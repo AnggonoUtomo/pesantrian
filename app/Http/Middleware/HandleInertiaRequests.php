@@ -39,7 +39,7 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'ziggy' => array_merge(
-                (new Ziggy())->toArray(),
+                (new Ziggy)->toArray(),
                 [
                     'location' => $request->url(),
                 ],

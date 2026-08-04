@@ -49,6 +49,11 @@ final class ModuleRegistry
                     throw new \InvalidArgumentException("Permission source [$permissionPath] tidak ditemukan.");
                 }
 
+                $configPath = dirname($manifestPath).DIRECTORY_SEPARATOR.$manifest->configSource;
+                if (! is_file($configPath)) {
+                    throw new \InvalidArgumentException("Config source [$configPath] tidak ditemukan.");
+                }
+
                 $permissions = require $permissionPath;
                 if (! is_array($permissions)) {
                     throw new \InvalidArgumentException('Permission source harus mengembalikan array.');

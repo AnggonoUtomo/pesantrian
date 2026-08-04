@@ -32,3 +32,10 @@ it('mendeteksi duplicate permission key antar module', function () {
         ->and(collect($result['diagnostics'])->pluck('message')->join(' '))
         ->toContain('Duplicate permission key');
 });
+
+it('mengisolasi module saat config source tidak tersedia', function () {
+    $result = (new ModuleRegistry)->discover(dirname(__DIR__).'/Fixtures/Modules/MissingSource');
+
+    expect($result['modules'])->toBe([])
+        ->and($result['diagnostics'][0]['message'])->toContain('Config source');
+});

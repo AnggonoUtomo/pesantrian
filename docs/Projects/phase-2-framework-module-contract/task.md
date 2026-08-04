@@ -91,8 +91,10 @@ Setiap task akan ditulis dengan pola berikut sebelum ditandai selesai:
     diagnostic yang dapat dibaca.
   - Evidence: Pint lulus; `php artisan test tests/Unit/ModuleRegistryTest.php`
     menghasilkan 4 test/10 assertion lulus; `git diff --check` lulus.
-  - Risiko: `config_source` belum dieksekusi registry dan ditangani pada
-    increment infrastructure berikutnya.
+  - Risiko: isi `config_source` belum dieksekusi sebagai konfigurasi runtime;
+    registry hanya memverifikasi file source tersedia. Eksekusi runtime ditunda
+    untuk increment infrastructure agar tidak menjalankan konfigurasi saat
+    discovery read-only.
 
 ### TASK-006 — Buat command module
 

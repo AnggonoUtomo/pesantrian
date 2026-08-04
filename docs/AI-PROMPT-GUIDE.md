@@ -376,6 +376,13 @@ php artisan module:validate System/UserManagement --json
 - Tidak ada Wayfinder atau Laravel Boost pada dependency, source, config, atau
   generated output.
 
+## Format Laporan Task
+
+AI wajib mencatat kondisi awal, file/path yang dibuat atau diubah, perubahan
+kode/configuration, alasan, acceptance criteria, command/test, hasil evidence,
+dan risiko. Gunakan checklist bertingkat dan execution log yang dapat dipahami
+tanpa konteks chat.
+
 ## Forbidden Prompt Pattern
 
 Jangan gunakan prompt seperti:

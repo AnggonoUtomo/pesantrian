@@ -221,6 +221,16 @@ Dokumentasi baseline 00–07 sudah disusun sebagai implementation contract.
 Implementasi kode belum dianggap selesai sampai 03.11-BASELINE-TASK-PLAN.md,
 test plan, CI gate, deployment verification, dan release acceptance terpenuhi.
 
+## Format Detail Rencana dan Evidence
+
+`implementation-plan.md`, `task.md`, dan `planning/execution-log.md` wajib
+menjadi catatan kerja yang dapat dibaca mandiri. Setiap task harus menjelaskan
+kondisi awal, file/path, perubahan kode/configuration, alasan, acceptance
+criteria, command/test, hasil, dan risiko.
+
+Checklist selesai wajib memiliki sub-item detail. Execution log tidak boleh
+hanya menulis "implementasi selesai" tanpa file dan evidence.
+
 ## License
 
 Internal Project Documentation Template.

@@ -40,9 +40,12 @@ dan konfigurasi route belum memiliki exposure policy eksplisit.
 ## Verifikasi
 
 - `php artisan route:list --json`
-- 
+-
+
 pm run types:check`
-- 
+-
+
 pm run build`
+
 - Focused positive route-generation test.
 - Focused negative authorization test.

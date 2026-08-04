@@ -226,6 +226,25 @@ Dokumentasi ini global dan tidak mengasumsikan project selalu dimulai dari nol. 
 
 Untuk project turunan, gunakan `Projects/{project-slug}` dari `Projects/_TEMPLATE`. Jangan menyalin seluruh baseline 00–07. Jika starter kit sudah ada, gunakan kapabilitas yang tersedia; jangan membangun ulang tanpa keputusan eksplisit.
 
+## Format Detail Task dan Evidence
+
+Implementation plan, task plan, dan execution log wajib menjelaskan kondisi
+awal, file/path, perubahan kode/configuration, alasan teknis, acceptance
+criteria, command/test, hasil, dan risiko. Checklist tidak boleh hanya berisi
+kalimat umum seperti "scope task selesai".
+
+Gunakan checklist bertingkat:
+
+```markdown
+- [x] Scope task selesai.
+  - Kondisi awal: `path/file` memiliki ...
+  - Perubahan: `path/file` diubah menjadi ...
+  - Alasan: perubahan diperlukan karena ...
+  - Evidence: `command` menghasilkan ...
+```
+
+Execution log harus dapat dipahami tanpa membaca percakapan agent.
+
 ## Implementasi Incremental
 
 Gunakan skill `incremental-implementation` untuk perubahan multi-file dan modul baru. Setiap increment wajib memiliki scope kecil, acceptance criteria, focused test, verification evidence, execution log, dan documentation update. Mulai increment berikutnya hanya setelah increment sebelumnya diverifikasi.

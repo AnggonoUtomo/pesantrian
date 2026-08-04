@@ -57,6 +57,28 @@ scope, urutan, dependency, acceptance criteria, dan verifikasinya jelas. Setelah
 pekerjaan selesai, checklist wajib ditinjau kembali dan diperbarui sesuai hasil
 nyata. Jangan membiarkan task yang sudah selesai tetap bertanda belum selesai,
 dan jangan menandai task selesai tanpa bukti verifikasi.
+
+## Format Detail Task dan Evidence
+
+Implementation plan, task plan, dan execution log tidak boleh hanya berisi
+judul atau kalimat umum seperti "scope task selesai". Setiap task wajib
+menjelaskan kondisi awal, file/path yang dibaca atau diubah, perubahan kode
+atau konfigurasi, alasan teknis, acceptance criteria, command/test, hasil
+penting, serta risiko atau batasan.
+
+Checklist selesai wajib memiliki sub-item detail. Gunakan pola berikut:
+
+```markdown
+- [x] Scope task selesai.
+  - Kondisi awal: `path/file` memiliki ...
+  - Perubahan: `path/file` diubah menjadi ...
+  - Alasan: perubahan diperlukan karena ...
+  - Evidence: `command` menghasilkan ...
+```
+
+Execution log harus dapat dipahami tanpa membaca percakapan agent. Hindari
+catatan seperti "implementasi selesai" tanpa menyebut file, perubahan, alasan,
+command, hasil, dan risiko.
 ## Authoritative Documentation
 
 Instruksi arsitektur dan workflow authoritative berada di:

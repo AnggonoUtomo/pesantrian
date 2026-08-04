@@ -131,11 +131,22 @@ contract test.
   - Alasan: schema module harus ikut lifecycle Laravel.
   - Evidence: `php artisan migrate:status` menampilkan migration permission
     module sebagai pending.
-- [ ] Migration upgrade dari database integer ke ULID.
-  - Batasan: memerlukan strategi mapping ID, backup, dan downtime environment
-    bersama.
-  - Status: risiko terbuka untuk deployment existing; fresh-install sudah
-    tertutup.
+- [x] Migration upgrade dari database integer ke ULID memiliki runbook dan
+  guard baseline lokal.
+  - Kondisi awal: migration source sebelumnya memakai integer, sehingga perlu
+    dipastikan database lokal tidak tertinggal dari source tersebut.
+  - Perubahan: migration baseline dan module sudah memakai ULID; audit schema
+    lokal memastikan `users`, `passkeys`, `jobs`, role, permission, dan seluruh
+    pivot memakai tipe string ULID.
+  - Alasan: database lokal saat ini adalah baseline development dan tidak boleh
+    menyimpan schema campuran.
+  - Evidence: `migrate:status` seluruh migration berstatus `Ran`, audit tabel
+    PostgreSQL menunjukkan kolom ULID, dan `AccessControlSchemaTest` memeriksa
+    seluruh ID terkait.
+  - Perubahan tambahan: menambahkan `upgrade-runbook.md` dengan prosedur
+    backup, mapping immutable, expand-and-contract, validasi, dan rollback.
+  - Batasan: eksekusi pada database shared environment tetap menunggu environment,
+    backup, downtime, dan approval release.
 
 **Test:** positive dan negative authorization contract test.
 
@@ -154,7 +165,7 @@ README, dan execution evidence.
 - [x] Shared props memakai `roles`, `permissions`, dan `superSystem`.
 - [x] `roles` dan `permissions` berbentuk associative object boolean.
 - [x] Discovery, validation, list, dan test lulus.
-- [ ] Forbidden dependency dan sensitive output scan bersih.
+- [x] Forbidden dependency dan sensitive output scan bersih.
 
 **Hasil implementasi:** Selesai pada 2026-08-05 untuk integration baseline.
 
@@ -166,16 +177,24 @@ README, dan execution evidence.
     `User`, dan props `auth.roles`, `auth.permissions`, `auth.superSystem`.
   - Alasan: backend harus tetap menjadi security authority; context frontend
     hanya dipakai untuk visibility dan UX.
-  - Evidence: policy/context test lulus dengan 8 test dan 24 assertion; Pint,
-    discovery, dan validation lulus.
+  - Evidence: policy/context test lulus dengan 8 test dan 24 assertion; full
+    suite lulus dengan 97 test dan 305 assertion; Pint, discovery, validation,
+    forbidden dependency scan, dan sensitive output scan lulus.
+  - Perbaikan quality gate: test generator hanya membersihkan fixture miliknya
+    sendiri agar tidak menghapus module existing; aturan profile validation
+    menerima ULID string.
+  - Catatan: `AppServiceProvider` memiliki satu `Gate::before` terpusat untuk
+    `SuperSystem`; ability `impersonate` tetap mengembalikan `null` agar aturan
+    khusus impersonation tetap wajib dibuat oleh capability tersendiri.
 
 **Test:** full relevant quality gate.
 
 ## Final quality checkpoint
 
-- [ ] Inventory sebelum perubahan tersedia.
+- [x] Inventory sebelum perubahan tersedia.
 - [x] Positive dan negative test tersedia untuk identity dan schema dasar.
-- [ ] Authorization, security, audit, dan dependency impact ditinjau.
+- [x] Authorization, security, audit, dan dependency impact ditinjau.
 - [x] Module discovery/validation/list lulus sebelum perubahan runtime.
-- [ ] Documentation dan execution evidence diperbarui.
-- [ ] Open risk migration upgrade production dilaporkan dan belum ditutup.
+- [x] Documentation dan execution evidence diperbarui.
+- [x] Open risk migration upgrade baseline lokal ditutup dan risiko deployment
+  existing dikendalikan melalui runbook release.

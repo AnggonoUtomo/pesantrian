@@ -35,4 +35,28 @@ final class AccessControlSchemaTest extends TestCase
         self::assertTrue(Schema::hasColumn('role_has_permissions', 'permission_id'));
         self::assertTrue(Schema::hasColumn('model_has_permissions', 'permission_id'));
     }
+
+    public function test_existing_baseline_tables_do_not_drift_back_to_integer_ids(): void
+    {
+        foreach ([
+            ['users', 'id'],
+            ['passkeys', 'id'],
+            ['passkeys', 'user_id'],
+            ['jobs', 'id'],
+            ['roles', 'id'],
+            ['permissions', 'id'],
+            ['model_has_roles', 'role_id'],
+            ['model_has_roles', 'model_id'],
+            ['model_has_permissions', 'permission_id'],
+            ['model_has_permissions', 'model_id'],
+            ['role_has_permissions', 'role_id'],
+            ['role_has_permissions', 'permission_id'],
+        ] as [$table, $column]) {
+            self::assertContains(
+                Schema::getColumnType($table, $column),
+                ['string', 'varchar'],
+                "$table.$column harus memakai tipe string ULID.",
+            );
+        }
+    }
 }

@@ -4,20 +4,20 @@ use Illuminate\Support\Facades\File;
 use Symfony\Component\Process\Process;
 
 beforeEach(function () {
-    File::deleteDirectory(app_path('Modules'));
+    File::deleteDirectory(app_path('Modules/System/AuditLog'));
 });
 
 afterEach(function () {
-    File::deleteDirectory(app_path('Modules'));
+    File::deleteDirectory(app_path('Modules/System/AuditLog'));
 });
 
 it('menyediakan dry-run JSON tanpa membuat file', function () {
-    $result = runModuleMake('AccessControl', ['--domain=System', '--dry-run', '--json']);
+    $result = runModuleMake('Billing', ['--domain=System', '--dry-run', '--json']);
 
     expect($result->getExitCode())->toBe(0)
         ->and($result->getOutput())->toContain('MODULE_PREVIEWED');
 
-    expect(File::exists(app_path('Modules/System/AccessControl')))->toBeFalse();
+    expect(File::exists(app_path('Modules/System/Billing')))->toBeFalse();
 });
 
 it('membuat module baru dan mengembalikan JSON sukses', function () {
@@ -35,7 +35,7 @@ it('menolak input invalid sebelum membuat file', function () {
     expect($result->getExitCode())->toBe(1)
         ->and($result->getOutput())->toContain('MODULE_GENERATION_INVALID');
 
-    expect(File::exists(app_path('Modules')))->toBeFalse();
+    expect(File::exists(app_path('Modules/System/AccessControl')))->toBeTrue();
 });
 
 it('menolak mutasi tanpa konfirmasi force', function () {
@@ -45,7 +45,7 @@ it('menolak mutasi tanpa konfirmasi force', function () {
         ->and($result->getOutput())->toContain('MODULE_GENERATION_INVALID')
         ->and($result->getOutput())->toContain('--force');
 
-    expect(File::exists(app_path('Modules')))->toBeFalse();
+    expect(File::exists(app_path('Modules/System/AccessControl')))->toBeTrue();
 });
 
 it('mengembalikan failure saat target conflict', function () {

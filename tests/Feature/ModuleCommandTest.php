@@ -3,11 +3,11 @@
 use Illuminate\Support\Facades\File;
 
 beforeEach(function () {
-    File::deleteDirectory(app_path('Modules'));
+    File::deleteDirectory(app_path('Modules/System/InvalidModule'));
 });
 
 afterEach(function () {
-    File::deleteDirectory(app_path('Modules'));
+    File::deleteDirectory(app_path('Modules/System/InvalidModule'));
 });
 
 it('menyediakan command module dengan output JSON', function () {

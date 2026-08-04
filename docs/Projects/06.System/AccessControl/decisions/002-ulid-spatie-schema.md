@@ -36,5 +36,6 @@ langsung karena akan membuat schema campuran.
 
 ## Risiko tersisa
 
-Migration upgrade dari database production integer belum dibuat. Perubahan saat
-ini aman untuk fresh-install atau database development yang dapat dibuat ulang.
+Runbook upgrade untuk database existing tersedia pada `upgrade-runbook.md`.
+Eksekusi shared environment tetap memerlukan backup, rehearsal, downtime, dan
+approval release karena database tersebut belum tersedia pada sesi kerja ini.

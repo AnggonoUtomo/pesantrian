@@ -24,6 +24,7 @@ coarse-grained, dan shared authorization context sudah tersedia.
 3. [Tasks](tasks.md)
 4. [ADR namespace](decisions/001-access-control-namespace.md)
 5. [ADR schema ULID](decisions/002-ulid-spatie-schema.md)
+6. [Runbook upgrade ULID](upgrade-runbook.md)
 
 ## Dokumen terkait
 
@@ -39,6 +40,8 @@ coarse-grained, dan shared authorization context sudah tersedia.
 - Model dan repository internal tidak boleh diimpor langsung oleh module lain.
 - Backend tetap menjadi security authority.
 - UI hanya memakai authorization context untuk visibility dan UX.
+- `SuperSystem` memiliki bypass terpusat melalui `Gate::before`; impersonation
+  tetap membutuhkan aturan khusus dan tidak ikut bypass otomatis.
 
 ## Cara verifikasi awal
 

@@ -14,6 +14,7 @@ use App\Modules\System\AccessControl\Presentation\Policies\AccessControlPolicy;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Tests\TestCase;
 
 final class AccessControlPolicyAndContextTest extends TestCase
@@ -63,5 +64,17 @@ final class AccessControlPolicyAndContextTest extends TestCase
         $middleware = RoleController::middleware();
 
         self::assertCount(2, $middleware);
+    }
+
+    public function test_super_system_gate_before_is_global_but_impersonate_still_requires_dedicated_rule(): void
+    {
+        $superSystem = User::factory()->create();
+        $regular = User::factory()->create();
+        Role::create(['name' => 'SuperSystem', 'guard_name' => 'web']);
+        $superSystem->assignRole('SuperSystem');
+
+        self::assertTrue(Gate::forUser($superSystem)->allows('unregistered-ability'));
+        self::assertFalse(Gate::forUser($regular)->allows('unregistered-ability'));
+        self::assertFalse(Gate::forUser($superSystem)->allows('impersonate'));
     }
 }

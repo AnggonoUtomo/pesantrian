@@ -143,6 +143,9 @@ global, sedangkan folder project berisi context, keputusan, task, dan evidence.
   yang disepakati.
 - Direct concrete dependency lintas module dilarang.
 - Module invalid diisolasi; module valid lain tetap berjalan.
+- Module yang memiliki alur pengguna wajib memiliki vertical slice frontend
+  yang dapat dibuka dan diuji langsung di browser, termasuk state UI,
+  permission visibility, responsive layout, dan browser/accessibility test.
 - Semua identifier persistence dan boundary menggunakan ULID.
 - Permission baseline menggunakan allow permission dan policy rule.
 - Wayfinder dan Laravel Boost dilarang total; frontend route memakai Ziggy.

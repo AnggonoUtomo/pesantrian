@@ -13,6 +13,9 @@ yang tidak berkaitan.
 
 - [ ] {Perilaku berhasil.}
 - [ ] {Perilaku ditolak atau failure case.}
+- [ ] Frontend page/component dan state UI dapat dibuka bila task memiliki alur
+  pengguna.
+- [ ] Browser/accessibility test tersedia bila task memiliki alur pengguna.
 
 **Hasil implementasi:** {Isi setelah task selesai, termasuk tanggal.}
 
@@ -39,3 +42,5 @@ yang tidak berkaitan.
 - [ ] Test negatif dan security impact ditinjau.
 - [ ] Quality gate lulus.
 - [ ] Documentation dan execution evidence diperbarui.
+- [ ] Frontend build/type check dan browser/accessibility test lulus untuk task
+  yang memiliki alur pengguna.

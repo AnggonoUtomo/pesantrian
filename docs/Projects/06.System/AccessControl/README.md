@@ -11,11 +11,12 @@ repository, atau adapter internalnya secara langsung.
 - Namespace: `App\Modules\System\AccessControl`
 - Path: `app/Modules/System/AccessControl`
 - Permission owner: `AccessControl`
-- Status: `Capability, policy dasar, dan authorization context tersedia`
+- Status: `Backend authorization tersedia; frontend role/permission belum selesai`
 
 Package `spatie/laravel-permission:8.3.0` sudah terhubung melalui config dan
 model adapter ULID milik module. Capability dasar, policy role, middleware
-coarse-grained, dan shared authorization context sudah tersedia.
+coarse-grained, dan shared authorization context sudah tersedia. Page frontend
+untuk role/permission dan browser test masih menjadi pekerjaan module.
 
 ## Urutan baca
 
@@ -25,6 +26,7 @@ coarse-grained, dan shared authorization context sudah tersedia.
 4. [ADR namespace](decisions/001-access-control-namespace.md)
 5. [ADR schema ULID](decisions/002-ulid-spatie-schema.md)
 6. [Runbook upgrade ULID](upgrade-runbook.md)
+7. [Frontend AccessControl](frontend/README.md)
 
 ## Dokumen terkait
 

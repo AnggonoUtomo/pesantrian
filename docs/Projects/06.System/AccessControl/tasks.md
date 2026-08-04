@@ -166,8 +166,15 @@ README, dan execution evidence.
 - [x] `roles` dan `permissions` berbentuk associative object boolean.
 - [x] Discovery, validation, list, dan test lulus.
 - [x] Forbidden dependency dan sensitive output scan bersih.
+- [ ] Frontend role/permission page, state UI, dan browser/accessibility test
+  tersedia.
 
-**Hasil implementasi:** Selesai pada 2026-08-05 untuk integration baseline.
+Rincian frontend ada di [Frontend AccessControl](frontend/README.md). Task
+frontend dikerjakan setelah dokumentasi frontend disetujui dan sebelum module
+AccessControl dinyatakan selesai.
+
+**Hasil implementasi:** Backend integration dan quality gate selesai pada
+2026-08-05. Frontend role/permission belum selesai.
 
 - [x] Scope task selesai.
   - Kondisi awal: middleware, policy, use case re-check, dan shared Inertia
@@ -186,6 +193,8 @@ README, dan execution evidence.
   - Catatan: `AppServiceProvider` memiliki satu `Gate::before` terpusat untuk
     `SuperSystem`; ability `impersonate` tetap mengembalikan `null` agar aturan
     khusus impersonation tetap wajib dibuat oleh capability tersendiri.
+  - Batasan: module belum boleh dinyatakan selesai sampai page frontend,
+    responsive state, dan browser/accessibility test tersedia.
 
 **Test:** full relevant quality gate.
 

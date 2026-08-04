@@ -258,6 +258,12 @@ Untuk perubahan multi-file atau module baru, agent wajib bekerja incremental:
 7. Presentation dan routes.
 8. Tests, README, dan documentation evidence.
 
+Untuk module yang memiliki alur pengguna, setiap implementasi juga wajib
+memiliki vertical slice frontend yang dapat dibuka dan diuji. Minimal mencakup
+page/component, route Ziggy, loading/empty/error state, permission visibility,
+responsive layout, dan focused browser test. Backend tanpa UI yang dapat diuji
+tidak boleh dinyatakan sebagai module selesai.
+
 Setiap increment wajib memiliki:
 
 - scope kecil;
@@ -295,6 +301,10 @@ Perubahan dianggap selesai hanya jika:
 - documentation authoritative dan downstream diperbarui;
 - tidak ada broken link atau forbidden dependency;
 - unresolved risk dilaporkan.
+- frontend UI/UX tersedia untuk alur module yang memiliki pengguna;
+- frontend build/type check dan browser/accessibility test yang relevan lulus;
+- hasil UI dapat ditinjau langsung pada browser, bukan hanya melalui dokumen
+  atau test backend.
 
 ## Agent Handoff Format
 

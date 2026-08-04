@@ -169,6 +169,15 @@ Setiap perubahan implementasi membutuhkan:
 - Perintah verifikasi atau bukti (*evidence*);
 - Dokumentasi/pembaruan context yang terdampak saat perilaku kode berubah.
 
+## Kewajiban Frontend Module
+
+Module yang memiliki alur pengguna wajib dibuat sebagai vertical slice
+backend-plus-frontend. Implementasi tidak boleh berhenti pada model, migration,
+service, dan test backend saja. Minimal harus tersedia page/component yang dapat
+dibuka, route frontend menggunakan Ziggy, state loading/empty/error, aturan
+visibility permission, responsive layout, dan browser/accessibility test yang
+relevan. Hasil module harus dapat ditinjau langsung pada browser.
+
 ## Kualitas dan Verifikasi
 
 Gate kualitas yang relevan mencakup:
@@ -216,6 +225,9 @@ Module hanya dianggap selesai jika seluruh kondisi berikut terpenuhi:
 - generated structure snapshot atau structure test lulus;
 - README module menjelaskan purpose, boundary, contract, permission, dependency,
   configuration, test, dan operational notes;
+- page/component frontend dan route Ziggy tersedia bila module memiliki UI;
+- frontend build/type check serta browser/accessibility test relevan lulus;
+- UI state dan permission visibility dapat diverifikasi langsung pada browser;
 - tidak ada Wayfinder, Laravel Boost, secret, credential, atau sensitive payload
   pada output;
 - evidence verification dan unresolved risk dilaporkan.

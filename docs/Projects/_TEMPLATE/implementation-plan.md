@@ -10,8 +10,10 @@
 2. Test fokus dalam kondisi RED.
 3. Implementasi capability inti.
 4. Authorization, audit, dan security guard.
-5. Frontend/API atau integrasi terkait.
-6. Quality gate dan review scope.
+5. Frontend vertical slice: page, route Ziggy, state UI, permission visibility,
+   responsive layout, dan browser/accessibility test.
+6. API atau integrasi terkait.
+7. Quality gate dan review scope.
 
 ## Risiko
 

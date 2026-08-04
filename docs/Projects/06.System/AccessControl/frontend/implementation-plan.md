@@ -35,3 +35,21 @@ php artisan test
 
 Browser verification menggunakan Chrome DevTools MCP dan accessibility check
 yang tersedia pada project.
+
+## Execution evidence terbaru
+
+- `RoleController` memiliki middleware untuk view, dashboard, create, update,
+  dan delete.
+- `AddRoleDialog` dan `DeleteRoleDialog` memakai route Ziggy serta Inertia
+  mutation. Field nama role memiliki label, validasi server, processing state,
+  dan error alert.
+- Role `SuperSystem` tidak dapat dihapus atau diubah permission-nya. UI hanya
+  membantu visibility; middleware dan policy tetap memutuskan akses.
+- Full test suite `php artisan test` lulus dengan 113 test dan 374 assertion.
+- `npm run types:check`, `npm run lint:check`, `npm run build`, dan
+  `git diff --check` lulus.
+- Browser mobile 375x812, dialog tambah role, protected state, console, dan
+  Lighthouse sudah ditinjau. Lighthouse mobile mendapat skor 100 untuk
+  accessibility, best practices, SEO, dan agentic browsing.
+- `vite.config.ts` memisahkan dependency vendor sehingga build tidak lagi
+  menghasilkan warning chunk di atas 500 kB.

@@ -98,13 +98,16 @@ tidak menjadi security boundary.
 
 ## Permission awal
 
-Permission dimiliki oleh module `AccessControl`. Daftar permission final belum
-ditetapkan dan menjadi Open Decision sebelum implementasi.
+Permission dimiliki oleh module `AccessControl`. Permission awal mencakup
+`system.dashboard.view`, `access_control.role.manage`,
+`access_control.permission.manage`, `access_control.role.assign`, dan
+`access_control.permission.assign`.
 
 ## Route/API design
 
-Module baseline ini tidak membuat endpoint publik pada increment pertama.
-Authorization dipakai melalui middleware, policy, dan public capability.
+Module memiliki endpoint internal System untuk dashboard, daftar role, create,
+update permission, dan delete role. Authorization tetap dipakai melalui
+middleware, policy, dan public capability.
 
 ## Acceptance criteria
 

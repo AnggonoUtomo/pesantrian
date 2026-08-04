@@ -113,4 +113,53 @@ final class AccessControlPageTest extends TestCase
         $response->assertForbidden();
         self::assertFalse($role->fresh()->hasPermissionTo($assign));
     }
+
+    public function test_authorized_actor_can_create_role(): void
+    {
+        $user = User::factory()->create();
+        $manage = Permission::create(['name' => 'access_control.role.manage', 'guard_name' => 'web']);
+        $user->givePermissionTo($manage);
+
+        $response = $this->actingAs($user)->post(route('access-control.roles.store'), [
+            'name' => 'Reviewer',
+        ]);
+
+        $response->assertRedirect();
+        self::assertDatabaseHas('roles', ['name' => 'Reviewer', 'guard_name' => 'web']);
+    }
+
+    public function test_actor_without_manage_permission_cannot_create_role(): void
+    {
+        $this->actingAs(User::factory()->create())
+            ->post(route('access-control.roles.store'), ['name' => 'Reviewer'])
+            ->assertForbidden();
+    }
+
+    public function test_authorized_actor_can_delete_editable_role(): void
+    {
+        $user = User::factory()->create();
+        $manage = Permission::create(['name' => 'access_control.role.manage', 'guard_name' => 'web']);
+        $user->givePermissionTo($manage);
+        $role = Role::create(['name' => 'Reviewer', 'guard_name' => 'web']);
+
+        $this->actingAs($user)
+            ->delete(route('access-control.roles.destroy', $role))
+            ->assertRedirect();
+
+        self::assertDatabaseMissing('roles', ['id' => $role->getKey()]);
+    }
+
+    public function test_super_system_role_cannot_be_deleted(): void
+    {
+        $user = User::factory()->create();
+        $manage = Permission::create(['name' => 'access_control.role.manage', 'guard_name' => 'web']);
+        $user->givePermissionTo($manage);
+        $role = Role::create(['name' => 'SuperSystem', 'guard_name' => 'web']);
+
+        $this->actingAs($user)
+            ->delete(route('access-control.roles.destroy', $role))
+            ->assertForbidden();
+
+        self::assertDatabaseHas('roles', ['id' => $role->getKey()]);
+    }
 }

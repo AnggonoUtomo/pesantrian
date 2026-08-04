@@ -39,14 +39,15 @@ export default function Welcome() {
                 <section className="mb-6 w-full max-w-[335px] lg:max-w-4xl">
                     <div className="mb-4">
                         <p className="text-sm font-medium text-primary">
-                            Pilih area kerja
+                            System workspace
                         </p>
                         <h1 className="mt-1 text-2xl font-semibold tracking-tight">
-                            Masuk ke workspace kamu
+                            Masuk ke System
                         </h1>
                         <p className="mt-1 max-w-2xl text-sm text-[#706f6c] dark:text-[#A1A09A]">
-                            Setiap area memiliki dashboard dan aturan akses
-                            sesuai permission akun.
+                            Gunakan satu pintu login untuk dashboard dan semua
+                            module System. Fitur yang tampil mengikuti role dan
+                            permission akun.
                         </p>
                     </div>
                     <div className="grid gap-3 md:grid-cols-3">
@@ -57,28 +58,32 @@ export default function Welcome() {
                             <LayoutDashboard className="size-6 text-primary" />
                             <h2 className="mt-4 font-semibold">System</h2>
                             <p className="mt-1 text-sm text-[#706f6c] dark:text-[#A1A09A]">
-                                Dashboard system dan capability platform.
+                                Satu pintu login untuk dashboard dan module
+                                System.
                             </p>
                         </Link>
-                        <Link
-                            href={route('system.login')}
-                            className="group rounded-xl border bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-md dark:bg-[#161615]"
-                        >
+                        <div className="rounded-xl border bg-white p-4 shadow-sm dark:bg-[#161615]">
                             <ShieldCheck className="size-6 text-primary" />
-                            <h2 className="mt-4 font-semibold">
-                                Access Control
-                            </h2>
-                            <p className="mt-1 text-sm text-[#706f6c] dark:text-[#A1A09A]">
-                                Role, permission, dan policy akses.
+                            <p className="mt-4 text-[10px] font-semibold tracking-[0.16em] text-primary uppercase">
+                                System module
                             </p>
-                        </Link>
+                            <h2 className="mt-1 font-semibold">Access Control</h2>
+                            <p className="mt-1 text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                                Role, permission, dan policy akses setelah login
+                                System sesuai hak akun.
+                            </p>
+                        </div>
                         <div className="rounded-xl border border-dashed bg-white/60 p-4 dark:bg-[#161615]/60">
                             <Users className="size-6 text-muted-foreground" />
-                            <h2 className="mt-4 font-semibold">
+                            <p className="mt-4 text-[10px] font-semibold tracking-[0.16em] text-muted-foreground uppercase">
+                                System module
+                            </p>
+                            <h2 className="mt-1 font-semibold">
                                 User Management
                             </h2>
                             <p className="mt-1 text-sm text-[#706f6c] dark:text-[#A1A09A]">
-                                Segera tersedia setelah module diaktifkan.
+                                Module berikutnya di System. Akses akan
+                                mengikuti role dan permission.
                             </p>
                         </div>
                     </div>

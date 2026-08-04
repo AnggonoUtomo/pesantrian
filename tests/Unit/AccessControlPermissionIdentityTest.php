@@ -10,11 +10,13 @@ it('memiliki permission identity AccessControl yang valid dan unik', function ()
         $permissions,
     );
 
-    expect($identities)->toHaveCount(4)
+    expect($identities)->toHaveCount(5)
         ->and(array_unique(array_map(static fn (PermissionIdentity $permission): string => $permission->key, $identities)))
-        ->toHaveCount(4)
-        ->and(array_map(static fn (PermissionIdentity $permission): string => $permission->module, $identities))
-        ->each->toBe('AccessControl');
+        ->toHaveCount(5);
+
+    expect(array_map(static fn (PermissionIdentity $permission): string => $permission->module, $identities))
+        ->toContain('System')
+        ->toContain('AccessControl');
 });
 
 it('membedakan permission sensitif dan non-sensitif', function () {

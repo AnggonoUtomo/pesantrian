@@ -21,7 +21,8 @@ Pola dari `FrontendContoh/access-control` dipakai sebagai referensi struktur:
 - layout module `system-dashboard-layout` dengan pola header, grid content, dan
   footer dashboard.
 - halaman system dashboard pada route `system.dashboard`.
-- halaman login area System pada route `system.login`.
+- satu halaman login System pada route `system.login` untuk semua module di
+  dalam namespace System.
 - halaman `errors/unauthorized` untuk response authorization `403`.
 - sticky top navigation mengikuti pola `dashboard-shell-01`, berisi toggle
   sidebar, breadcrumb, language menu, notification action, dan profile menu.
@@ -90,8 +91,10 @@ Frontend hanya mengatur visibility/UX; backend tetap memeriksa authorization.
   data sales contoh yang tidak terkait module.
 - Dashboard module baru dibuat di namespace page module masing-masing dan dapat
   memakai `system-dashboard-layout` sebagai layout bersama.
-- Login area hanya memberi konteks tujuan; authentication tetap memakai Fortify
-  yang sama dan akses akhir tetap diperiksa middleware/policy.
+- Login hanya memiliki satu pintu System; AccessControl dan UserManagement
+  bukan area login terpisah.
+- Authentication tetap memakai Fortify yang sama. Akses setiap fitur tetap
+  diperiksa middleware dan policy berdasarkan role/permission.
 - Top navigation menjadi bagian dari `AppLayout` global agar semua halaman
   System dan module mendapat header yang konsisten.
 - Halaman Appearance menyediakan pemilih theme palette yang mengubah warna

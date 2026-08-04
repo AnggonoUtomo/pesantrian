@@ -95,7 +95,6 @@ export function AppSidebarHeader({
                             <Button
                                 variant="ghost"
                                 className="ml-1 h-10 gap-2 px-2"
-                                aria-label={`Buka menu profil ${auth.user.name}`}
                                 data-test="top-nav-profile-trigger"
                             >
                                 <UserInfo user={auth.user} />

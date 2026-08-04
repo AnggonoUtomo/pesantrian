@@ -1,6 +1,6 @@
 # Runbook Upgrade Schema Integer ke ULID
 
-Status: Siap untuk rehearsal  
+Status: Terkendali untuk development; wajib rehearsal sebelum release shared
 Owner: Release owner dan DevOps  
 Scope: database existing yang masih memakai integer
 
@@ -9,7 +9,8 @@ Scope: database existing yang masih memakai integer
 Runbook ini mengubah identifier integer menjadi ULID tanpa kehilangan data dan
 tanpa membuat relasi role, permission, user, passkey, atau session terputus.
 Runbook ini belum dijalankan pada shared environment karena database tersebut
-belum tersedia pada sesi kerja ini.
+belum tersedia pada sesi kerja ini. Kondisi ini bukan blocker untuk baseline
+development, tetapi tetap menjadi release gate sebelum deployment existing.
 
 ## Tabel yang terdampak
 
@@ -72,3 +73,13 @@ mapping immutable. Jangan menghapus mapping atau histori permission.
 Go hanya jika backup restore, mapping, foreign key, jumlah record, smoke test,
 dan owner approval semuanya tersedia. No-go jika ada data orphan, mapping
 tidak lengkap, backup tidak dapat direstore, atau aplikasi lama belum kompatibel.
+
+## Status risiko
+
+Risiko migration upgrade dinyatakan terkendali untuk workspace ini karena:
+
+- schema development sudah memakai ULID;
+- test schema memeriksa primary key, foreign key, pivot, dan relasi permission;
+- prosedur mapping immutable, rehearsal, validasi, dan rollback sudah tersedia;
+- deployment existing tetap wajib berhenti pada gate `No-go` sampai rehearsal
+  shared environment benar-benar lulus.

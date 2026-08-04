@@ -27,4 +27,25 @@ export default defineConfig({
         }),
         tailwindcss(),
     ],
+    build: {
+        rollupOptions: {
+            output: {
+                manualChunks(id) {
+                    const nodeModulesIndex = id.lastIndexOf('node_modules/');
+
+                    if (nodeModulesIndex !== -1) {
+                        const packagePath = id.slice(
+                            nodeModulesIndex + 'node_modules/'.length,
+                        );
+                        const packageParts = packagePath.split('/');
+                        const packageName = packagePath.startsWith('@')
+                            ? packageParts.slice(0, 2).join('-')
+                            : packageParts[0];
+
+                        return `vendor-${packageName.replaceAll('@', '')}`;
+                    }
+                },
+            },
+        },
+    },
 });

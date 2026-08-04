@@ -11,12 +11,12 @@ repository, atau adapter internalnya secara langsung.
 - Namespace: `App\Modules\System\AccessControl`
 - Path: `app/Modules/System/AccessControl`
 - Permission owner: `AccessControl`
-- Status: `Backend authorization tersedia; frontend role/permission belum selesai`
+- Status: `Selesai; backend, frontend, test, dan browser verification lulus`
 
 Package `spatie/laravel-permission:8.3.0` sudah terhubung melalui config dan
 model adapter ULID milik module. Capability dasar, policy role, middleware
-coarse-grained, dan shared authorization context sudah tersedia. Page frontend
-untuk role/permission dan browser test masih menjadi pekerjaan module.
+coarse-grained, shared authorization context, page role/permission, mutation
+role, dan browser verification sudah tersedia.
 
 ## Urutan baca
 
@@ -53,4 +53,11 @@ php artisan module:validate --json
 php artisan module:list --json
 ```
 
-Verifikasi implementasi akan ditambahkan setelah module mulai dibuat.
+Verifikasi implementasi:
+
+```bash
+php artisan test
+npm run types:check
+npm run lint:check
+npm run build
+```

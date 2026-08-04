@@ -9,6 +9,7 @@ use App\Modules\System\AccessControl\Infrastructure\Persistence\Models\Permissio
 use App\Modules\System\AccessControl\Infrastructure\Persistence\Models\Role;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Inertia\Inertia;
@@ -25,6 +26,7 @@ final class RoleController implements HasMiddleware
             new Middleware('can:system.dashboard.view', only: ['dashboard']),
             new Middleware('can:create,'.Role::class, only: ['store']),
             new Middleware('can:update,role', only: ['syncPermissions']),
+            new Middleware('can:delete,role', only: ['destroy']),
         ];
     }
 
@@ -81,11 +83,27 @@ final class RoleController implements HasMiddleware
         ];
     }
 
-    public function store(Request $request): array
+    public function store(Request $request): RedirectResponse
     {
+        $request->validate([
+            'name' => [
+                'required',
+                'string',
+                'min:2',
+                'max:100',
+                'regex:/^[A-Za-z0-9][A-Za-z0-9 _-]*$/',
+                Rule::unique('roles', 'name')->where('guard_name', 'web'),
+            ],
+        ]);
+
         $this->authorizeRoleMutation->ensureAllowed($request->user());
 
-        return ['status' => 'authorized'];
+        Role::create([
+            'name' => trim((string) $request->string('name')),
+            'guard_name' => 'web',
+        ]);
+
+        return back()->with('status', 'Role berhasil ditambahkan.');
     }
 
     public function syncPermissions(Request $request, Role $role): RedirectResponse
@@ -100,5 +118,14 @@ final class RoleController implements HasMiddleware
         $role->syncPermissions($validated['permissions']);
 
         return back()->with('status', 'Permission role berhasil diperbarui.');
+    }
+
+    public function destroy(Role $role): RedirectResponse
+    {
+        abort_if($role->name === 'SuperSystem', 403);
+
+        $role->delete();
+
+        return back()->with('status', 'Role berhasil dihapus.');
     }
 }

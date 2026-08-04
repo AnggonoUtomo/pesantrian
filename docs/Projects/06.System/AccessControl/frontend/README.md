@@ -37,4 +37,5 @@ resources/js/pages/System/AccessControl/
 
 ## Status
 
-Dokumentasi selesai. Coding frontend dan browser verification belum dimulai.
+Frontend, mutation role, browser verification, dan accessibility check selesai.
+Backend tetap menjadi security authority untuk seluruh mutation.

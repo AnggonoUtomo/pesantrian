@@ -146,8 +146,21 @@ contract test.
     seluruh ID terkait.
   - Perubahan tambahan: menambahkan `upgrade-runbook.md` dengan prosedur
     backup, mapping immutable, expand-and-contract, validasi, dan rollback.
-  - Batasan: eksekusi pada database shared environment tetap menunggu environment,
-    backup, downtime, dan approval release.
+  - Status risiko: terkendali untuk workspace development. Eksekusi shared
+    environment menjadi release gate terpisah yang wajib memiliki database,
+    backup restore, maintenance window, dan approval release.
+
+## Quality risk — frontend bundle
+
+- [x] Warning chunk frontend di atas 500 kB ditutup.
+  - Kondisi awal: `npm run build` menghasilkan chunk aplikasi sekitar 500 kB
+    dan memberi warning ukuran bundle.
+  - Perubahan: `vite.config.ts` memisahkan dependency `node_modules` menjadi
+    vendor chunk berdasarkan package.
+  - Alasan: chunk aplikasi utama lebih kecil dan dependency dapat di-cache
+    terpisah oleh browser.
+  - Evidence: `npm run build` lulus tanpa warning ukuran chunk; chunk aplikasi
+    turun menjadi sekitar 55 kB dan chunk vendor terbesar sekitar 202 kB.
 
 **Test:** positive dan negative authorization contract test.
 
@@ -169,16 +182,25 @@ README, dan execution evidence.
 - [x] Sidebar memiliki menu Access Control dengan visibility berbasis permission.
 - [x] Discovery, validation, list, dan test lulus.
 - [x] Forbidden dependency dan sensitive output scan bersih.
-- [ ] Frontend role/permission page, state UI, dan browser/accessibility test
+- [x] Frontend role/permission page, state UI, dan browser/accessibility test
   tersedia.
+  - Kondisi awal: backend selesai, tetapi dialog lifecycle role, endpoint
+    create/delete, dan quality gate browser masih terbuka.
+  - Perubahan: menambahkan dialog role, endpoint create/delete dengan policy,
+    test positive/negative, responsive verification, dan Lighthouse audit.
+  - Alasan: module baru dapat dinyatakan selesai hanya jika capability dapat
+    ditinjau dan diuji langsung melalui UI.
+  - Evidence: full suite `php artisan test` lulus 113 test dan 374 assertion;
+    `npm run types:check`, `npm run lint:check`, build, serta Lighthouse mobile
+    lulus.
 
 Rincian frontend ada di [Frontend AccessControl](frontend/README.md). Task
 frontend dikerjakan setelah dokumentasi frontend disetujui dan sebelum module
 AccessControl dinyatakan selesai.
 
-**Hasil implementasi:** Backend integration dan quality gate selesai pada
-2026-08-05. Page frontend dasar, route Ziggy, sidebar menu, seeder demo, dan
-focused browser review sudah tersedia. Mutation UI role/permission belum selesai.
+**Hasil implementasi:** Backend dan frontend AccessControl selesai pada
+2026-08-05. Page role/permission, mutation role, route Ziggy, sidebar menu,
+seeder demo, browser review, dan accessibility check sudah tersedia.
 
 - [x] Scope task selesai.
   - Kondisi awal: middleware, policy, use case re-check, dan shared Inertia
@@ -188,8 +210,8 @@ focused browser review sudah tersedia. Mutation UI role/permission belum selesai
     `User`, dan props `auth.roles`, `auth.permissions`, `auth.superSystem`.
   - Alasan: backend harus tetap menjadi security authority; context frontend
     hanya dipakai untuk visibility dan UX.
-  - Evidence: policy/context test lulus dengan 8 test dan 24 assertion; full
-    suite lulus dengan 97 test dan 305 assertion; Pint, discovery, validation,
+  - Evidence: policy/context test lulus dengan 5 test dan 11 assertion; full
+    suite lulus dengan 113 test dan 374 assertion; Pint, discovery, validation,
     forbidden dependency scan, dan sensitive output scan lulus.
   - Perbaikan quality gate: test generator hanya membersihkan fixture miliknya
     sendiri agar tidak menghapus module existing; aturan profile validation
@@ -221,7 +243,7 @@ focused browser review sudah tersedia. Mutation UI role/permission belum selesai
   menu sidebar `System Dashboard`; middleware tetap memeriksa permission
   `access_control.role.manage`.
 - `AccessControlSeederTest` lulus: empat test, 15 assertion.
-- `AccessControlPageTest` lulus: enam test, 32 assertion.
+- `AccessControlPageTest` lulus: sepuluh test, 41 assertion.
 - `vendor/bin/pint --test` dan `npm run types:check` lulus.
 - Browser mobile snapshot pada `/system/access-control` setelah login
   `security-admin@example.test` menampilkan menu `Access Control`, page role,

@@ -63,7 +63,7 @@ final class AccessControlPolicyAndContextTest extends TestCase
     {
         $middleware = RoleController::middleware();
 
-        self::assertCount(2, $middleware);
+        self::assertCount(5, $middleware);
     }
 
     public function test_super_system_gate_before_is_global_but_impersonate_still_requires_dedicated_rule(): void

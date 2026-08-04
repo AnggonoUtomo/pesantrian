@@ -49,7 +49,7 @@ export function RoleControlCard({
                     <div className="flex items-center justify-between gap-3">
                         <span className="font-medium">{activeRole.name}</span>
                         {activeRole.is_protected ? (
-                            <span className="rounded-full bg-amber-500/10 px-2 py-1 text-xs text-amber-700">
+                            <span className="rounded-full bg-amber-500/10 px-2 py-1 text-xs text-amber-800">
                                 Protected
                             </span>
                         ) : null}

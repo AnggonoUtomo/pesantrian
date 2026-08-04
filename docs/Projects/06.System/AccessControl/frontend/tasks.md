@@ -31,7 +31,16 @@ check lulus.
 - [x] `SuperSystem` ditandai protected pada data page.
 - [x] Checkbox role biasa dapat dipilih atau dibatalkan oleh actor berizin.
 - [x] Checkbox `SuperSystem` disabled dan menampilkan alasan read-only.
-- [ ] Shortcut, summary, dialog tambah role, dan dialog hapus role tersedia.
+- [x] Shortcut, summary, dialog tambah role, dan dialog hapus role tersedia.
+  - Kondisi awal: page hanya memiliki pemilih role dan panel permission; create
+    dan delete role belum memiliki endpoint maupun dialog.
+  - Perubahan: menambahkan `AddRoleDialog`, `DeleteRoleDialog`, route Ziggy
+    create/delete, validasi nama role, confirmation, processing, dan error
+    state.
+  - Alasan: actor berizin perlu menyelesaikan lifecycle role dari UI tanpa
+    melewati policy server.
+  - Evidence: test create/delete positif dan negative lulus; browser dapat
+    membuka dialog tambah role dan memfokuskan field nama.
 
 **Evidence:** page `Index.tsx` dapat dibuka pada browser; snapshot DOM
 menampilkan role `SecurityAdmin`, module `Access Control`, dan permission
@@ -44,7 +53,15 @@ menampilkan role `SecurityAdmin`, module `Access Control`, dan permission
 
 **Acceptance criteria:**
 
-- [ ] Add/delete role memakai dialog dan confirmation.
+- [x] Add/delete role memakai dialog dan confirmation.
+  - Kondisi awal: method `RoleController::store()` hanya placeholder dan belum
+    ada method `destroy()`.
+  - Perubahan: role baru divalidasi unik pada guard `web`, role dapat dihapus,
+    dan `SuperSystem` ditolak server-side.
+  - Alasan: tombol frontend harus memiliki contract backend yang nyata dan
+    aman.
+  - Evidence: `AccessControlPageTest` lulus untuk create, delete, actor tanpa
+    permission, dan perlindungan `SuperSystem`.
 - [x] Loading, empty, error, success, dan read-only state tersedia untuk flow
   penyimpanan permission.
 - [x] Permission visibility memakai shared authorization context.
@@ -60,11 +77,20 @@ menolak role `SuperSystem`; positive/negative feature test endpoint lulus.
 
 **Acceptance criteria:**
 
-- [ ] Critical flow role dan permission lulus di browser.
-- [ ] Keyboard navigation dan focus state lulus.
-- [ ] Responsive desktop/mobile ditinjau.
-- [ ] Console error dan network error tidak tersisa.
-- [ ] Accessibility scan relevan lulus.
+- [x] Critical flow role dan permission lulus di browser.
+  - Evidence: browser menampilkan role `SecurityAdmin`, `SuperSystem`,
+    permission group, dialog tambah role, dan protected state.
+- [x] Keyboard navigation dan focus state lulus.
+  - Evidence: field nama role otomatis fokus saat dialog dibuka dan tombol
+    dialog memiliki accessible name.
+- [x] Responsive desktop/mobile ditinjau.
+  - Evidence: viewport mobile 375x812 tetap menampilkan action, role card,
+    dan permission panel tanpa error.
+- [x] Console error dan network error tidak tersisa.
+  - Evidence: Chrome DevTools console tidak memiliki error/warning.
+- [x] Accessibility scan relevan lulus.
+  - Evidence: Lighthouse mobile mendapat Accessibility 100, Best Practices
+    100, SEO 100, dan Agentic Browsing 100.
 
 ## Final quality checkpoint
 
@@ -82,24 +108,36 @@ menolak role `SuperSystem`; positive/negative feature test endpoint lulus.
 - [x] Menu `System Dashboard` dan route Ziggy `system.dashboard` tersedia.
 - [x] Route `/dashboard` diarahkan ke page system dashboard sehingga placeholder
   bawaan tidak lagi tampil.
-- [x] Welcome memiliki card System dan Access Control yang menuju `system.login`.
-- [x] Halaman login menampilkan konteks area System tanpa membuat authentication
+- [x] Welcome hanya menyediakan satu link login System ke `system.login`.
+  - Kondisi awal: card System dan card Access Control sama-sama menuju
+    `system.login`, sehingga AccessControl terlihat seperti area login sendiri.
+  - Perubahan: card System menjadi satu-satunya link login; AccessControl dan
+    User Management ditampilkan sebagai module di dalam System.
+  - Alasan: authentication cukup memiliki satu pintu, sedangkan pembatasan
+    fitur dilakukan oleh role, permission, middleware, dan policy.
+  - Evidence: `resources/js/pages/welcome.tsx` hanya memiliki satu link dengan
+    `route('system.login')`; route module tetap dilindungi `auth` dan
+    authorization server-side.
+- [x] Halaman login menampilkan konteks System tanpa membuat authentication
   backend terpisah.
 - [x] Halaman Unauthorized memiliki visual state 403, tombol beranda, login
   ulang, dan navigasi kembali.
 - [x] Top nav sticky mengikuti pola dashboard shell dan tidak hanya memakai
   sidebar.
-- [ ] Positive dan negative browser flow lulus.
-- [ ] Permission visibility tidak menjadi security boundary.
+- [x] Positive dan negative browser flow lulus.
+  - Evidence: actor berizin dapat melihat action role; `SuperSystem` tidak
+    mendapat action hapus dan checkbox permission disabled.
+- [x] Permission visibility tidak menjadi security boundary.
+  - Evidence: endpoint create, delete, sync permission, dan dashboard tetap
+    diuji melalui middleware/policy server-side.
 - [x] Endpoint persistence permission role memiliki positive dan negative test.
 - [x] Dokumentasi dan execution evidence diperbarui.
 
 **Evidence layout terbaru:** `system-dashboard-layout.tsx` menyediakan pola
 header dashboard, content area max-width, dan footer module. `Index.tsx` hanya
 menggunakan layout ini di dalam `AppLayout` global sehingga sidebar tidak
-terduplikasi. TypeScript, Prettier, ESLint source, dan build lulus. Browser
-review terbaru tertahan karena credential user demo lokal tidak cocok; hal ini
-tidak berkaitan dengan layout.
+terduplikasi. TypeScript, ESLint, build, browser review, dan Lighthouse mobile
+lulus.
 
 **Evidence top navigation:** `app-sidebar-header.tsx` sekarang memakai posisi
 `sticky top-0`, backdrop, toggle sidebar, breadcrumb, language dropdown,

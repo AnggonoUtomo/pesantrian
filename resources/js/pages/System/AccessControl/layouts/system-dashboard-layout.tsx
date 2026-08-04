@@ -24,7 +24,7 @@ export default function SystemDashboardLayout({
                     <h1 className="text-2xl font-semibold tracking-tight">
                         {title}
                     </h1>
-                    <p className="max-w-2xl text-sm text-muted-foreground">
+                    <p className="max-w-2xl text-sm text-foreground/75">
                         {description}
                     </p>
                 </div>
@@ -35,7 +35,7 @@ export default function SystemDashboardLayout({
 
             <main className="flex-1">{children}</main>
 
-            <footer className="mt-8 border-t pt-4 text-xs text-muted-foreground">
+            <footer className="mt-8 border-t pt-4 text-xs text-foreground/75">
                 <p>System Dashboard · {new Date().getFullYear()}</p>
             </footer>
         </div>

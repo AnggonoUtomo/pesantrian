@@ -85,7 +85,7 @@ Test utama: `tests/Feature/StarterFoundationVerificationTest.php`.
 - Build client dan SSR.
 
 Detail command dan hasil disimpan pada
-`docs/Projects/phase-1-starter-foundation/planning/execution-log.md`.
+`docs/Projects/01.phase-1-starter-foundation/planning/execution-log.md`.
 
 ## 6. Hasil Phase 1
 

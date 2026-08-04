@@ -2,16 +2,16 @@
 
 ## Panduan Belajar Code
 
-- [Alur Code Phase 1 dan Phase 2](phase-1-2-code-flow/README.md)
-- [Phase 3 Module Generator](phase-3-module-generator/README.md)
+- [Alur Code Phase 1 sampai Phase 3](05.phase-1-2-code-flow/README.md)
+- [Phase 3 Module Generator](03.phase-3-module-generator/README.md)
 
 ## Document Information
 
-| Item | Value |
-|---|---|
-| Version | 1.1 |
-| Status | Accepted |
-| Owner | Tech Lead |
+| Item    | Value     |
+| ------- | --------- |
+| Version | 1.1       |
+| Status  | Accepted  |
+| Owner   | Tech Lead |
 
 Folder ini berisi dokumentasi spesifik project turunan atau module extension.
 Baseline global berada pada folder 00–07 dan tidak disalin ke setiap project.
@@ -35,6 +35,6 @@ Gunakan skill incremental-implementation.
 
 ## Revision History
 
-| Version | Date | Description |
-|---|---|---|
-| 1.1 | 2026-07-31 | Metadata normalization |
+| Version | Date       | Description            |
+| ------- | ---------- | ---------------------- |
+| 1.1     | 2026-07-31 | Metadata normalization |

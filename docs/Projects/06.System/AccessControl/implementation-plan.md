@@ -4,10 +4,11 @@
 
 ```text
 Authentication
-    -> Middleware/Controller guard
+    -> Controller middleware (coarse-grained)
+    -> Policy AccessControl (resource/scope/state)
+    -> Application use case (re-check sebelum mutation)
     -> AccessControl public capability
     -> Spatie Permission adapter internal
-    -> Policy/resource rule milik module owner
     -> Audit bila mutation sensitif
 ```
 
@@ -18,10 +19,11 @@ repository, dan adapter Spatie tetap berada di dalam `AccessControl`.
 
 1. Finalisasi namespace, boundary, permission owner, dan ADR.
 2. Buat module melalui generator dan verifikasi manifest.
-3. Buat permission identity dan contract authorization typed.
+3. Tetapkan role `SuperSystem`, permission key, dan contract authorization typed.
 4. Implementasikan adapter internal ke Spatie Permission.
 5. Implementasikan policy/gate integration dan server-side denial.
-6. Tambahkan authorization context untuk frontend UX bila dibutuhkan.
+6. Tambahkan shared Inertia props `user`, `roles`, `permissions`, dan
+   `superSystem` dengan object boolean yang typed.
 7. Tambahkan test positif, negatif, contract, security, dan isolation.
 8. Jalankan discovery, validation, quality gate, dan review documentation.
 
@@ -35,6 +37,8 @@ repository, dan adapter Spatie tetap berada di dalam `AccessControl`.
 | Spatie Permission menjadi coupling publik | Adapter dibungkus public capability AccessControl |
 | Role atau impersonation terlalu cepat dibakukan | Catat sebagai Open Decision dan implementasikan bertahap |
 | Authorization context membocorkan data sensitif | Typed context minimal dan redaction test |
+| Nama permission tidak konsisten | Gunakan dot notation dengan underscore dan contract test |
+| Bypass `SuperSystem` tersebar di feature | Satu policy/capability terpusat dan negative test |
 
 ## Rollback
 

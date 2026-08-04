@@ -52,6 +52,7 @@ runtime config, permission identity, dan README module.
 - [ ] Owner module adalah `AccessControl`.
 - [ ] Duplicate permission ditolak.
 - [ ] Permission sensitif diberi metadata yang tepat.
+- [ ] Role privileged menggunakan nama `SuperSystem`.
 
 **Hasil implementasi:** Belum dikerjakan.
 
@@ -71,6 +72,8 @@ contract test.
 - [ ] Actor tanpa izin ditolak.
 - [ ] Module pemanggil tidak mengimpor private model atau repository.
 - [ ] Hasil capability typed dan tidak memuat data sensitif.
+- [ ] Policy menangani resource, scope, state, dan `SuperSystem`.
+- [ ] Use case mengulang authorization sebelum mutation.
 
 **Hasil implementasi:** Belum dikerjakan.
 
@@ -88,6 +91,8 @@ README, dan execution evidence.
 
 - [ ] Server-side denial terbukti.
 - [ ] Frontend context hanya digunakan untuk UX.
+- [ ] Shared props memakai `roles`, `permissions`, dan `superSystem`.
+- [ ] `roles` dan `permissions` berbentuk associative object boolean.
 - [ ] Discovery, validation, list, dan test lulus.
 - [ ] Forbidden dependency dan sensitive output scan bersih.
 

@@ -40,7 +40,7 @@ secara eksplisit meminta `module extension` atau perubahan module existing.
 ## Baseline Module Order
 
 Module baseline pertama yang dibuat adalah `AccessControl` karena module ini
-memiliki ownership role, permission, policy, `Super System`, dan public
+memiliki ownership role, permission, policy, `SuperSystem`, dan public
 authorization capability.
 
 `UserManagement` menjadi module business pertama setelah public authorization
@@ -65,8 +65,8 @@ Lakukan Project Intake dan Existing Module Inventory terlebih dahulu.
 Verifikasi module yang sudah ada dengan module:discover, module:validate, dan
 module:list jika tersedia. Jangan membuat duplicate module.
 
-Buat module {Domain}/{Module} dengan profile platform menggunakan:
-php artisan module:make {Domain} {Module} --profile=platform --dry-run --json
+Buat module {Module} pada domain {Domain} dengan profile default-v1 menggunakan:
+php artisan module:make {Module} --domain={Domain} --profile=default-v1 --dry-run --json
 
 Setelah dry-run disetujui, jalankan pembuatan aktual. Ikuti struktur DDD-lite,
 manifest schema, permission schema, public contract, README module, dan test
@@ -82,17 +82,16 @@ Urutan command yang dianjurkan:
 php artisan module:discover --json
 php artisan module:validate --json
 php artisan module:list --json
-php artisan module:make System AccessControl --profile=platform --dry-run --json
-php artisan module:make System AccessControl --profile=platform --json
-php artisan module:make System UserManagement --profile=platform --dry-run --json
-php artisan module:make System UserManagement --profile=platform --json
-php artisan module:inspect System/UserManagement --json
-php artisan module:validate System/UserManagement --json
+php artisan module:make AccessControl --domain=System --profile=default-v1 --dry-run --json
+php artisan module:make AccessControl --domain=System --profile=default-v1 --force --yes --json
+php artisan module:make UserManagement --domain=System --profile=default-v1 --dry-run --json
+php artisan module:make UserManagement --domain=System --profile=default-v1 --force --yes --json
+php artisan module:validate --json
 php artisan module:list --json
 ```
 
-Untuk overwrite pada environment non-interactive, gunakan `--force --yes`.
-Jangan menggunakan `--force` tanpa `--yes` pada CI.
+Untuk mutasi pada environment non-interactive, gunakan `--force --yes`.
+Validasi target module spesifik belum tersedia; gunakan validasi registry global.
 
 ## Standard Authorization Pattern untuk Semua Module
 
@@ -187,7 +186,7 @@ Implementasikan AccessControl terlebih dahulu secara incremental:
 1. `module.json`, `module.php`, dan `ServiceProvider.php`.
 2. `permissions.php` dengan metadata permission lengkap.
 3. Public authorization contract/capability dan DTO result.
-4. Role, permission sync, policy, dan `Super System` behavior.
+4. Role, permission sync, policy, dan `SuperSystem` behavior.
 5. `Tests/Unit`, `Tests/Feature`, dan contract/permission tests.
 
 Acceptance minimum: module dapat di-discover dan di-validate, permission schema
@@ -212,7 +211,7 @@ Verify:
 php artisan module:discover --json
 php artisan module:validate --json
 php artisan module:list --json
-php artisan module:make System UserManagement --profile=platform --dry-run --json
+php artisan module:make UserManagement --domain=System --profile=default-v1 --dry-run --json
 ```
 
 ### Increment 1 - Manifest dan Runtime Identity
@@ -233,7 +232,7 @@ Verify:
 
 ```bash
 php artisan module:discover --json
-php artisan module:validate System/UserManagement --json
+php artisan module:validate --json
 ```
 
 ### Increment 2 - Permission Identity
@@ -349,8 +348,7 @@ Acceptance:
 Verify:
 
 ```bash
-php artisan module:inspect System/UserManagement --json
-php artisan module:validate System/UserManagement --json
+php artisan module:validate --json
 ```
 
 ## Safety Rules
@@ -369,8 +367,8 @@ php artisan module:validate System/UserManagement --json
 - Project intake dan existing module inventory tersedia sebelum generate.
 - `AccessControl` dapat dibuat sebagai module baseline pertama.
 - `UserManagement` dapat dibuat setelah public authorization contract tersedia.
-- Output sesuai manifest/file manifest profile `platform`.
-- `module:discover`, `module:validate`, dan `module:inspect` berhasil.
+- Output sesuai manifest/file manifest profile `default-v1`.
+- `module:discover`, `module:validate`, dan `module:list` berhasil.
 - Dry-run, conflict, force/yes, cleanup, dan JSON output teruji.
 - Generated structure reproducible dan tidak menghasilkan duplicate ownership.
 - Tidak ada Wayfinder atau Laravel Boost pada dependency, source, config, atau

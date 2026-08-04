@@ -13,6 +13,9 @@ repository, atau adapter internalnya secara langsung.
 - Permission owner: `AccessControl`
 - Status: `Discovery`
 
+Package `spatie/laravel-permission:8.3.0` sudah tersedia. Integrasi runtime,
+role, assignment, policy, dan `SuperSystem` belum diimplementasikan.
+
 ## Urutan baca
 
 1. [Specification](specification.md)

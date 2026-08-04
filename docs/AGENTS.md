@@ -63,10 +63,10 @@ Authentication, notifikasi, profil, dan setting default dari Laravel React start
 - Setiap primary key dan foreign key tabel menggunakan ULID.
 - Boundary identifier, correlation ID, actor ID, job ID, fixture, dan resource ID pada API juga menggunakan ULID.
 - Baseline otorisasi menggunakan aturan *allow permissions* dan *policy rules*; tidak ada model *explicit deny*.
-- `Super System` adalah peran baseline istimewa yang dibuat melalui `AccessControl`, bukan hardcoded project role. Kapabilitas istimewa tersembunyi dari pengguna lain.
-- Impersonation membutuhkan izin dan alasan eksplisit; penargetan `Super System` selalu dilarang, termasuk oleh `Super System` itu sendiri.
+- `SuperSystem` adalah peran baseline istimewa yang dibuat melalui `AccessControl`, bukan hardcoded project role. Kapabilitas istimewa tersembunyi dari pengguna lain.
+- Impersonation membutuhkan izin dan alasan eksplisit; penargetan `SuperSystem` selalu dilarang, termasuk oleh `SuperSystem` itu sendiri.
 - AuditLog bersifat *append-only*, ter-scoped, data sensitif ter-redaksi, dan disimpan minimal selama satu tahun.
-- Perubahan SystemSetting dibatasi hanya untuk `Super System`, divalidasi, langsung aktif setelah validasi, dan diaudit.
+- Perubahan SystemSetting dibatasi hanya untuk `SuperSystem`, divalidasi, langsung aktif setelah validasi, dan diaudit.
 - Operational setting baseline mencakup target RTO 4 jam dan RPO 24 jam melalui SystemSetting.
 - Dilarang menyimpan atau mencatat secret, token, password, credential, atau sensitive payload sebagai data polos (*plain data*).
 

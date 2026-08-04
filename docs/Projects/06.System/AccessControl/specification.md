@@ -20,7 +20,8 @@ Path: app/Modules/System/AccessControl
 - Membuat module `AccessControl` pada domain `System`.
 - Menetapkan manifest, runtime configuration, provider, dan permission identity.
 - Menyediakan public contract untuk pemeriksaan capability authorization.
-- Menggunakan Spatie Permission sebagai adapter internal yang tidak diekspos.
+- Menyiapkan adapter internal Spatie Permission yang belum diimplementasikan
+  pada tahap dokumentasi ini.
 - Menetapkan pola permission owner dan policy boundary.
 - Menyediakan test positif, negatif, contract, dan security.
 
@@ -36,7 +37,8 @@ Path: app/Modules/System/AccessControl
 ## Existing capability contract
 
 - Laravel starter kit menyediakan authentication dan flow Inertia dasar.
-- Spatie Permission tersedia sebagai dependency baseline.
+- Spatie Permission `8.3.0` tersedia sebagai dependency baseline, tetapi module
+  `AccessControl` dan adapter runtime-nya belum dibuat.
 - `packages/StarterKit` menyediakan manifest, permission identity, registry,
   discovery, validation, dan generator `module:make`.
 - Generator menghasilkan struktur module baru tanpa overwrite.
@@ -52,6 +54,40 @@ Public capability awal yang perlu dirancang:
 
 Nama interface, DTO, event, dan permission final masih harus ditetapkan pada
 ADR atau task implementasi sebelum coding.
+
+## Authorization contract
+
+Role privileged baseline bernama `SuperSystem`.
+
+Permission key menggunakan dot notation dengan underscore:
+
+```text
+access_control.role.manage
+access_control.permission.manage
+access_control.role.assign
+access_control.permission.assign
+```
+
+Permission dan role yang dibagikan ke Inertia menggunakan associative object
+bernilai boolean:
+
+```php
+'roles' => [
+    'access_control.role.manage' => true,
+],
+'permissions' => [
+    'access_control.role.manage' => true,
+],
+'superSystem' => $user?->isSuperSystem() ?? false,
+```
+
+Controller memakai middleware `can:*` untuk coarse-grained guard. Policy
+`AccessControl` menangani aturan resource, scope, state, dan `SuperSystem`.
+Application use case mengulang pemeriksaan sebelum mutation. Detail Spatie
+Permission tetap berada di adapter internal.
+
+Frontend `usePermission()` hanya digunakan untuk visibility dan UX. Nilainya
+tidak menjadi security boundary.
 
 ## Data contract
 
@@ -78,6 +114,11 @@ Authorization dipakai melalui middleware, policy, dan public capability.
 - Permission identity valid dan ownership-nya jelas.
 - Public capability dapat dipakai module lain tanpa mengimpor private class.
 - Actor tanpa permission ditolak pada server-side authorization.
+- Role `SuperSystem` mengikuti aturan privileged baseline.
+- Controller middleware, policy, dan use-case authorization memakai boundary
+  yang sesuai.
+- Shared authorization props memakai `roles`, `permissions`, dan `superSystem`
+  dengan bentuk object boolean yang typed.
 - Frontend authorization context tidak menjadi security boundary.
 - Positive, negative, contract, dan security test tersedia.
 - Tidak ada forbidden dependency atau sensitive payload pada output.

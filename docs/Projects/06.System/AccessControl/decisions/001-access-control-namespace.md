@@ -2,7 +2,7 @@
 
 ## Status
 
-`Diusulkan`.
+`Diterima`.
 
 ## Konteks
 
@@ -43,6 +43,14 @@ app/Modules/System/UserManagement
 - Perubahan namespace setelah coding membutuhkan migration namespace dan ADR
   baru.
 
-## Open Decision
+## Keputusan yang diterima
 
-- Persetujuan user diperlukan sebelum module runtime dibuat.
+- Namespace sudah disetujui: `App\\Modules\\System\\AccessControl`.
+- Role privileged menggunakan nama `SuperSystem`.
+- Permission memakai dot notation dengan underscore.
+- Shared authorization context memakai object boolean pada `roles` dan
+  `permissions`, serta flag `superSystem`.
+- Authorization memakai middleware, policy, use case, public capability, dan
+  adapter Spatie Permission secara berurutan.
+
+Status ADR ini menjadi `Diterima` berdasarkan persetujuan user.

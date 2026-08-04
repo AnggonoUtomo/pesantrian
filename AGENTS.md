@@ -181,11 +181,14 @@ php artisan module:list --json
 Untuk module target:
 
 ```bash
-php artisan module:inspect {Domain}/{Module} --json
 php artisan module:validate {Domain}/{Module} --json
 ```
 
-Jika command belum tersedia, lakukan read-only scan dan laporkan keterbatasannya.
+Command target-specific seperti `module:inspect` dan
+`module:validate {Domain}/{Module}` belum tersedia pada implementasi saat ini.
+Gunakan `module:discover --json`, `module:validate --json`, dan
+`module:list --json`; lakukan read-only scan tambahan bila membutuhkan target
+spesifik. Laporkan keterbatasan tersebut dalam evidence.
 Jangan membuat module dengan name, path, namespace, provider, atau permission key
 yang sudah dimiliki module valid.
 

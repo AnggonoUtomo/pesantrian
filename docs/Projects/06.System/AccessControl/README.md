@@ -11,11 +11,11 @@ repository, atau adapter internalnya secara langsung.
 - Namespace: `App\Modules\System\AccessControl`
 - Path: `app/Modules/System/AccessControl`
 - Permission owner: `AccessControl`
-- Status: `Schema ULID dan runtime identity tersedia; capability belum dimulai`
+- Status: `Capability, policy dasar, dan authorization context tersedia`
 
 Package `spatie/laravel-permission:8.3.0` sudah terhubung melalui config dan
-model adapter ULID milik module. Role, assignment, policy, dan capability publik
-belum diimplementasikan.
+model adapter ULID milik module. Capability dasar, policy role, middleware
+coarse-grained, dan shared authorization context sudah tersedia.
 
 ## Urutan baca
 

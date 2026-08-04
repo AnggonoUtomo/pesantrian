@@ -90,16 +90,29 @@ contract test.
 
 **Acceptance criteria:**
 
-- [ ] Actor berizin dapat melewati pemeriksaan.
-- [ ] Actor tanpa izin ditolak.
-- [ ] Module pemanggil tidak mengimpor private model atau repository.
-- [ ] Hasil capability typed dan tidak memuat data sensitif.
-- [ ] Policy menangani resource, scope, state, dan `SuperSystem`.
-- [ ] Use case mengulang authorization sebelum mutation.
+- [x] Actor berizin dapat melewati pemeriksaan.
+- [x] Actor tanpa izin ditolak.
+- [x] Module pemanggil tidak mengimpor private model atau repository.
+- [x] Hasil capability typed dan tidak memuat data sensitif.
+- [x] Policy menangani resource, scope, state, dan `SuperSystem` pada capability
+  dasar role.
+- [x] Use case mengulang authorization sebelum mutation.
 
-**Hasil implementasi:** Belum dikerjakan.
+**Hasil implementasi:** Selesai pada 2026-08-05 untuk capability dasar.
 
-## Open risk â€” ULID dan runtime Spatie
+- [x] Scope task selesai.
+  - Kondisi awal: module belum memiliki public contract dan adapter runtime.
+  - Perubahan: menambahkan `AuthorizationCapability`,
+    `AuthorizationDecision`, adapter Spatie internal, binding provider, dan
+    feature test.
+  - Alasan: module lain perlu memeriksa authorization tanpa mengimpor model
+    atau detail package Spatie.
+  - Evidence: `AccessControlAuthorizationCapabilityTest` lulus, 2 test dan
+    7 assertion; Pint juga lulus.
+  - Batasan: policy resource/state untuk resource bisnis selain role akan
+    dibuat oleh module pemilik resource.
+
+## Open risk — ULID dan runtime Spatie
 
 - [x] Schema starter kit dan Spatie menggunakan ULID.
   - Kondisi awal: migration starter kit dan migration bawaan Spatie memakai
@@ -136,14 +149,25 @@ README, dan execution evidence.
 
 **Acceptance criteria:**
 
-- [ ] Server-side denial terbukti.
-- [ ] Frontend context hanya digunakan untuk UX.
-- [ ] Shared props memakai `roles`, `permissions`, dan `superSystem`.
-- [ ] `roles` dan `permissions` berbentuk associative object boolean.
-- [ ] Discovery, validation, list, dan test lulus.
+- [x] Server-side denial terbukti.
+- [x] Frontend context hanya digunakan untuk UX.
+- [x] Shared props memakai `roles`, `permissions`, dan `superSystem`.
+- [x] `roles` dan `permissions` berbentuk associative object boolean.
+- [x] Discovery, validation, list, dan test lulus.
 - [ ] Forbidden dependency dan sensitive output scan bersih.
 
-**Hasil implementasi:** Belum dikerjakan.
+**Hasil implementasi:** Selesai pada 2026-08-05 untuk integration baseline.
+
+- [x] Scope task selesai.
+  - Kondisi awal: middleware, policy, use case re-check, dan shared Inertia
+    authorization context belum tersedia.
+  - Perubahan: menambahkan `AccessControlPolicy`, `RoleController` dengan
+    `can:*` middleware, `AuthorizeRoleMutation`, helper authorization pada
+    `User`, dan props `auth.roles`, `auth.permissions`, `auth.superSystem`.
+  - Alasan: backend harus tetap menjadi security authority; context frontend
+    hanya dipakai untuk visibility dan UX.
+  - Evidence: policy/context test lulus dengan 8 test dan 24 assertion; Pint,
+    discovery, dan validation lulus.
 
 **Test:** full relevant quality gate.
 

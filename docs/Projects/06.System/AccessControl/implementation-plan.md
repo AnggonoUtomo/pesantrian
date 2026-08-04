@@ -20,7 +20,8 @@ repository, dan adapter Spatie tetap berada di dalam `AccessControl`.
 1. Finalisasi namespace, boundary, permission owner, dan ADR.
 2. Buat module melalui generator dan verifikasi manifest.
 3. Tetapkan role `SuperSystem`, permission key, dan contract authorization typed.
-4. Implementasikan adapter internal ke Spatie Permission.
+4. Implementasikan adapter internal ke Spatie Permission. **Selesai untuk
+   capability dasar.**
 5. Implementasikan policy/gate integration dan server-side denial.
 6. Tambahkan shared Inertia props `user`, `roles`, `permissions`, dan
    `superSystem` dengan object boolean yang typed.

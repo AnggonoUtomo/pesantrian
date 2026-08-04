@@ -20,8 +20,7 @@ Path: app/Modules/System/AccessControl
 - Membuat module `AccessControl` pada domain `System`.
 - Menetapkan manifest, runtime configuration, provider, dan permission identity.
 - Menyediakan public contract untuk pemeriksaan capability authorization.
-- Menyiapkan adapter internal Spatie Permission yang belum diimplementasikan
-  pada tahap dokumentasi ini.
+- Menyediakan adapter internal Spatie Permission untuk capability dasar.
 - Menetapkan pola permission owner dan policy boundary.
 - Menyediakan test positif, negatif, contract, dan security.
 
@@ -37,8 +36,8 @@ Path: app/Modules/System/AccessControl
 ## Existing capability contract
 
 - Laravel starter kit menyediakan authentication dan flow Inertia dasar.
-- Spatie Permission `8.3.0` tersedia sebagai dependency baseline, tetapi module
-  `AccessControl` dan adapter runtime-nya belum dibuat.
+- Spatie Permission `8.3.0` tersedia sebagai dependency baseline dan adapter
+  runtime berada di dalam module `AccessControl`.
 - `packages/StarterKit` menyediakan manifest, permission identity, registry,
   discovery, validation, dan generator `module:make`.
 - Generator menghasilkan struktur module baru tanpa overwrite.
@@ -52,8 +51,8 @@ Public capability awal yang perlu dirancang:
 - menyediakan hasil typed untuk pemanggil;
 - menjaga detail Spatie Permission tetap private di dalam module.
 
-Nama interface, DTO, event, dan permission final masih harus ditetapkan pada
-ADR atau task implementasi sebelum coding.
+Contract awal memakai `AuthorizationCapability`, dengan result typed
+`AuthorizationDecision`. Detail model Spatie tetap private di adapter.
 
 ## Authorization contract
 

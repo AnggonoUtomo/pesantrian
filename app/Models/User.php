@@ -36,6 +36,25 @@ class User extends Authenticatable implements PasskeyUser
     /** @use HasFactory<UserFactory> */
     use HasFactory, HasRoles, HasUlids, Notifiable, PasskeyAuthenticatable, TwoFactorAuthenticatable;
 
+    /** @return array<string, bool> */
+    public function getUserRoles(): array
+    {
+        return $this->getRoleNames()->mapWithKeys(fn (string $role): array => [$role => true])->all();
+    }
+
+    /** @return array<string, bool> */
+    public function getUserPermissions(): array
+    {
+        return $this->getAllPermissions()->pluck('name')->mapWithKeys(
+            fn (string $permission): array => [$permission => true],
+        )->all();
+    }
+
+    public function isSuperSystem(): bool
+    {
+        return $this->hasRole('SuperSystem');
+    }
+
     /**
      * Get the attributes that should be cast.
      *

@@ -1,34 +1,30 @@
-# Project: {Project Name}
+# {Nama Project}
 
-## Project Context
+{Ringkasan singkat tujuan project atau module.}
 
-| Item | Value |
-|---|---|
-| Slug | {project-slug} |
-| Source Repository | {repository/path} |
-| Mode | Greenfield / Existing Starter Kit / Module Extension |
-| Laravel | {version} |
-| Starter Kit Status | Installed / Partial / Not Installed |
-| Owner | {owner} |
-| Status | Discovery |
+## Status
 
-## Intake Summary
+`Discovery`.
 
-- Existing starter kit capability:
-- Existing modules:
-- Existing packages:
-- Requested module or change:
-- Baseline documents referenced:
-- Out of scope:
+{Ringkasan kemampuan yang sudah ada dan kemampuan yang sedang dikerjakan.}
 
-## Module Inventory
+## Urutan baca
 
-| Module | Status | Owner | Contract/Dependency | Notes |
-|---|---|---|---|---|
-| {Module} | Existing/New | {Owner} | {Contract} | {Notes} |
+1. [Specification](specification.md)
+2. [Implementation plan](implementation-plan.md)
+3. [Tasks](tasks.md)
+4. {ADR terkait jika ada}
 
-## Working Rules
+## Dokumen terkait
 
-Gunakan baseline global sebagai source of truth. Jangan membangun ulang
-capability existing tanpa keputusan eksplisit. Setiap task mengikuti incremental
-implementation dan wajib memiliki verification evidence.
+- {Dokumen baseline yang menjadi acuan}
+- {Dokumen module atau project yang terdampak}
+
+## Cara verifikasi
+
+1. `{command atau langkah verifikasi pertama}`
+2. `{command atau langkah verifikasi berikutnya}`
+
+## Verifikasi implementasi {YYYY-MM-DD}
+
+- {Command}: {hasil}.

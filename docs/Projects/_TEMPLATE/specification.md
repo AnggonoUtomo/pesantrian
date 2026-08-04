@@ -1,37 +1,49 @@
-# {Project Name} Specification
+# Specification: {Nama Project}
 
-## Scope
+## Objective
 
-### In Scope
+{Jelaskan tujuan utama project dengan kalimat singkat.}
 
--
+## Scope saat ini
 
-### Out of Scope
+- {Kemampuan yang termasuk dalam pekerjaan.}
+- {Aturan atau batasan utama.}
 
--
+## Non-scope
 
-## Existing Capability Contract
+- {Hal yang sengaja tidak dikerjakan.}
 
-Dokumentasikan capability starter kit/module yang digunakan kembali, bukan
-dibangun ulang.
+## Existing capability contract
 
-## Module Requirements
+{Tuliskan capability dari starter kit atau module existing yang digunakan.
+Jangan mengulang capability yang sudah tersedia.}
 
-| ID | Requirement | Priority | Acceptance |
-|---|---|---|---|
-| REQ-001 |  | Must |  |
+## Data contract
 
-## Module Boundary
+{Jelaskan model, field, identifier, event, atau payload yang menjadi contract.}
 
-- Owner:
-- Public contract:
-- Events:
-- Permissions:
-- Data ownership:
-- Dependencies:
+## Route/API design
 
-## Open Decisions
+```txt
+{METHOD} {path}
+```
 
-| ID | Question | Impact | Owner | Status |
-|---|---|---|---|---|
-| OD-001 |  |  |  | Open |
+Permissions: `{permission.key}`.
+
+## Acceptance criteria
+
+- {Perilaku berhasil yang harus terpenuhi.}
+- {Perilaku ditolak atau failure case yang harus terpenuhi.}
+- {Aturan authorization, audit, atau security yang harus terpenuhi.}
+
+## Commands dan test plan
+
+```bash
+{command test atau verifikasi}
+```
+
+## Boundaries
+
+- Always: {aturan yang selalu berlaku}.
+- Ask first: {perubahan yang membutuhkan persetujuan}.
+- Never: {hal yang dilarang}.

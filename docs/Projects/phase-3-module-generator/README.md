@@ -15,7 +15,7 @@ dapat diuji tanpa mengubah file sebelum semua validasi lulus.
 
 - `specification.md`: requirement dan contract generator.
 - `implementation-plan.md`: urutan increment implementasi.
-- `task.md`: checklist kerja terperinci.
+- `tasks.md`: checklist kerja terperinci.
 - `roadmap.md`: milestone Phase 3.
 - `decisions/ADR-0001-MODULE-GENERATOR-BOUNDARY.md`: keputusan boundary.
 - `planning/discovery.md`: inventory dan dependency awal.

@@ -155,6 +155,15 @@ yang dibaca, file yang berubah, alasan, evidence, dan risiko. Tujuannya agar
 tim dapat melakukan review, rollback, dan audit tanpa bergantung pada riwayat
 percakapan agent.
 
+## Konfirmasi Langsung Saat Blocker
+
+Jika agent menemukan kesulitan teknis, konflik antar dokumen, requirement yang
+belum jelas, atau keputusan yang dapat mengubah arah pekerjaan, agent wajib
+langsung mengonfirmasi kepada user pada saat masalah ditemukan. Jangan menunda
+pertanyaan, mengisi keputusan dengan asumsi, atau melanjutkan coding melewati
+blocker. Sambil menunggu jawaban, agent boleh melanjutkan pemeriksaan read-only
+yang tidak mengubah arah implementasi.
+
 Jika project sudah memiliki module, agent tidak boleh menganggap project kosong.
 Jika project dinyatakan `greenfield`, status tersebut harus didukung evidence.
 

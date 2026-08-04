@@ -1,22 +1,25 @@
-# {Project Name} Implementation Plan
+# Implementation Plan: {Nama Project}
 
-## Delivery Strategy
+## Architecture
 
-Urutan setiap increment: specify, plan, implement, test, review, document,
-verify. Jangan mencampur beberapa capability besar dalam satu increment.
+{Gambarkan alur utama, misalnya FormRequest -> DTO -> Service -> Transaction.}
 
-## Increments
+## Urutan
 
-| Increment | Scope | Depends On | Acceptance | Verification | Status |
-|---|---|---|---|---|---|
-| INC-001 |  |  |  |  | Planned |
+1. Contract dan dokumentasi.
+2. Test fokus dalam kondisi RED.
+3. Implementasi capability inti.
+4. Authorization, audit, dan security guard.
+5. Frontend/API atau integrasi terkait.
+6. Quality gate dan review scope.
 
-## Technical Tasks
+## Risiko
 
-- [ ] Confirm existing module/package inventory.
-- [ ] Define module contract and permission identity.
-- [ ] Define migration and ULID behavior.
-- [ ] Implement application/domain behavior.
-- [ ] Implement API/frontend flow.
-- [ ] Add audit, authorization, and security tests.
-- [ ] Verify CI/build and update documentation.
+| Risiko | Mitigasi |
+|---|---|
+| {Risiko teknis atau operasional} | {Cara mencegah atau mendeteksi} |
+
+## Rollback
+
+{Jelaskan cara membatalkan perubahan. Sertakan catatan migration, data
+production, dan batasan rollback bila ada.}

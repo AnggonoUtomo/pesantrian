@@ -124,10 +124,8 @@ Projects/{project-slug}/
 |-- README.md
 |-- specification.md
 |-- implementation-plan.md
-|-- roadmap.md
-|-- task.md
+|-- tasks.md
 |-- decisions/
-`-- planning/
 
 Folder Projects tidak menggantikan baseline 00–07. Baseline menjadi referensi
 global, sedangkan folder project berisi context, keputusan, task, dan evidence.
@@ -223,10 +221,11 @@ test plan, CI gate, deployment verification, dan release acceptance terpenuhi.
 
 ## Format Detail Rencana dan Evidence
 
-`implementation-plan.md`, `task.md`, dan `planning/execution-log.md` wajib
-menjadi catatan kerja yang dapat dibaca mandiri. Setiap task harus menjelaskan
-kondisi awal, file/path, perubahan kode/configuration, alasan, acceptance
-criteria, command/test, hasil, dan risiko.
+`implementation-plan.md` dan `tasks.md` wajib menjadi catatan kerja yang dapat
+dibaca mandiri. Jika project membutuhkan catatan discovery atau execution log,
+file tersebut boleh ditambahkan di folder project. Setiap task harus
+menjelaskan kondisi awal, file/path, perubahan kode/configuration, alasan,
+acceptance criteria, command/test, hasil, dan risiko.
 
 Checklist selesai wajib memiliki sub-item detail. Execution log tidak boleh
 hanya menulis "implementasi selesai" tanpa file dan evidence.

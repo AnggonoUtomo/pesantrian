@@ -4,7 +4,11 @@ return [
     'only' => [
         'home',
         'dashboard',
+        'system.dashboard',
+        'access-control.index',
+        'access-control.roles.permissions.update',
         'login',
+        'system.login',
         'login.store',
         'logout',
         'register',

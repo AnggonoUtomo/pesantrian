@@ -2,6 +2,12 @@
 
 return [
     [
+        'key' => 'system.dashboard.view',
+        'description' => 'Melihat dashboard area System.',
+        'module' => 'System',
+        'sensitive' => false,
+    ],
+    [
         'key' => 'access_control.role.manage',
         'description' => 'Mengelola role AccessControl.',
         'module' => 'AccessControl',

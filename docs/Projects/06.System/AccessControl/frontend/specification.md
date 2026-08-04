@@ -17,6 +17,16 @@ Pola dari `FrontendContoh/access-control` dipakai sebagai referensi struktur:
 - dialog tambah role dan hapus role;
 - empty workspace saat belum ada role;
 - summary box untuk jumlah permission.
+- menu sidebar `Access Control` untuk user yang memiliki capability.
+- layout module `system-dashboard-layout` dengan pola header, grid content, dan
+  footer dashboard.
+- halaman system dashboard pada route `system.dashboard`.
+- halaman login area System pada route `system.login`.
+- halaman `errors/unauthorized` untuk response authorization `403`.
+- sticky top navigation mengikuti pola `dashboard-shell-01`, berisi toggle
+  sidebar, breadcrumb, language menu, notification action, dan profile menu.
+- komponen dashboard: statistics cards, insight card, coverage card, metrics
+  card, activity table, dropdown action, progress visual, dan footer.
 
 Contoh tidak disalin mentah. Identifier, route, type, permission key, dan data
 harus disesuaikan dengan contract AccessControl saat ini.
@@ -27,6 +37,21 @@ Route frontend memakai Ziggy. Target route page:
 
 ```text
 GET /system/access-control
+```
+
+Dashboard system memakai route:
+
+```text
+GET /system/dashboard
+```
+
+Route `/dashboard` juga menjadi alias halaman system dashboard agar menu
+Dashboard bawaan starter kit tidak membuka placeholder lama.
+
+Mutation permission role memakai route Ziggy berikut:
+
+```text
+PUT /system/access-control/roles/{role}/permissions
 ```
 
 Props Inertia minimum:
@@ -53,9 +78,22 @@ Frontend hanya mengatur visibility/UX; backend tetap memeriksa authorization.
 - Role protected `SuperSystem` tidak memiliki action destructive.
 - User tanpa permission update hanya dapat melihat permission.
 - Loading, empty, error, dan success feedback tersedia.
+- Role biasa dapat menyimpan perubahan permission; `SuperSystem` ditolak oleh
+  policy server-side.
 - Layout dapat dipakai pada desktop dan viewport mobile.
 - Critical flow dapat dijalankan dengan keyboard.
 - Route frontend menggunakan Ziggy dan tidak memakai Wayfinder.
+- Menu sidebar hanya terlihat untuk `SuperSystem` atau permission
+  `access_control.role.manage`.
+- Layout module tidak membuat `AppLayout` atau sidebar aplikasi kedua.
+- Data dashboard berasal dari role dan permission AccessControl; tidak memakai
+  data sales contoh yang tidak terkait module.
+- Dashboard module baru dibuat di namespace page module masing-masing dan dapat
+  memakai `system-dashboard-layout` sebagai layout bersama.
+- Login area hanya memberi konteks tujuan; authentication tetap memakai Fortify
+  yang sama dan akses akhir tetap diperiksa middleware/policy.
+- Top navigation menjadi bagian dari `AppLayout` global agar semua halaman
+  System dan module mendapat header yang konsisten.
 
 ## Boundaries
 

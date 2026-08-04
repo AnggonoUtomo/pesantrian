@@ -69,12 +69,13 @@ lulus.
 - [x] Permission sensitif diberi metadata yang tepat.
 - [x] Role privileged menggunakan nama `SuperSystem`.
 
-**Hasil implementasi:** Selesai pada 2026-08-05. `permissions.php` berisi empat
+**Hasil implementasi:** Selesai pada 2026-08-05. `permissions.php` berisi lima
 permission AccessControl dengan owner, format key, dan metadata `sensitive`.
 
 - [x] Scope task selesai.
   - Kondisi awal: `permissions.php` masih kosong dari generator.
-  - Perubahan: menambahkan empat permission dan focused permission test.
+  - Perubahan: menambahkan lima permission, termasuk `system.dashboard.view`,
+    dan focused permission test.
   - Alasan: vocabulary permission harus tersedia sebelum adapter Spatie.
   - Evidence: focused test lulus dengan 13 test dan 30 assertion.
 
@@ -164,6 +165,8 @@ README, dan execution evidence.
 - [x] Frontend context hanya digunakan untuk UX.
 - [x] Shared props memakai `roles`, `permissions`, dan `superSystem`.
 - [x] `roles` dan `permissions` berbentuk associative object boolean.
+- [x] Seeder dummy membuat permission, role, dan user demo secara idempotent.
+- [x] Sidebar memiliki menu Access Control dengan visibility berbasis permission.
 - [x] Discovery, validation, list, dan test lulus.
 - [x] Forbidden dependency dan sensitive output scan bersih.
 - [ ] Frontend role/permission page, state UI, dan browser/accessibility test
@@ -174,7 +177,8 @@ frontend dikerjakan setelah dokumentasi frontend disetujui dan sebelum module
 AccessControl dinyatakan selesai.
 
 **Hasil implementasi:** Backend integration dan quality gate selesai pada
-2026-08-05. Frontend role/permission belum selesai.
+2026-08-05. Page frontend dasar, route Ziggy, sidebar menu, seeder demo, dan
+focused browser review sudah tersedia. Mutation UI role/permission belum selesai.
 
 - [x] Scope task selesai.
   - Kondisi awal: middleware, policy, use case re-check, dan shared Inertia
@@ -198,6 +202,31 @@ AccessControl dinyatakan selesai.
 
 **Test:** full relevant quality gate.
 
+**Evidence tambahan untuk seeder dan sidebar:**
+
+- `AccessControlSeeder` membuat lima permission, role `SuperSystem`, role
+  `SecurityAdmin`, serta dua user demo. Seeder memakai `firstOrCreate`,
+  `syncPermissions`, dan `syncRoles`, sehingga aman dijalankan berulang.
+- Seeder dipanggil melalui command module `php artisan access-control:seed`.
+  `DatabaseSeeder` Laravel tidak lagi menjadi entry point AccessControl.
+- Seeder tidak membuat data jika `app.env` adalah `production`. Password demo
+  berasal dari `ACCESS_CONTROL_DUMMY_PASSWORD` atau dibuat acak.
+- Jika env password diisi, command module dapat menyetel ulang password user
+  demo existing; jika kosong, password existing tidak diubah.
+- `app-sidebar.tsx` menambahkan menu `Access Control` melalui route Ziggy
+  `access-control.index`; menu disembunyikan untuk actor tanpa capability.
+- Endpoint `PUT access-control.roles.permissions.update` menyimpan permission
+  role biasa dan menolak `SuperSystem` melalui policy server-side.
+- Route `system.dashboard` menyediakan halaman dashboard khusus System dengan
+  menu sidebar `System Dashboard`; middleware tetap memeriksa permission
+  `access_control.role.manage`.
+- `AccessControlSeederTest` lulus: empat test, 15 assertion.
+- `AccessControlPageTest` lulus: enam test, 32 assertion.
+- `vendor/bin/pint --test` dan `npm run types:check` lulus.
+- Browser mobile snapshot pada `/system/access-control` setelah login
+  `security-admin@example.test` menampilkan menu `Access Control`, page role,
+  dan permission group; credential hanya digunakan pada environment lokal.
+
 ## Final quality checkpoint
 
 - [x] Inventory sebelum perubahan tersedia.
@@ -205,5 +234,6 @@ AccessControl dinyatakan selesai.
 - [x] Authorization, security, audit, dan dependency impact ditinjau.
 - [x] Module discovery/validation/list lulus sebelum perubahan runtime.
 - [x] Documentation dan execution evidence diperbarui.
+- [x] Seeder demo dan menu sidebar ditinjau ulang setelah implementasi.
 - [x] Open risk migration upgrade baseline lokal ditutup dan risiko deployment
   existing dikendalikan melalui runbook release.

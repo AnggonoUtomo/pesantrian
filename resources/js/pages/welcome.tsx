@@ -1,4 +1,5 @@
 import { Head, Link, usePage } from '@inertiajs/react';
+import { LayoutDashboard, ShieldCheck, Users } from 'lucide-react';
 import route from '@/lib/route';
 
 export default function Welcome() {
@@ -35,6 +36,53 @@ export default function Welcome() {
                         )}
                     </nav>
                 </header>
+                <section className="mb-6 w-full max-w-[335px] lg:max-w-4xl">
+                    <div className="mb-4">
+                        <p className="text-sm font-medium text-primary">
+                            Pilih area kerja
+                        </p>
+                        <h1 className="mt-1 text-2xl font-semibold tracking-tight">
+                            Masuk ke workspace kamu
+                        </h1>
+                        <p className="mt-1 max-w-2xl text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                            Setiap area memiliki dashboard dan aturan akses
+                            sesuai permission akun.
+                        </p>
+                    </div>
+                    <div className="grid gap-3 md:grid-cols-3">
+                        <Link
+                            href={route('system.login')}
+                            className="group rounded-xl border bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-md dark:bg-[#161615]"
+                        >
+                            <LayoutDashboard className="size-6 text-primary" />
+                            <h2 className="mt-4 font-semibold">System</h2>
+                            <p className="mt-1 text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                                Dashboard system dan capability platform.
+                            </p>
+                        </Link>
+                        <Link
+                            href={route('system.login')}
+                            className="group rounded-xl border bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-md dark:bg-[#161615]"
+                        >
+                            <ShieldCheck className="size-6 text-primary" />
+                            <h2 className="mt-4 font-semibold">
+                                Access Control
+                            </h2>
+                            <p className="mt-1 text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                                Role, permission, dan policy akses.
+                            </p>
+                        </Link>
+                        <div className="rounded-xl border border-dashed bg-white/60 p-4 dark:bg-[#161615]/60">
+                            <Users className="size-6 text-muted-foreground" />
+                            <h2 className="mt-4 font-semibold">
+                                User Management
+                            </h2>
+                            <p className="mt-1 text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                                Segera tersedia setelah module diaktifkan.
+                            </p>
+                        </div>
+                    </div>
+                </section>
                 <div className="flex w-full items-center justify-center opacity-100 transition-opacity duration-750 lg:grow starting:opacity-0">
                     <main className="flex w-full max-w-[335px] flex-col-reverse lg:max-w-4xl lg:flex-row">
                         <div className="flex-1 rounded-br-lg rounded-bl-lg bg-white p-6 pb-12 text-[13px] leading-[20px] shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] lg:rounded-tl-lg lg:rounded-br-none lg:p-20 dark:bg-[#161615] dark:text-[#EDEDEC] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]">

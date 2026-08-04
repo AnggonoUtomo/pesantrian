@@ -94,6 +94,10 @@ Frontend hanya mengatur visibility/UX; backend tetap memeriksa authorization.
   yang sama dan akses akhir tetap diperiksa middleware/policy.
 - Top navigation menjadi bagian dari `AppLayout` global agar semua halaman
   System dan module mendapat header yang konsisten.
+- Halaman Appearance menyediakan pemilih theme palette yang mengubah warna
+  utama aplikasi tanpa mengubah pilihan dark/light.
+- Theme palette tersimpan di browser dan tetap aktif setelah halaman dimuat
+  ulang.
 
 ## Boundaries
 
@@ -101,3 +105,14 @@ Frontend hanya mengatur visibility/UX; backend tetap memeriksa authorization.
 - Ask first: perubahan struktur halaman, permission visibility, dan action role.
 - Never: hardcode bypass authorization, import private repository module lain,
   secret di props, atau URL route string tersebar.
+
+## Theme palette
+
+Palette diambil dari referensi `FrontendContoh/app.css` dan memakai atribut
+`data-theme` pada elemen `html`. Palette yang tersedia adalah `urban`,
+`graphite`, `mist`, `harbor`, `quartz`, `aurora`, `saffron`, `ruby`, `forest`,
+`ocean`, `plum`, dan `copper`.
+
+State palette disimpan pada `localStorage` dengan key `theme-palette`. Fitur ini
+hanya mengubah warna tampilan. Pilihan mode `light`, `dark`, atau `system` tetap
+dikelola terpisah oleh `use-appearance`.

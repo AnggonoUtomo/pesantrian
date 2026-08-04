@@ -119,3 +119,152 @@ menggunakan `system-dashboard-layout` dan widget dashboard. Backend route
 `system.dashboard` memakai middleware permission AccessControl; actor tanpa
 permission menerima `403`. Dashboard module berikutnya dapat dibuat di bawah
 namespace module masing-masing dengan pola layout yang sama.
+
+## Task 05 — Theme palette pada Appearance
+
+**Tujuan:** menambahkan pilihan warna tema yang dapat ditinjau dan digunakan
+langsung melalui halaman Appearance.
+
+**Kondisi awal:** halaman Appearance hanya memiliki pilihan `Light`, `Dark`, dan
+`System`. CSS belum memiliki state palette yang dapat dipilih dari UI.
+
+**Perubahan:**
+
+- [x] Scope task selesai.
+  - Kondisi awal: `resources/js/components/appearance-tabs.tsx` hanya mengatur
+    mode tampilan.
+  - Perubahan: `resources/js/components/theme-palette.tsx` menampilkan dua
+    belas pilihan palette dengan swatch, status terpilih, label aksesibel, dan
+    `data-test`.
+  - Alasan: user perlu melihat dan mengganti warna utama tanpa masuk ke source
+    code.
+  - Evidence: snapshot browser menampilkan palette `Urban` sampai `Copper`.
+- [x] State palette selesai.
+  - Kondisi awal: `use-appearance` hanya menyimpan mode light/dark/system.
+  - Perubahan: `resources/js/hooks/use-theme-palette.ts` menyimpan pilihan
+    pada `localStorage` key `theme-palette`, menerapkan `data-theme`, dan
+    memulihkan pilihan saat aplikasi dimuat.
+  - Alasan: pilihan warna harus konsisten setelah navigasi dan reload.
+  - Evidence: setelah memilih `Ruby`, browser membaca
+    `data-theme="ruby"`, `--primary: oklch(0.52 0.16 18)`, dan pilihan tetap
+    aktif setelah reload.
+- [x] CSS palette selesai.
+  - Kondisi awal: `resources/css/app.css` hanya memiliki warna default dan
+    dark mode umum.
+  - Perubahan: selector `[data-theme]` dan `.dark[data-theme]` ditambahkan
+    untuk 12 palette dengan warna primary, accent, ring, dan foreground.
+  - Alasan: satu state palette harus berdampak ke komponen Tailwind yang
+    memakai token warna aplikasi.
+  - Evidence: computed style browser berubah dari palette default ke palette
+    Ruby tanpa error console.
+- [x] Integrasi Appearance selesai.
+  - Kondisi awal: halaman `settings/appearance` belum memiliki section palette.
+  - Perubahan: section `Theme palette` ditambahkan setelah `AppearanceTabs`.
+  - Alasan: pengaturan warna ditempatkan bersama pengaturan light/dark.
+  - Evidence: `npm run types:check`, `npm run lint:check`,
+    `npm run format:check`, dan `npm run build` lulus.
+- [x] Background dan hover sidebar selesai.
+  - Kondisi awal: palette hanya mengubah primary dan accent sehingga background
+    serta hover sidebar masih memakai warna netral yang sama.
+  - Perubahan: `resources/css/app.css` memakai `color-mix` untuk menghasilkan
+    `background`, `card`, `muted`, `sidebar`, dan `sidebar-accent` dari warna
+    palette aktif. Selector `.dark[data-theme]` menyediakan versi gelap yang
+    tetap lembut.
+  - Alasan: background dan hover sidebar harus terasa satu tema tanpa kontras
+    berlebihan.
+  - Evidence: browser membaca `--background`, `--sidebar`, dan
+    `--sidebar-accent` bertema; sidebar ter-render dengan warna baru dan console
+    tidak memiliki error atau warning.
+- [x] Hierarchy top nav dan sidebar selesai.
+  - Kondisi awal: warna sidebar terlalu dekat dengan top nav sehingga layout
+    terlihat flat.
+  - Perubahan: token `--sidebar` dibuat sedikit lebih gelap dari
+    `--background` pada light dan dark mode, `--sidebar-accent` memakai
+    campuran primary untuk hover, dan menu aktif mendapat indikator garis
+    primary di sisi kiri.
+  - Alasan: sidebar perlu memiliki kedalaman visual tanpa kontras yang tajam.
+  - Evidence: browser menunjukkan warna sidebar dark lebih gelap daripada top
+    nav pada palette Forest, console bersih, dan `npm run format:check`,
+    `npm run build`, serta `git diff --check` lulus.
+- [x] Konsistensi hover seluruh palette selesai.
+  - Kondisi awal: `urban`, `quartz`, dan `aurora` belum memiliki override
+    primary pada dark mode sehingga hover sidebar memakai warna default.
+  - Perubahan: override `.dark[data-theme]` dilengkapi untuk seluruh 12
+    palette, termasuk `urban`, `quartz`, dan `aurora`. Dark hover memakai
+    campuran primary palette ke surface sidebar agar perbedaan hue tetap
+    terlihat pada background gelap.
+  - Perbaikan lanjutan: aturan generic tidak lagi menimpa `--accent` milik
+    palette setelah selector khusus dark mode.
+  - Alasan: hover dan active state harus mengikuti palette yang dipilih pada
+    semua kombinasi light/dark.
+  - Evidence: browser menguji seluruh 12 nilai `data-theme`; Urban, Ruby,
+    Forest, Ocean, dan Plum menghasilkan hue hover yang berbeda. Quartz tetap
+    netral sesuai palette-nya. Build dan format lulus.
+- [x] Separator hover sidebar selesai.
+  - Kondisi awal: hover link sidebar hanya mengubah background dan warna teks.
+  - Perubahan: `resources/js/components/nav-main.tsx` menambahkan separator
+    `|` setelah icon. Separator muncul saat pointer hover dan tersembunyi pada
+    sidebar mode icon.
+  - Alasan: menambah detail visual kecil agar hubungan icon dan label lebih
+    mudah terlihat.
+  - Evidence: browser menunjukkan separator dengan `display: block` dan
+    `opacity: 1` saat link di-hover; lint, type check, build, dan diff check
+    lulus.
+- [x] Dark background mengikuti palette selesai.
+  - Kondisi awal: dark mode masih memakai background generic sehingga beberapa
+    palette terlihat netral walaupun accent sudah berubah.
+  - Perubahan: `resources/css/app.css` menambahkan surface dark khusus untuk
+    seluruh 12 palette pada `--background`, `--card`, `--popover`, dan
+    `--sidebar`.
+  - Alasan: background, card, popover, dan sidebar harus membawa hue theme yang
+    sama; sidebar tetap dibuat sedikit lebih gelap dari background.
+  - Evidence: browser membaca background Forest `oklch(0.18 0.014 145)` dan
+    sidebar sebagai campuran warna Forest dengan hitam. Format, build, dan diff
+    check lulus.
+- [x] Active dan active-hover sidebar selesai.
+  - Kondisi awal: active link dan active-hover memakai token yang sama; selector
+    active juga menimpa hover sehingga warna hover tidak mengikuti accent theme.
+  - Perubahan: token `--sidebar-active` dipakai untuk active normal. Selector
+    active-hover dipaksa memakai `--sidebar-accent` dan
+    `--sidebar-accent-foreground`.
+  - Alasan: active normal perlu soft, sedangkan active-hover harus terlihat
+    responsif dan tetap mengikuti palette.
+  - Evidence: browser Forest dark menunjukkan active-hover sama dengan
+    `--sidebar-accent` `oklch(0.31 0.055 135)`; format, build, dan diff check
+    lulus.
+- [x] Light hover sidebar terlihat sesuai theme.
+  - Kondisi awal: hover light terlalu pucat karena accent terlalu dekat dengan
+    background sidebar.
+  - Perubahan: `--sidebar-accent` light memakai campuran primary yang lebih
+    terlihat, tetapi tetap soft; foreground hover ikut primary theme. Menu
+    navigasi settings memakai `hover:bg-primary/20`, `hover:text-primary`, dan
+    shadow tipis.
+  - Alasan: user perlu melihat respons hover pada light mode tanpa membuat
+    sidebar terlalu kontras.
+  - Evidence: browser Forest light menghasilkan hover sidebar
+    `oklch(0.852872 0.0271387 145)` dan hover menu `Appearance` memakai primary
+    Forest 20% dengan shadow; format, build, dan diff check lulus.
+- [x] Active-hover menu Appearance selesai.
+  - Kondisi awal: menu Appearance yang sedang aktif masih memakai tint active
+    biasa saat pointer diarahkan ke link.
+  - Perubahan: active normal memakai `bg-primary/10`, sedangkan active-hover
+    memakai `bg-primary/30` dengan teks primary.
+  - Alasan: state aktif dan active-hover perlu terlihat berbeda saat ditinjau.
+  - Evidence: browser Forest light menunjukkan active-hover memakai primary
+    Forest 30%; lint, type check, build, dan diff check lulus.
+- [x] Active-hover link Dashboard selesai.
+  - Kondisi awal: link Dashboard memakai state active sidebar umum yang belum
+    memiliki perbedaan soft dan strong seperti menu Appearance.
+  - Perubahan: token `--sidebar-active` dipakai untuk active normal dan token
+    `--sidebar-active-hover` dipakai untuk active-hover pada link sidebar.
+    Font active normal dan active-hover memakai `var(--primary)` seperti menu
+    Appearance.
+  - Alasan: Dashboard perlu memiliki hierarchy state yang sama dengan menu
+    settings dan tetap mengikuti primary theme.
+  - Evidence: browser Forest light menunjukkan active-hover Dashboard memakai
+    campuran primary 30% dengan font primary. Active normal juga menggunakan
+    font primary; lint, type check, build, dan diff check lulus.
+
+**Batasan:** palette saat ini disimpan per browser melalui `localStorage`, belum
+disimpan ke profil user atau database. Jika nanti diperlukan sinkronisasi lintas
+perangkat, perlu contract backend dan keputusan baru.

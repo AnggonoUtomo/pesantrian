@@ -178,6 +178,32 @@ dibuka, route frontend menggunakan Ziggy, state loading/empty/error, aturan
 visibility permission, responsive layout, dan browser/accessibility test yang
 relevan. Hasil module harus dapat ditinjau langsung pada browser.
 
+### Baseline UI/UX Module
+
+UI/UX yang sudah selesai pada AccessControl menjadi baseline untuk module
+berikutnya. Module baru yang memiliki frontend wajib mengikuti pola berikut:
+
+- `AppLayout` global dengan sticky top navigation, breadcrumb, language action,
+  notification action, theme toggle, dan profile dropdown;
+- sidebar utama dengan warna yang mengikuti theme palette, state active dan
+  hover yang jelas, indikator active, serta separator icon saat hover;
+- halaman Appearance dengan mode `light`, `dark`, `system`, dan theme palette;
+- state active normal memakai warna primary yang soft, sedangkan active-hover
+  memakai warna primary yang lebih kuat dan font primary;
+- menu settings memakai pola hover dan active yang sama dengan halaman
+  Appearance;
+- background, card, popover, sidebar, dan hover harus mengikuti hue palette
+  pada light maupun dark mode;
+- komponen baru harus memakai token theme yang sudah ada, bukan warna hardcode
+  yang membuat module terlihat berbeda dari shell aplikasi.
+
+`resources/js/components/app-sidebar-header.tsx`,
+`resources/js/components/app-sidebar.tsx`, `resources/js/components/nav-main.tsx`,
+`resources/js/layouts/settings/layout.tsx`, `resources/js/hooks/use-appearance.tsx`,
+`resources/js/hooks/use-theme-palette.ts`, dan `resources/css/app.css` menjadi
+referensi implementasi. Folder `FrontendContoh/` hanya bahan referensi visual
+dan tidak boleh menjadi dependency atau target commit.
+
 ## Kualitas dan Verifikasi
 
 Gate kualitas yang relevan mencakup:

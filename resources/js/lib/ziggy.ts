@@ -1,6 +1,6 @@
 import type { route as ziggyRoute } from 'ziggy-js';
 
-export type ZiggyConfig = Parameters<typeof ziggyRoute>[3];
+export type ZiggyConfig = NonNullable<Parameters<typeof ziggyRoute>[3]>;
 
 let config: ZiggyConfig;
 

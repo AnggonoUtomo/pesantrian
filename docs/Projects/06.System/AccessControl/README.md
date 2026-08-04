@@ -11,10 +11,11 @@ repository, atau adapter internalnya secara langsung.
 - Namespace: `App\Modules\System\AccessControl`
 - Path: `app/Modules/System/AccessControl`
 - Permission owner: `AccessControl`
-- Status: `Discovery`
+- Status: `Schema ULID dan runtime identity tersedia; capability belum dimulai`
 
-Package `spatie/laravel-permission:8.3.0` sudah tersedia. Integrasi runtime,
-role, assignment, policy, dan `SuperSystem` belum diimplementasikan.
+Package `spatie/laravel-permission:8.3.0` sudah terhubung melalui config dan
+model adapter ULID milik module. Role, assignment, policy, dan capability publik
+belum diimplementasikan.
 
 ## Urutan baca
 
@@ -22,6 +23,7 @@ role, assignment, policy, dan `SuperSystem` belum diimplementasikan.
 2. [Implementation plan](implementation-plan.md)
 3. [Tasks](tasks.md)
 4. [ADR namespace](decisions/001-access-control-namespace.md)
+5. [ADR schema ULID](decisions/002-ulid-spatie-schema.md)
 
 ## Dokumen terkait
 

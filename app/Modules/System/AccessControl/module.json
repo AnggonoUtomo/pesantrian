@@ -1,0 +1,13 @@
+{
+    "name": "AccessControl",
+    "namespace": "App\\Modules\\System\\AccessControl",
+    "version": "1.0.0",
+    "schema_version": 1,
+    "status": "enabled",
+    "domain": "System",
+    "path": "app/Modules/System/AccessControl",
+    "provider": "App\\Modules\\System\\AccessControl\\ServiceProvider",
+    "dependencies": [],
+    "permission_source": "permissions.php",
+    "config_source": "module.php"
+}

@@ -13,13 +13,18 @@ manifest module, dan README module.
 
 **Acceptance criteria:**
 
-- [ ] Namespace `App\Modules\System\AccessControl` disepakati.
-- [ ] Path `app/Modules/System/AccessControl` tidak bentrok dengan module valid.
-- [ ] Ownership capability authorization dan permission tercatat.
+- [x] Namespace `App\Modules\System\AccessControl` disepakati.
+- [x] Path `app/Modules/System/AccessControl` tidak bentrok dengan module valid.
+- [x] Ownership capability authorization dan permission tercatat.
 
-**Hasil implementasi:** Belum dikerjakan.
+**Hasil implementasi:** Disetujui pada 2026-08-05. Namespace, domain, ownership
+capability, role `SuperSystem`, permission naming, shared authorization context,
+dan boundary Spatie Permission sudah ditetapkan.
 
 **Test:** `php artisan module:discover --json`
+
+**Evidence:** ADR-001 berstatus `Diterima`; inventory module saat ini kosong dan
+tidak ada target `System/AccessControl` yang bentrok.
 
 ## Task 02 — Module skeleton dan manifest
 
@@ -31,13 +36,23 @@ runtime config, permission identity, dan README module.
 
 **Acceptance criteria:**
 
-- [ ] Struktur golden module tersedia.
-- [ ] `module.json` dan `module.php` valid.
-- [ ] Module tidak menimpa module existing.
+- [x] Struktur golden module tersedia.
+- [x] `module.json` dan `module.php` valid.
+- [x] Module tidak menimpa module existing.
 
-**Hasil implementasi:** Belum dikerjakan.
+**Hasil implementasi:** Selesai pada 2026-08-05. Generator profile `default-v1`
+membuat `app/Modules/System/AccessControl` dengan directory DDD-lite,
+`module.json`, `module.php`, `permissions.php`, `ServiceProvider.php`, README,
+dan route entry point. Permission final, policy, service, migration, test
+module, dan business logic belum dibuat.
 
 **Test:** `php artisan module:make AccessControl --domain=System --dry-run --json`
+
+**Evidence:** `module:discover --json`, `module:validate --json`, dan
+`module:list --json` menemukan satu module valid tanpa diagnostic. Percobaan
+tanpa `--force` ditolak dengan `MODULE_GENERATION_INVALID`; percobaan ulang pada
+target existing ditolak dengan `MODULE_GENERATION_FAILED`. `git diff --check`
+lulus.
 
 ## Task 03 — Permission identity
 
@@ -48,13 +63,20 @@ runtime config, permission identity, dan README module.
 
 **Acceptance criteria:**
 
-- [ ] Permission key mengikuti format yang disepakati.
-- [ ] Owner module adalah `AccessControl`.
-- [ ] Duplicate permission ditolak.
-- [ ] Permission sensitif diberi metadata yang tepat.
-- [ ] Role privileged menggunakan nama `SuperSystem`.
+- [x] Permission key mengikuti format yang disepakati.
+- [x] Owner module adalah `AccessControl`.
+- [x] Duplicate permission ditolak.
+- [x] Permission sensitif diberi metadata yang tepat.
+- [x] Role privileged menggunakan nama `SuperSystem`.
 
-**Hasil implementasi:** Belum dikerjakan.
+**Hasil implementasi:** Selesai pada 2026-08-05. `permissions.php` berisi empat
+permission AccessControl dengan owner, format key, dan metadata `sensitive`.
+
+- [x] Scope task selesai.
+  - Kondisi awal: `permissions.php` masih kosong dari generator.
+  - Perubahan: menambahkan empat permission dan focused permission test.
+  - Alasan: vocabulary permission harus tersedia sebelum adapter Spatie.
+  - Evidence: focused test lulus dengan 13 test dan 30 assertion.
 
 **Test:** focused permission contract test.
 
@@ -76,6 +98,31 @@ contract test.
 - [ ] Use case mengulang authorization sebelum mutation.
 
 **Hasil implementasi:** Belum dikerjakan.
+
+## Open risk â€” ULID dan runtime Spatie
+
+- [x] Schema starter kit dan Spatie menggunakan ULID.
+  - Kondisi awal: migration starter kit dan migration bawaan Spatie memakai
+    `bigint`.
+  - Perubahan: migration `users`, `passkeys`, dan `jobs` memakai ULID; module
+    menambahkan migration permission ULID; model `User`, `Role`, dan
+    `Permission` memakai `HasUlids`.
+  - Alasan: aturan baseline melarang schema campuran integer dan ULID.
+  - Evidence: `AccessControlSchemaTest` lulus dan role `SuperSystem` dapat
+    diberikan kepada user dengan ID string.
+- [x] Provider module memuat migration permission.
+  - Kondisi awal: provider module belum terdaftar dan migration module tidak
+    terdeteksi Laravel.
+  - Perubahan: mendaftarkan provider pada `bootstrap/providers.php` dan memakai
+    `loadMigrationsFrom`.
+  - Alasan: schema module harus ikut lifecycle Laravel.
+  - Evidence: `php artisan migrate:status` menampilkan migration permission
+    module sebagai pending.
+- [ ] Migration upgrade dari database integer ke ULID.
+  - Batasan: memerlukan strategi mapping ID, backup, dan downtime environment
+    bersama.
+  - Status: risiko terbuka untuk deployment existing; fresh-install sudah
+    tertutup.
 
 **Test:** positive dan negative authorization contract test.
 
@@ -103,8 +150,8 @@ README, dan execution evidence.
 ## Final quality checkpoint
 
 - [ ] Inventory sebelum perubahan tersedia.
-- [ ] Positive dan negative test tersedia.
+- [x] Positive dan negative test tersedia untuk identity dan schema dasar.
 - [ ] Authorization, security, audit, dan dependency impact ditinjau.
-- [ ] Module discovery/validation/list lulus.
+- [x] Module discovery/validation/list lulus sebelum perubahan runtime.
 - [ ] Documentation dan execution evidence diperbarui.
-- [ ] Open risk dilaporkan atau ditutup.
+- [ ] Open risk migration upgrade production dilaporkan dan belum ditutup.

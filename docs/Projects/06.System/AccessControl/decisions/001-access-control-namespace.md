@@ -4,6 +4,8 @@
 
 `Diterima`.
 
+Disetujui user pada 2026-08-05.
+
 ## Konteks
 
 Project menggunakan struktur module `app/Modules/{Domain}/{Module}`. Module

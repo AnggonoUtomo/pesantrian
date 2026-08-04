@@ -8,7 +8,7 @@
 | TASK-004 | INC-004 | Buat permission contract | Metadata permission tervalidasi | Unit test schema | Selesai |
 | TASK-005 | INC-005 | Buat registry dan discovery | Valid ditemukan; invalid diisolasi | Integration test | Selesai |
 | TASK-006 | INC-006 | Buat command module | Tiga command mendukung JSON | Command test | Selesai |
-| TASK-007 | INC-007 | Tutup Phase 2 | Quality gate dan docs lengkap | Full verification | Planned |
+| TASK-007 | INC-007 | Tutup Phase 2 | Quality gate dan docs lengkap | Full verification | Selesai |
 
 ## Detail Task
 
@@ -118,11 +118,29 @@ Setiap task akan ditulis dengan pola berikut sebelum ditandai selesai:
 
 ## Definition of Done
 
-- [ ] Scope task selesai dengan detail kondisi awal, file, perubahan, alasan,
+- [x] Scope task selesai dengan detail kondisi awal, file, perubahan, alasan,
   evidence, dan risiko.
-- [ ] Test positif dan negatif tersedia.
-- [ ] Duplicate identity dan invalid module diuji.
-- [ ] Security impact dan diagnostic redaction ditinjau.
-- [ ] Command human-readable dan JSON diverifikasi.
-- [ ] Documentation dan execution log diperbarui.
-- [ ] Checklist ditinjau sebelum dan sesudah pekerjaan.
+- [x] Test positif dan negatif tersedia pada contract, registry, dan command.
+- [x] Duplicate identity dan invalid module diuji melalui fixture Basic,
+  Duplicate, dan PermissionDuplicate.
+- [x] Security impact dan diagnostic redaction ditinjau; diagnostic hanya
+  memuat path dan pesan validasi, tanpa payload permission atau secret.
+- [x] Command human-readable dan JSON diverifikasi; focused command test dan
+  smoke command lulus.
+- [x] Documentation dan execution log diperbarui untuk setiap increment.
+- [x] Checklist ditinjau sebelum dan sesudah pekerjaan.
+- [x] Full quality gate Phase 2 selesai.
+
+### TASK-007 — Tutup Phase 2
+
+- [x] Scope task selesai.
+  - Kondisi awal: quality gate, static analysis, build, dependency scan, dan
+    review dokumentasi belum memiliki evidence lengkap.
+  - File diubah: `resources/js/lib/route.ts`,
+    `resources/js/types/global.d.ts`, dan dokumen Phase 2 terkait.
+  - Perubahan: format frontend diperbaiki dan seluruh quality gate dijalankan.
+  - Alasan: Phase 2 harus siap menjadi dasar Phase 3 dengan bukti teknis.
+  - Evidence: full test 65 test/191 assertion; Pint, PHPStan, ESLint,
+    TypeScript, Prettier, build, command module, forbidden dependency scan,
+    dan `git diff --check` lulus.
+  - Risiko: GitHub Actions dan production deployment belum dijalankan.

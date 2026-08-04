@@ -16,7 +16,7 @@ checklist sebelum increment berikutnya dimulai.
 | INC-004 | Permission identity validator | INC-003 | Unit test schema/duplicate key | Selesai |
 | INC-005 | Registry, discovery, dan isolation | INC-003, INC-004 | Integration test valid/invalid | Selesai |
 | INC-006 | Command discover/validate/list | INC-005 | Command human-readable/JSON | Selesai |
-| INC-007 | Hardening, test, dan documentation evidence | INC-006 | Full quality gate | Planned |
+| INC-007 | Hardening, test, dan documentation evidence | INC-006 | Full quality gate | Selesai |
 
 ## Detail Pelaksanaan
 
@@ -75,22 +75,27 @@ checklist sebelum increment berikutnya dimulai.
 - Perubahan: hardening error handling, redaction diagnostic, execution log, dan
   quality gate.
 - Alasan: contract framework menjadi dependency Phase 3.
-- Evidence: full test, static analysis, lint, dan build lulus.
+- Evidence: full test, static analysis, lint, format, type check, build, dan
+  forbidden dependency scan lulus.
 
 ## Technical Tasks
 
-- [ ] Finalisasi contract dan ADR.
+- [x] Finalisasi contract dan ADR.
   - File: `specification.md`, `ADR-0001`, `implementation-plan.md`.
   - Hasil yang diharapkan: boundary tidak memiliki Open Decision blocking.
-- [ ] Buat package `packages/StarterKit`.
+- [x] Buat package `packages/StarterKit`.
   - File: Composer metadata, source package, provider, dan test boot.
   - Hasil yang diharapkan: package dapat di-autoload Laravel.
-- [ ] Buat manifest dan permission validator.
+- [x] Buat manifest dan permission validator.
   - File: contract/value object, schema validator, dan unit test.
   - Hasil yang diharapkan: valid/invalid/duplicate memiliki diagnostic stabil.
-- [ ] Buat registry dan command read-only.
+- [x] Buat registry dan command read-only.
   - File: registry, discovery service, command, dan integration test.
   - Hasil yang diharapkan: module valid tetap diproses saat module lain invalid.
-- [ ] Tutup quality gate dan documentation evidence.
+- [x] Tutup quality gate dan documentation evidence.
   - File: test, log, task, dan roadmap.
   - Hasil yang diharapkan: Phase 2 siap menjadi input Phase 3.
+
+Catatan status: seluruh technical task Phase 2 sudah memiliki implementation
+dan evidence. Verifikasi GitHub Actions dan production deployment tetap menjadi
+verifikasi lingkungan berikutnya.

@@ -20,12 +20,20 @@ Phase 2: buat package StarterKit
     -> buat ModuleRegistry
     -> buat command module:*
     -> jalankan quality gate
+
+Phase 3: susun input generator
+    -> buat plan dari profile default-v1
+    -> cek conflict dan dry-run
+    -> tulis ke staging ULID
+    -> promote secara atomic
+    -> jalankan module:make dan quality gate
 ```
 
 ## Isi Folder
 
 - `phase-1-flow.md`: fondasi runtime dan verification command.
 - `phase-2-flow.md`: package dan module contract.
+- `phase-3-flow.md`: generator `module:make`, staging, promotion, dan test.
 - `file-map.md`: peta file code, tanggung jawab, dan test.
 
 ## Cara Belajar
@@ -36,5 +44,5 @@ Phase 2: buat package StarterKit
 4. Cocokkan setiap class dengan test yang membuktikan behavior-nya.
 5. Jalankan command verifikasi setelah membaca setiap bagian.
 
-Phase 1 dan Phase 2 selesai pada scope yang sudah didokumentasikan. Generator
-`module:make` belum dibuat karena menjadi pekerjaan Phase 3.
+Phase 1, Phase 2, dan Phase 3 selesai pada scope yang sudah didokumentasikan.
+Mode extension dan overwrite generator belum diaktifkan.

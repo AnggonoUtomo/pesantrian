@@ -2,7 +2,7 @@
 
 ## Status
 
-Proposed
+Diterima.
 
 ## Context
 

@@ -15,7 +15,7 @@ verify. Increment berikutnya tidak dimulai sebelum increment sebelumnya lulus.
 | INC-004 | Conflict detection dan dry-run | INC-003 | Tidak ada side effect sebelum validasi lulus | Feature test | Selesai |
 | INC-005 | Staging dan atomic promotion | INC-004 | Staging ULID, rename atomic, cleanup | Integration test | Selesai |
 | INC-006 | Command `module:make` | INC-005 | Human/JSON output dan exit code stabil | Command test | Selesai |
-| INC-007 | Hardening dan quality gate | INC-006 | Security, dependency, docs, dan full gate lulus | Full verification | Planned |
+| INC-007 | Hardening dan quality gate | INC-006 | Security, dependency, docs, dan full gate lulus | Full verification | Selesai |
 
 ## Technical Tasks
 
@@ -28,5 +28,5 @@ verify. Increment berikutnya tidak dimulai sebelum increment sebelumnya lulus.
 - [x] Buat staging writer, atomic promotion, dan cleanup. Rollback overwrite
   belum diperlukan karena target existing selalu ditolak.
 - [x] Buat command `module:make` dengan output human-readable/JSON.
-- [ ] Tambahkan test positif, negatif, conflict, dry-run, dan failure cleanup.
-- [ ] Jalankan quality gate dan perbarui dokumentasi evidence.
+- [x] Tambahkan test positif, negatif, conflict, dry-run, mutasi tanpa `--force`, dan failure cleanup.
+- [x] Jalankan quality gate, scan forbidden dependency, validasi hasil generate, dan perbarui dokumentasi evidence.

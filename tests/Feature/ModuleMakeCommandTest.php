@@ -21,7 +21,7 @@ it('menyediakan dry-run JSON tanpa membuat file', function () {
 });
 
 it('membuat module baru dan mengembalikan JSON sukses', function () {
-    $result = runModuleMake('AuditLog', ['--domain=System', '--json']);
+    $result = runModuleMake('AuditLog', ['--domain=System', '--force', '--yes', '--json']);
 
     expect($result->getExitCode())->toBe(0)
         ->and($result->getOutput())->toContain('MODULE_CREATED');
@@ -38,10 +38,20 @@ it('menolak input invalid sebelum membuat file', function () {
     expect(File::exists(app_path('Modules')))->toBeFalse();
 });
 
-it('mengembalikan failure saat target conflict', function () {
-    expect(runModuleMake('AuditLog', ['--domain=System'])->getExitCode())->toBe(0);
-
+it('menolak mutasi tanpa konfirmasi force', function () {
     $result = runModuleMake('AuditLog', ['--domain=System', '--json']);
+
+    expect($result->getExitCode())->toBe(1)
+        ->and($result->getOutput())->toContain('MODULE_GENERATION_INVALID')
+        ->and($result->getOutput())->toContain('--force');
+
+    expect(File::exists(app_path('Modules')))->toBeFalse();
+});
+
+it('mengembalikan failure saat target conflict', function () {
+    expect(runModuleMake('AuditLog', ['--domain=System', '--force', '--yes'])->getExitCode())->toBe(0);
+
+    $result = runModuleMake('AuditLog', ['--domain=System', '--force', '--yes', '--json']);
 
     expect($result->getExitCode())->toBe(1)
         ->and($result->getOutput())->toContain('MODULE_GENERATION_FAILED');

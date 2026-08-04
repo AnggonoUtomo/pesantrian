@@ -18,7 +18,7 @@ final class ModuleMakeCommand extends Command
         {--domain=System : Domain module dalam PascalCase}
         {--profile=default-v1 : Profile generator}
         {--dry-run : Tampilkan rencana tanpa menulis file}
-        {--force : Konfirmasi mode mutasi untuk caller non-interactive}
+        {--force : Wajib untuk mengizinkan mutasi; tidak mengaktifkan overwrite}
         {--yes : Lewati konfirmasi interaktif setelah force}
         {--json : Tampilkan hasil sebagai JSON}';
 
@@ -35,6 +35,11 @@ final class ModuleMakeCommand extends Command
                 'force' => (bool) $this->option('force'),
                 'yes' => (bool) $this->option('yes'),
             ]);
+
+            if (! $request->dryRun && ! $request->force) {
+                throw new \InvalidArgumentException('Pembuatan module membutuhkan --force; gunakan --dry-run untuk preview.');
+            }
+
             $preview = $previewer->preview($request, app_path('Modules'));
 
             if (! $preview->isValid()) {

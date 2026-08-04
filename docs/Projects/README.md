@@ -1,5 +1,10 @@
 # Project Documentation
 
+## Panduan Belajar Code
+
+- [Alur Code Phase 1 dan Phase 2](phase-1-2-code-flow/README.md)
+- [Phase 3 Module Generator](phase-3-module-generator/README.md)
+
 ## Document Information
 
 | Item | Value |

@@ -10,6 +10,13 @@ Indonesia yang sederhana, jelas, dan mudah dipahami. Hindari kalimat yang
 terlalu panjang serta jargon yang tidak perlu. Nama class, command, namespace,
 package, API field, dan code identifier tetap menggunakan istilah teknis resmi.
 
+## Bahasa Commit
+
+Commit message wajib menggunakan Bahasa Indonesia yang sederhana dan
+menjelaskan tujuan perubahan. Contoh: `tutup quality gate phase 2`,
+`perbaiki validasi registry`, atau `tambah test generator`. Nama class,
+command, package, dan code identifier tetap memakai istilah teknis resminya.
+
 ## Penggunaan Skill Agent
 
 Sebelum melakukan setiap langkah kerja yang memakai skill, agent wajib
@@ -91,6 +98,20 @@ Agent wajib membaca file di atas sebelum melakukan perubahan. Jika instruksi
 project ini berbeda dengan `docs/AGENTS.md`, laporkan konflik dan ikuti aturan
 yang lebih authoritative; jangan memilih berdasarkan tebakan.
 
+Sebelum membuat atau mengubah specification, design, generator, module,
+contract, atau struktur folder, agent wajib membaca dokumen baseline `docs/`
+yang langsung terkait. Untuk generator/module minimal mencakup:
+
+- `docs/03-IMPLEMENTATION/03.04-FOLDER-STRUCTURE.md`;
+- `docs/03-IMPLEMENTATION/03.05-GENERATOR-SPEC.md`;
+- `docs/06-FRAMEWORK/06.05-GENERATOR-ENGINE.md`;
+- `docs/06-FRAMEWORK/06.06-STUB-ENGINE.md`; dan
+- `docs/06-FRAMEWORK/06.07-CONSOLE.md`.
+
+Ringkasan tidak boleh menggantikan struktur canonical. Jika dokumen baseline
+menentukan golden structure, output generator dan specification wajib mengikuti
+struktur tersebut atau mencatat ADR perubahan terlebih dahulu.
+
 ## First Read dan Project Intake
 
 Sebelum coding, generator, migration, atau perubahan konfigurasi apa pun, agent
@@ -108,6 +129,31 @@ wajib:
    event, migration, test, dan README.
 6. Menentukan dokumen authoritative dan downstream yang terdampak.
 7. Menyusun acceptance criteria, focused test, verification command, dan risk.
+
+## Preflight Baseline dan Traceability
+
+Sebelum membuat atau mengubah code, specification, generator, module, contract,
+atau struktur folder, agent wajib membuat pemeriksaan singkat yang menjawab:
+
+| Item | Wajib dicatat |
+|---|---|
+| Authoritative source | Dokumen baseline yang menjadi acuan utama |
+| Downstream docs | Specification, plan, task, ADR, README, dan log yang terdampak |
+| Existing code | File/class/command yang sudah memiliki behavior terkait |
+| Golden structure | Struktur folder, field, contract, dan naming yang wajib diikuti |
+| Dependency | Increment, package, module, atau keputusan yang menjadi prasyarat |
+| Acceptance | Behavior yang harus terbukti setelah perubahan |
+| Rollback trace | Commit/file yang dapat ditelusuri jika perubahan dibatalkan |
+
+Agent tidak boleh mulai coding jika authoritative source dan golden structure
+belum dicocokkan dengan specification. Jika ditemukan konflik, hentikan coding,
+laporkan konflik, dan buat keputusan melalui ADR atau minta arahan user.
+
+Setiap perubahan contract atau structure wajib memperbarui semua downstream
+document terkait dalam increment yang sama. Execution log wajib menyebut source
+yang dibaca, file yang berubah, alasan, evidence, dan risiko. Tujuannya agar
+tim dapat melakukan review, rollback, dan audit tanpa bergantung pada riwayat
+percakapan agent.
 
 Jika project sudah memiliki module, agent tidak boleh menganggap project kosong.
 Jika project dinyatakan `greenfield`, status tersebut harus didukung evidence.

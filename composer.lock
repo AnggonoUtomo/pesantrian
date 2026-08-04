@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f01b8dda96750ca6fd81637605745308",
+    "content-hash": "ed6085ebb682cd918ec6a85a274972e3",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -4447,6 +4447,42 @@
                 }
             ],
             "time": "2026-07-16T10:28:45+00:00"
+        },
+        {
+            "name": "starterkit/framework",
+            "version": "1.0.0",
+            "dist": {
+                "type": "path",
+                "url": "packages/StarterKit",
+                "reference": "d936cb0e82233ccabb049760fb386380a7576571"
+            },
+            "require": {
+                "illuminate/console": "^13.0",
+                "illuminate/contracts": "^13.0",
+                "illuminate/support": "^13.0",
+                "php": "^8.4"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "StarterKit\\StarterKitServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "StarterKit\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Reusable framework foundation for the Laravel Engineering Starter Kit.",
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
         },
         {
             "name": "symfony/clock",

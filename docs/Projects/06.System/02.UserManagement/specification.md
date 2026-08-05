@@ -2,10 +2,12 @@
 
 ## Status
 
-Status terbaru: `Task 09 selesai` — impersonation session, audit event, route,
-dan browser flow sudah diverifikasi.
+Status terbaru: `Task 10 quality checkpoint selesai` — module valid, backend
+test, frontend quality gate, dan browser smoke test sudah diverifikasi untuk
+scope list/detail, create dialog dasar, dan impersonation.
 
-`Ready for Task 08` — Task 01 sampai Task 07 sudah diverifikasi.
+Mutation UI umum seperti edit, status, delete, dan role assignment tetap menjadi
+increment berikutnya.
 
 ## Objective
 

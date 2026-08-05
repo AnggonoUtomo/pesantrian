@@ -1,7 +1,7 @@
 # Tasks: System/UserManagement
 
-Status pekerjaan: `Ready for Task 09`. Checklist belum boleh ditandai selesai
-sebelum ada perubahan file dan evidence verifikasi.
+Status pekerjaan: `Task 10 quality checkpoint selesai`. Mutation UI umum tetap
+menjadi scope lanjutan dan tidak boleh dianggap sudah selesai.
 
 ## Task 01 — Prompt generator, project intake, dan dry-run
 
@@ -198,9 +198,11 @@ komunikasi dengan AccessControl.
 System/UserManagement --json`, dan focused contract test.
 
 **Hasil implementasi:** selesai pada 2026-08-06. Permission identity,
-dependency manifest, public role-assignment contract, dan focused test sudah
-tersedia. Adapter/implementasi role assignment belum dibuat dan menjadi bagian
-Task 05. `composer types:check` lulus dengan PHPStan tanpa error.
+dependency manifest, public role-assignment contract, focused test, dan adapter
+runtime AccessControl sudah tersedia. Adapter berada di owner module
+AccessControl dan di-resolve melalui container; UserManagement tetap tidak
+mengimpor private implementation. `composer types:check` lulus dengan PHPStan
+tanpa error.
 
 ## Task 04 — Domain lifecycle user
 
@@ -903,6 +905,52 @@ development dan tidak boleh digunakan sebagai data production.
   - Evidence: focused Pest lulus 8 test/21 assertion dengan `--fail-on-warning`;
     `composer ci:check` lulus 150 test/577 assertion tanpa warning.
 
+## Task 10 — Quality checkpoint UserManagement
+
+- [x] Scope quality checkpoint selesai.
+  - Kondisi awal: implementasi UserManagement sudah memiliki module identity,
+    authorization, persistence, route, backend test, frontend vertical slice,
+    impersonation, seeder dummy, dan baseline styling, tetapi status pada
+    beberapa dokumen belum sama dengan hasil implementasi terakhir.
+  - File ditinjau: `README.md`, `specification.md`,
+    `implementation-plan.md`, `tasks.md`, `planning/execution-log.md`, serta
+    source backend dan frontend UserManagement yang dirujuk oleh dokumen.
+  - Perubahan: menyelaraskan status Task 10, menegaskan scope yang sudah
+    diverifikasi, menambahkan execution log rinci, dan memastikan tidak ada
+    karakter mojibake pada dokumen checkpoint.
+  - Alasan: dokumentasi harus dapat dipakai untuk review dan rollback tanpa
+    bergantung pada riwayat percakapan.
+  - Acceptance: status dokumen konsisten; scope yang belum dibuat tidak
+    diklaim selesai; setiap evidence menyebut path, command, dan hasil.
+  - Evidence: `module:validate` dan `module:inspect` menghasilkan success;
+    focused Pest lulus 30 test/163 assertion; `npm run types:check`,
+    `npm run lint:check`, dan `npm run format:check` lulus; browser membuka
+    `/system/users`, dialog tambah user dapat dibuka dan ditutup, console tidak
+    memiliki error/warning; Lighthouse mobile menghasilkan Accessibility 100,
+    Best Practices 100, SEO 100, dan Agentic Browsing 100.
+  - Batasan: UI mutation umum untuk edit, status, delete, dan role assignment
+    belum termasuk scope selesai. Migrasi shared/production belum dijalankan
+    dari workspace karena membutuhkan database nyata dan backup environment.
+
+## Review Checklist Task 10
+
+- [x] Checklist ditinjau sebelum pekerjaan.
+  - Scope, dependency AccessControl, acceptance criteria, command verifikasi,
+    dan risiko migration sudah dicocokkan dengan dokumen baseline.
+- [x] Checklist ditinjau setelah pekerjaan.
+  - Semua item yang diverifikasi diberi evidence; scope lanjutan tetap
+    dilaporkan sebagai belum selesai dan tidak ditutup secara paksa.
+- [x] Positive dan negative path ditinjau.
+  - Test module mencakup capability, lifecycle, infrastructure, presentation,
+    impersonation, seeder, dan authorization boundary.
+- [x] Frontend ditinjau pada browser nyata.
+  - Halaman, dialog tambah user, responsive layout, shortcut, protected user,
+    console, dan accessibility score sudah diperiksa.
+- [x] Dokumentasi downstream diperbarui.
+  - `README.md`, `specification.md`, `implementation-plan.md`, `tasks.md`,
+    dan `planning/execution-log.md` sekarang menyebut status dan batasan yang
+    sama.
+
 ## Revision History
 
 | Version | Date       | Description                                             |
@@ -913,4 +961,5 @@ development dan tidak boleh digunakan sebagai data production.
 | 2.0     | 2026-08-06 | Menambahkan seeder 10 user dummy dan test idempotency |
 | 2.1     | 2026-08-06 | Menyamakan baseline warna module dengan AccessControl |
 | 2.2     | 2026-08-06 | Menutup warning Pest pada unit test application |
+| 2.3     | 2026-08-06 | Menutup Task 10 quality checkpoint dan menyelaraskan evidence dokumentasi |
 | 1.1     | 2026-08-06 | Menetapkan keputusan scope dan status task siap dimulai |

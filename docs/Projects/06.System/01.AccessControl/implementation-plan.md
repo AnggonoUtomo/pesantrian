@@ -37,6 +37,12 @@ Sebelum increment CQRS berikutnya, status fondasi harus tetap dapat ditelusuri:
 - Facade/Module API: public capability menjadi API module; Facade bukan default.
 - Queue/Job: tidak digunakan untuk flow synchronous role/permission.
 
+Implementasi role assignment saat ini menggunakan
+`Infrastructure/Services/SpatieRoleAssignmentAdapter`. Adapter memeriksa
+permission `access_control.role.assign`, melindungi role `SuperSystem` agar
+hanya dapat dikelola oleh actor `SuperSystem`, lalu memanggil API role pada
+target melalui public capability. Binding dilakukan oleh `ServiceProvider`.
+
 Setiap perubahan pada status tersebut wajib memiliki acceptance criteria,
 focused positive/negative test, failure behavior, dan rollback trace.
 
@@ -88,6 +94,7 @@ mutation, atau menulis aturan validasi langsung.
 | Authorization context membocorkan data sensitif | Typed context minimal dan redaction test |
 | Nama permission tidak konsisten | Gunakan dot notation dengan underscore dan contract test |
 | Bypass `SuperSystem` tersebar di feature | Satu policy/capability terpusat dan negative test untuk role protected |
+| Contract role assignment tidak dapat di-resolve runtime | Binding `RoleAssignmentCapability` ke adapter internal dan focused test container |
 
 ## Rollback
 

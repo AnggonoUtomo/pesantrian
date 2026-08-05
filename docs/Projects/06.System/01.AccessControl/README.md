@@ -69,8 +69,9 @@ atau test module, bukan sebagai alur bootstrap satu-satunya.
 ## Pola komunikasi module
 
 AccessControl memiliki dua public capability: `AuthorizationCapability` dan
-`RoleAssignmentCapability`. Module lain wajib memakai interface tersebut, bukan
-model, repository, atau adapter Spatie private.
+`RoleAssignmentCapability`. Keduanya sudah memiliki binding runtime melalui
+adapter internal. Module lain wajib memakai interface tersebut, bukan model,
+repository, atau adapter Spatie private.
 
 Mutation AccessControl memakai Application Action dan read memakai Application
 Query. Domain Event, Integration Event, Command Bus, Queue/Job, Facade, dan
@@ -97,6 +98,18 @@ kosong sebelum increment baru dimulai:
 Status di atas menjadi guardrail untuk pekerjaan berikutnya. Implementasi CQRS
 hybrid atau penuh tidak boleh dilakukan dengan menghapus boundary Action/Query
 secara langsung.
+
+## Status Open Risk
+
+- Open Risk runtime AccessControl: `ditutup`. Contract authorization dan role
+  assignment sudah memiliki binding adapter, policy, focused test, dan full CI.
+- Fondasi CQRS yang berstatus `planned` atau `not applicable` bukan defect.
+  Status tersebut adalah keputusan scope CQRS-lite karena belum ada consumer
+  event, kebutuhan command bus, atau pekerjaan asynchronous yang nyata.
+- Migration upgrade database existing tetap menjadi release gate terkendali.
+  Runbook, backup, rehearsal, downtime, dan approval release wajib tersedia
+  sebelum deployment shared. Risiko ini tidak dapat dieksekusi dari workspace
+  tanpa database environment yang sebenarnya.
 
 ## Cara verifikasi awal
 

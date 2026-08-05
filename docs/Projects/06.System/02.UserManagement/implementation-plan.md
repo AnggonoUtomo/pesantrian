@@ -2,7 +2,8 @@
 
 ## Status
 
-`Task 09 selesai; mutation UI umum masih menjadi increment berikutnya`.
+`Task 10 quality checkpoint selesai; mutation UI umum masih menjadi increment
+berikutnya`.
 
 ## Architecture
 

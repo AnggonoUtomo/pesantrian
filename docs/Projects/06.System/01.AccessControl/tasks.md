@@ -400,3 +400,57 @@ seeder demo, browser review, dan accessibility check sudah tersedia.
     test, evidence, atau batasan yang jelas.
   - Evidence: `composer ci:check` lulus; tidak ada Open Risk aktif pada scope
     ini.
+
+## Increment penyelarasan AccessControl — RoleAssignmentCapability runtime
+
+- [x] Public role-assignment contract memiliki implementasi runtime.
+  - Kondisi awal: `RoleAssignmentCapability` sudah didefinisikan dan dipakai
+    oleh UserManagement, tetapi `AccessControl\ServiceProvider` belum memiliki
+    binding untuk contract tersebut. Container belum membuktikan bahwa action
+    role assignment dapat di-resolve.
+  - Perubahan: menambahkan
+    `app/Modules/System/AccessControl/Infrastructure/Services/SpatieRoleAssignmentAdapter.php`
+    dan binding singleton pada
+    `app/Modules/System/AccessControl/ServiceProvider.php`.
+  - Alasan: AccessControl adalah owner role/permission dan harus menyediakan
+    public capability yang benar-benar dapat dipakai module lain.
+  - Acceptance: contract dapat di-resolve; actor dengan permission dapat
+    assign/revoke role biasa; actor tanpa permission ditolak; role
+    `SuperSystem` tidak dapat dikelola actor biasa.
+  - Evidence: `AccessControlRoleAssignmentCapabilityTest` lulus 3 test,
+    bersama test authorization dan contract menjadi 7 test/60 assertion;
+    Pint lulus; PHPStan lulus tanpa error.
+
+- [x] Security boundary role assignment ditinjau.
+  - Kondisi awal: contract hanya mendefinisikan method tanpa aturan runtime
+    tentang permission assignment dan role protected.
+  - Perubahan: adapter memeriksa `access_control.role.assign`, memvalidasi
+    role pada guard `web`, memeriksa target mendukung API role, dan menolak
+    assignment/revoke `SuperSystem` dari actor non-`SuperSystem`.
+  - Alasan: permission sensitive tidak boleh berubah menjadi jalur eskalasi
+    privilege yang tidak terkontrol.
+  - Evidence: focused negative test actor tanpa permission dan actor biasa
+    terhadap `SuperSystem` sama-sama lulus.
+
+- [x] Checklist ditinjau kembali setelah implementasi.
+  - Kondisi akhir: contract, binding, adapter, test, dan dokumentasi downstream
+    sudah diperiksa. Tidak ada Open Risk aktif untuk runtime binding pada scope
+    increment ini.
+  - Evidence: `git diff --check` lulus; dokumentasi AccessControl dan referensi
+    UserManagement menyebut status adapter runtime yang sama.
+
+- [x] Seluruh Open Risk AccessControl ditinjau dan statusnya ditetapkan.
+  - Kondisi awal: daftar risiko mencampur defect runtime, keputusan scope
+    CQRS-lite, dan release gate migrasi database existing.
+  - Perubahan: defect binding role assignment ditutup melalui adapter dan test;
+    fondasi CQRS yang belum aktif ditetapkan sebagai keputusan scope, bukan
+    risiko terbuka; migrasi existing tetap dicatat sebagai release gate yang
+    terkendali dan tidak dapat dieksekusi tanpa environment shared nyata.
+  - Alasan: tim harus dapat membedakan pekerjaan yang wajib diperbaiki sekarang
+    dari capability yang memang menunggu consumer atau keputusan increment baru.
+  - Acceptance: tidak ada Open Risk runtime yang belum memiliki mitigasi;
+    batasan CQRS dan migrasi external memiliki owner/trigger yang jelas.
+  - Evidence: `composer ci:check` lulus dengan 168 test dan 630 assertion;
+    `module:validate` dan `module:inspect` lulus; README, specification,
+    implementation plan, tasks, dan upgrade runbook menyatakan status yang
+    konsisten.

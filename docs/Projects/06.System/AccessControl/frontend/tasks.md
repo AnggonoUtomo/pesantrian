@@ -717,19 +717,21 @@ perangkat, perlu contract backend dan keputusan baru.
   - Perubahan: `RoleController.php` memakai `Inertia::flash('toast', ...)`
     untuk tiga operasi sukses. `Index.tsx` mengimpor `toast` dari `sonner` dan
     menampilkan `toast.error` untuk kegagalan simpan permission, tambah role,
-    dan hapus role. Pesan inline error tetap dipertahankan sebagai fallback.
+    dan hapus role. Pesan inline untuk error operasi role tetap menjadi fallback;
+    permission tidak lagi menampilkan notifikasi inline setelah increment
+    berikutnya.
     `AccessControlPageTest.php` menambahkan assertion terhadap payload flash
     sukses pada ketiga mutation.
   - Alasan: notifikasi hasil operasi harus konsisten dengan Sonner global dan
     tidak bergantung pada pesan status yang tidak dibaca hook frontend.
   - Acceptance: operasi sukses mengirim payload `flash.toast` bertipe success,
-    kegagalan mutation menampilkan toast error, pesan inline tetap tersedia,
-    dan otorisasi serta behavior mutation tidak berubah.
+    kegagalan mutation menampilkan toast error, dan otorisasi serta behavior
+    mutation tidak berubah.
   - Evidence: test RED awal gagal pada tiga assertion flash. Setelah perubahan,
     `php artisan test tests/Feature/AccessControlPageTest.php` lulus 12/12 test
     dengan 59 assertion. `npm run types:check`, `npm run format:check`, dan
     `git diff --check` lulus.
-- [x] Toast memiliki warna semantic yang mengikuti mode light/dark.
+- [x] Toast memiliki warna semantic sebagai baseline awal.
   - Kondisi awal: toast masih memakai background `popover` dan border umum,
     sehingga success dan error sulit dibedakan secara visual.
   - Perubahan: `resources/css/app.css` menambahkan style berdasarkan
@@ -737,13 +739,15 @@ perangkat, perlu contract backend dan keputusan baru.
     destructive, warning memakai chart amber, dan info memakai primary. Semua
     warna menggunakan `color-mix` dengan `popover` agar tetap lembut pada light
     dan dark mode.
-  - Alasan: hasil operasi harus cepat dikenali tanpa membuat toast terlalu
-    mencolok atau keluar dari palette theme aktif.
+  - Alasan: hasil operasi harus cepat dikenali dengan warna semantic yang
+    berbeda dari surface biasa.
   - Acceptance: toast success/error/warning/info memiliki warna border,
     background, dan icon yang berbeda; teks tetap terbaca pada light/dark; dan
     layout toast tidak berubah.
   - Evidence: `npm run types:check`, `npm run format:check`, dan
-    `git diff --check` lulus. Browser tidak menghasilkan error atau warning.
+    `git diff --check` lulus. Implementasi warna ini kemudian diperkuat menjadi
+    background solid pada increment berikutnya. Browser tidak menghasilkan
+    error atau warning.
 - [x] Notifikasi inline permission dihapus dan role memakai search combobox.
   - Kondisi awal: `PermissionModulePanel.tsx` menampilkan `saveStatus` sebagai
     pesan inline setelah save, bersamaan dengan toast Sonner dari backend.
@@ -765,3 +769,17 @@ perangkat, perlu contract backend dan keputusan baru.
     memilih role tersebut, mengecek pesan inline lama tidak dirender, dan
     console bersih. `npm run types:check`, `npm run format:check`, dan
     `git diff --check` lulus.
+- [x] Background toast dibuat solid dan tidak mengikuti palette theme.
+  - Kondisi awal: background toast memakai `color-mix` dengan token theme,
+    sehingga success dan error terlihat seperti surface biasa dan kurang jelas.
+  - Perubahan: `resources/css/app.css` menetapkan warna tetap untuk toast
+    success hijau, error merah, warning amber, dan info biru. Border, icon, dan
+    foreground juga memakai warna kontras yang tetap sama pada light/dark.
+    `!important` dipakai hanya pada rule toast agar tidak ditimpa variable
+    background bawaan Sonner.
+  - Alasan: notifikasi harus langsung dikenali sebagai status operasi, bukan
+    terlihat seperti card biasa yang berubah mengikuti theme.
+  - Acceptance: success memiliki background hijau solid, error merah solid,
+    teks dan icon terbaca, dan hasilnya konsisten pada mode light maupun dark.
+  - Evidence: `git diff --check` lulus; computed style browser untuk selector
+    toast menunjukkan background fixed semantic dan console tetap bersih.

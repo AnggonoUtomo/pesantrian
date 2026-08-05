@@ -812,59 +812,43 @@
     }
 
     .toaster [data-sonner-toast][data-type='success'] {
-        border-color: color-mix(
-            in oklch,
-            var(--dashboard-chart-cyan) 68%,
-            var(--border)
-        );
-        background: color-mix(
-            in oklch,
-            var(--dashboard-chart-cyan) 13%,
-            var(--popover)
-        );
+        border-color: oklch(0.43 0.16 145) !important;
+        background: oklch(0.52 0.17 145) !important;
+        color: oklch(0.98 0.01 145) !important;
     }
 
     .toaster [data-sonner-toast][data-type='success'] [data-icon] {
-        color: var(--dashboard-chart-cyan);
+        color: oklch(0.98 0.01 145) !important;
     }
 
     .toaster [data-sonner-toast][data-type='error'] {
-        border-color: color-mix(
-            in oklch,
-            var(--destructive) 68%,
-            var(--border)
-        );
-        background: color-mix(in oklch, var(--destructive) 12%, var(--popover));
+        border-color: oklch(0.43 0.19 25) !important;
+        background: oklch(0.55 0.2 25) !important;
+        color: oklch(0.98 0.01 25) !important;
     }
 
     .toaster [data-sonner-toast][data-type='error'] [data-icon] {
-        color: var(--destructive);
+        color: oklch(0.98 0.01 25) !important;
     }
 
     .toaster [data-sonner-toast][data-type='warning'] {
-        border-color: color-mix(
-            in oklch,
-            var(--dashboard-chart-4) 68%,
-            var(--border)
-        );
-        background: color-mix(
-            in oklch,
-            var(--dashboard-chart-4) 13%,
-            var(--popover)
-        );
+        border-color: oklch(0.55 0.16 82) !important;
+        background: oklch(0.78 0.17 82) !important;
+        color: oklch(0.25 0.05 82) !important;
     }
 
     .toaster [data-sonner-toast][data-type='warning'] [data-icon] {
-        color: var(--dashboard-chart-4);
+        color: oklch(0.25 0.05 82) !important;
     }
 
     .toaster [data-sonner-toast][data-type='info'] {
-        border-color: color-mix(in oklch, var(--primary) 60%, var(--border));
-        background: color-mix(in oklch, var(--primary) 10%, var(--popover));
+        border-color: oklch(0.43 0.18 255) !important;
+        background: oklch(0.55 0.2 255) !important;
+        color: oklch(0.98 0.01 255) !important;
     }
 
     .toaster [data-sonner-toast][data-type='info'] [data-icon] {
-        color: var(--primary);
+        color: oklch(0.98 0.01 255) !important;
     }
 
     .dashboard-card {

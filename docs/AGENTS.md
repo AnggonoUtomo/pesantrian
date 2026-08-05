@@ -234,7 +234,19 @@ berikutnya. Module baru yang memiliki frontend wajib mengikuti pola berikut:
 - background, card, popover, sidebar, dan hover harus mengikuti hue palette
   pada light maupun dark mode;
 - komponen baru harus memakai token theme yang sudah ada, bukan warna hardcode
-  yang membuat module terlihat berbeda dari shell aplikasi.
+  yang membuat module terlihat berbeda dari shell aplikasi;
+- notifikasi status boleh menjadi pengecualian terkontrol: toast `success`,
+  `error`, `warning`, dan `info` memakai warna semantic tetap agar mudah
+  dikenali, tidak mengikuti hue palette, dan wajib memiliki kontras yang jelas
+  pada light maupun dark.
+
+### Boundary controller
+
+Controller module wajib menjadi orchestration layer yang tipis. Controller hanya
+menangani middleware, menerima FormRequest, memanggil Application Query/Action,
+menyiapkan flash notification, dan mengembalikan response. Query Eloquent,
+aturan validasi, persistence mutation, dan business rule harus berada di layer
+yang memilikinya, bukan bercampur di controller.
 
 `resources/js/components/app-sidebar-header.tsx`,
 `resources/js/components/app-sidebar.tsx`, `resources/js/components/nav-main.tsx`,

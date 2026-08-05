@@ -245,6 +245,13 @@ owner menangani ownership, scope, state, dan resource-specific rule. Inertia
 `auth.authorization` hanya boleh dipakai untuk frontend UX dan tidak boleh
 menjadi security boundary.
 
+Controller wajib menjadi orchestration layer yang tipis. Controller boleh
+menangani middleware, menerima FormRequest, memanggil Application Query/Action,
+menyiapkan flash notification, dan mengembalikan response. Query Eloquent,
+aturan validasi, persistence mutation, dan business rule tidak boleh ditulis
+langsung di controller. Logic tersebut harus berada pada boundary yang
+memilikinya dan memiliki focused test.
+
 ## Incremental Implementation
 
 Untuk perubahan multi-file atau module baru, agent wajib bekerja incremental:

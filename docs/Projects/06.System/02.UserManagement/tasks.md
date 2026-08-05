@@ -1,6 +1,6 @@
 # Tasks: System/UserManagement
 
-Status pekerjaan: `Discovery`. Checklist belum boleh ditandai selesai sebelum
+Status pekerjaan: `Ready for Task 01`. Checklist belum boleh ditandai selesai sebelum
 ada perubahan file dan evidence verifikasi.
 
 ## Task 01 — Prompt generator, project intake, dan dry-run
@@ -114,7 +114,8 @@ AccessControl tetap tidak berubah.
 
 **Verification:** `php artisan module:validate --json` dan focused contract test.
 
-**Hasil implementasi:** menunggu keputusan permission dan contract.
+**Hasil implementasi:** permission dan contract akan ditetapkan pada Task 03;
+keputusan boundary scope awal sudah tersedia.
 
 ## Task 04 — Domain lifecycle user
 
@@ -133,7 +134,8 @@ AccessControl tetap tidak berubah.
 
 **Verification:** focused domain unit test dan architecture test.
 
-**Hasil implementasi:** menunggu keputusan field status dan soft delete.
+**Hasil implementasi:** siap dikerjakan dengan enum status `active`, `inactive`,
+`suspended`; soft delete hanya untuk user selain `SuperSystem`.
 
 ## Task 05 — Application actions dan queries
 
@@ -232,7 +234,8 @@ integration test.
 
 **Verification:** security test, session test, browser test, dan audit contract test.
 
-**Hasil implementasi:** menunggu keputusan impersonation.
+**Hasil implementasi:** ditunda sampai Task 09 memiliki ADR session, audit,
+route leave, dan redaction yang disetujui.
 
 ## Final Quality Checkpoint
 
@@ -248,4 +251,4 @@ integration test.
 
 | Version | Date | Description |
 | --- | --- | --- |
-| 1.0 | 2026-08-06 | Discovery task plan UserManagement |
+| 1.1 | 2026-08-06 | Menetapkan keputusan scope dan status task siap dimulai |

@@ -2,7 +2,7 @@
 
 ## Status
 
-`Discovery` — belum siap coding sampai Open Decision yang memblokir disetujui.
+`Ready for Task 01` — boundary dan scope awal sudah disetujui.
 
 ## Objective
 
@@ -26,13 +26,11 @@ di `app/Models`, `packages/StarterKit`, atau private layer AccessControl.
 
 ## Scope Saat Ini
 
-- membaca daftar dan detail user;
-- membuat user dengan validasi input;
-- memperbarui nama, email, dan status user;
-- mengaktifkan atau menonaktifkan user;
-- soft delete user dengan perlindungan terhadap `SuperSystem`;
-- melihat dan mengubah role user melalui `AuthorizationCapability` atau public
-  role-assignment contract yang disetujui;
+- vertical slice awal membaca daftar dan detail user;
+- search/filter sederhana pada daftar user;
+- state loading, empty, error, unauthorized, dan responsive layout;
+- tahap lanjutan mencakup create, update, status, soft delete, role assignment,
+  dan impersonation setelah slice baca lulus;
 - menyediakan permission identity milik UserManagement;
 - menyediakan page frontend dengan layout System baseline;
 - menyediakan loading, empty, error, permission visibility, responsive layout,
@@ -44,6 +42,7 @@ di `app/Models`, `packages/StarterKit`, atau private layer AccessControl.
 - membuat adapter Spatie kedua di UserManagement;
 - mengimpor private model, repository, policy, atau service AccessControl;
 - mengubah role atau permission langsung melalui model Spatie dari UserManagement;
+- invitation flow untuk create user pada increment awal;
 - menghapus permanen user dari database;
 - membuat audit implementation sendiri sebelum AuditLog tersedia;
 - mengubah module AccessControl yang sudah selesai tanpa increment terpisah.
@@ -98,11 +97,11 @@ hanya melakukan discovery dan sync permission berdasarkan contract yang tersedia
 - `password`: tidak pernah dikembalikan pada response;
 - `created_at` dan `updated_at`.
 
-### Field tambahan yang masih perlu keputusan
+### Field tambahan yang sudah disetujui
 
-- `status` atau `is_active` untuk lifecycle aktif/nonaktif;
-- `deleted_at` untuk soft delete;
-- metadata invitation atau password reset jika flow tersebut disetujui;
+- `status` enum dengan nilai `active`, `inactive`, dan `suspended`;
+- `deleted_at` untuk soft delete user selain `SuperSystem`;
+- password lokal/development untuk increment create user awal;
 - field audit actor/correlation jika AuditLog sudah tersedia.
 
 ## Route/API Design Awal
@@ -129,7 +128,9 @@ application action. Frontend route dibuat dengan Ziggy.
 - Backend adalah security authority.
 - Frontend hanya menyembunyikan atau menampilkan action untuk UX.
 - UserManagement tidak membuat authorization implementation kedua.
-- Assignment role memakai public contract AccessControl.
+- Assignment role memakai public contract terpisah `RoleAssignmentCapability`
+  dari AccessControl. Contract tersebut harus tersedia sebelum task role
+  assignment dimulai.
 - Target `SuperSystem` tidak boleh diubah statusnya, dihapus, atau dijadikan
   target impersonation.
 - Impersonation harus memiliki permission dan alasan eksplisit.
@@ -209,8 +210,8 @@ Focused test yang akan dibuat:
 
 - Always: gunakan ULID, public contract AccessControl, FormRequest, typed DTO,
   policy, action/query, Ziggy, dan UI baseline System.
-- Ask first: field status, soft delete migration, invitation/password policy,
-  impersonation session design, dan scope frontend.
+- Ask first: detail migration additive, impersonation session/audit design, dan
+  perubahan scope frontend dari vertical slice awal.
 - Never: direct import private AccessControl class, hard delete user,
   menyimpan password/secret di log atau response, dan menjadikan frontend
   permission sebagai security boundary.
@@ -219,4 +220,4 @@ Focused test yang akan dibuat:
 
 | Version | Date | Description |
 | --- | --- | --- |
-| 1.0 | 2026-08-06 | Discovery specification awal UserManagement |
+| 1.1 | 2026-08-06 | Menetapkan keputusan scope dan vertical slice awal |

@@ -2,11 +2,15 @@
 
 ## Status
 
-`Discovery`.
+`Ready for Task 01`.
 
 UserManagement adalah module business pertama setelah AccessControl. Module ini
 mengelola lifecycle user di atas tabel `users` starter kit. Authentication,
 Passkey, 2FA, dan password flow bawaan Laravel tetap digunakan kembali.
+
+Keputusan boundary dan scope awal sudah disetujui. Implementasi dimulai dari
+vertical slice read-only user list sebelum mutation, role assignment, atau
+impersonation.
 
 ## Boundary Module
 
@@ -52,6 +56,16 @@ mengambil alih private implementation AccessControl.
 - flow impersonation dengan permission, alasan, dan perlindungan
   `SuperSystem`.
 
+## Keputusan Scope Awal
+
+- Status user memakai enum `active`, `inactive`, dan `suspended`.
+- Create user awal memakai password lokal/development. Invitation flow ditunda.
+- Soft delete hanya berlaku untuk user selain `SuperSystem`.
+- Role assignment memakai public contract terpisah `RoleAssignmentCapability`.
+- Vertical slice pertama hanya daftar/detail user, search/filter sederhana, dan
+  state loading/empty/error.
+- Impersonation menjadi increment terakhir dengan ADR session dan audit khusus.
+
 ## Cara Verifikasi Awal
 
 ```bash
@@ -67,8 +81,9 @@ Prompt berikut menjadi acuan sebelum menjalankan generator:
 
 ```text
 Lakukan Project Intake dan Existing Module Inventory terlebih dahulu.
-Verifikasi module yang sudah ada dengan module:discover, module:validate, dan
-module:list. Jangan membuat duplicate module.
+Verifikasi module yang sudah ada dengan module:discover, module:validate,
+module:list, dan module:inspect System/AccessControl. Jangan membuat duplicate
+module.
 
 Buat module UserManagement pada domain System dengan profile default-v1
 menggunakan:
@@ -88,14 +103,14 @@ memiliki code `MODULE_CREATED` dan struktur skeleton canonical. Generator tidak
 membuat migration business, permission final, test behavior, atau frontend
 business secara otomatis.
 
-## Open Decision
+## Status Keputusan
 
-Scope business sudah mengikuti baseline module. Detail password/invitation,
-status user, impersonation session, dan urutan vertical slice masih harus
-disetujui sebelum coding.
+Keputusan scope awal sudah disetujui. Detail session impersonation, audit event,
+dan route keluar tetap harus ditetapkan dalam ADR khusus pada Task 09 sebelum
+fitur impersonation dibuat.
 
 ## Revision History
 
 | Version | Date | Description |
 | --- | --- | --- |
-| 1.0 | 2026-08-06 | Discovery dan dokumentasi awal UserManagement |
+| 1.1 | 2026-08-06 | Menetapkan keputusan scope awal dan vertical slice |

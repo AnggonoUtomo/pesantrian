@@ -2,7 +2,7 @@
 
 ## Status
 
-`Discovery`.
+`Ready for Task 01`.
 
 ## Architecture
 
@@ -34,21 +34,23 @@ lintas module.
    `module:make` dengan `--force --yes --json`; verifikasi manifest, provider,
    path, namespace, dan struktur canonical.
 3. **Permission identity dan public contract**: tetapkan permission dan contract
-   lifecycle user yang perlu dikonsumsi module lain.
-4. **Domain boundary**: definisikan status, lifecycle rule, exception, dan
-   value object setelah keputusan status disetujui.
-5. **Application boundary**: buat action/query/DTO untuk list, create, update,
+   lifecycle user; role assignment memakai `RoleAssignmentCapability` terpisah.
+4. **Vertical slice read-only**: implementasikan user list/detail, search/filter,
+   state UI, authorization visibility, dan browser flow.
+5. **Domain boundary**: gunakan enum status `active`, `inactive`, `suspended`,
+   serta rule soft delete untuk user selain `SuperSystem`.
+6. **Application boundary**: buat action/query/DTO untuk list, create, update,
    status, soft delete, role assignment, dan impersonation.
-6. **Infrastructure**: siapkan migration additive, model/repository, factory,
+7. **Infrastructure**: siapkan migration additive, model/repository, factory,
    dan seeder dengan ULID.
-7. **Authorization dan security**: policy, middleware, reason validation,
+8. **Authorization dan security**: policy, middleware, reason validation,
    protected `SuperSystem`, session separation, dan redaction.
-8. **Presentation dan routes**: controller tipis, FormRequest, resource, dan
+9. **Presentation dan routes**: controller tipis, FormRequest, resource, dan
    route module.
-9. **Frontend vertical slice**: page user list/detail, dialog mutation, role
+10. **Frontend mutation slice**: page user list/detail, dialog mutation, role
    assignment, state loading/empty/error, Ziggy, permission visibility,
    responsive layout, dan browser accessibility test.
-10. **Quality gate dan documentation evidence**: update README, task, execution
+11. **Quality gate dan documentation evidence**: update README, task, execution
     log, test, CI, dan open risk.
 
 ## Prompt Pelaksanaan Generator
@@ -105,12 +107,13 @@ User list
     -> detail link
 ```
 
-Setelah slice baca lulus, lanjut create/update, status, role assignment, lalu
-impersonation. Mutation berisiko tidak dibuat bersamaan dengan list pertama.
+Setelah slice baca lulus, lanjut create/update, status, role assignment melalui
+`RoleAssignmentCapability`, lalu impersonation. Mutation berisiko tidak dibuat
+bersamaan dengan list pertama.
 
 ## Dependency dan Boundary
 
-- AccessControl: public authorization capability dan role assignment contract.
+- AccessControl: public authorization capability dan `RoleAssignmentCapability`.
 - Laravel starter kit: authentication, password, Passkey, 2FA, dan User model.
 - UserManagement: lifecycle user, status, soft delete, route, page, dan policy
   resource user.
@@ -127,7 +130,7 @@ dahulu.
 | Tabel `users` belum memiliki status dan `deleted_at` | Gunakan migration additive setelah keputusan field disetujui; uji fresh dan upgrade |
 | Assignment role mencampur private AccessControl | Tambahkan public contract/capability dan architecture test |
 | Impersonation membuka akses ke `SuperSystem` | Policy dan application action melakukan penolakan ganda |
-| Password/invitation belum jelas | Jangan coding flow create user sebelum keputusan dibuat |
+| Invitation flow ditunda | Gunakan password lokal/development pada increment create awal; jangan membuat email invitation |
 | UserManagement terlalu besar pada increment awal | Mulai dari read-only list vertical slice |
 | AuditLog belum tersedia | Sediakan event/contract boundary; jangan membuat audit storage kedua |
 | Frontend hanya selesai sebagai mock | Wajib browser flow sampai response backend |
@@ -148,11 +151,12 @@ dahulu.
 
 Coding UserManagement siap dimulai setelah:
 
-- Open Decision utama disetujui;
+- boundary dan keputusan scope awal disetujui;
 - dry-run generator menunjukkan target yang benar;
 - prompt generator dan hasil yang diharapkan sudah ditinjau;
-- public role-assignment contract disepakati;
-- field status dan soft delete diputuskan;
+- `RoleAssignmentCapability` disepakati sebagai contract role assignment dan
+  harus tersedia dari AccessControl sebelum assignment diaktifkan;
+- enum status dan aturan soft delete sudah dicatat;
 - permission identity final tersedia;
 - acceptance criteria dan focused test disetujui.
 
@@ -160,4 +164,4 @@ Coding UserManagement siap dimulai setelah:
 
 | Version | Date | Description |
 | --- | --- | --- |
-| 1.0 | 2026-08-06 | Discovery implementation plan UserManagement |
+| 1.1 | 2026-08-06 | Menetapkan urutan vertical slice dan keputusan scope |

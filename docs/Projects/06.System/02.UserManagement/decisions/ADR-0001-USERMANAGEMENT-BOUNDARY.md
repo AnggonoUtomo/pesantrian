@@ -2,7 +2,7 @@
 
 ## Status
 
-`Proposed`.
+`Accepted`.
 
 ## Date
 
@@ -38,6 +38,12 @@ UserManagement menjadi owner lifecycle user di atas tabel `users`, sedangkan:
   capability, atau public event;
 - skeleton UserManagement dibuat melalui `module:make` dengan domain `System`
   sebelum business implementation dimulai;
+- status lifecycle memakai enum `active`, `inactive`, dan `suspended`;
+- create user awal memakai password lokal/development; invitation flow ditunda;
+- soft delete berlaku untuk user selain `SuperSystem`;
+- role assignment memakai public contract terpisah `RoleAssignmentCapability`;
+- implementasi dimulai dari vertical slice read-only user list/detail;
+- impersonation dikerjakan terakhir setelah ADR session dan audit disetujui;
 - private model, repository, policy, dan service AccessControl tidak boleh
   diimpor;
 - controller UserManagement tetap tipis dan business rule berada pada
@@ -70,19 +76,16 @@ business capability module.
 - UserManagement memiliki test contract untuk memastikan tidak ada private
   import lintas module.
 - Perubahan schema user harus additive dan diuji terhadap auth, Passkey, dan 2FA.
-- Impersonation membutuhkan keputusan session dan audit sebelum implementasi.
+- Impersonation membutuhkan ADR session dan audit khusus sebelum implementasi.
 
-## Open Decision
+## Keputusan Lanjutan
 
-ADR ini belum dapat berstatus `Accepted` sebelum disetujui bersama keputusan:
-
-1. Bentuk status user: `is_active` atau enum `status`.
-2. Apakah create user memakai password langsung atau invitation flow.
-3. Detail session impersonation dan route leave.
-4. Apakah soft delete berlaku untuk semua user selain `SuperSystem`.
+Detail session impersonation, route leave, audit event, dan redaction akan
+ditetapkan pada ADR khusus Task 09. Keputusan lanjutan tersebut tidak memblokir
+Task 01 sampai Task 08 selama impersonation belum diaktifkan.
 
 ## Revision History
 
 | Version | Date | Description |
 | --- | --- | --- |
-| 1.0 | 2026-08-06 | ADR boundary UserManagement diajukan |
+| 1.1 | 2026-08-06 | Boundary dan scope awal UserManagement disetujui |

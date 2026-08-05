@@ -2,12 +2,12 @@
 
 ## Status
 
-Status terbaru: `Task 10 quality checkpoint selesai` — module valid, backend
-test, frontend quality gate, dan browser smoke test sudah diverifikasi untuk
-scope list/detail, create dialog dasar, dan impersonation.
+Status terbaru: `Task 11 evaluasi dan penyelarasan selesai` — module valid,
+backend test, frontend quality gate, browser smoke test, dan perbaikan state
+dialog edit sudah diverifikasi untuk scope list/detail, create, edit, dan
+impersonation.
 
-Mutation UI umum seperti edit, status, delete, dan role assignment tetap menjadi
-increment berikutnya.
+UI status, delete, dan role assignment tetap menjadi increment berikutnya.
 
 ## Objective
 

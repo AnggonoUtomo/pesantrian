@@ -176,6 +176,7 @@ export default function Index() {
                 }}
             />
             <UserFormDialog
+                key={`${mode}-${selectedUser?.id ?? 'new'}`}
                 open={mode === 'create' || mode === 'edit'}
                 user={mode === 'edit' ? selectedUser : null}
                 onOpenChange={(open) => !open && closeModal()}

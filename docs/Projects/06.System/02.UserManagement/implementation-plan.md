@@ -2,8 +2,8 @@
 
 ## Status
 
-`Task 10 quality checkpoint selesai; mutation UI umum masih menjadi increment
-berikutnya`.
+`Task 11 evaluasi dan penyelarasan selesai; UI status, delete, dan role
+assignment masih menjadi increment berikutnya`.
 
 ## Architecture
 

@@ -951,6 +951,63 @@ development dan tidak boleh digunakan sebagai data production.
     dan `planning/execution-log.md` sekarang menyebut status dan batasan yang
     sama.
 
+## Task 11 — Evaluasi dan penyelarasan UserManagement
+
+- [x] Preflight module dan boundary selesai.
+  - Kondisi awal: UserManagement sudah memiliki module valid dengan dependency
+    `AccessControl`, tetapi perlu diverifikasi ulang setelah binding
+    `RoleAssignmentCapability` diperbaiki.
+  - File ditinjau: manifest, provider, controller, policy, action, query,
+    repository, migration, seeder, route, test, dan frontend UserManagement.
+  - Evidence: `module:validate System/UserManagement --json` dan
+    `module:inspect System/UserManagement --json` lulus; dependency hanya
+    menunjuk ke public capability AccessControl.
+
+- [x] Evaluasi authorization dan security selesai.
+  - Kondisi awal: lifecycle user memiliki beberapa mutation sensitif dan flow
+    impersonation yang harus tetap memakai backend sebagai security authority.
+  - Perubahan: tidak ditemukan bypass valid pada controller, policy, action,
+    atau session adapter. Protected `SuperSystem`, permission, reason
+    impersonation, actor restore, dan event redaction sudah memiliki boundary
+    serta test.
+  - Alasan: evaluasi harus membedakan defect nyata dari keputusan scope yang
+    memang sudah disetujui.
+  - Evidence: focused UserManagement test suite lulus; contract tidak
+    mengimpor private implementation AccessControl; full CI sebelumnya lulus.
+
+- [x] Bug state dialog edit diperbaiki.
+  - Kondisi awal: `UserFormDialog` menginisialisasi `useForm` saat `user` masih
+    `null`, sehingga dialog edit dapat menampilkan field Nama dan Email kosong.
+  - Perubahan: `resources/js/pages/System/UserManagement/pages/Index.tsx`
+    memberi `key` berdasarkan mode dan ULID user pada `UserFormDialog`. Setiap
+    user atau mode baru sekarang membuat state form yang sesuai.
+  - Alasan: data user yang dipilih harus selalu menjadi initial value dialog dan
+    tidak boleh membawa state user sebelumnya.
+  - Acceptance: edit Alya menampilkan data Alya; setelah ditutup, edit Bima
+    menampilkan data Bima; create tetap memiliki form kosong dan password awal.
+  - Evidence: browser snapshot dan DOM evaluation mengonfirmasi nilai Alya
+    serta Bima; `npm run types:check`, `npm run lint:check`, dan
+    `npm run format:check` lulus.
+
+- [x] Browser dan quality checkpoint ditutup untuk scope saat ini.
+  - Kondisi awal: dokumentasi masih menyebut seluruh mutation UI umum belum
+    tersedia, padahal create, edit, detail, dan impersonation sudah ada.
+  - Perubahan: status README, specification, implementation plan, tasks, dan
+    execution log diselaraskan. UI status, delete, dan role assignment tetap
+    ditulis sebagai scope lanjutan karena belum tersedia pada UserTable.
+  - Evidence: `/system/users` dapat dibuka; create/edit/detail/impersonation
+    terlihat pada browser; protected user tidak menampilkan edit atau
+    impersonate; console tidak memiliki error/warning; Lighthouse mobile
+    Accessibility, Best Practices, SEO, dan Agentic Browsing masing-masing 100.
+  - Batasan: tidak ada implementasi status, delete, atau role assignment UI
+    pada Task 11.
+
+- [x] Checklist ditinjau sebelum dan sesudah pekerjaan.
+  - Sebelum: scope, dependency AccessControl, acceptance, test, browser flow,
+    dan batasan UI dicocokkan dengan dokumen baseline.
+  - Sesudah: setiap temuan diberi status dan evidence; fitur yang belum ada
+    tidak ditandai selesai; perubahan kode hanya menyentuh bug state dialog.
+
 ## Revision History
 
 | Version | Date       | Description                                             |

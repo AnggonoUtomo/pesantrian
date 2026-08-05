@@ -2,8 +2,9 @@
 
 ## Status
 
-`Task 10 quality checkpoint lulus untuk scope UserManagement saat ini;
-mutation UI umum, status/delete, dan role assignment menjadi scope lanjutan.`
+`Task 11 evaluasi dan penyelarasan selesai untuk scope UserManagement saat ini;
+UI create, edit, detail, dan impersonation sudah diverifikasi. UI status,
+delete, dan role assignment tetap menjadi scope lanjutan.`
 
 UserManagement adalah module business pertama setelah AccessControl. Module ini
 mengelola lifecycle user di atas tabel `users` starter kit. Authentication,

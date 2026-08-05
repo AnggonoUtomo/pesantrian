@@ -14,3 +14,23 @@ riwayat percakapan.
 - Authorization tetap memakai public capability AccessControl.
 - Frontend mutation umum belum boleh dianggap selesai hanya karena backend
   action sudah tersedia.
+
+## Task 11 — Evaluasi dan penyelarasan
+
+- Kondisi awal: status dokumen menyebut mutation UI umum belum tersedia,
+  sementara browser menunjukkan create, edit, detail, dan impersonation sudah
+  diimplementasikan. Dialog edit juga memiliki risiko state karena initial
+  `useForm` dapat terbentuk saat user masih `null`.
+- File yang diubah: `resources/js/pages/System/UserManagement/pages/Index.tsx`,
+  `README.md`, `specification.md`, `implementation-plan.md`, `tasks.md`, dan
+  `planning/execution-log.md`.
+- Perubahan kode: `UserFormDialog` diberi key mode + user ULID agar form selalu
+  diinisialisasi ulang saat target user berubah.
+- Perubahan dokumentasi: status diubah menjadi Task 11; create, edit, detail,
+  dan impersonation dicatat sebagai scope terverifikasi; status, delete, dan
+  role assignment UI dicatat sebagai scope lanjutan.
+- Evidence: module validate/inspect lulus; frontend type, lint, dan format
+  lulus; browser mengonfirmasi field Alya dan Bima; console bersih; Lighthouse
+  mobile menghasilkan empat score 100.
+- Risiko tersisa: UI status, delete, dan role assignment belum tersedia;
+  migration shared/production tetap membutuhkan database nyata dan backup.

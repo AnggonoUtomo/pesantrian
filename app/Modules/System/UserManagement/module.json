@@ -1,0 +1,15 @@
+{
+    "name": "UserManagement",
+    "namespace": "App\\Modules\\System\\UserManagement",
+    "version": "1.0.0",
+    "schema_version": 1,
+    "status": "enabled",
+    "domain": "System",
+    "path": "app/Modules/System/UserManagement",
+    "provider": "App\\Modules\\System\\UserManagement\\ServiceProvider",
+    "dependencies": [
+        "AccessControl"
+    ],
+    "permission_source": "permissions.php",
+    "config_source": "module.php"
+}

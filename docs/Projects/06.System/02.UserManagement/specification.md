@@ -2,7 +2,7 @@
 
 ## Status
 
-`Ready for Task 01` — boundary dan scope awal sudah disetujui.
+`Ready for Task 05` — Task 01 sampai Task 04 sudah diverifikasi.
 
 ## Objective
 
@@ -69,18 +69,15 @@ Dependency: AccessControl public capability
 
 ## Permission Identity Awal
 
-Definisi berikut adalah proposal berdasarkan baseline dan belum menggantikan
-keputusan final:
+Definisi berikut adalah permission identity yang disetujui untuk increment awal:
 
 | Key | Tujuan | Sensitive |
 | --- | --- | --- |
 | `user.view` | Melihat daftar dan detail user | false |
 | `user.create` | Membuat user | true |
 | `user.update` | Mengubah data user | true |
-| `user.activate` | Mengaktifkan user | true |
-| `user.deactivate` | Menonaktifkan user | true |
+| `user.status.manage` | Mengubah status lifecycle user | true |
 | `user.delete` | Soft delete user | true |
-| `user.role.assign` | Mengubah role user | true |
 | `user.impersonate` | Masuk sebagai user target | true |
 
 Permission owner tetap UserManagement melalui `permissions.php`. AccessControl
@@ -221,3 +218,5 @@ Focused test yang akan dibuat:
 | Version | Date | Description |
 | --- | --- | --- |
 | 1.1 | 2026-08-06 | Menetapkan keputusan scope dan vertical slice awal |
+| 1.2 | 2026-08-06 | Menetapkan enam permission identity dan status Task 04 |
+| 1.3 | 2026-08-06 | Menambahkan domain lifecycle dan guard SuperSystem |

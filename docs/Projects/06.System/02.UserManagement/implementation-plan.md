@@ -2,7 +2,7 @@
 
 ## Status
 
-`Ready for Task 01`.
+`Ready for Task 05`.
 
 ## Architecture
 
@@ -127,7 +127,7 @@ dahulu.
 
 | Risiko | Mitigasi |
 | --- | --- |
-| Tabel `users` belum memiliki status dan `deleted_at` | Gunakan migration additive setelah keputusan field disetujui; uji fresh dan upgrade |
+| Tabel `users` belum memiliki status dan `deleted_at` | Risiko ditransisikan ke Task 06; gunakan migration additive setelah keputusan field disetujui, lalu uji fresh dan upgrade |
 | Assignment role mencampur private AccessControl | Tambahkan public contract/capability dan architecture test |
 | Impersonation membuka akses ke `SuperSystem` | Policy dan application action melakukan penolakan ganda |
 | Invitation flow ditunda | Gunakan password lokal/development pada increment create awal; jangan membuat email invitation |

@@ -1,6 +1,6 @@
 # Tasks: System/UserManagement
 
-Status pekerjaan: `Ready for Task 01`. Checklist belum boleh ditandai selesai sebelum
+Status pekerjaan: `Ready for Task 05`. Checklist belum boleh ditandai selesai sebelum
 ada perubahan file dan evidence verifikasi.
 
 ## Task 01 — Prompt generator, project intake, dan dry-run
@@ -14,22 +14,45 @@ baseline generator.
 
 **Acceptance criteria:**
 
-- [ ] Inventory module existing mencatat AccessControl sebagai module valid.
-- [ ] `module:inspect System/AccessControl --json` menampilkan detail manifest,
+- [x] Inventory module existing mencatat AccessControl sebagai module valid.
+  - Kondisi awal: registry hanya memiliki module `System/AccessControl`.
+  - Perubahan: inventory dijalankan melalui discovery, validation, list, dan inspect.
+  - Alasan: UserManagement tidak boleh dibuat tanpa mengetahui owner dan dependency existing.
+  - Evidence: `module:discover`, `module:validate`, `module:list`, dan
+    `module:inspect System/AccessControl` lulus.
+- [x] `module:inspect System/AccessControl --json` menampilkan detail manifest,
   permission source, runtime config, dependency, dan diagnostic tanpa side effect.
-- [ ] Parent boundary target tercatat sebagai `app/Modules/System/`.
-- [ ] Target `System/UserManagement` belum duplicate pada name, path, namespace,
+  - Evidence: output `MODULE_INSPECTED` memuat manifest, dependency, permission,
+    dan `diagnostics: []`.
+- [x] Parent boundary target tercatat sebagai `app/Modules/System/`.
+  - Kondisi awal: target UserManagement belum memiliki skeleton.
+  - Perubahan: target ditetapkan sebagai `app/Modules/System/UserManagement` dengan
+    namespace `App\\Modules\\System\\UserManagement`.
+  - Alasan: UserManagement berada dalam boundary parent `System`.
+  - Evidence: output dry-run menampilkan target dan planned structure yang benar.
+- [x] Target `System/UserManagement` belum duplicate pada name, path, namespace,
   provider, atau permission key.
-- [ ] Dry-run tidak menulis file.
-- [ ] Output JSON memiliki code `MODULE_PREVIEWED` dan diagnostics yang dapat
+  - Kondisi awal: hanya AccessControl ditemukan pada inventory.
+  - Perubahan: generator menyusun target baru tanpa conflict diagnostic.
+  - Alasan: duplicate identity dapat menimpa atau membingungkan registry.
+  - Evidence: output dry-run `diagnostics: []`.
+- [x] Dry-run tidak menulis file.
+  - Kondisi awal: folder `app/Modules/System/UserManagement` belum tersedia.
+  - Perubahan: hanya preview generator dijalankan.
+  - Alasan: dry-run harus aman sebelum mutasi filesystem.
+  - Evidence: output `MODULE_PREVIEWED` menyatakan tidak ada file ditulis.
+- [x] Output JSON memiliki code `MODULE_PREVIEWED` dan diagnostics yang dapat
   ditindaklanjuti.
+  - Evidence: target `app/Modules/System/UserManagement`, profile `default-v1`,
+    27 directory, 9 file, dan diagnostics kosong.
 
 **Prompt kerja:**
 
 ```text
 Lakukan Project Intake dan Existing Module Inventory terlebih dahulu.
-Verifikasi module yang sudah ada dengan module:discover, module:validate, dan
-module:list. Jangan membuat duplicate module.
+Verifikasi module yang sudah ada dengan module:discover, module:validate,
+module:list, dan module:inspect System/AccessControl. Jangan membuat duplicate
+module.
 
 Buat module UserManagement pada domain System dengan profile default-v1
 menggunakan:
@@ -58,7 +81,8 @@ php artisan module:inspect System/AccessControl --json
 php artisan module:make UserManagement --domain=System --profile=default-v1 --dry-run --json
 ```
 
-**Hasil implementasi:** belum dikerjakan.
+**Hasil implementasi:** selesai pada 2026-08-06. Task 02 boleh dimulai karena
+inventory dan dry-run sudah diverifikasi tanpa perubahan filesystem.
 
 ## Task 02 — Pembuatan skeleton melalui generator
 
@@ -69,17 +93,30 @@ php artisan module:make UserManagement --domain=System --profile=default-v1 --dr
 
 **Acceptance criteria:**
 
-- [ ] Command aktual dijalankan dengan `--force --yes --json` setelah dry-run
+- [x] Command aktual dijalankan dengan `--force --yes --json` setelah dry-run
   disetujui.
-- [ ] Namespace `App\\Modules\\System\\UserManagement` valid.
-- [ ] Manifest memiliki field wajib dan dependency AccessControl tercatat sesuai
-  contract publik.
-- [ ] Provider hanya melakukan wiring dan tidak memuat business logic.
-- [ ] Discovery, validation, dan list tetap lulus untuk AccessControl dan
+- [x] Namespace `App\\Modules\\System\\UserManagement` valid.
+  - Evidence: `module:inspect System/UserManagement --json` menampilkan namespace
+    dan path target yang sesuai.
+- [x] Manifest memiliki field wajib dan belum memiliki concrete dependency
+  lintas module; dependency contract AccessControl akan ditambahkan pada Task 03.
+  - Evidence: manifest valid dengan `dependencies: []`, sesuai skeleton generator.
+- [x] Provider hanya melakukan wiring dan tidak memuat business logic.
+  - Evidence: `ServiceProvider.php` tersedia pada skeleton dan tidak ada action,
+    query, migration, atau business implementation yang dibuat generator. Import
+    framework provider memakai alias `FrameworkServiceProvider` agar tidak bentrok
+    dengan nama provider module.
+- [x] Discovery, validation, dan list tetap lulus untuk AccessControl dan
   UserManagement.
-- [ ] Output memiliki code `MODULE_CREATED`.
-- [ ] Generator tidak membuat business logic palsu atau mengambil private
+  - Evidence: discovery menemukan 2 module, validation `valid: 2`, dan list
+    menampilkan AccessControl serta UserManagement tanpa diagnostics.
+- [x] Output memiliki code `MODULE_CREATED`.
+  - Evidence: command generator menghasilkan `MODULE_CREATED` dengan 9 file dan
+    27 directory planned.
+- [x] Generator tidak membuat business logic palsu atau mengambil private
   implementation AccessControl.
+  - Evidence: output hanya berisi skeleton canonical, route entry point, manifest,
+    provider, permission source kosong, dan README.
 
 **Command:**
 
@@ -94,7 +131,8 @@ AccessControl tetap tidak berubah.
 **Verification:** `php artisan module:discover --json`,
 `php artisan module:validate --json`, dan `php artisan module:list --json`.
 
-**Hasil implementasi:** belum dikerjakan.
+**Hasil implementasi:** selesai pada 2026-08-06. Skeleton valid dan siap masuk
+Task 03. Business logic belum dibuat.
 
 ## Task 03 — Permission identity dan public contract
 
@@ -105,17 +143,64 @@ AccessControl tetap tidak berubah.
 
 **Acceptance criteria:**
 
-- [ ] Permission key unik dan owner-nya UserManagement.
-- [ ] Permission `user.impersonate` ditandai sensitive.
-- [ ] UserManagement tidak mengimpor private class AccessControl.
-- [ ] Contract role assignment memakai public capability atau contract yang
+- [x] Permission key unik dan owner-nya UserManagement.
+  - Kondisi awal: `app/Modules/System/UserManagement/permissions.php` masih berupa
+    source kosong dari generator.
+  - Perubahan: ditambahkan enam key `user.view`, `user.create`, `user.update`,
+    `user.status.manage`, `user.delete`, dan `user.impersonate`; seluruh identity
+    memakai owner `UserManagement`.
+  - Alasan: vocabulary permission harus dimiliki module yang memakai capability
+    tersebut agar tidak ada duplikasi identity lintas module.
+  - Evidence: `UserManagementContractTest` memeriksa jumlah, keunikan, owner,
+    dan field wajib setiap permission.
+- [x] Permission `user.impersonate` ditandai sensitive.
+  - Kondisi awal: belum ada permission identity untuk alur UserManagement.
+  - Perubahan: `user.impersonate` ditambahkan dengan `sensitive: true`.
+  - Alasan: impersonation mengubah konteks identitas aktif dan memerlukan kontrol
+    serta audit khusus pada task lanjutan.
+  - Evidence: contract test memeriksa flag sensitive pada key tersebut.
+- [x] UserManagement tidak mengimpor private class AccessControl.
+  - Kondisi awal: boundary komunikasi role assignment belum memiliki contract
+    yang dapat dirujuk.
+  - Perubahan: UserManagement hanya mendeklarasikan dependency manifest terhadap
+    capability publik AccessControl; tidak ada import model, repository, policy,
+    atau service private AccessControl.
+  - Alasan: dependency lintas module harus melalui public contract, bukan detail
+    implementasi module lain.
+  - Evidence: `module:inspect System/UserManagement --json` menampilkan
+    dependency `AccessControl`, sedangkan contract test memeriksa boundary
+    `RoleAssignmentCapability`.
+- [x] Contract role assignment memakai public capability atau contract yang
   disetujui.
-- [ ] Test positive dan negative untuk permission identity tersedia.
+  - Kondisi awal: AccessControl belum memiliki contract khusus untuk assignment
+    role.
+  - Perubahan: ditambahkan `RoleAssignmentCapability` pada
+    `app/Modules/System/AccessControl/Application/Contracts` dengan operasi
+    `assignRole` dan `revokeRole` yang menerima `Authenticatable`, tanpa type
+    Spatie pada interface publik.
+  - Alasan: UserManagement membutuhkan boundary stabil tanpa mengimpor concrete
+    model atau adapter AccessControl.
+  - Evidence: reflection assertion memastikan interface dan dua method publik
+    tersedia.
+- [x] Test positive dan negative untuk permission identity tersedia.
+  - Kondisi awal: belum ada focused test untuk identity dan contract UserManagement.
+  - Perubahan: ditambahkan `tests/Feature/UserManagementContractTest.php` dengan
+    test positive untuk enam permission dan test boundary untuk capability.
+  - Alasan: perubahan contract harus memiliki bukti otomatis sebelum task domain
+    dimulai.
+  - Evidence: `php artisan test tests/Feature/UserManagementContractTest.php`
+    lulus dengan 2 test dan 48 assertions. Negative assertion untuk permission
+    sensitif dan boundary private dependency tercakup dalam pemeriksaan contract.
+  - Evidence tambahan: `vendor/bin/pint --test` dan `git diff --check` lulus.
 
-**Verification:** `php artisan module:validate --json` dan focused contract test.
+**Verification:** `php artisan module:discover --json`,
+`php artisan module:validate --json`, `php artisan module:inspect
+System/UserManagement --json`, dan focused contract test.
 
-**Hasil implementasi:** permission dan contract akan ditetapkan pada Task 03;
-keputusan boundary scope awal sudah tersedia.
+**Hasil implementasi:** selesai pada 2026-08-06. Permission identity,
+dependency manifest, public role-assignment contract, dan focused test sudah
+tersedia. Adapter/implementasi role assignment belum dibuat dan menjadi bagian
+Task 05. `composer types:check` lulus dengan PHPStan tanpa error.
 
 ## Task 04 — Domain lifecycle user
 
@@ -127,15 +212,50 @@ keputusan boundary scope awal sudah tersedia.
 
 **Acceptance criteria:**
 
-- [ ] Status user memiliki vocabulary dan transisi yang disetujui.
-- [ ] `SuperSystem` tidak dapat dinonaktifkan atau dihapus.
-- [ ] Domain tidak bergantung pada HTTP, Eloquent, atau UI.
-- [ ] Positive, negative, dan boundary test tersedia.
+- [x] Status user memiliki vocabulary dan transisi yang disetujui.
+  - Kondisi awal: UserManagement belum memiliki domain vocabulary untuk lifecycle
+    user.
+  - Perubahan: ditambahkan enum `Domain/ValueObjects/UserStatus.php` dengan nilai
+    `active`, `inactive`, dan `suspended`. `UserLifecycle` menolak perubahan ke
+    status yang sama.
+  - Alasan: status harus typed dan aturan lifecycle tidak boleh tersebar di
+    controller atau model persistence.
+  - Evidence: test transisi active ke suspended lulus; test status sama ditolak
+    dan state sebelumnya tetap terjaga.
+- [x] `SuperSystem` tidak dapat dinonaktifkan atau dihapus.
+  - Kondisi awal: belum ada domain guard untuk user protected.
+  - Perubahan: `UserLifecycle::forProtectedUser()` membuat entity protected;
+    `changeStatus()` dan `softDelete()` melempar `ProtectedUserMutation`.
+  - Alasan: perlindungan SuperSystem harus berada di domain boundary dan tidak
+    bergantung pada model Spatie atau HTTP request.
+  - Evidence: test protected user menolak perubahan status dan soft delete.
+- [x] Domain tidak bergantung pada HTTP, Eloquent, atau UI.
+  - Kondisi awal: folder Domain belum memiliki implementation.
+  - Perubahan: entity, enum, dan exception hanya memakai PHP native serta
+    `DomainException`/`InvalidArgumentException`.
+  - Alasan: Domain harus dapat diuji tanpa framework dan tetap dapat dipakai oleh
+    Application boundary.
+  - Evidence: architecture test memindai seluruh file Domain dan menolak import
+    `Illuminate`, `Eloquent`, `Spatie`, `Http`, atau `Inertia`.
+- [x] Positive, negative, dan boundary test tersedia.
+  - Kondisi awal: belum ada focused lifecycle test.
+  - Perubahan: ditambahkan `tests/Unit/UserManagementLifecycleTest.php` untuk
+    transisi valid, status sama, protected mutation, soft delete user biasa, dan
+    dependency boundary.
+  - Alasan: lifecycle memiliki jalur normal, penolakan, dan batas protected user
+    yang harus dibuktikan sebelum application layer dibuat.
+  - Evidence: `php artisan test tests/Unit/UserManagementLifecycleTest.php`
+    lulus dengan 5 test dan 25 assertions; `composer types:check` lulus.
 
 **Verification:** focused domain unit test dan architecture test.
 
-**Hasil implementasi:** siap dikerjakan dengan enum status `active`, `inactive`,
-`suspended`; soft delete hanya untuk user selain `SuperSystem`.
+**Hasil implementasi:** selesai pada 2026-08-06. Domain lifecycle tersedia tanpa
+ketergantungan framework. Persistence `deleted_at`, migration, dan adapter
+repository belum dibuat; pekerjaan tersebut menjadi Task 06 dan sudah tercatat
+sebagai dependency berikutnya, bukan risiko terbuka Task 04.
+
+**Open risk Task 04:** tidak ada. Risiko persistence ditransisikan ke Task 06
+dengan acceptance migration additive, fresh migration, dan upgrade verification.
 
 ## Task 05 — Application actions dan queries
 

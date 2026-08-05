@@ -133,11 +133,11 @@ menolak role `SuperSystem`; positive/negative feature test endpoint lulus.
 - [x] Endpoint persistence permission role memiliki positive dan negative test.
 - [x] Dokumentasi dan execution evidence diperbarui.
 
-**Evidence layout terbaru:** `system-dashboard-layout.tsx` menyediakan pola
-header dashboard, content area max-width, dan footer module. `Index.tsx` hanya
-menggunakan layout ini di dalam `AppLayout` global sehingga sidebar tidak
-terduplikasi. TypeScript, ESLint, build, browser review, dan Lighthouse mobile
-lulus.
+**Evidence layout terbaru:** `resources/js/layouts/system-dashboard-layout.tsx`
+menyediakan pola header dashboard, content area max-width, dan footer workspace.
+`Index.tsx` hanya menggunakan layout ini di dalam `AppLayout` global sehingga
+sidebar tidak terduplikasi. TypeScript, ESLint, build, browser review, dan
+Lighthouse mobile lulus.
 
 **Evidence top navigation:** `app-sidebar-header.tsx` sekarang memakai posisi
 `sticky top-0`, backdrop, toggle sidebar, breadcrumb, language dropdown,
@@ -967,3 +967,30 @@ perangkat, perlu contract backend dan keputusan baru.
     dibuka, `System` tetap `y=353` dan `User` berada di bawah `AccessControl`.
     Viewport mobile `500px` tidak overflow; type check, lint, format, dan
     console browser lulus.
+- [x] Footer identitas tersedia pada workspace System.
+  - Kondisi awal: layout bersama `resources/js/layouts/system-dashboard-layout.tsx`
+    belum memiliki keterangan pembuat; dokumentasi frontend masih menunjuk
+    layout module lama yang tidak dipakai oleh page aktif.
+  - Perubahan: menambahkan footer dengan teks `Created by Ino@2026` pada layout
+    bersama, lalu memperbarui code-flow dan file-map agar menunjuk path runtime
+    yang benar.
+  - Alasan: seluruh halaman System harus memiliki identitas footer yang konsisten
+    dan dokumentasinya harus dapat ditelusuri ke file yang benar.
+  - Acceptance: footer tampil setelah content pada System Dashboard, AccessControl,
+    dan UserManagement tanpa membuat sidebar/topnav ganda atau overflow.
+  - Evidence: `npm run types:check`, `npm run lint:check`, dan `npm run build`
+    lulus; pemeriksaan diff tidak menemukan whitespace error.
+
+## Open Risk
+
+- [ ] File layout legacy masih berada di
+  `resources/js/pages/System/AccessControl/layouts/system-dashboard-layout.tsx`.
+  - Kondisi: page aktif memakai layout bersama
+    `resources/js/layouts/system-dashboard-layout.tsx`, sehingga file legacy
+    belum memengaruhi halaman yang diuji.
+  - Dampak: jika file legacy diimpor kembali, footer dan perilaku shell dapat
+    berbeda dari baseline global.
+  - Rencana: hapus file tersebut atau ubah menjadi re-export layout bersama
+    dalam increment cleanup frontend berikutnya setelah seluruh import diverifikasi.
+  - Batasan: tidak menghapus file pada increment footer ini agar perubahan tetap
+    kecil dan rollback mudah.

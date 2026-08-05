@@ -72,6 +72,10 @@ export default function SystemDashboardLayout({
             </header>
 
             <main className="flex-1">{children}</main>
+
+            <footer className="mt-8 border-t border-border/70 pt-4 text-xs text-foreground/60">
+                <p>Created by Ino@2026</p>
+            </footer>
         </div>
     );
 }

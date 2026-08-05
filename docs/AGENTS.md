@@ -348,13 +348,22 @@ Acuan detail berada pada
 [`03.12-MODULE-COMMUNICATION-AND-EXECUTION.md`](03-IMPLEMENTATION/03.12-MODULE-COMMUNICATION-AND-EXECUTION.md)
 dan [ADR-0003](05-DECISIONS/ADR/05.05-ADR-0003-MODULE-COMMUNICATION-AND-EXECUTION.md).
 
-- Public module API memakai contract, DTO, capability, atau public event.
-- Application Action adalah default untuk mutation synchronous.
-- Application Query adalah default untuk read dan typed DTO/read contract.
+- Setiap module wajib memiliki bagian dokumentasi `Fondasi Enterprise` yang
+  membahas Contract/Interface, Domain Event, Application Event,
+  Integration Event, Command, Query/Read Contract, Shared Kernel,
+  Facade/Module API, dan Queue/Job.
+- Setiap bagian wajib menyebut status (`implemented`, `planned`, atau
+  `not applicable`), owner, dependency, acceptance criteria, verification,
+  dan alasan teknis. Status kosong dianggap belum siap coding.
+- Public Module API memakai contract, DTO, capability, atau public event.
+- Mutation synchronous memakai Application Action atau Command + Handler sesuai
+  complexity. Query memakai Application Query dan typed Read Contract.
 - Domain Event bersifat internal module. Application Event dan Integration Event
-  memerlukan consumer nyata.
-- Command Bus, Queue/Job, Facade, dan Shared Kernel bukan default baseline.
-- Baseline saat ini adalah CQRS-lite, bukan CQRS penuh.
+  hanya diaktifkan jika consumer serta failure contract-nya nyata.
+- Command Bus, Queue/Job, Facade, dan Shared Kernel tidak boleh ditambahkan
+  tanpa kebutuhan, owner, retry/idempotency atau API contract yang jelas.
+- Baseline runtime tetap CQRS-lite, tetapi fondasi dokumentasi dan boundary
+  enterprise wajib tersedia sejak module pertama dibuat.
 - `packages/StarterKit` adalah reusable framework package, bukan Shared Kernel
   business.
 

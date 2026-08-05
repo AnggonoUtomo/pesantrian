@@ -146,6 +146,28 @@ untuk write, Application Query dan DTO untuk read, serta Domain Event internal
 untuk impersonation. Command Bus, Integration Event, Queue/Job, Facade, dan
 Shared Kernel belum menjadi dependency module.
 
+## Fondasi Enterprise
+
+Setiap fondasi berikut wajib memiliki status dan alasan sebelum implementasi
+baru dimulai. Status saat ini harus tetap selaras dengan specification, tasks,
+README, test, dan ADR terkait.
+
+| Fondasi | Status saat ini | Batasan implementasi |
+| --- | --- | --- |
+| Contract / Interface | `implemented` | Gunakan contract publik AccessControl untuk authorization dan role assignment; jangan memakai class internal module lain. |
+| Domain Event | `implemented` terbatas | Event impersonation boleh tetap menjadi fakta domain internal; payload harus typed, aman, dan tidak memuat credential. |
+| Application Event | `planned` | Tambahkan hanya jika koordinasi beberapa handler memang diperlukan dan failure handler dapat diuji. |
+| Integration Event | `planned` | Menunggu consumer seperti AuditLog; event harus versioned, memiliki event ID/correlation ID, dan payload tersanitasi. |
+| Command | `planned` | Action saat ini dapat dievolusikan menjadi Command + Handler setelah ada kebutuhan idempotency, audit, atau async; perubahan wajib memiliki ADR/increment. |
+| Query / Read Contract | `implemented` | Read list/detail memakai Query dan DTO; query tidak boleh mengubah state atau mengembalikan model persistence secara langsung. |
+| Shared Kernel | `not applicable` | Jangan membuat shared model; gunakan contract/value object publik yang memiliki owner dan consumer jelas bila kebutuhan lintas module muncul. |
+| Facade / Module API | `implemented` terbatas | Public capability adalah API module; facade baru boleh ditambah bila consumer dan compatibility contract sudah jelas. |
+| Queue / Job (CQRS) | `planned` | Flow sinkron tetap menjadi default; Job baru wajib mendefinisikan retry, idempotency, actor/correlation, dan failure handling. |
+
+Implementasi tidak boleh menambahkan bus, handler, event consumer, facade, atau
+job hanya karena pola tersebut tersedia. Perubahan status harus disertai
+acceptance criteria, focused test, verification command, dan rencana rollback.
+
 ## Risiko
 
 | Risiko | Mitigasi |

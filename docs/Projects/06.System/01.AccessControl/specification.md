@@ -66,6 +66,25 @@ Contract awal memakai `AuthorizationCapability`, dengan result typed
 - Detail target dan status implementasi mengikuti
   [`03.12-MODULE-COMMUNICATION-AND-EXECUTION.md`](../../../03-IMPLEMENTATION/03.12-MODULE-COMMUNICATION-AND-EXECUTION.md).
 
+## Fondasi Enterprise AccessControl
+
+Specification ini menjadi sumber keputusan sebelum implementasi lanjutan:
+
+| Fondasi | Status | Acceptance minimum |
+| --- | --- | --- |
+| Contract/Interface | `implemented` | Contract typed tidak mengembalikan model private atau object Spatie |
+| Domain Event | `planned` | Event past tense, payload typed, ULID actor/correlation, tanpa secret |
+| Application Event | `not applicable` | Diaktifkan hanya jika ada beberapa handler application yang perlu dikoordinasikan |
+| Integration Event | `planned` | Memiliki consumer nyata, version, event ID, correlation ID, dan redaction test |
+| Command | `planned` | Command immutable, Handler terpisah, authorization dan idempotency jelas |
+| Query/Read Contract | `implemented` | Query dashboard mengembalikan DTO typed dan tidak memiliki side effect |
+| Shared Kernel | `not applicable` | Value object tidak dipindahkan ke shared package tanpa dua consumer dan owner |
+| Facade/Module API | `implemented` | `AuthorizationCapability` dan `RoleAssignmentCapability` menjadi API publik |
+| Queue/Job | `not applicable` | Tidak digunakan untuk mutation synchronous tanpa retry/failure contract |
+
+Perubahan status wajib memperbarui specification, implementation plan, tasks,
+README, code-flow, dan ADR yang relevan dalam increment yang sama.
+
 ## Authorization contract
 
 Role privileged baseline bernama `SuperSystem`.

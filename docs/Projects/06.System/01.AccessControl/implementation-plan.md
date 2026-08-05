@@ -15,6 +15,27 @@ Authentication
 Module lain hanya memanggil public contract atau capability. Detail model,
 repository, dan adapter Spatie tetap berada di dalam `AccessControl`.
 
+## Fondasi Enterprise dan Batas Evolusi
+
+Sebelum increment CQRS berikutnya, status fondasi harus tetap dapat ditelusuri:
+
+- Contract/Interface: sudah aktif untuk authorization dan role assignment.
+- Domain Event: disiapkan sebagai boundary fakta role/permission, tetapi belum
+  dibuat tanpa consumer atau kebutuhan audit yang jelas.
+- Application Event: belum diperlukan karena mutation belum memiliki beberapa
+  handler application yang perlu dikoordinasikan.
+- Integration Event: menunggu AuditLog atau consumer eksternal nyata.
+- Command: Action saat ini dapat dinaikkan menjadi Command + Handler melalui
+  ADR dan focused migration increment.
+- Query/Read Contract: sudah aktif melalui `BuildAccessControlDashboard` dan
+  `AccessControlDashboardData`.
+- Shared Kernel: tidak digunakan; `packages/StarterKit` tetap framework.
+- Facade/Module API: public capability menjadi API module; Facade bukan default.
+- Queue/Job: tidak digunakan untuk flow synchronous role/permission.
+
+Setiap perubahan pada status tersebut wajib memiliki acceptance criteria,
+focused positive/negative test, failure behavior, dan rollback trace.
+
 Pola execution baseline adalah CQRS-lite: Action untuk mutation dan Query untuk
 read. Command Bus, Integration Event, Queue/Job, Facade, dan Shared Kernel
 tidak ditambahkan tanpa consumer nyata dan keputusan ADR-0003.

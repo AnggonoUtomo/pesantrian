@@ -127,6 +127,13 @@ Mutation memakai Application Action. Event impersonation saat ini adalah Domain
 Event synchronous; belum ada Application Event, Integration Event, Command Bus,
 Queue/Job, Facade, atau Shared Kernel domain.
 
+Fondasi enterprise wajib tetap dipetakan pada setiap increment UserManagement.
+Status saat ini menjadi acuan: Contract/Interface dan Query/Read Contract
+`implemented`; Domain Event `implemented terbatas` untuk impersonation;
+Application Event, Integration Event, Command Bus, Queue/Job, Facade, dan
+Shared Kernel `planned` atau `not applicable` sesuai consumer nyata. Perubahan
+status wajib memperbarui specification, plan, tasks, test, dan ADR terkait.
+
 ## Cara Verifikasi Awal
 
 ```bash

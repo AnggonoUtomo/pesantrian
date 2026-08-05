@@ -44,7 +44,7 @@
 | Path | Tanggung jawab |
 | --- | --- |
 | `pages/System/AccessControl/pages/Index.tsx` | Page role dan permission |
-| `pages/System/AccessControl/layouts/system-dashboard-layout.tsx` | Shell layout module |
+| `resources/js/layouts/system-dashboard-layout.tsx` | Shell layout bersama untuk page System, termasuk footer identitas |
 | `pages/System/AccessControl/components/RoleControlCard.tsx` | Search dan pemilihan role |
 | `pages/System/AccessControl/components/PermissionModulePanel.tsx` | Permission group dan checkbox |
 | `pages/System/AccessControl/components/AddRoleDialog.tsx` | Dialog tambah role |

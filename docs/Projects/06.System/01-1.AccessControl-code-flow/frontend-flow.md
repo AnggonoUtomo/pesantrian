@@ -4,14 +4,14 @@
 
 Entry page: `resources/js/pages/System/AccessControl/pages/Index.tsx`.
 
-Layout module: `resources/js/pages/System/AccessControl/layouts/system-dashboard-layout.tsx`.
+Layout bersama: `resources/js/layouts/system-dashboard-layout.tsx`.
 
 Alurnya:
 
 ```text
 Inertia response
     -> Index.tsx membaca typed props
-    -> system-dashboard-layout membungkus page
+    -> system-dashboard-layout membungkus page dan menampilkan footer identitas
     -> AccessControlHeader
     -> RoleControlCard
     -> PermissionModulePanel

@@ -42,6 +42,25 @@ memakai Application Event, Integration Event, Command Bus, Queue/Job, Facade,
 atau Shared Kernel domain. Domain Event juga belum menjadi bagian runtime
 AccessControl; event impersonation berada pada UserManagement.
 
+## Checklist Fondasi Enterprise
+
+Code-flow AccessControl harus selalu dipetakan terhadap sembilan fondasi:
+
+| Fondasi | Status saat ini |
+| --- | --- |
+| Contract/Interface | `implemented` melalui public capability dan contract internal |
+| Domain Event | `planned` untuk fakta role/permission yang memiliki consumer |
+| Application Event | `not applicable` pada flow saat ini |
+| Integration Event | `planned` setelah AuditLog memiliki consumer nyata |
+| Command | `planned`; Action tetap menjadi command-like use case saat ini |
+| Query/Read Contract | `implemented` melalui Query dan DTO dashboard |
+| Shared Kernel | `not applicable`; StarterKit bukan domain shared kernel |
+| Facade/Module API | `implemented` melalui public capability |
+| Queue/Job | `not applicable` untuk request synchronous saat ini |
+
+Setiap perubahan status wajib disertai pembaruan code-flow, task, test, dan
+ADR atau decision yang relevan.
+
 ## Batas Penting
 
 - Frontend hanya mengatur visibility dan UX.

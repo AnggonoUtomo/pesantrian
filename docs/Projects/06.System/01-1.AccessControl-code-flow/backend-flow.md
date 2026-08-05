@@ -65,6 +65,12 @@ Queue/Job, Application Event, atau Integration Event. Jika kebutuhan lintas
 module muncul, gunakan public contract/DTO atau public event yang disetujui;
 jangan memanggil model atau adapter Infrastructure secara langsung.
 
+Fondasi enterprise tetap dipetakan walaupun belum semua aktif: Contract dan
+Query/Read Contract sudah implemented; Command, Domain Event, Application Event,
+Integration Event, Shared Kernel, Facade tambahan, dan Queue/Job memiliki status
+terdokumentasi pada README module. Status tersebut harus berubah melalui
+increment dan ADR, bukan melalui penambahan class tanpa contract.
+
 ## 4. Authorization Capability
 
 Public contract: `Application/Contracts/AuthorizationCapability.php`.

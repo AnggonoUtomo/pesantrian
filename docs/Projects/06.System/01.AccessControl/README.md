@@ -72,6 +72,27 @@ Query. Domain Event, Integration Event, Command Bus, Queue/Job, Facade, dan
 Shared Kernel belum menjadi bagian runtime AccessControl. Baseline keseluruhan
 menggunakan CQRS-lite.
 
+## Fondasi Enterprise Module
+
+Fondasi berikut wajib dipertimbangkan dan statusnya tidak boleh dibiarkan
+kosong sebelum increment baru dimulai:
+
+| Fondasi | Status AccessControl saat ini | Aturan evolusi |
+| --- | --- | --- |
+| Contract/Interface | `implemented` melalui `AuthorizationCapability` dan `RoleAssignmentCapability` | Semua consumer memakai contract publik, bukan model Spatie |
+| Domain Event | `planned` | Tambahkan untuk fakta mutation role/permission bila consumer internal nyata sudah ditetapkan |
+| Application Event | `not applicable` pada scope saat ini | Aktifkan jika beberapa handler application perlu dikoordinasikan |
+| Integration Event | `planned` | Aktifkan saat AuditLog atau consumer eksternal tersedia; wajib versioned dan sanitized |
+| Command | `planned` | Mutation dapat dinaikkan dari Action ke Command + Handler melalui increment dan ADR |
+| Query/Read Contract | `implemented` internal | Query typed tidak boleh mengubah state; public read contract memerlukan consumer nyata |
+| Shared Kernel | `not applicable` | `packages/StarterKit` tetap framework package, bukan Shared Kernel bisnis |
+| Facade/Module API | `implemented` melalui public capability | Facade baru memerlukan API stabil dan consumer nyata |
+| Queue/Job | `not applicable` pada scope synchronous | Job baru wajib memiliki retry, idempotency, actor/correlation ID, dan failure contract |
+
+Status di atas menjadi guardrail untuk pekerjaan berikutnya. Implementasi CQRS
+hybrid atau penuh tidak boleh dilakukan dengan menghapus boundary Action/Query
+secara langsung.
+
 ## Cara verifikasi awal
 
 ```bash

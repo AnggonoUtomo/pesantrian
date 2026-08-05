@@ -261,6 +261,21 @@ seeder demo, browser review, dan accessibility check sudah tersedia.
 - [x] Authorization, security, audit, dan dependency impact ditinjau.
 - [x] Module discovery/validation/list lulus sebelum perubahan runtime.
 - [x] Documentation dan execution evidence diperbarui.
+- [x] Fondasi enterprise module didokumentasikan.
+  - Kondisi awal: status Contract/Interface, Domain Event, Application Event,
+    Integration Event, Command, Query/Read Contract, Shared Kernel,
+    Facade/Module API, dan Queue/Job tersebar di beberapa dokumen dan belum
+    memiliki matriks status tunggal untuk increment berikutnya.
+  - Perubahan: README, specification, implementation plan, task, code-flow,
+    baseline framework, dan ADR-0003 sekarang memuat status, owner/boundary,
+    dependency, acceptance, verification, serta aturan evolusi untuk sembilan
+    fondasi enterprise tersebut.
+  - Alasan: implementasi module enterprise tidak boleh menambahkan pola
+    Command, Event, Facade, Shared Kernel, atau Queue secara sembarangan.
+  - Evidence: `git diff --check` lulus; semua status AccessControl dapat
+    ditelusuri dari README module sampai dokumen authoritative 03.12 dan ADR.
+  - Batasan: runtime AccessControl tetap CQRS-lite sampai increment Command /
+    Handler, Domain Event, atau Integration Event disetujui dan diuji.
 - [x] Seeder demo dan menu sidebar ditinjau ulang setelah implementasi.
 - [x] Open risk migration upgrade baseline lokal ditutup dan risiko deployment
   existing dikendalikan melalui runbook release.

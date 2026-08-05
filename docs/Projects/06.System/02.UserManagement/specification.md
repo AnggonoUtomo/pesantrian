@@ -90,6 +90,25 @@ UserManagement wajib mengikuti pola visual AccessControl:
 - Detail global berada pada
   [`03.12-MODULE-COMMUNICATION-AND-EXECUTION.md`](../../../03-IMPLEMENTATION/03.12-MODULE-COMMUNICATION-AND-EXECUTION.md).
 
+## Fondasi Enterprise UserManagement
+
+Setiap increment wajib memperbarui status fondasi berikut sebelum coding:
+
+| Fondasi | Status saat ini | Aturan |
+| --- | --- | --- |
+| Contract/Interface | `implemented` | Port internal dan public capability AccessControl harus typed |
+| Domain Event | `implemented terbatas` | Event impersonation synchronous tanpa secret |
+| Application Event | `planned` | Hanya jika beberapa handler application perlu dikoordinasikan |
+| Integration Event | `planned` | Menunggu consumer AuditLog atau external system nyata |
+| Command | `planned` | Action dapat dinaikkan menjadi Command + Handler melalui ADR |
+| Query/Read Contract | `implemented` internal | Query typed, pagination jelas, tanpa side effect |
+| Shared Kernel | `not applicable` | Value object lintas module memerlukan owner dan dua consumer |
+| Facade/Module API | `implemented` melalui public contract | Tidak membuat Facade tambahan tanpa consumer |
+| Queue/Job | `planned` | Wajib memiliki retry, idempotency, actor/correlation ID, dan failure path |
+
+Status dan acceptance fondasi ini wajib selaras dengan dokumen global 03.12 dan
+ADR-0003.
+
 ## Target Module Identity
 
 ```text

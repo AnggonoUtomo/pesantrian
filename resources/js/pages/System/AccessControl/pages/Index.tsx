@@ -194,7 +194,7 @@ export default function Index() {
                         <kbd>Esc</kbd> tutup pencarian
                     </span>
                 </div>
-                <div className="grid items-start gap-4 xl:grid-cols-[280px_1fr]">
+                <div className="grid items-start gap-4 xl:grid-cols-[320px_minmax(0,1fr)]">
                     <RoleControlCard
                         ref={roleControlRef}
                         roles={roles}

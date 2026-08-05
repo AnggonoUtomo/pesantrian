@@ -554,7 +554,7 @@ perangkat, perlu contract backend dan keputusan baru.
     browser belum memiliki `theme-palette` atau nilainya tidak valid.
   - Perubahan: `use-theme-palette.ts` mengganti initial state, fallback
     storage, dan server snapshot menjadi `neutral`.
-  - Alasan: Neutral paling sesuai dengan baseline surface bone white/charcoal
+  - Alasan: Neutral paling sesuai dengan baseline surface putih bersih/charcoal
     dan menjadi titik awal yang clean untuk user baru.
   - Acceptance: user baru menerima `Neutral`, pilihan tersimpan tetap dipakai,
     dan palette invalid kembali ke `Neutral`.
@@ -648,17 +648,20 @@ perangkat, perlu contract backend dan keputusan baru.
   - Kondisi awal: tint accent 3% pada light dan 6% pada dark masih membuat
     card AccessControl terlihat berwarna, terutama pada mode light.
   - Perubahan: `resources/css/app.css` menetapkan `--dashboard-surface` dan
-    `--dashboard-surface-strong` menjadi bone white pada light serta charcoal
-    netral pada dark. Aturan tint background pada `dashboard-module-card` dan
+    `--dashboard-surface-strong` menjadi abu-abu netral yang sedikit lebih gelap
+    pada light serta sedikit lebih gelap dari sidebar pada dark. Main card dark
+    mengikuti warna sidebar.
+    Aturan tint background pada `dashboard-module-card` dan
     subcard dihapus. Main card memakai `rounded-2xl`, subcard memakai
     `rounded-xl`. Accent tetap dipakai pada icon, badge, garis card, dan state
     interaksi.
   - Alasan: mengikuti pola clean Dashboard Shell 01 tanpa menghilangkan
     identitas warna semantic pada elemen fungsi.
-  - Acceptance: main card dan subcard memakai surface bone white/charcoal,
-    tepian membulat, warna semantic tetap terlihat pada elemen pendukung,
+  - Acceptance: main card light putih bersih, subcard light sedikit lebih gelap,
+    main card dark mengikuti sidebar, subcard dark sedikit lebih gelap, tepian
+    membulat, warna semantic tetap terlihat,
     tidak overflow di mobile, dan teks tetap memenuhi kontras minimum.
-  - Evidence: computed style browser light membaca card `oklch(0.985 0.008 90)`
+  - Evidence: computed style browser light membaca card `oklch(1 0 0)`
     dan dark membaca card `oklch(0.19 0.012 260)`. Console bersih, Lighthouse mobile
     seluruh kategori 100, `npm run types:check`, `npm run build`, dan
     `git diff --check` lulus.
@@ -837,3 +840,74 @@ perangkat, perlu contract backend dan keputusan baru.
     `npm run format:check`, dan `git diff --check` lulus. Browser berhasil
     membuka role search dengan `R`, memfokuskan input `Cari role`, menutupnya
     dengan `Escape`, dan console bersih.
+
+## Increment visual cleanup AccessControl
+
+- [x] Surface global light untuk sidebar dan topnav dibuat putih bersih.
+  - Kondisi awal: background sidebar dan topnav masih mengikuti campuran
+    `--primary`, sehingga berubah saat palette diganti. Inner sidebar juga
+    masih dapat ditimpa utility `bg-sidebar`.
+  - Perubahan: `resources/css/app.css` menambahkan token
+    `--dashboard-global-surface`. Pada light token ini memakai putih bersih
+    `oklch(1 0 0)`, sedangkan dark memakai `--sidebar` dari palette aktif.
+    `AppSidebarHeader.tsx` memakai class
+    `dashboard-topnav`; inner sidebar memakai token dengan prioritas yang
+    cukup. Footer sidebar memakai surface yang sama.
+  - Perubahan tambahan: `--dashboard-surface` dan
+    `--dashboard-surface-strong` juga memakai `oklch(1 0 0)` pada light,
+    sehingga card utama dan subcard AccessControl memakai putih bersih yang
+    sama.
+  - Alasan: shell dan surface content harus stabil ketika user mengganti
+    palette; palette tetap dipakai oleh icon, active state, dan accent module.
+  - Acceptance: topnav dan sidebar light memiliki surface putih bersih pada
+    semua palette, active/hover tetap terlihat, dan dark mengikuti warna
+    palette aktif.
+  - Evidence: browser sebelumnya membaca topnav dan sidebar light sebagai
+    `oklch(1 0 0)` setelah utility `bg-sidebar` diperbaiki. Pada dark,
+    `--dashboard-global-surface` mengikuti `--sidebar` palette aktif. `npm run
+    types:check`, `npm run lint:check`, `npm run format:check`, dan `npm run
+    build` lulus.
+- [x] Layout panel AccessControl dibuat lebih seimbang.
+  - Kondisi awal: grid desktop memakai kolom Role `280px`, sehingga action
+    role terlihat terlalu rapat dan ruang panel Permission tidak terpakai
+    secara proporsional.
+  - Perubahan: `pages/System/AccessControl/pages/Index.tsx` mengubah grid
+    desktop menjadi `320px` dan kolom permission fleksibel dengan
+    `minmax(0, 1fr)`. `PermissionModulePanel.tsx` memberi class khusus pada
+    tombol simpan disabled agar teks dan surface tetap terbaca.
+  - Alasan: informasi role dan action membutuhkan ruang yang konsisten tanpa
+    mengubah behavior state atau request mutation.
+  - Acceptance: panel Role tidak berhimpitan dengan panel Permission, tombol
+    action tetap dapat digunakan, dan tombol simpan disabled tetap terbaca pada
+    light/dark.
+  - Evidence: `npm run types:check`, `npm run lint:check`, `npm run
+    format:check`, dan `npm run build` lulus. Browser snapshot tetap memuat
+    Role, Permission Module, dan tombol mutation tanpa error console sebelum
+    probe screenshot DevTools mengalami timeout.
+- [x] Accent border permission dan action role dirapikan.
+  - Kondisi awal: seluruh subcard permission memakai accent cyan walaupun icon
+    group sudah berbeda; tombol Hapus role memakai surface merah solid yang
+    terlalu dominan pada card Role.
+  - Perubahan: `PermissionModulePanel.tsx` memakai accent group pada subcard
+    masing-masing. `DeleteRoleDialog.tsx` memakai outline destructive dengan
+    hover merah lembut sehingga arti destructive tetap terlihat tanpa
+    mendominasi layout.
+  - Alasan: warna icon, border, dan state interaksi perlu memiliki hubungan
+    visual yang jelas dengan tetap menjaga komposisi clean.
+  - Acceptance: border group mengikuti accent AccessControl/System/User,
+    tombol hapus tetap jelas sebagai destructive, dan behavior dialog tidak
+    berubah.
+  - Evidence: `npm run types:check`, `npm run lint:check`, `npm run
+    format:check`, dan `npm run build` lulus.
+- [x] Browser visual checkpoint final ditutup.
+  - Kondisi awal: verifikasi awal sempat terganggu oleh probe screenshot
+    DevTools yang menggantung setelah Vite rebuild.
+  - Perubahan: tab DevTools baru dipakai untuk memeriksa light dan dark setelah
+    token surface berubah menjadi putih bersih.
+  - Alasan: styling harus dibuktikan pada runtime, bukan hanya melalui build.
+  - Evidence: screenshot light dan dark berhasil diambil. Computed style light
+    membaca topnav/sidebar/card sebagai `oklch(1 0 0)` dan subcard sebagai
+    `oklch(0.97 0 0)`; dark
+    pada palette `neutral` membaca topnav dan card `oklch(0.1782 0 0)` dari
+    `--sidebar`, sedangkan subcard membaca surface yang sedikit lebih gelap
+    melalui `color-mix` dengan black. Console tidak memiliki error/warning.

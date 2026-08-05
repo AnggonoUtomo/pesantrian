@@ -39,8 +39,9 @@ export function DeleteRoleDialog({
             <DialogTrigger asChild>
                 <Button
                     type="button"
-                    variant="destructive"
+                    variant="outline"
                     size="sm"
+                    className="border-destructive text-destructive hover:bg-destructive/10 hover:text-destructive"
                     disabled={!canManage}
                 >
                     Hapus role

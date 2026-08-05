@@ -162,8 +162,9 @@ masih membuat card light terlihat kurang clean.
 - `RoleControlCard.tsx` dan `PermissionModulePanel.tsx` memakai class
   `dashboard-module-card` pada main card.
 - `resources/css/app.css` menetapkan `--dashboard-surface` dan
-  `--dashboard-surface-strong` menjadi bone white pada light dan charcoal
-  netral pada dark. Aturan tint background card module dihapus.
+  `--dashboard-surface-strong` menjadi putih bersih pada light dan sedikit
+  lebih gelap dari sidebar pada dark. Main card dark mengikuti warna sidebar.
+  Aturan tint background card module dihapus.
 - `RoleControlCard.tsx` dan `PermissionModulePanel.tsx` memakai
   `rounded-2xl` pada main card dan `rounded-xl` pada subcard.
 - Accent tetap dipakai oleh border, garis atas card, icon, badge, dan state
@@ -173,8 +174,8 @@ masih membuat card light terlihat kurang clean.
 
 ### Acceptance criteria dan evidence
 
-- Card role, permission, dan subcard memakai surface bone white/charcoal seperti
-  Dashboard Shell 01.
+- Card role dan permission memakai surface putih bersih pada light serta warna
+  sidebar pada dark. Subcard dibuat sedikit lebih gelap dari card utama.
 - Tepian main card dan subcard tidak lagi tajam.
 - Icon, badge, garis card, dan state interaksi tetap memakai warna semantic.
 - Viewport mobile tidak memiliki horizontal overflow dan console bersih.

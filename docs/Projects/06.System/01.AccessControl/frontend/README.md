@@ -43,7 +43,9 @@ glow ringan pada icon, badge, progress, serta garis card. Backend tetap menjadi
 security authority untuk seluruh mutation. OPEN RISK styling, preload font, dan
 format check global sudah ditutup. Baseline ini juga berlaku untuk halaman
 AccessControl dan module System berikutnya.
-Card module dan subcard memakai surface bone white pada light serta charcoal
-netral pada dark, seperti pola Dashboard Shell 01. Main card memakai radius
-besar dan subcard radius sedang. Warna theme tetap dipakai pada icon, badge,
-grafik, progress, garis card, dan state interaksi.
+Card utama memakai surface putih bersih pada light. Subcard memakai abu-abu
+netral yang sedikit lebih gelap. Pada dark, card utama mengikuti warna sidebar
+dan subcard dibuat sedikit lebih gelap,
+seperti pola Dashboard Shell 01. Main card memakai radius besar dan subcard
+radius sedang. Warna theme tetap dipakai pada icon, badge, grafik, progress,
+garis card, dan state interaksi.

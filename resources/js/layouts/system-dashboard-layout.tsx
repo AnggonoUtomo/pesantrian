@@ -72,10 +72,6 @@ export default function SystemDashboardLayout({
             </header>
 
             <main className="flex-1">{children}</main>
-
-            <footer className="mt-8 border-t pt-4 text-xs text-foreground/75">
-                <p>System Dashboard · {new Date().getFullYear()}</p>
-            </footer>
         </div>
     );
 }

@@ -157,8 +157,10 @@ turunan memakai `dashboard-subcard`, dan icon fungsi memakai
 `dashboard-icon` dengan warna semantic.
 
 Card module dan subcard memakai surface neutral seperti Dashboard Shell 01:
-bone white pada mode light dan charcoal netral pada mode dark. Main card
-memakai radius besar, subcard radius sedang. Warna accent tidak dipakai
+putih bersih pada mode light dan subcard memakai abu-abu netral yang sedikit
+lebih gelap. Pada mode dark, main card mengikuti warna sidebar dan subcard
+dibuat sedikit lebih gelap. Main card memakai radius besar,
+subcard radius sedang. Warna accent tidak dipakai
 sebagai background card; accent hanya dipakai pada icon, badge, progress,
 grafik, garis card, dan state interaksi.
 

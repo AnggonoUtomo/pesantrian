@@ -429,8 +429,9 @@
     );
     --sidebar-border: color-mix(in oklch, var(--border) 70%, var(--primary));
     --sidebar-ring: var(--ring);
-    --dashboard-surface: oklch(0.985 0.008 90);
-    --dashboard-surface-strong: oklch(0.985 0.008 90);
+    --dashboard-surface: oklch(1 0 0);
+    --dashboard-surface-strong: oklch(0.97 0 0);
+    --dashboard-global-surface: oklch(1 0 0);
     --dashboard-chart-cyan: oklch(0.6 0.118 184.704);
     --dashboard-chart-orange: oklch(0.646 0.222 41.116);
     --dashboard-chart-yellow: oklch(0.828 0.189 84.429);
@@ -457,8 +458,9 @@
     );
     --sidebar-border: color-mix(in oklch, var(--border) 70%, var(--primary));
     --sidebar-ring: var(--ring);
-    --dashboard-surface: oklch(0.19 0.012 260);
-    --dashboard-surface-strong: oklch(0.19 0.012 260);
+    --dashboard-surface: var(--sidebar);
+    --dashboard-surface-strong: color-mix(in oklch, var(--sidebar) 88%, black);
+    --dashboard-global-surface: var(--sidebar);
     --dashboard-chart-cyan: oklch(0.72 0.14 184.704);
     --dashboard-chart-orange: oklch(0.76 0.18 41.116);
     --dashboard-chart-yellow: oklch(0.84 0.16 84.429);
@@ -566,7 +568,7 @@
     .dashboard-sidebar [data-sidebar='sidebar'] {
         border-right: 1px solid
             color-mix(in oklch, var(--sidebar-border) 80%, transparent);
-        background: color-mix(in oklch, var(--sidebar) 94%, black);
+        background: var(--dashboard-global-surface) !important;
         box-shadow:
             8px 0 24px color-mix(in oklch, black 12%, transparent),
             inset -1px 0 color-mix(in oklch, var(--primary) 8%, transparent);
@@ -647,7 +649,7 @@
     .dashboard-sidebar [data-sidebar='footer'] {
         border-top: 1px solid
             color-mix(in oklch, var(--sidebar-border) 72%, transparent);
-        background: color-mix(in oklch, var(--sidebar) 88%, var(--primary));
+        background: var(--dashboard-global-surface);
     }
 
     .dashboard-sidebar [data-sidebar='footer'] [data-sidebar='menu-item'] svg {
@@ -686,6 +688,15 @@
 
     .theme-dashboard-shell {
         background: var(--background);
+    }
+
+    .dashboard-topnav {
+        border-bottom-color: color-mix(
+            in oklch,
+            var(--border) 84%,
+            var(--primary)
+        );
+        background: var(--dashboard-global-surface) !important;
     }
 
     .dashboard-toolbar {
@@ -762,6 +773,25 @@
         font-weight: 600;
         line-height: 1.25rem;
         text-align: center;
+    }
+
+    .dashboard-save-button:disabled {
+        border-color: color-mix(
+            in oklch,
+            var(--border) 86%,
+            transparent
+        ) !important;
+        background: color-mix(
+            in oklch,
+            var(--dashboard-global-surface) 78%,
+            var(--muted-foreground)
+        ) !important;
+        color: color-mix(
+            in oklch,
+            var(--foreground) 62%,
+            transparent
+        ) !important;
+        opacity: 1;
     }
 
     .dashboard-permission-checkbox {

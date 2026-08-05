@@ -87,6 +87,7 @@ export function PermissionModulePanel({
                     <Button
                         type="button"
                         size="sm"
+                        className="dashboard-save-button"
                         disabled={!isDirty || isSaving}
                         onClick={onSave}
                     >
@@ -108,7 +109,7 @@ export function PermissionModulePanel({
                         return (
                             <div
                                 key={group.module}
-                                className="dashboard-subcard dashboard-accent--cyan rounded-xl p-4"
+                                className={`dashboard-subcard ${accentClass} rounded-xl p-4`}
                             >
                                 <button
                                     type="button"

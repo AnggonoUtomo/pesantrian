@@ -12,7 +12,7 @@ bootstrap/providers.php
     -> AccessControl\ServiceProvider
     -> register singleton AuthorizationCapability
     -> daftarkan access-control:seed
-    -> boot migration module dan policy Role
+    -> boot migration, route module, dan policy Role
 ```
 
 `ServiceProvider` hanya melakukan wiring framework. Query, mutation, dan aturan
@@ -30,11 +30,12 @@ permission dari private implementation AccessControl.
 
 ## 3. Request Membuka Halaman
 
-Route utama berada pada `Routes/web.php`:
+Route utama berada pada
+`app/Modules/System/AccessControl/Routes/web.php`:
 
 ```text
 GET /system/dashboard
-    -> RoleController@systemDashboard
+    -> RoleController@dashboard
 
 GET /system/access-control
     -> RoleController@index

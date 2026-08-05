@@ -23,7 +23,6 @@ use App\Modules\System\UserManagement\Domain\Exceptions\ProtectedUserMutation;
 use App\Modules\System\UserManagement\Domain\ValueObjects\UserStatus;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Auth\Authenticatable;
-use Mockery;
 
 it('mengembalikan typed DTO dari detail query', function (): void {
     $user = new UserData(

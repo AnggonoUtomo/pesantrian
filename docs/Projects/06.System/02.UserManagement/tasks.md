@@ -892,6 +892,17 @@ development dan tidak boleh digunakan sebagai data production.
     summary card, tabel user, shortcut, dan aksi user; browser light/dark/mobile
     lulus tanpa error console.
 
+- [x] Warning Pest pada unit test application ditutup.
+  - Kondisi awal: `composer ci:check` lulus tetapi Pest melaporkan satu warning
+    tanpa detail pada `tests/Unit/UserManagementApplicationTest.php`.
+  - Perubahan: menghapus `use Mockery;` dari file test tanpa namespace karena
+    PHP 8.4 menganggap import tersebut tidak efektif; blank line setelah import
+    ditambahkan agar Pint tetap lulus.
+  - Alasan: quality gate tidak boleh menyisakan warning yang dapat menutupi
+    masalah test berikutnya.
+  - Evidence: focused Pest lulus 8 test/21 assertion dengan `--fail-on-warning`;
+    `composer ci:check` lulus 150 test/577 assertion tanpa warning.
+
 ## Revision History
 
 | Version | Date       | Description                                             |
@@ -901,4 +912,5 @@ development dan tidak boleh digunakan sebagai data production.
 | 1.9     | 2026-08-06 | Menutup final quality checkpoint dan memperbaiki contrast tabel |
 | 2.0     | 2026-08-06 | Menambahkan seeder 10 user dummy dan test idempotency |
 | 2.1     | 2026-08-06 | Menyamakan baseline warna module dengan AccessControl |
+| 2.2     | 2026-08-06 | Menutup warning Pest pada unit test application |
 | 1.1     | 2026-08-06 | Menetapkan keputusan scope dan status task siap dimulai |

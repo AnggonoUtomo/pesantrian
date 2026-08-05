@@ -359,3 +359,44 @@ seeder demo, browser review, dan accessibility check sudah tersedia.
     baseline dokumentasi yang sama.
   - Evidence: `git diff --check` lulus; tidak ada file `app/`, `resources/`,
     `tests/`, atau konfigurasi runtime yang diubah.
+
+## Increment penutupan Open Risk
+
+- [x] Ownership route AccessControl dipindahkan ke module.
+  - Kondisi awal: route AccessControl berada di `routes/web.php`, sedangkan
+    `app/Modules/System/AccessControl/Routes/web.php` kosong.
+  - Perubahan: route dipindahkan ke file module dan `ServiceProvider` memuat
+    route web/API dengan `loadRoutesFrom()`; URL dan nama route tetap sama.
+  - Alasan: module harus memiliki route, provider, migration, dan permission
+    boundary sendiri agar discovery, rollback, dan isolasi dapat ditelusuri.
+  - Evidence: `php artisan route:list --path=system` tetap menampilkan route
+    AccessControl; focused page test dan Ziggy route test lulus.
+- [x] Layout legacy ditutup dengan re-export.
+  - Kondisi awal: terdapat implementasi shell kedua pada folder page
+    AccessControl.
+  - Perubahan: file legacy sekarang me-re-export
+    `resources/js/layouts/system-dashboard-layout.tsx`.
+  - Alasan: import lama tidak boleh menghasilkan footer atau perilaku shell
+    yang berbeda.
+  - Evidence: `rg` tidak menemukan import aktif ke layout legacy; type check,
+    lint, dan build lulus.
+- [x] Test SuperSystem diperkuat.
+  - Kondisi awal: test hanya membuktikan actor biasa tidak dapat memutasi role
+    `SuperSystem`; belum ada regression test untuk bypass global SuperSystem.
+  - Perubahan: menambahkan test bahwa SuperSystem dapat mengelola role biasa,
+    tetapi tetap ditolak saat memutasi role SuperSystem.
+  - Alasan: `Gate::before` tidak boleh menghapus proteksi resource protected.
+  - Evidence: `AccessControlPageTest` lulus.
+- [x] Metadata owner permission diselaraskan.
+  - Kondisi awal: `system.dashboard.view` didefinisikan di `AccessControl` tetapi
+    metadata `module` bernilai `System`.
+  - Perubahan: metadata seluruh permission pada `permissions.php` memakai
+    owner `AccessControl`; unit test memvalidasi lima identity tersebut.
+  - Alasan: permission identity harus dimiliki oleh module yang menjadi sumber
+    dan pemilik lifecycle-nya.
+  - Evidence: `AccessControlPermissionIdentityTest` lulus.
+- [x] Checklist Open Risk ditinjau setelah implementasi.
+  - Kondisi akhir: seluruh empat Open Risk evaluasi sudah memiliki perubahan,
+    test, evidence, atau batasan yang jelas.
+  - Evidence: `composer ci:check` lulus; tidak ada Open Risk aktif pada scope
+    ini.

@@ -119,6 +119,31 @@ final class AccessControlPageTest extends TestCase
         self::assertFalse($role->fresh()->hasPermissionTo($assign));
     }
 
+    public function test_super_system_can_manage_regular_role_but_cannot_mutate_super_system_role(): void
+    {
+        $superSystemUser = User::factory()->create();
+        $superSystem = Role::create(['name' => 'SuperSystem', 'guard_name' => 'web']);
+        $superSystemUser->assignRole($superSystem);
+        $regularRole = Role::create(['name' => 'Reviewer', 'guard_name' => 'web']);
+        $permission = Permission::create(['name' => 'access_control.role.assign', 'guard_name' => 'web']);
+
+        $this->actingAs($superSystemUser)
+            ->put(route('access-control.roles.permissions.update', $regularRole), [
+                'permissions' => [$permission->name],
+            ])
+            ->assertRedirect();
+
+        self::assertTrue($regularRole->fresh()->hasPermissionTo($permission));
+
+        $this->actingAs($superSystemUser)
+            ->put(route('access-control.roles.permissions.update', $superSystem), [
+                'permissions' => [$permission->name],
+            ])
+            ->assertForbidden();
+
+        self::assertFalse($superSystem->fresh()->hasPermissionTo($permission));
+    }
+
     public function test_authorized_actor_can_create_role(): void
     {
         $user = User::factory()->create();

@@ -18,6 +18,11 @@ model adapter ULID milik module. Capability dasar, policy role, middleware
 coarse-grained, shared authorization context, page role/permission, mutation
 role, dan browser verification sudah tersedia.
 
+Route web AccessControl dimiliki oleh module pada
+`app/Modules/System/AccessControl/Routes/web.php` dan dimuat melalui
+`AccessControl\ServiceProvider`. Nama route dan URL tetap menjadi contract
+frontend Ziggy.
+
 ## Migration dan seeder global
 
 Migration dan seeder tetap dimiliki module. Provider mendaftarkan migration

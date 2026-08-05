@@ -981,16 +981,13 @@ perangkat, perlu contract backend dan keputusan baru.
   - Evidence: `npm run types:check`, `npm run lint:check`, dan `npm run build`
     lulus; pemeriksaan diff tidak menemukan whitespace error.
 
-## Open Risk
-
-- [ ] File layout legacy masih berada di
-  `resources/js/pages/System/AccessControl/layouts/system-dashboard-layout.tsx`.
-  - Kondisi: page aktif memakai layout bersama
-    `resources/js/layouts/system-dashboard-layout.tsx`, sehingga file legacy
-    belum memengaruhi halaman yang diuji.
-  - Dampak: jika file legacy diimpor kembali, footer dan perilaku shell dapat
-    berbeda dari baseline global.
-  - Rencana: hapus file tersebut atau ubah menjadi re-export layout bersama
-    dalam increment cleanup frontend berikutnya setelah seluruh import diverifikasi.
-  - Batasan: tidak menghapus file pada increment footer ini agar perubahan tetap
-    kecil dan rollback mudah.
+- [x] Open Risk layout legacy ditutup.
+  - Kondisi awal: file `resources/js/pages/System/AccessControl/layouts/
+    system-dashboard-layout.tsx` memiliki implementasi shell terpisah yang tidak
+    dipakai page aktif.
+  - Perubahan: file legacy diubah menjadi re-export dari
+    `resources/js/layouts/system-dashboard-layout.tsx`.
+  - Alasan: import lama tetap aman dan tidak dapat menghasilkan footer atau
+    perilaku shell yang berbeda.
+  - Evidence: `rg` tidak menemukan import aktif ke layout legacy; type check,
+    lint, dan build lulus.

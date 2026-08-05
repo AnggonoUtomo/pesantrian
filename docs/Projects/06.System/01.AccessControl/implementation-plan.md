@@ -15,6 +15,10 @@ Authentication
 Module lain hanya memanggil public contract atau capability. Detail model,
 repository, dan adapter Spatie tetap berada di dalam `AccessControl`.
 
+Route web dan API juga menjadi milik module. `ServiceProvider` memuat file
+`Routes/web.php` dan `Routes/api.php`; route global hanya menyimpan route
+bootstrap aplikasi seperti welcome, login area, dan settings.
+
 ## Fondasi Enterprise dan Batas Evolusi
 
 Sebelum increment CQRS berikutnya, status fondasi harus tetap dapat ditelusuri:
@@ -78,12 +82,12 @@ mutation, atau menulis aturan validasi langsung.
 |---|---|
 | Module lain mengakses private implementation | Public contract test dan dependency review |
 | Frontend dianggap sebagai security boundary | Negative backend test tanpa authorization |
-| Permission key dimiliki module yang salah | Permission identity hanya didefinisikan di module owner |
+| Permission key dimiliki module yang salah | Semua permission AccessControl, termasuk `system.dashboard.view`, memakai metadata owner `AccessControl` |
 | Spatie Permission menjadi coupling publik | Adapter dibungkus public capability AccessControl |
 | Role atau impersonation terlalu cepat dibakukan | Catat sebagai Open Decision dan implementasikan bertahap |
 | Authorization context membocorkan data sensitif | Typed context minimal dan redaction test |
 | Nama permission tidak konsisten | Gunakan dot notation dengan underscore dan contract test |
-| Bypass `SuperSystem` tersebar di feature | Satu policy/capability terpusat dan negative test |
+| Bypass `SuperSystem` tersebar di feature | Satu policy/capability terpusat dan negative test untuk role protected |
 
 ## Rollback
 

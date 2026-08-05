@@ -47,9 +47,13 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                                 size="sm"
                                 variant="ghost"
                                 asChild
-                                className={cn('w-full justify-start', {
-                                    'bg-muted': isCurrentOrParentUrl(item.href),
-                                })}
+                                className={cn(
+                                    'w-full justify-start transition-colors hover:bg-primary/20 hover:text-primary hover:shadow-sm',
+                                    {
+                                        'bg-primary/10 text-primary hover:bg-primary/30':
+                                            isCurrentOrParentUrl(item.href),
+                                    },
+                                )}
                             >
                                 <Link href={item.href}>
                                     {item.icon && (

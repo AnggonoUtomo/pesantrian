@@ -1,0 +1,13 @@
+{
+  "name": "DuplicateModule",
+  "namespace": "App\\Modules\\System\\DuplicateA",
+  "version": "1.0.0",
+  "schema_version": 1,
+  "status": "enabled",
+  "domain": "System",
+  "path": "app/Modules/System/DuplicateA",
+  "provider": "App\\Modules\\System\\DuplicateProvider\\ServiceProvider",
+  "dependencies": [],
+  "permission_source": "permissions.php",
+  "config_source": "module.php"
+}

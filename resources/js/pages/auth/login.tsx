@@ -13,12 +13,23 @@ import route from '@/lib/route';
 type Props = {
     status?: string;
     canResetPassword: boolean;
+    area?: 'system';
 };
 
-export default function Login({ status, canResetPassword }: Props) {
+export default function Login({ status, canResetPassword, area }: Props) {
     return (
         <>
             <Head title="Log in" />
+
+            {area === 'system' ? (
+                <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 text-sm">
+                    <p className="font-semibold text-primary">System area</p>
+                    <p className="mt-1 text-muted-foreground">
+                        Masuk untuk mengakses dashboard dan capability System
+                        sesuai permission akunmu.
+                    </p>
+                </div>
+            ) : null}
 
             <PasskeyVerify />
 

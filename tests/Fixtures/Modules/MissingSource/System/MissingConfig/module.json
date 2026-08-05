@@ -1,0 +1,13 @@
+{
+  "name": "MissingConfig",
+  "namespace": "App\\Modules\\System\\MissingConfig",
+  "version": "1.0.0",
+  "schema_version": 1,
+  "status": "enabled",
+  "domain": "System",
+  "path": "app/Modules/System/MissingConfig",
+  "provider": "App\\Modules\\System\\MissingConfig\\ServiceProvider",
+  "dependencies": [],
+  "permission_source": "permissions.php",
+  "config_source": "module.php"
+}

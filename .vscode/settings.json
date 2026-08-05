@@ -1,0 +1,33 @@
+{
+    // Set Prettier as the default formatter for general files (JS, CSS, HTML, etc.)
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    // Enable format on save
+    "editor.formatOnSave": true,
+    // Prettier settings (optional, can be moved to a .prettierrc file)
+    "prettier.useTabs": false,
+    "prettier.trailingComma": "none",
+    "prettier.tabWidth": 4,
+    "prettier.singleQuote": true,
+
+    "files.autoSave": "off",
+    "editor.minimap.enabled": false,
+    "editor.wordWrap": "off",
+    "extensions.autoUpdate": false,
+    "telemetry.telemetryLevel": "off",
+
+    // Language-specific overrides
+    "[php]": {
+        // Use PHP Intelephense for standard PHP files
+        "editor.defaultFormatter": "bmewburn.vscode-intelephense-client"
+    },
+    "[blade]": {
+        // Use Laravel Blade Formatter for .blade.php files
+        "editor.defaultFormatter": "shufo.vscode-blade-formatter"
+    },
+    // Ensure file associations are correct (often needed for older setups, but good practice)
+    "files.associations": {
+        "*.blade.php": "html"
+    },
+    "js/ts.experimental.useTsgo": false,
+    "js/ts.tsdk.path": "node_modules\\typescript\\lib"
+}

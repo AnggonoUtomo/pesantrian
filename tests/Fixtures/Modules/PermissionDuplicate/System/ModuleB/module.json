@@ -1,0 +1,13 @@
+{
+  "name": "ModuleB",
+  "namespace": "App\\Modules\\System\\ModuleB",
+  "version": "1.0.0",
+  "schema_version": 1,
+  "status": "enabled",
+  "domain": "System",
+  "path": "app/Modules/System/ModuleB",
+  "provider": "App\\Modules\\System\\ModuleB\\ServiceProvider",
+  "dependencies": [],
+  "permission_source": "permissions.php",
+  "config_source": "module.php"
+}

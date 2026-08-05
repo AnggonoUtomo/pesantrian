@@ -1,48 +1,52 @@
-import { Link } from '@inertiajs/react';
-import { BookOpen, FolderGit2, LayoutGrid } from 'lucide-react';
+import { Link, usePage } from '@inertiajs/react';
+import { LayoutGrid, Palette, ShieldCheck, UserRound } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
-import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
-import { NavUser } from '@/components/nav-user';
 import {
     Sidebar,
     SidebarContent,
     SidebarFooter,
+    SidebarGroup,
     SidebarHeader,
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
+import { useCurrentUrl } from '@/hooks/use-current-url';
 import route from '@/lib/route';
-import type { NavItem } from '@/types';
-
-const footerNavItems: NavItem[] = [
-    {
-        title: 'Repository',
-        href: 'https://github.com/laravel/react-starter-kit',
-        icon: FolderGit2,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#react',
-        icon: BookOpen,
-    },
-];
+import type { Auth, NavItem } from '@/types';
 
 export function AppSidebar() {
+    const { auth } = usePage<{ auth: Auth }>().props;
+    const { isCurrentUrl } = useCurrentUrl();
     const dashboardUrl = route('dashboard');
+    const canAccessControl =
+        auth.superSystem === true ||
+        auth.permissions?.['access_control.role.manage'] === true;
 
     const mainNavItems: NavItem[] = [
         {
-            title: 'Dashboard',
+            title: 'System Dashboard',
             href: dashboardUrl,
             icon: LayoutGrid,
         },
     ];
 
+    if (canAccessControl) {
+        mainNavItems.push({
+            title: 'Access Control',
+            href: route('access-control.index'),
+            icon: ShieldCheck,
+        });
+    }
+
     return (
-        <Sidebar collapsible="icon" variant="inset">
-            <SidebarHeader>
+        <Sidebar
+            collapsible="icon"
+            variant="sidebar"
+            className="dashboard-sidebar"
+        >
+            <SidebarHeader className="dashboard-sidebar-header">
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
@@ -54,13 +58,51 @@ export function AppSidebar() {
                 </SidebarMenu>
             </SidebarHeader>
 
-            <SidebarContent>
+            <SidebarContent className="dashboard-sidebar-content">
                 <NavMain items={mainNavItems} />
             </SidebarContent>
 
-            <SidebarFooter>
-                <NavFooter items={footerNavItems} className="mt-auto" />
-                <NavUser />
+            <SidebarFooter className="dashboard-sidebar-footer p-2">
+                <SidebarGroup className="p-0">
+                    <SidebarMenu className="flex-row justify-between">
+                        {[
+                            {
+                                title: 'Profile',
+                                href: route('profile.edit'),
+                                icon: UserRound,
+                            },
+                            {
+                                title: 'Security',
+                                href: route('security.edit'),
+                                icon: ShieldCheck,
+                            },
+                            {
+                                title: 'Appearance',
+                                href: route('appearance.edit'),
+                                icon: Palette,
+                            },
+                        ].map((item) => (
+                            <SidebarMenuItem
+                                key={item.title}
+                                className="flex-1"
+                            >
+                                <SidebarMenuButton
+                                    asChild
+                                    isActive={isCurrentUrl(item.href)}
+                                    className="justify-center"
+                                    tooltip={{ children: item.title }}
+                                >
+                                    <Link href={item.href} prefetch>
+                                        <item.icon />
+                                        <span className="sr-only">
+                                            {item.title}
+                                        </span>
+                                    </Link>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+                        ))}
+                    </SidebarMenu>
+                </SidebarGroup>
             </SidebarFooter>
         </Sidebar>
     );

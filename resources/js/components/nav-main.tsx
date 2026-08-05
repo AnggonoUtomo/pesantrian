@@ -25,6 +25,12 @@ export function NavMain({ items = [] }: { items: NavItem[] }) {
                         >
                             <Link href={item.href} prefetch>
                                 {item.icon && <item.icon />}
+                                <span
+                                    aria-hidden="true"
+                                    className="-ml-1 hidden text-sidebar-accent-foreground/70 opacity-0 transition-opacity duration-200 group-hover/menu-item:inline group-hover/menu-item:opacity-100 group-data-[collapsible=icon]:hidden"
+                                >
+                                    |
+                                </span>
                                 <span>{item.title}</span>
                             </Link>
                         </SidebarMenuButton>

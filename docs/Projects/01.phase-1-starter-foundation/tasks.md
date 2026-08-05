@@ -1,0 +1,98 @@
+# Task Phase 1 Starter Foundation
+
+| ID       | Increment | Task                 | Acceptance                                                     | Verifikasi                            | Status  |
+| -------- | --------- | -------------------- | -------------------------------------------------------------- | ------------------------------------- | ------- |
+| TASK-001 | INC-001   | Inventory foundation | Versi, stack, package, service tercatat                        | Review inventory                      | Selesai |
+| TASK-002 | INC-002   | Dependency baseline  | Package wajib dan forbidden package terverifikasi              | Composer, npm, scan                   | Selesai |
+| TASK-003 | INC-003   | Runtime service      | PostgreSQL, Redis, cache, queue, session, storage, ULID teruji | Health check dan migration            | Selesai |
+| TASK-004 | INC-004   | Verification command | Command tersedia dalam output biasa dan JSON                   | `starter:verify`                      | Selesai |
+| TASK-005 | INC-005   | Quality gate         | Semua gate relevan lulus                                       | Pint, Pest, ESLint, TypeScript, build | Selesai |
+| TASK-006 | INC-006   | Tutup Phase 1        | Evidence, risiko, dan docs lengkap                             | Review akhir                          | Selesai |
+
+## Detail Task
+
+### TASK-001 — Inventory foundation
+
+- [x] Scope task selesai.
+    - Kondisi awal: belum ada verification matrix Phase 1.
+    - File dibuat: delapan dokumen pada folder `phase-1-starter-foundation`.
+    - File ditinjau: `composer.json`, `package.json`, `.env`, `.env.example`,
+      `config/`, `bootstrap/app.php`, dan struktur `app/`.
+    - Perubahan: menetapkan mode `Existing Starter Kit` dan mencatat versi serta
+      gap foundation.
+    - Alasan: Phase 2 tidak boleh dimulai dengan asumsi project kosong/sehat.
+    - Evidence: PHP 8.4.16, Laravel 13.23.0, Node 24.12.0, npm 11.6.4.
+
+### TASK-002 — Dependency baseline
+
+- [x] Scope task selesai.
+    - Kondisi awal: Spatie Permission belum ada dan PHP extension `redis` tidak
+      tersedia; `.env` memakai `phpredis`.
+    - File diubah: `composer.json`, `composer.lock`, `.env.example`.
+    - Perubahan: menambah `spatie/laravel-permission:8.3.0` dan
+      `predis/predis:3.5.1`; default Redis client menjadi `predis`.
+    - Alasan: permission adalah dependency baseline; Predis cocok tanpa extension
+      `redis`.
+    - Evidence: Composer install sukses; scan dependency/source bersih dari
+      Wayfinder dan Laravel Boost.
+
+### TASK-003 — Runtime service
+
+- [x] Scope task selesai.
+    - Kondisi awal: `.env` memakai MySQL dan database baru belum memiliki
+      migration table.
+    - File diubah: `.env` lokal, tidak di-commit.
+    - Perubahan: memakai PostgreSQL port 5432, menjalankan
+      `php artisan migrate --force`, dan memastikan `public/storage` valid.
+    - Alasan: runtime harus sesuai baseline PostgreSQL/Redis.
+    - Evidence: driver `pgsql`, Redis `PONG`, cache database `ok`, migration
+      status `Ran`, storage tersedia, dan ULID valid.
+
+### TASK-004 — Verification command
+
+- [x] Scope task selesai.
+    - Kondisi awal: `php artisan starter:verify` belum terdaftar.
+    - File dibuat: `app/Console/Commands/VerifyStarterFoundation.php` dan
+      `tests/Feature/StarterFoundationVerificationTest.php`.
+    - Perubahan: menambah check versi, package, extension, database, Redis,
+      storage, ULID, forbidden dependency, output JSON, dan exit code.
+    - Alasan: verification harus konsisten dan dapat dipakai CI.
+    - Evidence: output berisi `STARTER_VERIFIED`, `failed: 0`; test positif dan
+      negatif lulus; secret tidak dicetak.
+
+### TASK-005 — Quality gate
+
+- [x] Scope task selesai.
+    - File diperiksa: source PHP/React/TypeScript, konfigurasi, dan test.
+    - Perubahan: memperbaiki EOF pada `tests/Feature/ZiggyRouteTest.php`.
+    - Alasan: Pint harus bersih sebelum phase ditutup.
+    - Evidence: Pint lulus; Pest 43 test/150 assertion; ESLint, TypeScript, CSR
+      build, dan SSR build lulus.
+
+### TASK-006 — Penutupan Phase 1
+
+- [x] Scope task selesai.
+    - File diubah: dokumen pada folder `phase-1-starter-foundation`.
+    - Perubahan: status task/milestone menjadi selesai dan execution evidence
+      dilengkapi.
+    - Alasan: engineer berikutnya dapat memahami hasil tanpa membaca chat agent.
+    - Evidence: `git diff --check` bersih dan tidak ada checklist kosong.
+
+## Definisi Selesai
+
+- [x] Scope task selesai.
+    - Setiap task memiliki kondisi awal, file, perubahan, alasan, dan evidence.
+- [x] Test positif dan negatif tersedia.
+    - Positif: `starter:verify` lulus seluruh pemeriksaan.
+    - Negatif: output tidak membocorkan forbidden dependency atau application key.
+- [x] Dampak keamanan dan runtime ditinjau.
+    - Backend tetap security authority.
+    - Output verification tidak mencetak password atau application key.
+    - PostgreSQL dan Redis diuji pada runtime lokal.
+- [x] Evidence tersimpan.
+    - Command, hasil penting, dan risiko dicatat pada execution log.
+- [x] Dokumentasi diperbarui.
+    - Plan, task, roadmap, discovery, milestones, dan log saling konsisten.
+- [x] Checklist ditinjau sebelum dan sesudah pekerjaan.
+    - Checklist awal menentukan scope.
+    - Checklist akhir diperiksa setelah test dan build selesai.

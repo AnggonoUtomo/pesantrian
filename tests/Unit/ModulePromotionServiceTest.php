@@ -70,3 +70,48 @@ it('menolak promotion ke target existing tanpa overwrite', function () {
         testFilesystem()->deleteDirectory($base);
     }
 });
+
+it('menambahkan file yang belum ada pada mode extension tanpa overwrite', function () {
+    $base = sys_get_temp_dir().DIRECTORY_SEPARATOR.'starterkit-extension-'.Str::ulid();
+    $rootPath = $base.DIRECTORY_SEPARATOR.'app'.DIRECTORY_SEPARATOR.'Modules';
+    $stagingRoot = $base.DIRECTORY_SEPARATOR.'staging';
+    $targetPath = $rootPath.DIRECTORY_SEPARATOR.'System'.DIRECTORY_SEPARATOR.'AuditLog';
+    testFilesystem()->ensureDirectoryExists($targetPath);
+    testFilesystem()->put($targetPath.'/keep.txt', 'keep');
+
+    try {
+        (new ModulePromotionService)->promote(promotionPlan(), $rootPath, $stagingRoot, true);
+
+        expect(testFilesystem()->get($targetPath.'/keep.txt'))->toBe('keep')
+            ->and(is_file($targetPath.'/module.json'))->toBeTrue()
+            ->and(testFilesystem()->directories($stagingRoot))->toBe([]);
+    } finally {
+        testFilesystem()->deleteDirectory($base);
+    }
+});
+
+it('mengembalikan file existing saat overwrite gagal', function () {
+    $base = sys_get_temp_dir().DIRECTORY_SEPARATOR.'starterkit-overwrite-'.Str::ulid();
+    $rootPath = $base.DIRECTORY_SEPARATOR.'app'.DIRECTORY_SEPARATOR.'Modules';
+    $stagingRoot = $base.DIRECTORY_SEPARATOR.'staging';
+    $targetPath = $rootPath.DIRECTORY_SEPARATOR.'System'.DIRECTORY_SEPARATOR.'AuditLog';
+    testFilesystem()->ensureDirectoryExists($targetPath);
+    testFilesystem()->put($targetPath.'/module.php', 'original');
+    testFilesystem()->put($targetPath.'/blocked', 'file, not directory');
+    $plan = new ModuleGenerationPlan(
+        'default-v1',
+        'app/Modules/System/AuditLog',
+        [],
+        ['module.php' => 'changed', 'blocked/file.php' => 'will fail'],
+    );
+
+    try {
+        expect(fn () => (new ModulePromotionService)->promote($plan, $rootPath, $stagingRoot, true, true))
+            ->toThrow(RuntimeException::class)
+            ->and(testFilesystem()->get($targetPath.'/module.php'))->toBe('original')
+            ->and(testFilesystem()->get($targetPath.'/blocked'))->toBe('file, not directory')
+            ->and(testFilesystem()->directories($stagingRoot))->toBe([]);
+    } finally {
+        testFilesystem()->deleteDirectory($base);
+    }
+});

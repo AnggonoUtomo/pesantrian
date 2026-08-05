@@ -13,15 +13,20 @@ final class ModuleConflictDetector
     public function __construct(private ModuleRegistry $registry) {}
 
     /** @return list<array{code: string, message: string}> */
-    public function detect(ModuleGenerationPlan $plan, string $rootPath): array
+    public function detect(ModuleGenerationPlan $plan, string $rootPath, bool $extension = false): array
     {
         $targetPath = $this->targetPath($plan, $rootPath);
         $diagnostics = [];
 
-        if (is_dir($targetPath) || is_file($targetPath)) {
+        if (is_file($targetPath) && $extension) {
+            $diagnostics[] = [
+                'code' => 'TARGET_NOT_DIRECTORY',
+                'message' => "Target [{$plan->targetPath}] bukan directory module.",
+            ];
+        } elseif (! $extension && (is_dir($targetPath) || is_file($targetPath))) {
             $diagnostics[] = [
                 'code' => 'TARGET_EXISTS',
-                'message' => "Target [$targetPath] sudah ada.",
+                'message' => "Target [{$plan->targetPath}] sudah ada.",
             ];
         }
 
@@ -39,6 +44,12 @@ final class ModuleConflictDetector
         }
 
         foreach ($discovery['modules'] as $module) {
+            $isTargetModule = $extension && $module->path === $manifest['path'];
+
+            if ($isTargetModule) {
+                continue;
+            }
+
             foreach (['name', 'path', 'namespace', 'provider'] as $identity) {
                 if ($module->{$identity} === $manifest[$identity]) {
                     $diagnostics[] = [

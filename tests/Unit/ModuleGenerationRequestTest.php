@@ -13,7 +13,9 @@ it('membuat request generator valid dengan default profile', function () {
         ->and($request->profile)->toBe('default-v1')
         ->and($request->dryRun)->toBeFalse()
         ->and($request->force)->toBeFalse()
-        ->and($request->yes)->toBeFalse();
+        ->and($request->yes)->toBeFalse()
+        ->and($request->extension)->toBeFalse()
+        ->and($request->overwrite)->toBeFalse();
 });
 
 it('menerima opsi profile dan mode generator', function () {
@@ -24,12 +26,16 @@ it('menerima opsi profile dan mode generator', function () {
         'dry_run' => true,
         'force' => true,
         'yes' => true,
+        'extension' => true,
+        'overwrite' => true,
     ]);
 
     expect($request->profile)->toBe('platform-v2')
         ->and($request->dryRun)->toBeTrue()
         ->and($request->force)->toBeTrue()
-        ->and($request->yes)->toBeTrue();
+        ->and($request->yes)->toBeTrue()
+        ->and($request->extension)->toBeTrue()
+        ->and($request->overwrite)->toBeTrue();
 });
 
 it('menolak nama module, domain, dan profile yang tidak aman', function (array $data, string $message) {
@@ -48,3 +54,15 @@ it('menolak yes tanpa force', function () {
         'yes' => true,
     ]))->toThrow(InvalidArgumentException::class, 'yes membutuhkan force');
 });
+
+it('menolak overwrite tanpa guard extension force dan yes', function (array $data, string $message) {
+    expect(fn () => ModuleGenerationRequest::fromArray(array_merge([
+        'module' => 'AccessControl',
+        'domain' => 'System',
+        'overwrite' => true,
+    ], $data)))->toThrow(InvalidArgumentException::class, $message);
+})->with([
+    'extension' => [['extension' => false, 'force' => true, 'yes' => true], 'overwrite membutuhkan extension'],
+    'force' => [['extension' => true, 'force' => false, 'yes' => false], 'overwrite membutuhkan force'],
+    'yes' => [['extension' => true, 'force' => true, 'yes' => false], 'overwrite membutuhkan yes'],
+]);

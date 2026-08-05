@@ -21,7 +21,9 @@ final class ModuleListCommand extends Command
             $this->line(json_encode([
                 'success' => $result['diagnostics'] === [],
                 'code' => $result['diagnostics'] === [] ? 'MODULE_LISTED' : 'MODULE_LIST_FAILED',
+                'message' => $result['diagnostics'] === [] ? 'Daftar module berhasil dibaca.' : 'Daftar module memiliki diagnostic.',
                 'data' => ['modules' => array_map(static fn ($module): array => get_object_vars($module), $result['modules'])],
+                'diagnostics' => $result['diagnostics'],
             ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
         } else {
             foreach ($result['modules'] as $module) {

@@ -48,7 +48,7 @@ final class ModuleInspectCommand extends Command
                     'data' => ['module' => $this->moduleData($manifest)],
                     'diagnostics' => $result['diagnostics'],
                 ]);
-            } catch (Throwable $exception) {
+            } catch (Throwable) {
                 return $this->respond([
                     'success' => false,
                     'code' => 'MODULE_INSPECTION_FAILED',
@@ -56,7 +56,7 @@ final class ModuleInspectCommand extends Command
                     'data' => [],
                     'diagnostics' => [[
                         'path' => $manifest->path,
-                        'message' => $exception->getMessage(),
+                        'message' => 'Permission source module tidak dapat dibaca.',
                     ]],
                 ]);
             }

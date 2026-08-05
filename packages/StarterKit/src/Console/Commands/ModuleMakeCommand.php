@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace StarterKit\Console\Commands;
 
 use Illuminate\Console\Command;
+use InvalidArgumentException;
 use StarterKit\Generator\Contracts\ModuleGenerationPlan;
 use StarterKit\Generator\Contracts\ModuleGenerationRequest;
 use StarterKit\Generator\ModuleGenerationPreviewer;
@@ -18,8 +19,10 @@ final class ModuleMakeCommand extends Command
         {--domain=System : Domain module dalam PascalCase}
         {--profile=default-v1 : Profile generator}
         {--dry-run : Tampilkan rencana tanpa menulis file}
-        {--force : Wajib untuk mengizinkan mutasi; tidak mengaktifkan overwrite}
+        {--force : Wajib untuk mengizinkan operasi mutasi}
         {--yes : Lewati konfirmasi interaktif setelah force}
+        {--extension : Izinkan bekerja pada module existing}
+        {--overwrite : Ganti file existing yang tercantum pada plan}
         {--json : Tampilkan hasil sebagai JSON}';
 
     protected $description = 'Membuat module baru dari profile generator.';
@@ -34,10 +37,12 @@ final class ModuleMakeCommand extends Command
                 'dry_run' => (bool) $this->option('dry-run'),
                 'force' => (bool) $this->option('force'),
                 'yes' => (bool) $this->option('yes'),
+                'extension' => (bool) $this->option('extension'),
+                'overwrite' => (bool) $this->option('overwrite'),
             ]);
 
             if (! $request->dryRun && ! $request->force) {
-                throw new \InvalidArgumentException('Pembuatan module membutuhkan --force; gunakan --dry-run untuk preview.');
+                throw new InvalidArgumentException('Pembuatan module membutuhkan --force; gunakan --dry-run untuk preview.');
             }
 
             $preview = $previewer->preview($request, app_path('Modules'));
@@ -66,6 +71,8 @@ final class ModuleMakeCommand extends Command
                 $preview->plan,
                 app_path('Modules'),
                 storage_path('framework/module-staging'),
+                $request->extension,
+                $request->overwrite,
             );
 
             return $this->respond([
@@ -75,11 +82,19 @@ final class ModuleMakeCommand extends Command
                 'data' => ['target' => $result->targetPath, 'files' => array_keys($preview->plan->files)],
                 'diagnostics' => [],
             ]);
-        } catch (Throwable $exception) {
+        } catch (InvalidArgumentException $exception) {
             return $this->respond([
                 'success' => false,
                 'code' => 'MODULE_GENERATION_INVALID',
                 'message' => $exception->getMessage(),
+                'data' => [],
+                'diagnostics' => [],
+            ]);
+        } catch (Throwable) {
+            return $this->respond([
+                'success' => false,
+                'code' => 'MODULE_GENERATION_FAILED',
+                'message' => 'Generator module gagal dan perubahan telah dibersihkan.',
                 'data' => [],
                 'diagnostics' => [],
             ]);

@@ -12,58 +12,163 @@ use StarterKit\Generator\Contracts\ModuleGenerationPromotion;
 
 final class ModulePromotionService
 {
-    public function promote(ModuleGenerationPlan $plan, string $rootPath, string $stagingRoot): ModuleGenerationPromotion
-    {
+    public function promote(
+        ModuleGenerationPlan $plan,
+        string $rootPath,
+        string $stagingRoot,
+        bool $extension = false,
+        bool $overwrite = false,
+    ): ModuleGenerationPromotion {
         $targetPath = $this->targetPath($plan, $rootPath);
 
-        if (is_dir($targetPath) || is_file($targetPath)) {
-            throw new RuntimeException("Target [$targetPath] sudah ada.");
+        if (! $extension && (is_dir($targetPath) || is_file($targetPath))) {
+            throw new RuntimeException('Target module sudah ada.');
+        }
+
+        if ($extension && is_file($targetPath)) {
+            throw new RuntimeException('Target module bukan directory.');
         }
 
         $stagingPath = rtrim($stagingRoot, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.Str::ulid()->toBase32();
+        $outputPath = $extension ? $stagingPath.DIRECTORY_SEPARATOR.'output' : $stagingPath;
+        $backupPath = $stagingPath.DIRECTORY_SEPARATOR.'backup';
+        $createdFiles = [];
+        $overwrittenFiles = [];
 
         try {
             if (! mkdir($stagingPath, 0755, true) && ! is_dir($stagingPath)) {
-                throw new RuntimeException("Staging [$stagingPath] tidak dapat dibuat.");
+                throw new RuntimeException('Staging tidak dapat dibuat.');
             }
 
-            foreach ($plan->directories as $directory) {
-                $this->safeRelativePath($directory);
-                $path = $stagingPath.DIRECTORY_SEPARATOR.str_replace('/', DIRECTORY_SEPARATOR, $directory);
+            $this->writePlan($plan, $outputPath);
 
-                if (! mkdir($path, 0755, true) && ! is_dir($path)) {
-                    throw new RuntimeException("Directory staging [$path] tidak dapat dibuat.");
-                }
-            }
+            if ($extension) {
+                $this->promoteExtension(
+                    $plan,
+                    $outputPath,
+                    $targetPath,
+                    $backupPath,
+                    $overwrite,
+                    $createdFiles,
+                    $overwrittenFiles,
+                );
 
-            foreach ($plan->files as $relativePath => $contents) {
-                $this->safeRelativePath($relativePath);
-                $path = $stagingPath.DIRECTORY_SEPARATOR.str_replace('/', DIRECTORY_SEPARATOR, $relativePath);
-                $parent = dirname($path);
+                $this->removeDirectory($stagingPath);
 
-                if (! is_dir($parent) && ! mkdir($parent, 0755, true) && ! is_dir($parent)) {
-                    throw new RuntimeException("Parent staging [$parent] tidak dapat dibuat.");
-                }
-
-                if (file_put_contents($path, $contents, LOCK_EX) === false) {
-                    throw new RuntimeException("File staging [$path] tidak dapat ditulis.");
-                }
+                return new ModuleGenerationPromotion($targetPath);
             }
 
             $targetParent = dirname($targetPath);
             if (! is_dir($targetParent) && ! mkdir($targetParent, 0755, true) && ! is_dir($targetParent)) {
-                throw new RuntimeException("Parent target [$targetParent] tidak dapat dibuat.");
+                throw new RuntimeException('Parent target tidak dapat dibuat.');
             }
 
-            if (! rename($stagingPath, $targetPath)) {
-                throw new RuntimeException("Promotion ke [$targetPath] gagal.");
+            if (! rename($outputPath, $targetPath)) {
+                throw new RuntimeException('Promotion module gagal.');
             }
+
+            $this->removeDirectory($stagingPath);
 
             return new ModuleGenerationPromotion($targetPath);
         } catch (\Throwable $exception) {
+            foreach ($overwrittenFiles as $relativePath) {
+                $backup = $backupPath.DIRECTORY_SEPARATOR.str_replace('/', DIRECTORY_SEPARATOR, $relativePath);
+                $target = $targetPath.DIRECTORY_SEPARATOR.str_replace('/', DIRECTORY_SEPARATOR, $relativePath);
+
+                if (is_file($backup)) {
+                    copy($backup, $target);
+                }
+            }
+
+            foreach ($createdFiles as $relativePath) {
+                $created = $targetPath.DIRECTORY_SEPARATOR.str_replace('/', DIRECTORY_SEPARATOR, $relativePath);
+
+                if (is_file($created)) {
+                    unlink($created);
+                }
+            }
+
             $this->removeDirectory($stagingPath);
 
             throw $exception;
+        }
+    }
+
+    private function writePlan(ModuleGenerationPlan $plan, string $outputPath): void
+    {
+        foreach ($plan->directories as $directory) {
+            $this->safeRelativePath($directory);
+            $path = $outputPath.DIRECTORY_SEPARATOR.str_replace('/', DIRECTORY_SEPARATOR, $directory);
+
+            if (! mkdir($path, 0755, true) && ! is_dir($path)) {
+                throw new RuntimeException('Directory staging tidak dapat dibuat.');
+            }
+        }
+
+        foreach ($plan->files as $relativePath => $contents) {
+            $this->safeRelativePath($relativePath);
+            $path = $outputPath.DIRECTORY_SEPARATOR.str_replace('/', DIRECTORY_SEPARATOR, $relativePath);
+            $parent = dirname($path);
+
+            if (! is_dir($parent) && ! mkdir($parent, 0755, true) && ! is_dir($parent)) {
+                throw new RuntimeException('Parent staging tidak dapat dibuat.');
+            }
+
+            if (file_put_contents($path, $contents, LOCK_EX) === false) {
+                throw new RuntimeException('File staging tidak dapat ditulis.');
+            }
+        }
+    }
+
+    /** @param list<string> $createdFiles @param list<string> $overwrittenFiles */
+    private function promoteExtension(
+        ModuleGenerationPlan $plan,
+        string $outputPath,
+        string $targetPath,
+        string $backupPath,
+        bool $overwrite,
+        array &$createdFiles,
+        array &$overwrittenFiles,
+    ): void {
+        foreach ($plan->files as $relativePath => $contents) {
+            $this->safeRelativePath($relativePath);
+            $target = $targetPath.DIRECTORY_SEPARATOR.str_replace('/', DIRECTORY_SEPARATOR, $relativePath);
+            $staged = $outputPath.DIRECTORY_SEPARATOR.str_replace('/', DIRECTORY_SEPARATOR, $relativePath);
+
+            if (is_file($target) && ! $overwrite) {
+                continue;
+            }
+
+            $parent = dirname($target);
+            if (is_file($parent)) {
+                throw new RuntimeException('Parent target tidak dapat dibuat.');
+            }
+
+            if (! is_dir($parent) && ! mkdir($parent, 0755, true) && ! is_dir($parent)) {
+                throw new RuntimeException('Parent target tidak dapat dibuat.');
+            }
+
+            if (is_file($target)) {
+                $backup = $backupPath.DIRECTORY_SEPARATOR.str_replace('/', DIRECTORY_SEPARATOR, $relativePath);
+                $backupParent = dirname($backup);
+
+                if (! is_dir($backupParent) && ! mkdir($backupParent, 0755, true) && ! is_dir($backupParent)) {
+                    throw new RuntimeException('Backup target tidak dapat dibuat.');
+                }
+
+                if (! copy($target, $backup)) {
+                    throw new RuntimeException('Backup target tidak dapat dibuat.');
+                }
+
+                $overwrittenFiles[] = $relativePath;
+            } else {
+                $createdFiles[] = $relativePath;
+            }
+
+            $stagedContents = file_get_contents($staged);
+            if (! is_string($stagedContents) || file_put_contents($target, $stagedContents, LOCK_EX) === false) {
+                throw new RuntimeException('File target tidak dapat ditulis.');
+            }
         }
     }
 

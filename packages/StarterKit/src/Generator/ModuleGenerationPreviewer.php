@@ -21,7 +21,7 @@ final class ModuleGenerationPreviewer
 
         return new ModuleGenerationPreview(
             plan: $plan,
-            diagnostics: $this->conflicts->detect($plan, $rootPath),
+            diagnostics: $this->conflicts->detect($plan, $rootPath, $request->extension),
         );
     }
 }

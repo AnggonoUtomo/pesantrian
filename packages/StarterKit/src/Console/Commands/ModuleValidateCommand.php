@@ -9,26 +9,95 @@ use StarterKit\Modules\ModuleRegistry;
 
 final class ModuleValidateCommand extends Command
 {
-    protected $signature = 'module:validate {--json : Tampilkan hasil sebagai JSON}';
+    protected $signature = 'module:validate
+        {module? : Target module dalam format Domain/Module}
+        {--json : Tampilkan hasil sebagai JSON}';
 
     protected $description = 'Memvalidasi manifest module tanpa mengubah file.';
 
     public function handle(ModuleRegistry $registry): int
     {
         $result = $registry->discover(app_path('Modules'));
-        $success = $result['diagnostics'] === [];
+        $target = $this->argument('module');
+        $diagnostics = $result['diagnostics'];
+        $modules = $result['modules'];
+
+        if ($target !== null) {
+            $target = trim((string) $target, '/');
+
+            if (preg_match('#^[A-Z][A-Za-z0-9]*/[A-Z][A-Za-z0-9]*$#', $target) !== 1) {
+                return $this->respond([
+                    'success' => false,
+                    'code' => 'MODULE_TARGET_INVALID',
+                    'message' => 'Target module harus menggunakan format Domain/Module.',
+                    'data' => ['target' => $target, 'valid' => 0],
+                    'diagnostics' => [],
+                ]);
+            }
+
+            [$domain, $name] = explode('/', $target, 2);
+            $modules = array_values(array_filter(
+                $modules,
+                static fn ($module): bool => $module->domain === $domain && $module->name === $name,
+            ));
+            $diagnostics = array_values(array_filter(
+                $diagnostics,
+                static fn (array $diagnostic): bool => str_starts_with($diagnostic['path'], $target.'/'),
+            ));
+
+            if ($modules === [] && $diagnostics === []) {
+                return $this->respond([
+                    'success' => false,
+                    'code' => 'MODULE_TARGET_NOT_FOUND',
+                    'message' => "Target module [$target] tidak ditemukan.",
+                    'data' => ['target' => $target, 'valid' => 0],
+                    'diagnostics' => [],
+                ]);
+            }
+        }
+
+        $success = $diagnostics === [] && $modules !== [] || $target === null && $diagnostics === [];
         $payload = [
             'success' => $success,
             'code' => $success ? 'MODULE_VALID' : 'MODULE_INVALID',
-            'data' => ['valid' => count($result['modules']), 'diagnostics' => $result['diagnostics']],
+            'message' => $success
+                ? ($target === null ? 'Semua module yang ditemukan valid.' : "Target module [$target] valid.")
+                : 'Ada module yang tidak valid.',
+            'data' => [
+                'target' => $target,
+                'valid' => count($modules),
+                'diagnostics' => $diagnostics,
+            ],
+            'diagnostics' => $diagnostics,
         ];
 
         if ($this->option('json')) {
             $this->line(json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
         } else {
-            $success ? $this->info('Semua module yang ditemukan valid.') : $this->error('Ada module yang tidak valid.');
+            $success ? $this->info($target === null ? 'Semua module yang ditemukan valid.' : "Target module [$target] valid.") : $this->error('Ada module yang tidak valid.');
+            foreach ($diagnostics as $diagnostic) {
+                $this->error($diagnostic['path'].': '.$diagnostic['message']);
+            }
         }
 
         return $success ? self::SUCCESS : self::FAILURE;
+    }
+
+    /** @param array<string, mixed> $payload */
+    private function respond(array $payload): int
+    {
+        if ($this->option('json')) {
+            $this->line(json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR));
+        } elseif ($payload['success']) {
+            $this->info((string) $payload['message']);
+        } else {
+            $this->error((string) $payload['message']);
+
+            foreach ($payload['diagnostics'] as $diagnostic) {
+                $this->error($diagnostic['path'].': '.$diagnostic['message']);
+            }
+        }
+
+        return $payload['success'] ? self::SUCCESS : self::FAILURE;
     }
 }

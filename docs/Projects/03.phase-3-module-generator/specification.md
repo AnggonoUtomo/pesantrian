@@ -42,6 +42,9 @@ validasi identity kedua yang berbeda dari contract tersebut.
 | REQ-007 | Output ter-sanitasi | Must | Tidak ada secret, credential, forbidden dependency, atau payload sensitif |
 | REQ-008 | Output dapat diverifikasi | Must | JSON memiliki code, data, diagnostics, dan exit code stabil |
 | REQ-009 | Generator tidak overwrite default | Must | File existing ditolak kecuali mode extension disetujui |
+| REQ-010 | Extension dan overwrite eksplisit | Must | Extension hanya membuat file baru; overwrite wajib memakai guard lengkap dan backup |
+| REQ-011 | Preflight compatibility | Must | Namespace, manifest, profile, struktur, dan registry diperiksa sebelum mutation |
+| REQ-012 | Overwrite terbatas | Must | Hanya file dalam plan profile yang boleh ditimpa; business logic dan file custom tidak di-merge |
 
 ## Module Boundary
 
@@ -115,7 +118,9 @@ Baseline yang menjadi acuan: `docs/03-IMPLEMENTATION/03.04-FOLDER-STRUCTURE.md`.
 ## Keputusan yang Sudah Disetujui
 
 - Profile pertama: `default-v1`.
-- Phase 3 awal hanya membuat module baru; mode extension belum tersedia.
+- Mode extension dan overwrite diaktifkan melalui ADR-0002 dengan guard
+  `--extension`, `--overwrite`, `--force`, dan `--yes`.
+- `--dry-run --json` wajib dijalankan dan ditinjau sebelum overwrite.
 - Promotion memakai staging directory ULID, validasi hasil staging, rename
   atomic ke target, dan cleanup saat gagal.
 

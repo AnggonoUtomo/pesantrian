@@ -12,6 +12,8 @@ execution evidence, dan review checklist sebelum serta sesudah dikerjakan.
 | TASK-005 | INC-005   | Buat staging dan promotion      | TASK-004   | Promote sukses; cleanup saat gagal         | Integration test | Selesai |
 | TASK-006 | INC-006   | Buat command `module:make`      | TASK-005   | JSON/human output dan exit code stabil     | Command test     | Selesai |
 | TASK-007 | INC-007   | Hardening dan quality gate      | TASK-006   | Full verification lulus                    | Full suite       | Selesai |
+| TASK-008 | INC-008   | Hardening registry/generator   | TASK-007   | Recursive, target validate, diagnostic aman | Focused + CI   | Selesai |
+| TASK-009 | INC-009   | Extension dan overwrite aman   | TASK-008   | Guard, backup/restore, cleanup             | Focused + CI   | Selesai |
 
 ## Detail TASK-001
 
@@ -219,3 +221,63 @@ tests/Unit/ModulePromotionServiceTest.php` lulus dengan 3 test/9
 - [x] Generated structure dan manifest lulus validation registry.
 - [x] Documentation dan execution log diperbarui.
 - [x] Checklist ditinjau sebelum dan sesudah pekerjaan.
+
+## Detail TASK-008
+
+- [x] Scope task selesai.
+  - Kondisi awal: discovery registry belum recursive, `module:validate` belum
+    mendukung target, dan diagnostic belum seragam aman.
+  - File target: registry, command module, conflict detector, test, dan docs
+    console/Phase 3.
+  - Perubahan yang direncanakan: recursive discovery, target validation,
+    safe diagnostic, dan regression test.
+  - Alasan: generator membutuhkan registry yang lengkap dan aman sebagai source
+    of truth sebelum membuat module baru.
+  - Evidence: focused test lulus 23 test/62 assertion; PHPStan lulus; nested
+    discovery berhasil; target valid menghasilkan `MODULE_VALID`; target tidak
+    ditemukan menghasilkan `MODULE_TARGET_NOT_FOUND`; full CI lulus dengan
+    157 test dan 596 assertion.
+  - Risiko: struktur module non-canonical yang sudah ada dapat mulai terdeteksi
+    setelah scanner menjadi recursive.
+
+## Review Checklist TASK-008
+
+- [x] Checklist ditinjau sebelum coding.
+- [x] Positive dan negative test tersedia.
+- [x] Nested discovery dan target validation diuji.
+- [x] Diagnostic tidak membocorkan path absolut atau detail exception internal.
+- [x] Generator dry-run dan conflict tetap tidak menulis file.
+- [x] Checklist ditinjau sesudah focused test dan static analysis.
+
+## Detail TASK-009
+
+- [x] Scope task selesai.
+  - Kondisi awal: target existing selalu ditolak dan belum ada backup/restore.
+  - File target: generator request, preview, promotion, command, test, ADR,
+    specification, dan execution log.
+  - Perubahan yang direncanakan: `--extension`, `--overwrite`, guard eksplisit,
+    backup file existing, restore saat failure, dan cleanup staging.
+  - Alasan: melengkapi module existing perlu aman dan dapat di-rollback.
+  - Evidence: focused extension/overwrite test lulus 22 test dan 72 assertion;
+    full CI lulus dengan 165 test dan 625 assertion.
+  - Risiko: overwrite hanya berlaku untuk file yang tercantum pada plan profile.
+
+## Aturan Operasional TASK-009
+
+- [x] Dry-run menjadi langkah review sebelum overwrite.
+  - Command: `php artisan module:make {Module} --extension --overwrite --dry-run --json`.
+  - Alasan: planned file harus ditinjau sebelum mutation.
+- [x] Compatibility check menjadi prasyarat extension/overwrite.
+  - Scope: namespace, manifest, profile, struktur target, dan registry.
+- [x] Overwrite dibatasi pada file dalam plan profile.
+  - File business logic dan file custom tidak di-merge otomatis.
+- [x] Rollback sukses menggunakan Git; backup staging hanya untuk failure recovery.
+
+## Review Checklist TASK-009
+
+- [x] Checklist ditinjau sebelum coding.
+- [x] Extension tanpa overwrite hanya membuat file baru.
+- [x] Overwrite membutuhkan `--extension --force --yes`.
+- [x] Backup/restore dan cleanup failure diuji.
+- [x] File di luar plan tidak disentuh.
+- [x] Checklist ditinjau sesudah quality gate.

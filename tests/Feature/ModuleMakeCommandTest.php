@@ -57,6 +57,39 @@ it('mengembalikan failure saat target conflict', function () {
         ->and($result->getOutput())->toContain('MODULE_GENERATION_FAILED');
 });
 
+it('mengizinkan extension additive tanpa overwrite', function () {
+    expect(runModuleMake('AuditLog', ['--domain=System', '--force', '--yes', '--json'])->getExitCode())->toBe(0);
+    File::put(app_path('Modules/System/AuditLog/custom.txt'), 'keep');
+
+    $result = runModuleMake('AuditLog', ['--domain=System', '--extension', '--force', '--yes', '--json']);
+
+    expect($result->getExitCode())->toBe(0)
+        ->and($result->getOutput())->toContain('MODULE_CREATED')
+        ->and(File::get(app_path('Modules/System/AuditLog/custom.txt')))->toBe('keep');
+});
+
+it('menolak overwrite tanpa extension sebelum mutation', function () {
+    expect(runModuleMake('AuditLog', ['--domain=System', '--force', '--yes', '--json'])->getExitCode())->toBe(0);
+    File::put(app_path('Modules/System/AuditLog/module.php'), 'custom');
+
+    $result = runModuleMake('AuditLog', ['--domain=System', '--overwrite', '--force', '--yes', '--json']);
+
+    expect($result->getExitCode())->toBe(1)
+        ->and($result->getOutput())->toContain('overwrite membutuhkan extension')
+        ->and(File::get(app_path('Modules/System/AuditLog/module.php')))->toBe('custom');
+});
+
+it('mengizinkan overwrite file plan dengan guard lengkap', function () {
+    expect(runModuleMake('AuditLog', ['--domain=System', '--force', '--yes', '--json'])->getExitCode())->toBe(0);
+    File::put(app_path('Modules/System/AuditLog/module.php'), 'custom');
+
+    $result = runModuleMake('AuditLog', ['--domain=System', '--extension', '--overwrite', '--force', '--yes', '--json']);
+
+    expect($result->getExitCode())->toBe(0)
+        ->and($result->getOutput())->toContain('MODULE_CREATED')
+        ->and(File::get(app_path('Modules/System/AuditLog/module.php')))->toContain('return []');
+});
+
 /** @param list<string> $options */
 function runModuleMake(string $module, array $options): Process
 {

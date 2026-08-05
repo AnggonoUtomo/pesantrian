@@ -19,10 +19,11 @@ final class ModuleDiscoverCommand extends Command
         $payload = [
             'success' => $result['diagnostics'] === [],
             'code' => $result['diagnostics'] === [] ? 'MODULE_DISCOVERED' : 'MODULE_DISCOVERY_FAILED',
+            'message' => $result['diagnostics'] === [] ? 'Discovery module berhasil.' : 'Discovery menemukan module tidak valid.',
             'data' => [
                 'modules' => array_map(static fn ($module): array => get_object_vars($module), $result['modules']),
-                'diagnostics' => $result['diagnostics'],
             ],
+            'diagnostics' => $result['diagnostics'],
         ];
 
         return $this->respond($payload);

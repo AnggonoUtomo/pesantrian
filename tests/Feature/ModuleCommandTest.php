@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 
 beforeEach(function () {
@@ -48,6 +49,8 @@ it('mengembalikan failure JSON saat discover menemukan module invalid', function
     $this->artisan('module:discover', ['--json' => true])
         ->assertExitCode(1)
         ->expectsOutputToContain('MODULE_DISCOVERY_FAILED');
+
+    expect(Artisan::output())->not->toContain(app_path('Modules'));
 });
 
 it('mengembalikan failure JSON saat validate menemukan module invalid', function () {
@@ -56,6 +59,18 @@ it('mengembalikan failure JSON saat validate menemukan module invalid', function
     $this->artisan('module:validate', ['--json' => true])
         ->assertExitCode(1)
         ->expectsOutputToContain('MODULE_INVALID');
+});
+
+it('memvalidasi target module secara spesifik', function () {
+    $this->artisan('module:validate', ['module' => 'System/AccessControl', '--json' => true])
+        ->assertExitCode(0)
+        ->expectsOutputToContain('MODULE_VALID');
+});
+
+it('mengembalikan failure saat target validate tidak ditemukan', function () {
+    $this->artisan('module:validate', ['module' => 'System/MissingModule', '--json' => true])
+        ->assertExitCode(1)
+        ->expectsOutputToContain('MODULE_TARGET_NOT_FOUND');
 });
 
 it('mengembalikan failure JSON saat list menemukan module invalid', function () {

@@ -15,6 +15,8 @@ final readonly class ModuleGenerationRequest
         public bool $dryRun = false,
         public bool $force = false,
         public bool $yes = false,
+        public bool $extension = false,
+        public bool $overwrite = false,
     ) {}
 
     /** @param array<string, mixed> $data */
@@ -39,12 +41,26 @@ final readonly class ModuleGenerationRequest
         $dryRun = self::boolValue($data, 'dry_run');
         $force = self::boolValue($data, 'force');
         $yes = self::boolValue($data, 'yes');
+        $extension = self::boolValue($data, 'extension');
+        $overwrite = self::boolValue($data, 'overwrite');
 
         if ($yes && ! $force) {
             throw new InvalidArgumentException('yes membutuhkan force.');
         }
 
-        return new self($module, $domain, $profile, $dryRun, $force, $yes);
+        if ($overwrite && ! $extension) {
+            throw new InvalidArgumentException('overwrite membutuhkan extension.');
+        }
+
+        if ($overwrite && ! $force) {
+            throw new InvalidArgumentException('overwrite membutuhkan force.');
+        }
+
+        if ($overwrite && ! $yes) {
+            throw new InvalidArgumentException('overwrite membutuhkan yes.');
+        }
+
+        return new self($module, $domain, $profile, $dryRun, $force, $yes, $extension, $overwrite);
     }
 
     /** @param array<string, mixed> $data */

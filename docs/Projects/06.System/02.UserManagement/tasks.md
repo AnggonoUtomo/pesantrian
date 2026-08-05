@@ -1061,6 +1061,48 @@ development dan tidak boleh digunakan sebagai data production.
   - Sesudah: seluruh item Open Risk memiliki file perubahan dan evidence;
     tidak ada checklist terbuka pada folder UserManagement.
 
+## Task 13 — Pencatatan Scope Lanjutan
+
+- [x] Scope lanjutan dicatat pada dokumen UserManagement.
+  - Kondisi awal: Task 12 sudah menutup vertical slice status, soft delete, dan
+    role assignment, tetapi pekerjaan lanjutan belum memiliki daftar scope,
+    batasan, acceptance awal, dan bukti yang harus disiapkan.
+  - Perubahan: memperbarui `README.md`, `specification.md`,
+    `implementation-plan.md`, `migration-runbook.md`, dan execution log dengan
+    lima backlog resmi: restore user, invitation email, role revoke atau
+    multi-role management, AuditLog consumer production, dan migration
+    shared/production.
+  - Alasan: tim perlu membedakan fitur yang sudah selesai dari fitur yang baru
+    direncanakan agar implementasi, review, dan rollback dapat ditelusuri.
+  - Evidence: setiap scope memiliki batasan dan bukti minimum sebelum coding;
+    migration production dicatat sebagai release gate eksternal.
+
+- [ ] Restore user belum dibuat.
+  - Syarat selesai: action, policy, permission, audit event, aturan
+    `SuperSystem`, positive/negative test, dan browser flow tersedia.
+
+- [ ] Invitation email belum dibuat.
+  - Syarat selesai: token sekali pakai dengan expiry, mail-fake test, redaction,
+    failure handling, dan UI invitation tersedia.
+
+- [ ] Role revoke atau multi-role management belum dibuat.
+  - Syarat selesai: public contract, operasi atomik, protected-role guard,
+    audit, positive/negative test, dan browser flow tersedia.
+
+- [ ] AuditLog consumer production belum dibuat.
+  - Syarat selesai: event versioning, correlation ID, idempotency, retry,
+    redaction, monitoring, dan consumer test tersedia.
+
+- [ ] Migration shared/production belum dilakukan.
+  - Syarat selesai: rehearsal, backup/restore test, lock/downtime check,
+    approval operator, dan rollback evidence tersedia pada environment target.
+
+- [x] Checklist ditinjau sebelum dan sesudah pencatatan scope.
+  - Sebelum: lima item dipastikan berasal dari scope yang belum tersedia, bukan
+    dari fitur yang sudah ditutup Task 12.
+  - Sesudah: lima item tetap terbuka dengan acceptance awal; tidak ada item
+    backlog yang ditandai selesai hanya karena dokumentasinya sudah dibuat.
+
 ## Revision History
 
 | Version | Date       | Description                                             |
@@ -1073,3 +1115,4 @@ development dan tidak boleh digunakan sebagai data production.
 | 2.2     | 2026-08-06 | Menutup warning Pest pada unit test application |
 | 2.3     | 2026-08-06 | Menutup Task 10 quality checkpoint dan menyelaraskan evidence dokumentasi |
 | 1.1     | 2026-08-06 | Menetapkan keputusan scope dan status task siap dimulai |
+| 2.4     | 2026-08-06 | Mencatat lima scope lanjutan yang belum dibuat |

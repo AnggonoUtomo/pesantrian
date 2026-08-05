@@ -80,6 +80,32 @@ mengambil alih private implementation AccessControl.
 - flow impersonation dengan permission, alasan, dan perlindungan
   `SuperSystem`.
 
+## Scope Lanjutan yang Belum Dibuat
+
+Lima scope berikut dicatat sebagai pekerjaan lanjutan. Item ini belum dianggap
+selesai dan tidak boleh dibuat hanya dengan menambahkan tombol pada frontend.
+Setiap item harus memiliki specification, acceptance criteria, focused test,
+permission atau contract yang sesuai, browser flow bila memiliki UI, dan
+execution evidence sebelum ditandai selesai.
+
+1. **Restore user** — memulihkan user yang sudah di-soft-delete. Wajib memiliki
+   policy, permission, aturan untuk `SuperSystem`, audit event, dan test untuk
+   user yang masih aktif serta user yang sudah dihapus.
+2. **Invitation email** — membuat user melalui email undangan, token sekali
+   pakai, masa berlaku, dan alur menetapkan password. Jangan mencatat token atau
+   password ke log. Integrasi email perlu diuji dengan mail fake dan failure
+   path.
+3. **Role revoke dan multi-role management** — mencabut role tertentu dan
+   mengelola beberapa role user secara atomik. Perlu aturan agar role terakhir,
+   role `SuperSystem`, dan perubahan tanpa permission tidak dapat disalahgunakan.
+4. **AuditLog consumer production** — membuat consumer production untuk event
+   lifecycle, role, dan impersonation. Consumer harus memiliki schema event,
+   correlation ID, redaction, idempotency, retry, serta failure handling.
+5. **Migration shared/production** — melakukan rehearsal migration pada salinan
+   database, backup/restore test, verifikasi lock dan downtime, serta prosedur
+   rollback. Workspace lokal tidak dapat membuktikan deployment production tanpa
+   database nyata, backup, dan persetujuan operator.
+
 ## Aturan UI UserManagement
 
 - Referensi visual boleh diambil dari `FrontendContoh/users`, tetapi route,
@@ -184,3 +210,4 @@ khusus tersebut.
 | --- | --- | --- |
 | 1.1 | 2026-08-06 | Menetapkan keputusan scope awal dan vertical slice |
 | 1.2 | 2026-08-06 | Menyelesaikan impersonation session, audit event, dan browser flow |
+| 1.3 | 2026-08-06 | Mencatat lima scope lanjutan yang belum dibuat |

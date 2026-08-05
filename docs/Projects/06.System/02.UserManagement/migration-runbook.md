@@ -14,6 +14,14 @@ Migration `2026_08_06_000000_add_lifecycle_columns_to_users_table` menambahkan:
 
 Migration tidak mengubah `users.id`, password, token, 2FA, atau tabel Passkey.
 
+## Scope Migration Lanjutan
+
+Migration shared/production belum dianggap selesai. Sebelum dijalankan pada
+environment bersama atau production, harus ada rehearsal pada database yang
+menyerupai target, backup yang dapat dipulihkan, pemeriksaan lock/downtime, dan
+persetujuan operator. Workspace lokal tidak memiliki database production,
+backup nyata, atau kewenangan untuk membuktikan langkah tersebut.
+
 ## Urutan aman
 
 1. Pastikan release yang akan dijalankan sama dengan commit yang sudah lulus CI.

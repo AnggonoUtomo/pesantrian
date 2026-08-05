@@ -53,3 +53,25 @@ riwayat percakapan.
 - Status: Open Risk Task 08A ditutup untuk status, soft delete, dan role
   assignment. Migration shared/production tetap release gate external yang
   membutuhkan database nyata dan backup.
+
+## Task 13 — Pencatatan Scope Lanjutan
+
+- Kondisi awal: Task 12 sudah menutup vertical slice UI status, soft delete, dan
+  role assignment. Restore user, invitation email, pengelolaan role yang lebih
+  lengkap, consumer AuditLog production, dan migration shared/production belum
+  memiliki catatan backlog yang terstruktur.
+- File dokumentasi terdampak: `README.md`, `specification.md`,
+  `implementation-plan.md`, `tasks.md`, `migration-runbook.md`, dan file ini.
+- Perubahan: menambahkan lima scope resmi dengan batasan, pekerjaan minimum,
+  acceptance awal, serta kebutuhan evidence dan rollback. Status kelima scope
+  tetap `belum dikerjakan`.
+- Alasan: dokumentasi harus membedakan capability yang sudah diverifikasi dari
+  pekerjaan enterprise berikutnya agar tidak ada coding parsial yang dianggap
+  selesai.
+- Evidence: `tasks.md` memiliki checklist terbuka yang eksplisit untuk lima
+  scope; implementation plan memiliki tabel bukti selesai; migration runbook
+  menegaskan release gate shared/production.
+- Risiko tersisa: kelima scope belum dapat dipakai user sampai increment coding
+  dan quality gate masing-masing selesai. Migration shared/production tetap
+  membutuhkan database nyata, backup yang dapat dipulihkan, rehearsal, dan
+  persetujuan operator.

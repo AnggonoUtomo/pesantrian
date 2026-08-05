@@ -7,7 +7,8 @@ frontend quality gate, browser smoke test, dan state dialog sudah diverifikasi
 untuk scope list/detail, create, edit, impersonation, status, soft delete, dan
 role assignment.
 
-UI status, delete, dan role assignment tetap menjadi increment berikutnya.
+UI status, delete, dan role assignment sudah termasuk scope yang diverifikasi
+pada Task 12.
 
 ## Objective
 
@@ -34,12 +35,31 @@ di `app/Models`, `packages/StarterKit`, atau private layer AccessControl.
 - vertical slice awal membaca daftar dan detail user;
 - search/filter sederhana pada daftar user;
 - state loading, empty, error, unauthorized, dan responsive layout;
-- tahap lanjutan mencakup create, update, status, soft delete, role assignment,
-  dan impersonation setelah slice baca lulus;
+- create, update, status, soft delete, role assignment, dan impersonation;
 - menyediakan permission identity milik UserManagement;
 - menyediakan page frontend dengan layout System baseline;
 - menyediakan loading, empty, error, permission visibility, responsive layout,
   dan browser flow.
+
+## Scope Lanjutan yang Belum Dibuat
+
+Scope berikut belum termasuk implementasi saat ini:
+
+1. **Restore user**: memulihkan user dari soft delete dengan authorization,
+   audit, aturan `SuperSystem`, dan test positive/negative.
+2. **Invitation email**: mengirim undangan dengan token sekali pakai yang
+   memiliki expiry, redaction, mail-fake test, dan failure handling.
+3. **Role revoke atau multi-role management**: mencabut role tertentu serta
+   mengatur banyak role dalam satu operasi yang atomik dan aman.
+4. **AuditLog consumer production**: mengonsumsi event module secara idempotent
+   dengan correlation ID, retry, redaction, dan monitoring failure.
+5. **Migration shared/production**: rehearsal pada database yang menyerupai
+   target, backup/restore test, pemeriksaan lock/downtime, dan persetujuan
+   operator sebelum deployment.
+
+Item di atas baru boleh masuk increment coding setelah decision, contract,
+acceptance criteria, focused test, dan rollback trace ditambahkan. UI tidak
+boleh menampilkan fitur yang belum memiliki backend authority.
 
 ## Non-Scope
 
@@ -292,3 +312,4 @@ Focused test yang akan dibuat:
 | 1.4 | 2026-08-06 | Menambahkan application DTO, query, action, dan session contract |
 | 1.5 | 2026-08-06 | Menambahkan migration additive dan repository UserManagement |
 | 1.6 | 2026-08-06 | Menambahkan presentation route, policy, request, dan resource |
+| 1.7 | 2026-08-06 | Menyelaraskan status Task 12 dan mencatat scope lanjutan |

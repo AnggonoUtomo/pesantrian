@@ -813,6 +813,48 @@ development dan tidak boleh digunakan sebagai data production.
     - Evidence: Open risk Task 08A dan batasan migration production tercatat;
       tidak ada unresolved error pada scope yang sudah diimplementasikan.
 
+## Documentation alignment — komunikasi dan eksekusi module
+
+- [x] Status Contract dan dependency lintas module dicatat.
+  - Kondisi awal: UserManagement menggunakan `UserRepository`,
+    `ImpersonationSession`, dan capability publik AccessControl, tetapi batas
+    dependency belum diringkas pada checkpoint akhir.
+  - Perubahan: contract internal dan public capability lintas module dicatat;
+    UserManagement tidak boleh mengimpor model, repository, policy, atau
+    service private AccessControl.
+  - Alasan: boundary ini menjadi acuan saat evaluasi dan rollback dimulai dari
+    AccessControl.
+  - Evidence: `README.md`, `specification.md`, `implementation-plan.md`, dan
+    `docs/03-IMPLEMENTATION/03.12-MODULE-COMMUNICATION-AND-EXECUTION.md`.
+- [x] Status Event, Action, Query, dan CQRS-lite dicatat.
+  - Kondisi awal: event impersonation sudah ada, tetapi belum ditegaskan
+    statusnya terhadap Application Event dan Integration Event.
+  - Perubahan: `UserImpersonationStarted` dan `UserImpersonationEnded`
+    ditetapkan sebagai Domain Event synchronous. `CreateUser`, `UpdateUser`,
+    `ChangeUserStatus`, `SoftDeleteUser`, dan `StartImpersonation` tetap
+    Application Action; `ListUsers` dan `GetUser` tetap Query.
+  - Alasan: hanya event dengan consumer lintas module yang boleh dipromosikan
+    menjadi Integration Event.
+  - Evidence: ADR-0002 UserManagement, ADR-0003, dan specification module.
+- [x] Status Command Bus, Queue/Job, Facade, dan Shared Kernel ditinjau.
+  - Kondisi awal: tidak ada Command Bus, queued listener, Facade module, atau
+    Shared Kernel domain pada runtime UserManagement.
+  - Perubahan: dokumen menyatakan semua capability tersebut belum menjadi
+    dependency scope saat ini. CQRS yang berlaku adalah CQRS-lite.
+  - Alasan: menjaga implementasi tetap sederhana sampai tersedia kebutuhan,
+    consumer, retry/idempotency contract, dan ADR baru.
+  - Evidence: `README.md`, `specification.md`, `implementation-plan.md`, serta
+    dokumen authoritative 03.12.
+- [x] Checklist ditinjau setelah pembaruan.
+  - Kondisi awal: final checkpoint belum memiliki item khusus untuk memastikan
+    pola komunikasi module konsisten dengan baseline global.
+  - Perubahan: item alignment ini ditambahkan dan seluruh dokumen module
+    diselaraskan tanpa mengubah source code.
+  - Alasan: pekerjaan berikutnya dapat melanjutkan evaluasi AccessControl
+    dengan status UserManagement yang jelas.
+  - Evidence: `git diff --check` lulus; perubahan hanya berada pada folder
+    `docs/`.
+
 ## Revision History
 
 | Version | Date       | Description                                             |

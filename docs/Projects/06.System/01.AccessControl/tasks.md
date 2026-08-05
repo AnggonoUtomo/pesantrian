@@ -302,3 +302,45 @@ seeder demo, browser review, dan accessibility check sudah tersedia.
     assertion; Pint lulus. Regression test memeriksa controller tidak memuat
     `Role::query`, `Permission::query`, `Role::create`, persistence mutation,
     atau `$request->validate()`.
+
+## Documentation alignment — komunikasi dan eksekusi module
+
+- [x] Status Contract dan Module API dicatat.
+  - Kondisi awal: AccessControl sudah memiliki `AuthorizationCapability` dan
+    `RoleAssignmentCapability`, tetapi batas public API belum dirangkum pada
+    checkpoint task.
+  - Perubahan: status kedua contract dicatat sebagai public capability module.
+    Pemanggil lintas module tidak boleh mengambil model, repository, atau
+    adapter Spatie secara langsung.
+  - Alasan: contract menjadi batas dependency yang dapat ditelusuri saat
+    evaluasi atau rollback AccessControl.
+  - Evidence: `README.md`, `specification.md`, `implementation-plan.md`, dan
+    `docs/03-IMPLEMENTATION/03.12-MODULE-COMMUNICATION-AND-EXECUTION.md`.
+- [x] Status Event, Action, Query, dan CQRS-lite dicatat.
+  - Kondisi awal: document menyebut Action dan Query, tetapi belum membedakan
+    Domain Event dari Integration Event serta belum menyatakan bahwa Command
+    Bus bukan dependency runtime saat ini.
+  - Perubahan: AccessControl ditetapkan memakai Action untuk mutation dan
+    Query untuk read. Domain Event, Application Event, Integration Event,
+    Command Bus, dan Queue/Job belum aktif pada runtime module.
+  - Alasan: implementasi saat ini adalah CQRS-lite; penambahan bus atau event
+    lintas module tanpa consumer nyata akan menambah coupling tanpa kebutuhan.
+  - Evidence: ADR-0003 dan dokumen authoritative 03.12.
+- [x] Batas Shared Kernel dan Facade ditinjau.
+  - Kondisi awal: belum ada Shared Kernel domain atau Facade AccessControl.
+  - Perubahan: `packages/StarterKit` dicatat sebagai framework package, bukan
+    Shared Kernel domain. Public contract tetap menjadi Module API dan Facade
+    tidak ditambahkan.
+  - Alasan: mencegah private implementation berubah menjadi dependency lintas
+    module.
+  - Evidence: `docs/06-FRAMEWORK/06.02-MODULE-CONTRACTS.md`, root
+    `AGENTS.md`, dan `docs/AGENTS.md`.
+- [x] Checklist ditinjau setelah pembaruan.
+  - Kondisi awal: dokumen module dan baseline memiliki istilah komunikasi
+    yang belum seragam.
+  - Perubahan: specification, plan, README, task, code-flow, baseline,
+    framework contract, dan ADR diselaraskan tanpa mengubah source code.
+  - Alasan: rollback berikutnya harus dapat dimulai dari AccessControl dengan
+    baseline dokumentasi yang sama.
+  - Evidence: `git diff --check` lulus; tidak ada file `app/`, `resources/`,
+    `tests/`, atau konfigurasi runtime yang diubah.

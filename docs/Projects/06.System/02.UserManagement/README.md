@@ -66,6 +66,7 @@ mengambil alih private implementation AccessControl.
 - [Folder structure](../../../03-IMPLEMENTATION/03.04-FOLDER-STRUCTURE.md)
 - [Module contract](../../../03-IMPLEMENTATION/03.07-MODULES.md)
 - [Generator specification](../../../03-IMPLEMENTATION/03.05-GENERATOR-SPEC.md)
+- [Module communication and execution](../../../03-IMPLEMENTATION/03.12-MODULE-COMMUNICATION-AND-EXECUTION.md)
 - [Project rules](../../../AGENTS.md)
 
 ## Kemampuan yang Direncanakan
@@ -99,6 +100,18 @@ mengambil alih private implementation AccessControl.
 - Vertical slice pertama hanya daftar/detail user, search/filter sederhana, dan
   state loading/empty/error.
 - Impersonation menjadi increment terakhir dengan ADR session dan audit khusus.
+
+## Pola komunikasi module
+
+UserManagement memakai `UserRepository` dan `ImpersonationSession` sebagai
+contract internal/application boundary. Untuk lintas module, UserManagement
+memakai `AuthorizationCapability` dan `RoleAssignmentCapability` milik
+AccessControl.
+
+`ListUsers` dan `GetUser` adalah Query internal dengan `UserData` typed.
+Mutation memakai Application Action. Event impersonation saat ini adalah Domain
+Event synchronous; belum ada Application Event, Integration Event, Command Bus,
+Queue/Job, Facade, atau Shared Kernel domain.
 
 ## Cara Verifikasi Awal
 

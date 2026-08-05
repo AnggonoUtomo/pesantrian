@@ -141,6 +141,11 @@ Jika role assignment contract belum tersedia dari AccessControl, coding task
 role assignment harus berhenti dan keputusan contract harus dibuat terlebih
 dahulu.
 
+Pola eksekusi mengikuti ADR-0003. UserManagement memakai Application Action
+untuk write, Application Query dan DTO untuk read, serta Domain Event internal
+untuk impersonation. Command Bus, Integration Event, Queue/Job, Facade, dan
+Shared Kernel belum menjadi dependency module.
+
 ## Risiko
 
 | Risiko | Mitigasi |

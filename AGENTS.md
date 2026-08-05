@@ -245,6 +245,22 @@ policy, atau service dari AccessControl.
 - Secret, token, password, credential, dan sensitive payload tidak boleh masuk
   ke source, log, output, diagnostic, atau generated artifact.
 
+## Pola Komunikasi dan Eksekusi Module
+
+Acuan detail berada pada
+[`docs/03-IMPLEMENTATION/03.12-MODULE-COMMUNICATION-AND-EXECUTION.md`](docs/03-IMPLEMENTATION/03.12-MODULE-COMMUNICATION-AND-EXECUTION.md)
+dan ADR-0003.
+
+- Public module API memakai contract, DTO, capability, atau public event.
+- Application Action adalah default untuk mutation synchronous.
+- Application Query adalah default untuk read dan typed DTO/read contract.
+- Domain Event bersifat internal module. Application Event dan Integration Event
+  memerlukan consumer nyata.
+- Command Bus, Queue/Job, Facade, dan Shared Kernel bukan default baseline.
+- Baseline saat ini adalah CQRS-lite, bukan CQRS penuh.
+- `packages/StarterKit` adalah reusable framework package, bukan Shared Kernel
+  business.
+
 ## Standard Authorization Pattern
 
 Semua module mengikuti pola:

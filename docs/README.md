@@ -64,8 +64,10 @@ valid dan tidak bergantung pada nama workspace lokal.
 - [Requirements](01-REQUIREMENTS/01.05-BASELINE-SPECIFICATION.md)
 - [Design](02-DESIGN/02.04-SYSTEM-DESIGN.md)
 - [Implementation](03-IMPLEMENTATION/03.11-BASELINE-TASK-PLAN.md)
+- [Module Communication and Execution](03-IMPLEMENTATION/03.12-MODULE-COMMUNICATION-AND-EXECUTION.md)
 - [Deployment](04-DEPLOYMENT/04.04-RELEASE.md)
 - [Decisions](05-DECISIONS/ADR/05.04-ADR-0002-DOCUMENTATION-STANDARD.md)
+- [ADR-0003 Module Communication](05-DECISIONS/ADR/05.05-ADR-0003-MODULE-COMMUNICATION-AND-EXECUTION.md)
 - [Project Templates](Projects/README.md)
 
 ## Baseline Implementation Path

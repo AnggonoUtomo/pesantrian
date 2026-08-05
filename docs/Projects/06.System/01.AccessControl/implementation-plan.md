@@ -15,6 +15,10 @@ Authentication
 Module lain hanya memanggil public contract atau capability. Detail model,
 repository, dan adapter Spatie tetap berada di dalam `AccessControl`.
 
+Pola execution baseline adalah CQRS-lite: Action untuk mutation dan Query untuk
+read. Command Bus, Integration Event, Queue/Job, Facade, dan Shared Kernel
+tidak ditambahkan tanpa consumer nyata dan keputusan ADR-0003.
+
 ### Pembagian tanggung jawab runtime
 
 - `Presentation/Controllers/RoleController` hanya mengatur middleware,

@@ -54,6 +54,18 @@ Public capability awal yang perlu dirancang:
 Contract awal memakai `AuthorizationCapability`, dengan result typed
 `AuthorizationDecision`. Detail model Spatie tetap private di adapter.
 
+## Pola komunikasi dan eksekusi
+
+- `AuthorizationCapability` adalah public contract untuk pemeriksaan capability.
+- `RoleAssignmentCapability` adalah public contract untuk assignment role.
+- Application Action menjadi pola mutation synchronous.
+- Application Query menjadi pola read typed.
+- Domain Event hanya dipakai untuk fakta internal module.
+- Integration Event, Application Event, Command Bus, Queue/Job, Facade, dan
+  Shared Kernel belum aktif pada AccessControl baseline.
+- Detail target dan status implementasi mengikuti
+  [`03.12-MODULE-COMMUNICATION-AND-EXECUTION.md`](../../../03-IMPLEMENTATION/03.12-MODULE-COMMUNICATION-AND-EXECUTION.md).
+
 ## Authorization contract
 
 Role privileged baseline bernama `SuperSystem`.

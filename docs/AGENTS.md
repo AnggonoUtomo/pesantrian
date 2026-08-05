@@ -338,6 +338,22 @@ menyiapkan flash notification, dan mengembalikan response. Query Eloquent,
 aturan validasi, persistence mutation, dan business rule harus berada di layer
 yang memilikinya, bukan bercampur di controller.
 
+## Pola Komunikasi dan Eksekusi Module
+
+Acuan detail berada pada
+[`03.12-MODULE-COMMUNICATION-AND-EXECUTION.md`](03-IMPLEMENTATION/03.12-MODULE-COMMUNICATION-AND-EXECUTION.md)
+dan [ADR-0003](05-DECISIONS/ADR/05.05-ADR-0003-MODULE-COMMUNICATION-AND-EXECUTION.md).
+
+- Public module API memakai contract, DTO, capability, atau public event.
+- Application Action adalah default untuk mutation synchronous.
+- Application Query adalah default untuk read dan typed DTO/read contract.
+- Domain Event bersifat internal module. Application Event dan Integration Event
+  memerlukan consumer nyata.
+- Command Bus, Queue/Job, Facade, dan Shared Kernel bukan default baseline.
+- Baseline saat ini adalah CQRS-lite, bukan CQRS penuh.
+- `packages/StarterKit` adalah reusable framework package, bukan Shared Kernel
+  business.
+
 `resources/js/components/app-sidebar-header.tsx`,
 `resources/js/components/app-sidebar.tsx`, `resources/js/components/nav-main.tsx`,
 `resources/js/layouts/settings/layout.tsx`, `resources/js/hooks/use-appearance.tsx`,

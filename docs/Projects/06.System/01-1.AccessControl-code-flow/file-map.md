@@ -54,6 +54,18 @@
 | `pages/System/AccessControl/types.ts` | Contract props TypeScript |
 | `resources/js/components/ui/sonner.tsx` | Toast global dan tombol close |
 
+## Boundary komunikasi
+
+| Konsep | Status pada AccessControl |
+| --- | --- |
+| Public Module API | `AuthorizationCapability` dan `RoleAssignmentCapability` |
+| Mutation | Application Action synchronous |
+| Read | Application Query dan DTO |
+| Domain/Application/Integration Event | Belum dipakai pada runtime module |
+| Command Bus dan Queue/Job | Belum menjadi dependency module |
+| Facade dan Shared Kernel domain | Tidak digunakan; `packages/StarterKit` bukan Shared Kernel |
+| Pola keseluruhan | CQRS-lite |
+
 ## Test
 
 | Path | Fokus |

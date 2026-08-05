@@ -60,6 +60,23 @@ di `app/Models`, `packages/StarterKit`, atau private layer AccessControl.
 | Role/permission context | `HandleInertiaRequests` | Dipakai frontend untuk UX, bukan security boundary |
 | UI shell | `system-dashboard-layout` dan shared theme | Menjadi baseline frontend module |
 
+## Pola komunikasi dan eksekusi
+
+- Contract lintas module hanya melalui `AuthorizationCapability` dan
+  `RoleAssignmentCapability`.
+- `UserRepository` dan `ImpersonationSession` adalah port internal
+  UserManagement yang diimplementasikan Infrastructure.
+- `ListUsers` dan `GetUser` adalah Query/read contract internal.
+- `CreateUser`, `UpdateUser`, `ChangeUserStatus`, `SoftDeleteUser`, dan
+  `StartImpersonation` adalah Application Action.
+- `UserImpersonationStarted` dan `UserImpersonationEnded` adalah Domain Event
+  synchronous untuk boundary internal. Promosi ke Integration Event menunggu
+  consumer AuditLog yang nyata.
+- Module mengikuti CQRS-lite. Command Bus, Queue/Job, Facade, dan Shared Kernel
+  tidak digunakan pada scope saat ini.
+- Detail global berada pada
+  [`03.12-MODULE-COMMUNICATION-AND-EXECUTION.md`](../../../03-IMPLEMENTATION/03.12-MODULE-COMMUNICATION-AND-EXECUTION.md).
+
 ## Target Module Identity
 
 ```text

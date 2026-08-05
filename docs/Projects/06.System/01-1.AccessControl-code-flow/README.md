@@ -35,6 +35,13 @@ User login
     -> Action mengubah data dan frontend menampilkan toast
 ```
 
+Pola eksekusi ini adalah CQRS-lite: Application Action menangani mutation dan
+Application Query menangani read. `AuthorizationCapability` dan
+`RoleAssignmentCapability` adalah public Module API. AccessControl belum
+memakai Application Event, Integration Event, Command Bus, Queue/Job, Facade,
+atau Shared Kernel domain. Domain Event juga belum menjadi bagian runtime
+AccessControl; event impersonation berada pada UserManagement.
+
 ## Batas Penting
 
 - Frontend hanya mengatur visibility dan UX.
@@ -54,3 +61,4 @@ frontend page, seeder demo, authorization, dan quality gate.
 | Version | Date | Description |
 | --- | --- | --- |
 | 1.0 | 2026-08-06 | Menambahkan alur code AccessControl |
+| 1.1 | 2026-08-06 | Menambahkan batas Contract, Action/Query, event, dan eksekusi module |

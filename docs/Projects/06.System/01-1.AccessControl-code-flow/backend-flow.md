@@ -59,6 +59,12 @@ HTTP request
 `RoleController` tidak mengambil query Eloquent untuk membangun halaman. Ia
 hanya menerima dependency, memanggil query, dan mengembalikan response.
 
+Mutation lain mengikuti pola Application Action. Query dan DTO menjadi read
+contract internal untuk halaman module. AccessControl belum memakai Command Bus,
+Queue/Job, Application Event, atau Integration Event. Jika kebutuhan lintas
+module muncul, gunakan public contract/DTO atau public event yang disetujui;
+jangan memanggil model atau adapter Infrastructure secara langsung.
+
 ## 4. Authorization Capability
 
 Public contract: `Application/Contracts/AuthorizationCapability.php`.

@@ -1,6 +1,13 @@
 import { Check, ChevronDown, Search, UsersRound } from 'lucide-react';
+import {
+    forwardRef,
+    useEffect,
+    useImperativeHandle,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import type { ReactNode } from 'react';
-import { useEffect, useMemo, useRef, useState } from 'react';
 import type { AccessControlRole } from '../types';
 
 interface RoleControlCardProps {
@@ -10,12 +17,14 @@ interface RoleControlCardProps {
     actions?: ReactNode;
 }
 
-export function RoleControlCard({
-    roles,
-    activeRole,
-    onRoleChange,
-    actions,
-}: RoleControlCardProps) {
+export interface RoleControlCardHandle {
+    openRoleSearch: () => void;
+}
+
+export const RoleControlCard = forwardRef<
+    RoleControlCardHandle,
+    RoleControlCardProps
+>(function RoleControlCard({ roles, activeRole, onRoleChange, actions }, ref) {
     const [isRoleMenuOpen, setIsRoleMenuOpen] = useState(false);
     const [roleQuery, setRoleQuery] = useState('');
     const roleMenuRef = useRef<HTMLDivElement>(null);
@@ -29,6 +38,17 @@ export function RoleControlCard({
 
         return roles.filter((role) => role.name.toLowerCase().includes(query));
     }, [roleQuery, roles]);
+
+    useImperativeHandle(
+        ref,
+        () => ({
+            openRoleSearch: () => {
+                setRoleQuery('');
+                setIsRoleMenuOpen(true);
+            },
+        }),
+        [],
+    );
 
     useEffect(() => {
         if (!isRoleMenuOpen) {
@@ -190,4 +210,4 @@ export function RoleControlCard({
             ) : null}
         </section>
     );
-}
+});

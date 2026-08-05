@@ -783,3 +783,57 @@ perangkat, perlu contract backend dan keputusan baru.
     teks dan icon terbaca, dan hasilnya konsisten pada mode light maupun dark.
   - Evidence: `git diff --check` lulus; computed style browser untuk selector
     toast menunjukkan background fixed semantic dan console tetap bersih.
+- [x] Shortcut keyboard AccessControl ditambahkan.
+  - Kondisi awal: user harus membuka combobox role dengan mouse dan menekan
+    tombol Simpan perubahan secara manual. Tidak ada informasi shortcut di atas
+    panel Role dan Permission.
+  - Perubahan: `Index.tsx` menambahkan listener keyboard untuk `R` atau `/`
+    membuka pencarian role, serta `Shift+S` menjalankan save permission tanpa
+    mengambil alih shortcut simpan halaman browser.
+    `RoleControlCard.tsx` menerima request pencarian dari parent dan tetap
+    menangani `Escape` untuk menutup combobox. Strip bantuan dengan icon
+    `Keyboard` dan elemen `kbd` ditampilkan sebelum grid panel. `app.css`
+    menambahkan surface, border, dan style keycap shortcut.
+  - Alasan: shortcut mempercepat flow operator dan membantu user memahami
+    interaksi tanpa menebak tombol yang tersedia.
+  - Acceptance: `R`/`/` membuka dan memfokuskan pencarian role, `Esc` menutup
+    pencarian, `Shift+S` memanggil save hanya jika role editable dan dirty,
+    shortcut tidak mengambil alih input text, dan informasi shortcut terlihat
+    pada light/dark serta mobile.
+  - Evidence: browser snapshot menunjukkan strip shortcut. Chrome DevTools
+    berhasil membuka combobox dengan `R`, lalu menutupnya dengan `Escape`.
+    Console bersih. `npm run types:check`, `npm run format:check`, dan
+    `git diff --check` lulus.
+- [x] Toast dapat ditutup manual melalui tombol `X`.
+  - Kondisi awal: toast hanya hilang setelah durasi otomatis dan tidak memiliki
+    kontrol penutupan manual.
+  - Perubahan: `resources/js/components/ui/sonner.tsx` mengaktifkan prop
+    `closeButton` pada `Toaster` global. `resources/css/app.css` menyesuaikan
+    border, background, hover, dan warna tombol close agar mengikuti warna
+    foreground toast semantic.
+  - Alasan: user perlu dapat menghapus notifikasi segera tanpa menunggu timer,
+    terutama saat beberapa toast muncul berurutan.
+  - Acceptance: setiap toast success/error/warning/info memiliki tombol dengan
+    accessible label close, tombol dapat difokuskan dan diklik, serta tidak
+    mengurangi keterbacaan pada light/dark.
+  - Evidence: implementasi memakai selector resmi Sonner `[data-close-button]`;
+    `npm run types:check`, `npm run format:check`, dan `git diff --check`
+    lulus.
+- [x] Error lint shortcut AccessControl diperbaiki.
+  - Kondisi awal: `RoleControlCard.tsx` memakai effect untuk mengubah state
+    ketika shortcut meminta pencarian role. ESLint melaporkan
+    `react-hooks/set-state-in-effect`. `Index.tsx` juga memiliki warning
+    dependency `selectedPermissions` dan blank line yang hilang.
+  - Perubahan: `RoleControlCard.tsx` memakai `forwardRef` dan
+    `useImperativeHandle` untuk membuka pencarian melalui command langsung,
+    tanpa effect state synchronization. `Index.tsx` memakai `useMemo` untuk
+    `selectedPermissions` dan merapikan padding statement.
+  - Alasan: shortcut harus membuka UI melalui event imperative yang jelas dan
+    tidak membuat cascading render dari effect.
+  - Acceptance: lint tidak memiliki error/warning terkait shortcut, shortcut
+    `R`/`/` tetap membuka dan memfokuskan role search, dan behavior `Esc` serta
+    `Shift+S` tidak berubah.
+  - Evidence: `npm run lint:check -- --no-cache`, `npm run types:check`,
+    `npm run format:check`, dan `git diff --check` lulus. Browser berhasil
+    membuka role search dengan `R`, memfokuskan input `Cari role`, menutupnya
+    dengan `Escape`, dan console bersih.

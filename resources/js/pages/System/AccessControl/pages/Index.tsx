@@ -1,11 +1,13 @@
 import { Head, router, usePage } from '@inertiajs/react';
-import { useMemo, useState } from 'react';
+import { Keyboard } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import route from '@/lib/route';
 import { AddRoleDialog } from '../components/AddRoleDialog';
 import { DeleteRoleDialog } from '../components/DeleteRoleDialog';
 import { PermissionModulePanel } from '../components/PermissionModulePanel';
 import { RoleControlCard } from '../components/RoleControlCard';
+import type { RoleControlCardHandle } from '../components/RoleControlCard';
 import SystemDashboardLayout from '../layouts/system-dashboard-layout';
 import type { AccessControlPageProps } from '../types';
 
@@ -25,6 +27,7 @@ export default function Index() {
         null,
     );
     const [roleActionError, setRoleActionError] = useState<string | null>(null);
+    const roleControlRef = useRef<RoleControlCardHandle>(null);
     const activeRole = useMemo(
         () => roles.find((role) => role.id === activeRoleId) ?? null,
         [activeRoleId, roles],
@@ -32,9 +35,10 @@ export default function Index() {
     const canManage = Boolean(
         auth.superSystem || auth.permissions?.['access_control.role.manage'],
     );
-    const selectedPermissions = activeRole
-        ? (rolePermissions[activeRole.id] ?? [])
-        : [];
+    const selectedPermissions = useMemo(
+        () => (activeRole ? (rolePermissions[activeRole.id] ?? []) : []),
+        [activeRole, rolePermissions],
+    );
 
     const handlePermissionChange = (permission: string, checked: boolean) => {
         if (!activeRole || activeRole.is_protected || !canManage) {
@@ -59,7 +63,7 @@ export default function Index() {
           [...activeRole.permissions].sort().join('|')
         : false;
 
-    const handleSave = () => {
+    const handleSave = useCallback(() => {
         if (!activeRole || activeRole.is_protected || !canManage || !isDirty) {
             return;
         }
@@ -76,7 +80,52 @@ export default function Index() {
                 onFinish: () => setIsSaving(false),
             },
         );
-    };
+    }, [activeRole, canManage, isDirty, selectedPermissions]);
+
+    useEffect(() => {
+        const handleShortcut = (event: KeyboardEvent) => {
+            const target = event.target;
+            const isTyping =
+                target instanceof HTMLElement &&
+                (['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName) ||
+                    target.isContentEditable);
+
+            if (isTyping) {
+                return;
+            }
+
+            const key = event.key.toLowerCase();
+
+            if (
+                (key === 'r' || event.key === '/') &&
+                !event.ctrlKey &&
+                !event.metaKey &&
+                !event.altKey
+            ) {
+                event.preventDefault();
+
+                roleControlRef.current?.openRoleSearch();
+
+                return;
+            }
+
+            if (
+                key === 's' &&
+                event.shiftKey &&
+                !event.ctrlKey &&
+                !event.metaKey &&
+                !event.altKey
+            ) {
+                event.preventDefault();
+
+                handleSave();
+            }
+        };
+
+        window.addEventListener('keydown', handleShortcut);
+
+        return () => window.removeEventListener('keydown', handleShortcut);
+    }, [handleSave]);
 
     const handleCreateRole = (name: string) => {
         setRoleAction('create');
@@ -130,8 +179,24 @@ export default function Index() {
                         {roleActionError}
                     </p>
                 ) : null}
+                <div className="dashboard-shortcut-bar mb-4 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border px-3 py-2 text-xs">
+                    <span className="flex items-center gap-2 font-medium">
+                        <Keyboard aria-hidden="true" className="size-4" />
+                        Shortcut
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                        <kbd>R</kbd> atau <kbd>/</kbd> cari role
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                        <kbd>Shift</kbd> + <kbd>S</kbd> simpan permission
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                        <kbd>Esc</kbd> tutup pencarian
+                    </span>
+                </div>
                 <div className="grid items-start gap-4 xl:grid-cols-[280px_1fr]">
                     <RoleControlCard
+                        ref={roleControlRef}
                         roles={roles}
                         activeRole={activeRole}
                         onRoleChange={setActiveRoleId}

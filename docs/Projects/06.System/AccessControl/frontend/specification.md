@@ -170,3 +170,16 @@ Aturan ini menjaga pengalaman antar module tetap konsisten:
 - light dan dark mode memakai hue semantic yang sama;
 - perubahan visual tidak boleh mengubah permission, route, atau security
   boundary.
+
+## Shortcut keyboard AccessControl
+
+Halaman AccessControl menyediakan shortcut untuk mempercepat pekerjaan user:
+
+- `R` atau `/` membuka pencarian role;
+- `Shift+S` menyimpan perubahan permission role aktif tanpa mengambil alih
+  shortcut simpan halaman dari browser;
+- `Esc` menutup pencarian role.
+
+Shortcut hanya aktif saat fokus tidak berada pada input, textarea, select,
+combobox, atau elemen editable. Informasi shortcut ditampilkan pada strip
+bantuan di atas panel Role dan Permission.

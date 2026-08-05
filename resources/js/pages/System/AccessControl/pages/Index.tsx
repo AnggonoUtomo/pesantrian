@@ -1,5 +1,6 @@
 import { Head, router, usePage } from '@inertiajs/react';
 import { useMemo, useState } from 'react';
+import { toast } from 'sonner';
 import route from '@/lib/route';
 import { AddRoleDialog } from '../components/AddRoleDialog';
 import { DeleteRoleDialog } from '../components/DeleteRoleDialog';
@@ -24,9 +25,6 @@ export default function Index() {
         null,
     );
     const [roleActionError, setRoleActionError] = useState<string | null>(null);
-    const [saveStatus, setSaveStatus] = useState<'success' | 'error' | null>(
-        null,
-    );
     const activeRole = useMemo(
         () => roles.find((role) => role.id === activeRoleId) ?? null,
         [activeRoleId, roles],
@@ -54,7 +52,6 @@ export default function Index() {
 
             return { ...current, [activeRole.id]: [...permissions] };
         });
-        setSaveStatus(null);
     };
 
     const isDirty = activeRole
@@ -68,14 +65,14 @@ export default function Index() {
         }
 
         setIsSaving(true);
-        setSaveStatus(null);
         router.put(
             route('access-control.roles.permissions.update', activeRole.id),
             { permissions: selectedPermissions },
             {
                 preserveScroll: true,
-                onSuccess: () => setSaveStatus('success'),
-                onError: () => setSaveStatus('error'),
+                onError: () => {
+                    toast.error('Permission role tidak dapat diperbarui.');
+                },
                 onFinish: () => setIsSaving(false),
             },
         );
@@ -90,11 +87,13 @@ export default function Index() {
             {
                 preserveScroll: true,
                 preserveState: false,
-                onError: (errors) =>
-                    setRoleActionError(
+                onError: (errors) => {
+                    const message =
                         Object.values(errors)[0] ??
-                            'Role tidak dapat ditambahkan.',
-                    ),
+                        'Role tidak dapat ditambahkan.';
+                    setRoleActionError(message);
+                    toast.error(message);
+                },
                 onFinish: () => setRoleAction(null),
             },
         );
@@ -106,10 +105,12 @@ export default function Index() {
         router.delete(route('access-control.roles.destroy', role.id), {
             preserveScroll: true,
             preserveState: false,
-            onError: (errors) =>
-                setRoleActionError(
-                    Object.values(errors)[0] ?? 'Role tidak dapat dihapus.',
-                ),
+            onError: (errors) => {
+                const message =
+                    Object.values(errors)[0] ?? 'Role tidak dapat dihapus.';
+                setRoleActionError(message);
+                toast.error(message);
+            },
             onFinish: () => setRoleAction(null),
         });
     };
@@ -121,32 +122,34 @@ export default function Index() {
                 title="Access Control"
                 description="Pilih role, lalu tinjau dan kelola permission berdasarkan module."
             >
-                <div className="dashboard-toolbar mb-4 flex flex-wrap justify-end gap-2">
-                    {roleActionError ? (
-                        <p
-                            role="alert"
-                            className="dashboard-message--error mr-auto self-center text-sm"
-                        >
-                            {roleActionError}
-                        </p>
-                    ) : null}
-                    <AddRoleDialog
-                        canManage={canManage}
-                        isProcessing={roleAction === 'create'}
-                        onSubmit={handleCreateRole}
-                    />
-                    <DeleteRoleDialog
-                        role={activeRole}
-                        canManage={canManage}
-                        isProcessing={roleAction === 'delete'}
-                        onSubmit={handleDeleteRole}
-                    />
-                </div>
-                <div className="grid gap-4 xl:grid-cols-[280px_1fr]">
+                {roleActionError ? (
+                    <p
+                        role="alert"
+                        className="dashboard-message--error mb-4 text-sm"
+                    >
+                        {roleActionError}
+                    </p>
+                ) : null}
+                <div className="grid items-start gap-4 xl:grid-cols-[280px_1fr]">
                     <RoleControlCard
                         roles={roles}
                         activeRole={activeRole}
                         onRoleChange={setActiveRoleId}
+                        actions={
+                            <>
+                                <AddRoleDialog
+                                    canManage={canManage}
+                                    isProcessing={roleAction === 'create'}
+                                    onSubmit={handleCreateRole}
+                                />
+                                <DeleteRoleDialog
+                                    role={activeRole}
+                                    canManage={canManage}
+                                    isProcessing={roleAction === 'delete'}
+                                    onSubmit={handleDeleteRole}
+                                />
+                            </>
+                        }
                     />
                     <PermissionModulePanel
                         activeRole={activeRole}
@@ -156,7 +159,6 @@ export default function Index() {
                         onPermissionChange={handlePermissionChange}
                         isDirty={isDirty}
                         isSaving={isSaving}
-                        saveStatus={saveStatus}
                         onSave={handleSave}
                     />
                 </div>

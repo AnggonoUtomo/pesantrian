@@ -23,18 +23,18 @@ export const themePalettes = [
 export type ThemePalette = (typeof themePalettes)[number]['value'];
 
 const listeners = new Set<() => void>();
-let currentPalette: ThemePalette = 'urban';
+let currentPalette: ThemePalette = 'neutral';
 
 const getStoredPalette = (): ThemePalette => {
     if (typeof window === 'undefined') {
-        return 'urban';
+        return 'neutral';
     }
 
     const stored = localStorage.getItem('theme-palette');
 
     return themePalettes.some((palette) => palette.value === stored)
         ? (stored as ThemePalette)
-        : 'urban';
+        : 'neutral';
 };
 
 const applyPalette = (palette: ThemePalette): void => {
@@ -64,7 +64,7 @@ export function useThemePalette() {
             return () => listeners.delete(callback);
         },
         () => currentPalette,
-        () => 'urban' as ThemePalette,
+        () => 'neutral' as ThemePalette,
     );
 
     const updatePalette = (nextPalette: ThemePalette): void => {

@@ -6,6 +6,8 @@ return [
         'dashboard',
         'system.dashboard',
         'access-control.index',
+        'access-control.roles.store',
+        'access-control.roles.destroy',
         'access-control.roles.permissions.update',
         'login',
         'system.login',

@@ -259,3 +259,29 @@ seeder demo, browser review, dan accessibility check sudah tersedia.
 - [x] Seeder demo dan menu sidebar ditinjau ulang setelah implementasi.
 - [x] Open risk migration upgrade baseline lokal ditutup dan risiko deployment
   existing dikendalikan melalui runbook release.
+
+## Increment review boundary controller
+
+- [x] Logic query, mutation, dan validasi dikeluarkan dari `RoleController`.
+  - Kondisi awal: `RoleController` langsung menjalankan query `Role` dan
+    `Permission`, membentuk array page, memvalidasi input, membuat role,
+    melakukan sync permission, dan menghapus role.
+  - Perubahan: menambahkan `Application/Queries/BuildAccessControlDashboard`,
+    `Application/DTO/AccessControlDashboardData`, action `CreateRole`,
+    `SyncRolePermissions`, `DeleteRole`, serta request
+    `StoreRoleRequest` dan `SyncRolePermissionsRequest`. Controller sekarang
+    hanya menangani middleware, orchestration, flash toast, dan response.
+    `AuthorizeRoleMutation` menjadi pemeriksaan authorization use-case yang
+    dipakai bersama policy dan action.
+  - Alasan: mengikuti DDD-lite modular monolith. Presentation tidak boleh
+    mengambil alih business/persistence logic, dan authorization tidak boleh
+    tersebar pada setiap mutation.
+  - Acceptance: response Inertia dan behavior mutation tetap sama, actor tanpa
+    permission tetap ditolak, `SuperSystem` tetap protected, dan controller
+    tidak berisi query/persistence/validasi langsung.
+  - Evidence: `AccessControlArchitectureTest` lulus 2 test dengan 15
+    assertion; `AccessControlPageTest` dan
+    `AccessControlPolicyAndContextTest` bersama-sama lulus 17 test dengan 70
+    assertion; Pint lulus. Regression test memeriksa controller tidak memuat
+    `Role::query`, `Permission::query`, `Role::create`, persistence mutation,
+    atau `$request->validate()`.

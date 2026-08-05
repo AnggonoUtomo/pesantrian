@@ -124,6 +124,9 @@ State palette disimpan pada `localStorage` dengan key `theme-palette`. Fitur ini
 hanya mengubah warna tampilan. Pilihan mode `light`, `dark`, atau `system` tetap
 dikelola terpisah oleh `use-appearance`.
 
+Jika belum ada pilihan tersimpan atau nilainya tidak valid, palette default yang
+dipakai adalah `neutral`. Nilai palette yang sudah tersimpan tidak diubah.
+
 ## Baseline visual semantic
 
 Dashboard memakai background bersih tanpa gradient besar, pola grid, atau glow

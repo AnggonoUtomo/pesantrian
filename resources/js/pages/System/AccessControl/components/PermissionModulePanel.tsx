@@ -1,4 +1,5 @@
-import { KeyRound, ShieldCheck } from 'lucide-react';
+import { ChevronDown, KeyRound, ShieldCheck } from 'lucide-react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import type { AccessControlPermissionGroup, AccessControlRole } from '../types';
 
@@ -10,7 +11,6 @@ interface PermissionModulePanelProps {
     onPermissionChange: (permission: string, checked: boolean) => void;
     isDirty: boolean;
     isSaving: boolean;
-    saveStatus: 'success' | 'error' | null;
     onSave: () => void;
 }
 
@@ -22,9 +22,25 @@ export function PermissionModulePanel({
     onPermissionChange,
     isDirty,
     isSaving,
-    saveStatus,
     onSave,
 }: PermissionModulePanelProps) {
+    const [expandedGroup, setExpandedGroup] = useState<string | null>(null);
+
+    const toggleGroup = (module: string): void => {
+        setExpandedGroup((current) => (current === module ? null : module));
+    };
+
+    const getGroupAccentClass = (module: string): string => {
+        switch (module.toLowerCase().replace(/[\s_-]/g, '')) {
+            case 'accesscontrol':
+                return 'dashboard-accent--violet';
+            case 'system':
+                return 'dashboard-accent--emerald';
+            default:
+                return 'dashboard-accent--cyan';
+        }
+    };
+
     if (!activeRole) {
         return (
             <section className="dashboard-card dashboard-module-card dashboard-card--violet flex min-h-64 items-center justify-center rounded-2xl border-dashed p-6 text-center">
@@ -45,7 +61,7 @@ export function PermissionModulePanel({
         >
             <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="flex items-center gap-3">
-                    <div className="dashboard-icon dashboard-accent--violet flex size-10 shrink-0 items-center justify-center rounded-lg">
+                    <div className="dashboard-icon dashboard-accent--rose flex size-10 shrink-0 items-center justify-center rounded-lg">
                         <ShieldCheck aria-hidden="true" className="size-5" />
                     </div>
                     <div>
@@ -78,70 +94,85 @@ export function PermissionModulePanel({
                     </Button>
                 ) : null}
             </div>
-            {saveStatus === 'success' ? (
-                <p className="dashboard-message--success mt-3 text-sm">
-                    Perubahan berhasil disimpan.
-                </p>
-            ) : null}
-            {saveStatus === 'error' ? (
-                <p className="mt-3 text-sm text-destructive">
-                    Perubahan gagal disimpan.
-                </p>
-            ) : null}
             {groups.length === 0 ? (
                 <div className="dashboard-subcard mt-5 rounded-xl border-dashed p-6 text-center text-sm text-muted-foreground">
                     Permission belum tersedia.
                 </div>
             ) : (
-                <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                    {groups.map((group) => (
-                        <div
-                            key={group.module}
-                            className="dashboard-subcard dashboard-accent--cyan rounded-xl p-4"
-                        >
-                            <h3 className="flex items-center gap-2 font-medium">
-                                <span className="dashboard-icon dashboard-accent--cyan flex size-7 items-center justify-center rounded-md [&>svg]:size-4">
-                                    <KeyRound aria-hidden="true" />
-                                </span>
-                                {group.label}
-                            </h3>
-                            <ul className="mt-3 space-y-2">
-                                {group.permissions.map((permission) => (
-                                    <li
-                                        key={permission.id}
-                                        className="flex items-start gap-2 text-sm"
-                                    >
-                                        <input
-                                            type="checkbox"
-                                            checked={selectedPermissions.includes(
-                                                permission.name,
-                                            )}
-                                            disabled={
-                                                activeRole.is_protected ||
-                                                !canManage
-                                            }
-                                            onChange={(event) =>
-                                                onPermissionChange(
-                                                    permission.name,
-                                                    event.target.checked,
-                                                )
-                                            }
-                                            aria-label={permission.label}
-                                            className="mt-0.5 size-4 rounded"
-                                        />
-                                        <span>
-                                            <span className="block">
-                                                {permission.label}
-                                            </span>
-                                            <span className="block text-xs break-all text-muted-foreground">
-                                                {permission.name}
-                                            </span>
+                <div className="mt-5 grid items-start gap-3 sm:grid-cols-2">
+                    {groups.map((group, index) => {
+                        const isExpanded = expandedGroup === group.module;
+                        const groupId = `permission-group-${index}`;
+                        const accentClass = getGroupAccentClass(group.module);
+
+                        return (
+                            <div
+                                key={group.module}
+                                className="dashboard-subcard dashboard-accent--cyan rounded-xl p-4"
+                            >
+                                <button
+                                    type="button"
+                                    className="dashboard-permission-group-toggle flex w-full items-center justify-between gap-3 text-left font-medium"
+                                    aria-controls={groupId}
+                                    aria-expanded={isExpanded}
+                                    onClick={() => toggleGroup(group.module)}
+                                >
+                                    <span className="flex items-center gap-2">
+                                        <span
+                                            className={`dashboard-icon ${accentClass} flex size-7 items-center justify-center rounded-md [&>svg]:size-4`}
+                                        >
+                                            <KeyRound aria-hidden="true" />
                                         </span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    ))}
+                                        {group.label}
+                                    </span>
+                                    <ChevronDown
+                                        aria-hidden="true"
+                                        className={`size-4 shrink-0 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                                    />
+                                </button>
+                                {isExpanded ? (
+                                    <ul id={groupId} className="mt-3 space-y-2">
+                                        {group.permissions.map((permission) => (
+                                            <li
+                                                key={permission.id}
+                                                className="flex items-start gap-2 text-sm"
+                                            >
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedPermissions.includes(
+                                                        permission.name,
+                                                    )}
+                                                    disabled={
+                                                        activeRole.is_protected ||
+                                                        !canManage
+                                                    }
+                                                    onChange={(event) =>
+                                                        onPermissionChange(
+                                                            permission.name,
+                                                            event.target
+                                                                .checked,
+                                                        )
+                                                    }
+                                                    aria-label={
+                                                        permission.label
+                                                    }
+                                                    className="dashboard-permission-checkbox dashboard-accent--cyan mt-0.5 size-4 rounded"
+                                                />
+                                                <span>
+                                                    <span className="block">
+                                                        {permission.label}
+                                                    </span>
+                                                    <span className="block text-xs break-all text-muted-foreground">
+                                                        {permission.name}
+                                                    </span>
+                                                </span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                ) : null}
+                            </div>
+                        );
+                    })}
                 </div>
             )}
         </section>

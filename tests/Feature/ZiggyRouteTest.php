@@ -10,6 +10,8 @@ it('membagikan route yang dibutuhkan frontend', function () {
         'login',
         'dashboard',
         'profile.edit',
+        'access-control.roles.store',
+        'access-control.roles.destroy',
         'two-factor.qr-code',
         'passkey.confirm',
     ]);

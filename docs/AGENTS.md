@@ -217,12 +217,16 @@ berikutnya. Module baru yang memiliki frontend wajib mengikuti pola berikut:
   icon, badge, progress, grafik, garis card, serta state interaksi;
 - sidebar utama dengan warna yang mengikuti theme palette, state active dan
   hover yang jelas, indikator active, serta separator icon saat hover;
+- header sidebar memakai surface transparan tanpa block background atau border
+  permanen; state hover tetap boleh mengikuti token interaksi sidebar;
 - footer sidebar berisi shortcut `Profile`, `Security`, dan `Appearance` dalam
   toolbar horizontal icon-only. Label tetap tersedia untuk screen reader dan
   tooltip, tetapi tidak tampil sebagai teks permanen;
 - halaman Appearance dengan mode `light`, `dark`, `system`, dan theme palette;
 - theme palette default minimal mencakup `slate`, `gray`, `zinc`, `neutral`,
   dan `stone`; palette project boleh ditambahkan tanpa menghapus pilihan lama;
+- `neutral` menjadi fallback default untuk user baru atau nilai palette yang
+  tidak valid; pilihan palette yang sudah tersimpan tidak boleh ditimpa;
 - state active normal memakai warna primary yang soft, sedangkan active-hover
   memakai warna primary yang lebih kuat dan font primary;
 - menu settings memakai pola hover dan active yang sama dengan halaman

@@ -94,7 +94,12 @@ final class AccessControlPageTest extends TestCase
             'permissions' => [$assign->name],
         ]);
 
-        $response->assertRedirect();
+        $response
+            ->assertRedirect()
+            ->assertSessionHas('inertia.flash_data.toast', [
+                'type' => 'success',
+                'message' => 'Permission role berhasil diperbarui.',
+            ]);
         self::assertTrue($role->fresh()->hasPermissionTo($assign));
     }
 
@@ -124,7 +129,12 @@ final class AccessControlPageTest extends TestCase
             'name' => 'Reviewer',
         ]);
 
-        $response->assertRedirect();
+        $response
+            ->assertRedirect()
+            ->assertSessionHas('inertia.flash_data.toast', [
+                'type' => 'success',
+                'message' => 'Role berhasil ditambahkan.',
+            ]);
         self::assertDatabaseHas('roles', ['name' => 'Reviewer', 'guard_name' => 'web']);
     }
 
@@ -142,9 +152,14 @@ final class AccessControlPageTest extends TestCase
         $user->givePermissionTo($manage);
         $role = Role::create(['name' => 'Reviewer', 'guard_name' => 'web']);
 
-        $this->actingAs($user)
+        $response = $this->actingAs($user)
             ->delete(route('access-control.roles.destroy', $role))
             ->assertRedirect();
+
+        $response->assertSessionHas('inertia.flash_data.toast', [
+            'type' => 'success',
+            'message' => 'Role berhasil dihapus.',
+        ]);
 
         self::assertDatabaseMissing('roles', ['id' => $role->getKey()]);
     }

@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace App\Modules\System\AccessControl\Presentation\Controllers;
 
-use App\Modules\System\AccessControl\Application\Services\AuthorizeRoleMutation;
-use App\Modules\System\AccessControl\Infrastructure\Persistence\Models\Permission;
+use App\Modules\System\AccessControl\Application\Actions\CreateRole;
+use App\Modules\System\AccessControl\Application\Actions\DeleteRole;
+use App\Modules\System\AccessControl\Application\Actions\SyncRolePermissions;
+use App\Modules\System\AccessControl\Application\Queries\BuildAccessControlDashboard;
 use App\Modules\System\AccessControl\Infrastructure\Persistence\Models\Role;
+use App\Modules\System\AccessControl\Presentation\Requests\StoreRoleRequest;
+use App\Modules\System\AccessControl\Presentation\Requests\SyncRolePermissionsRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Inertia\Inertia;
@@ -17,7 +20,12 @@ use Inertia\Response;
 
 final class RoleController implements HasMiddleware
 {
-    public function __construct(private readonly AuthorizeRoleMutation $authorizeRoleMutation) {}
+    public function __construct(
+        private readonly BuildAccessControlDashboard $dashboard,
+        private readonly CreateRole $createRole,
+        private readonly SyncRolePermissions $syncRolePermissions,
+        private readonly DeleteRole $deleteRole,
+    ) {}
 
     public static function middleware(): array
     {
@@ -32,100 +40,49 @@ final class RoleController implements HasMiddleware
 
     public function index(): Response
     {
-        return Inertia::render('System/AccessControl/pages/Index', $this->dashboardData());
+        return Inertia::render('System/AccessControl/pages/Index', $this->dashboard->execute()->toArray());
     }
 
     public function dashboard(): Response
     {
-        return Inertia::render('System/Dashboard', $this->dashboardData());
+        return Inertia::render('System/Dashboard', $this->dashboard->execute()->toArray());
     }
 
-    /** @return array<string, mixed> */
-    private function dashboardData(): array
+    public function store(StoreRoleRequest $request): RedirectResponse
     {
-        $roles = Role::query()
-            ->with('permissions:id,name')
-            ->orderBy('name')
-            ->get()
-            ->map(static fn (Role $role): array => [
-                'id' => $role->getKey(),
-                'name' => $role->name,
-                'guard_name' => $role->guard_name,
-                'permissions' => $role->permissions->pluck('name')->values()->all(),
-                'is_protected' => $role->name === 'SuperSystem',
-            ])
-            ->values()
-            ->all();
+        $this->createRole->execute($request->user(), (string) $request->string('name'));
 
-        $permissionGroups = Permission::query()
-            ->orderBy('name')
-            ->get(['id', 'name', 'guard_name'])
-            ->groupBy(static fn (Permission $permission): string => (string) str($permission->name)->before('.'))
-            ->map(static function ($permissions, string $module): array {
-                return [
-                    'module' => $module,
-                    'label' => str($module)->replace('_', ' ')->title()->toString(),
-                    'permissions' => $permissions->map(static fn (Permission $permission): array => [
-                        'id' => $permission->getKey(),
-                        'name' => $permission->name,
-                        'guard_name' => $permission->guard_name,
-                        'label' => str($permission->name)->after('.')->replace(['.', '_'], ' ')->title()->toString(),
-                    ])->values()->all(),
-                ];
-            })
-            ->values()
-            ->all();
-
-        return [
-            'roles' => $roles,
-            'permissionGroups' => $permissionGroups,
-            'selectedRoleId' => $roles[0]['id'] ?? null,
-        ];
-    }
-
-    public function store(Request $request): RedirectResponse
-    {
-        $request->validate([
-            'name' => [
-                'required',
-                'string',
-                'min:2',
-                'max:100',
-                'regex:/^[A-Za-z0-9][A-Za-z0-9 _-]*$/',
-                Rule::unique('roles', 'name')->where('guard_name', 'web'),
-            ],
+        Inertia::flash('toast', [
+            'type' => 'success',
+            'message' => 'Role berhasil ditambahkan.',
         ]);
 
-        $this->authorizeRoleMutation->ensureAllowed($request->user());
-
-        Role::create([
-            'name' => trim((string) $request->string('name')),
-            'guard_name' => 'web',
-        ]);
-
-        return back()->with('status', 'Role berhasil ditambahkan.');
+        return back();
     }
 
-    public function syncPermissions(Request $request, Role $role): RedirectResponse
+    public function syncPermissions(SyncRolePermissionsRequest $request, Role $role): RedirectResponse
     {
-        abort_unless($request->user()?->can('update', $role), 403);
+        /** @var array<int, string> $permissions */
+        $permissions = $request->validated('permissions');
+        $this->syncRolePermissions->execute($request->user(), $role, $permissions);
 
-        $validated = $request->validate([
-            'permissions' => ['required', 'array'],
-            'permissions.*' => ['string', 'distinct', 'exists:permissions,name'],
+        Inertia::flash('toast', [
+            'type' => 'success',
+            'message' => 'Permission role berhasil diperbarui.',
         ]);
 
-        $role->syncPermissions($validated['permissions']);
-
-        return back()->with('status', 'Permission role berhasil diperbarui.');
+        return back();
     }
 
-    public function destroy(Role $role): RedirectResponse
+    public function destroy(Request $request, Role $role): RedirectResponse
     {
-        abort_if($role->name === 'SuperSystem', 403);
+        $this->deleteRole->execute($request->user(), $role);
 
-        $role->delete();
+        Inertia::flash('toast', [
+            'type' => 'success',
+            'message' => 'Role berhasil dihapus.',
+        ]);
 
-        return back()->with('status', 'Role berhasil dihapus.');
+        return back();
     }
 }

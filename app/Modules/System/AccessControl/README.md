@@ -33,6 +33,14 @@ Menu sidebar `Access Control` hanya tampil untuk `SuperSystem` atau user dengan
 permission `access_control.role.manage`. Backend tetap menjadi security
 authority.
 
+## Boundary code
+
+`RoleController` hanya menjadi orchestration layer. Query dashboard berada di
+`Application/Queries`, data page memakai DTO, validasi mutation berada di
+`Presentation/Requests`, dan side effect role berada di `Application/Actions`.
+Pemeriksaan authorization use-case dilakukan ulang oleh
+`AuthorizeRoleMutation`; policy tetap menjadi pemeriksaan route/resource.
+
 Perubahan permission role dikirim melalui `PUT
 access-control.roles.permissions.update`. Policy backend mengizinkan role biasa
 dan menolak role `SuperSystem`.

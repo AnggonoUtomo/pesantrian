@@ -537,6 +537,96 @@ perangkat, perlu contract backend dan keputusan baru.
     `oklch(0.62 0.17 160)` dan pada dark membaca
     `oklch(0.78 0.18 160)`. Console bersih, footer tetap memuat tiga link
     icon-only, dan Lighthouse mobile seluruh kategori 100.
+- [x] Block visual header sidebar dihilangkan.
+  - Kondisi awal: header sidebar memiliki background, border bawah, dan shadow
+    pada tombol logo sehingga terlihat seperti block terpisah dari shell.
+  - Perubahan: `resources/css/app.css` membuat header dan menu button header
+    transparan, menghapus border permanen, serta menghapus shadow. Hover tetap
+    diwariskan dari state sidebar umum.
+  - Alasan: shell terlihat lebih ringan dan konsisten dengan layout clean yang
+    sudah disepakati.
+  - Acceptance: header tidak memiliki block background/border saat normal,
+    logo tetap tampil, link dashboard tetap berfungsi, dan hover tetap jelas.
+  - Evidence: computed style browser, console, dan Lighthouse perlu lulus pada
+    light/dark.
+- [x] Palette `Neutral` dijadikan default.
+  - Kondisi awal: fallback hook dan snapshot server masih memakai `Urban` saat
+    browser belum memiliki `theme-palette` atau nilainya tidak valid.
+  - Perubahan: `use-theme-palette.ts` mengganti initial state, fallback
+    storage, dan server snapshot menjadi `neutral`.
+  - Alasan: Neutral paling sesuai dengan baseline surface bone white/charcoal
+    dan menjadi titik awal yang clean untuk user baru.
+  - Acceptance: user baru menerima `Neutral`, pilihan tersimpan tetap dipakai,
+    dan palette invalid kembali ke `Neutral`.
+  - Evidence: type check, browser initialization, console, build, dan diff
+    check lulus.
+- [x] Checkbox permission memakai accent semantic.
+  - Kondisi awal: checkbox permission hanya memakai style native dengan class
+    `rounded`, sehingga warna checked belum mengikuti accent module.
+  - Perubahan: `PermissionModulePanel.tsx` menambahkan class
+    `dashboard-permission-checkbox dashboard-accent--cyan`. `resources/css/app.css`
+    menambahkan `accent-color`, border cyan, hover, focus ring, dan disabled
+    state.
+  - Alasan: state permission checked harus mudah terlihat dan konsisten dengan
+    icon serta subcard permission pada light/dark.
+  - Acceptance: checkbox checked memiliki accent cyan, focus dapat terlihat,
+    disabled tetap jelas sebagai read-only, dan behavior permission tidak
+    berubah.
+  - Evidence: computed style browser, console, Lighthouse, type check, build,
+    dan diff check lulus.
+- [x] Icon judul Permission Module memakai accent berbeda.
+  - Kondisi awal: icon `ShieldCheck` pada judul Permission Module memakai
+    violet yang sama dengan main card sehingga hierarki visual kurang jelas.
+  - Perubahan: `PermissionModulePanel.tsx` mengubah icon judul menjadi
+    `dashboard-accent--rose`. Main card tetap violet dan checklist tetap cyan.
+  - Alasan: rose memberi penanda visual khusus untuk area permission tanpa
+    mengubah arti warna panel dan group permission.
+  - Acceptance: icon judul berbeda dari panel dan checklist, tetap terbaca pada
+    light/dark, dan tidak mengubah behavior authorization.
+  - Evidence: computed style browser, console, Lighthouse, build, dan diff
+    check lulus.
+- [x] Group permission memiliki accent icon berbeda dan dropdown collapsed.
+  - Kondisi awal: icon key pada group `AccessControl` dan `System` sama-sama
+    cyan. Checklist seluruh group langsung tampil saat halaman dibuka.
+  - Perubahan: `PermissionModulePanel.tsx` menambahkan mapping accent
+    `AccessControl` violet dan `System` emerald. Header group menjadi button
+    dengan `aria-expanded` dan `aria-controls`; state awal `expandedGroups`
+    kosong sehingga semua checklist collapsed. Klik header membuka atau
+    menutup checklist group.
+  - Alasan: pengguna dapat membedakan sumber permission dengan cepat dan
+    halaman tidak terlalu padat saat pertama dibuka.
+  - Acceptance: default tidak menampilkan checklist, klik header menampilkan
+    checklist group yang dipilih, icon group berbeda, checkbox tetap dapat
+    diubah sesuai authorization, dan keyboard focus terlihat.
+  - Evidence: browser snapshot sebelum klik tidak menampilkan checkbox,
+    setelah klik header checklist tampil. Console, Lighthouse, type check,
+    build, dan diff check lulus.
+- [x] Dropdown permission dibuat accordion dan hover mengikuti palette.
+  - Kondisi awal: state memakai `Set`, sehingga lebih dari satu group dapat
+    terbuka bersamaan. Hover header memakai accent cyan subcard, bukan primary
+    palette aktif.
+  - Perubahan: `PermissionModulePanel.tsx` mengganti state menjadi satu
+    `expandedGroup` sehingga hanya satu group terbuka pada satu waktu.
+    `resources/css/app.css` memakai `--primary` untuk background, text, dan
+    focus outline hover header.
+  - Alasan: interaksi lebih mudah dipahami dan hover harus konsisten dengan
+    theme palette yang dipilih user.
+  - Acceptance: membuka AccessControl menutup System, membuka System menutup
+    AccessControl, klik group terbuka menutupnya, dan hover mengikuti primary
+    palette pada light/dark.
+  - Evidence: browser state accordion, computed style hover, console,
+    Lighthouse, type check, build, dan diff check lulus.
+- [x] Tinggi subcard permission tidak lagi ikut stretch.
+  - Kondisi awal: saat satu group permission dibuka, subcard group lain dalam
+    grid ikut mengikuti tinggi row dan menampilkan ruang kosong.
+  - Perubahan: `PermissionModulePanel.tsx` menambahkan `items-start` pada grid
+    group permission agar setiap subcard memakai tinggi kontennya sendiri.
+  - Alasan: card yang tertutup harus tetap compact dan tidak terlihat seperti
+    ikut terbuka.
+  - Acceptance: membuka satu group tidak mengubah tinggi visual group lain,
+    accordion tetap eksklusif, dan checklist yang dibuka tetap dapat digunakan.
+  - Evidence: browser membandingkan tinggi subcard sebelum/sesudah group dibuka,
+    console, Lighthouse, type check, build, dan diff check lulus.
 - [x] Halaman AccessControl memakai pola dashboard System.
   - Kondisi awal: role panel dan permission panel masih memakai `bg-card` polos;
     group permission belum memiliki icon dan toolbar action belum memiliki
@@ -594,4 +684,84 @@ perangkat, perlu contract backend dan keputusan baru.
     `oklch(0.45 0.05 255)` dan primary dark `oklch(0.72 0.06 255)`.
     Console bersih. Lighthouse mobile seluruh kategori 100. `npm run
     types:check`, `npm run format:check`, `npm run build`, dan
+    `git diff --check` lulus.
+
+## Increment perbaikan route Ziggy
+
+- [x] Route mutation AccessControl tersedia pada daftar route Ziggy.
+  - Kondisi awal: route backend `access-control.roles.store` dan
+    `access-control.roles.destroy` sudah terdaftar di `routes/web.php`, tetapi
+    keduanya belum masuk daftar `only` pada `config/ziggy.php`. Saat tombol
+    Tambah role dijalankan, frontend melempar error bahwa route
+    `access-control.roles.store` tidak ada di route list.
+  - Perubahan: `config/ziggy.php` menambahkan route `access-control.roles.store`
+    dan `access-control.roles.destroy`. `tests/Feature/ZiggyRouteTest.php`
+    menambahkan assertion regression untuk kedua route mutation tersebut.
+  - Alasan: setiap route yang dipanggil frontend melalui helper Ziggy wajib
+    tersedia pada konfigurasi route yang dibagikan ke Inertia.
+  - Acceptance: route store, destroy, dan update permission tersedia pada
+    payload Ziggy; dialog Tambah role dapat dibuka tanpa error route; middleware
+    dan otorisasi backend tetap tidak berubah.
+  - Evidence: test RED gagal sebelum whitelist diperbaiki. Setelah perubahan,
+    `php artisan test tests/Feature/ZiggyRouteTest.php` lulus 2/2 test dengan
+    11 assertion. Browser membaca ketiga route dari payload Ziggy, dialog
+    Tambah role berhasil terbuka, dan tidak ada error/warning console.
+
+## Increment notifikasi mutation dengan Sonner
+
+- [x] Toast Sonner diaktifkan untuk operasi AccessControl.
+  - Kondisi awal: komponen `Toaster` dan hook `useFlashToast` sudah aktif pada
+    shell aplikasi, tetapi `RoleController` masih memakai session `status` biasa
+    sehingga operasi tambah role, hapus role, dan simpan permission tidak
+    menghasilkan toast. Error frontend hanya ditampilkan sebagai pesan inline.
+  - Perubahan: `RoleController.php` memakai `Inertia::flash('toast', ...)`
+    untuk tiga operasi sukses. `Index.tsx` mengimpor `toast` dari `sonner` dan
+    menampilkan `toast.error` untuk kegagalan simpan permission, tambah role,
+    dan hapus role. Pesan inline error tetap dipertahankan sebagai fallback.
+    `AccessControlPageTest.php` menambahkan assertion terhadap payload flash
+    sukses pada ketiga mutation.
+  - Alasan: notifikasi hasil operasi harus konsisten dengan Sonner global dan
+    tidak bergantung pada pesan status yang tidak dibaca hook frontend.
+  - Acceptance: operasi sukses mengirim payload `flash.toast` bertipe success,
+    kegagalan mutation menampilkan toast error, pesan inline tetap tersedia,
+    dan otorisasi serta behavior mutation tidak berubah.
+  - Evidence: test RED awal gagal pada tiga assertion flash. Setelah perubahan,
+    `php artisan test tests/Feature/AccessControlPageTest.php` lulus 12/12 test
+    dengan 59 assertion. `npm run types:check`, `npm run format:check`, dan
+    `git diff --check` lulus.
+- [x] Toast memiliki warna semantic yang mengikuti mode light/dark.
+  - Kondisi awal: toast masih memakai background `popover` dan border umum,
+    sehingga success dan error sulit dibedakan secara visual.
+  - Perubahan: `resources/css/app.css` menambahkan style berdasarkan
+    `data-type` Sonner. Success memakai cyan dashboard, error memakai
+    destructive, warning memakai chart amber, dan info memakai primary. Semua
+    warna menggunakan `color-mix` dengan `popover` agar tetap lembut pada light
+    dan dark mode.
+  - Alasan: hasil operasi harus cepat dikenali tanpa membuat toast terlalu
+    mencolok atau keluar dari palette theme aktif.
+  - Acceptance: toast success/error/warning/info memiliki warna border,
+    background, dan icon yang berbeda; teks tetap terbaca pada light/dark; dan
+    layout toast tidak berubah.
+  - Evidence: `npm run types:check`, `npm run format:check`, dan
+    `git diff --check` lulus. Browser tidak menghasilkan error atau warning.
+- [x] Notifikasi inline permission dihapus dan role memakai search combobox.
+  - Kondisi awal: `PermissionModulePanel.tsx` menampilkan `saveStatus` sebagai
+    pesan inline setelah save, bersamaan dengan toast Sonner dari backend.
+    `RoleControlCard.tsx` memakai elemen `select` sehingga role harus dicari
+    dari daftar native yang panjang.
+  - Perubahan: prop dan state `saveStatus` serta dua pesan inline dihapus.
+    Error mutation tetap memakai `toast.error`. `RoleControlCard.tsx` mengganti
+    select dengan combobox custom yang memiliki input pencarian, listbox,
+    filter nama role, pilihan aktif, klik di luar untuk menutup, dan Escape
+    untuk menutup. `resources/css/app.css` menambahkan hover dan selected state
+    combobox yang mengikuti primary palette.
+  - Alasan: hasil permission cukup diberitahukan satu kali melalui Sonner, dan
+    pencarian role menjadi lebih cepat bagi user dengan banyak role.
+  - Acceptance: tidak ada pesan inline sukses/gagal permission, combobox
+    memiliki `aria-expanded` dan `aria-haspopup=listbox`, query menyaring role,
+    pilihan role mengubah permission panel, Escape/click luar menutup menu, dan
+    keyboard focus tetap terlihat.
+  - Evidence: browser berhasil menyaring query `test` menjadi satu option,
+    memilih role tersebut, mengecek pesan inline lama tidak dirender, dan
+    console bersih. `npm run types:check`, `npm run format:check`, dan
     `git diff --check` lulus.

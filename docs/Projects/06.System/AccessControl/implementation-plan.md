@@ -15,6 +15,25 @@ Authentication
 Module lain hanya memanggil public contract atau capability. Detail model,
 repository, dan adapter Spatie tetap berada di dalam `AccessControl`.
 
+### Pembagian tanggung jawab runtime
+
+- `Presentation/Controllers/RoleController` hanya mengatur middleware,
+  menerima request yang sudah tervalidasi, memanggil query/action, dan
+  mengembalikan response Inertia atau redirect.
+- `Presentation/Requests` memiliki aturan validasi input mutation.
+- `Application/Queries/BuildAccessControlDashboard` mengambil dan membentuk
+  data role serta permission untuk kebutuhan page.
+- `Application/DTO/AccessControlDashboardData` menjadi bentuk data typed yang
+  dikirim ke Inertia.
+- `Application/Actions` memiliki side effect create role, sync permission, dan
+  delete role.
+- `Application/Services/AuthorizeRoleMutation` menjadi pemeriksaan use-case
+  kedua sebelum mutation. Policy memakai service yang sama untuk coarse-grained
+  dan resource/state authorization.
+
+Controller tidak boleh mengambil query Eloquent, menjalankan persistence
+mutation, atau menulis aturan validasi langsung.
+
 ## Urutan
 
 1. Finalisasi namespace, boundary, permission owner, dan ADR.

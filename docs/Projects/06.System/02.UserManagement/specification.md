@@ -2,7 +2,9 @@
 
 ## Status
 
-`Ready for Task 05` — Task 01 sampai Task 04 sudah diverifikasi.
+Status terbaru: `Ready for Task 09` — Task 01 sampai Task 08 sudah diverifikasi.
+
+`Ready for Task 08` — Task 01 sampai Task 07 sudah diverifikasi.
 
 ## Objective
 
@@ -220,3 +222,6 @@ Focused test yang akan dibuat:
 | 1.1 | 2026-08-06 | Menetapkan keputusan scope dan vertical slice awal |
 | 1.2 | 2026-08-06 | Menetapkan enam permission identity dan status Task 04 |
 | 1.3 | 2026-08-06 | Menambahkan domain lifecycle dan guard SuperSystem |
+| 1.4 | 2026-08-06 | Menambahkan application DTO, query, action, dan session contract |
+| 1.5 | 2026-08-06 | Menambahkan migration additive dan repository UserManagement |
+| 1.6 | 2026-08-06 | Menambahkan presentation route, policy, request, dan resource |

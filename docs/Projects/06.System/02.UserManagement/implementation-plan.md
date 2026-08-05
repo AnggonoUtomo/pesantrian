@@ -2,7 +2,7 @@
 
 ## Status
 
-`Ready for Task 05`.
+`Ready for Task 09`.
 
 ## Architecture
 
@@ -42,7 +42,9 @@ lintas module.
 6. **Application boundary**: buat action/query/DTO untuk list, create, update,
    status, soft delete, role assignment, dan impersonation.
 7. **Infrastructure**: siapkan migration additive, model/repository, factory,
-   dan seeder dengan ULID.
+   dan seeder dengan ULID. Migration tetap module-local melalui
+   `loadMigrationsFrom()`, sedangkan seeder module dipanggil oleh global
+   `DatabaseSeeder` untuk `php artisan migrate:fresh --seed`.
 8. **Authorization dan security**: policy, middleware, reason validation,
    protected `SuperSystem`, session separation, dan redaction.
 9. **Presentation dan routes**: controller tipis, FormRequest, resource, dan

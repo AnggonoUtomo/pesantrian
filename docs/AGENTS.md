@@ -119,6 +119,25 @@ Module dengan alur pengguna tidak boleh dinyatakan selesai tanpa frontend yang
 terhubung ke backend, state loading/empty/error, permission visibility,
 responsive layout, route Ziggy, serta browser/accessibility test.
 
+### 4a. Migration dan seeder global
+
+Migration dan seeder tetap dimiliki module agar schema, relation, permission,
+dan data awal tidak bercampur antar-boundary. Provider module wajib mendaftarkan
+migration melalui `loadMigrationsFrom()`. Seeder module tetap berada di
+`Database/Seeders`, tetapi semua seeder yang diperlukan untuk bootstrap wajib
+dipanggil oleh `database/seeders/DatabaseSeeder.php` sesuai dependency order.
+
+Target bootstrap standar adalah:
+
+```bash
+php artisan migrate:fresh --seed
+```
+
+Command module seperti `access-control:seed` hanya menjadi adapter untuk focused
+operation atau test. Module baru wajib membuktikan tidak ada duplicate migration,
+foreign key dijalankan setelah tabel owner tersedia, seeder idempotent, dan
+global `DatabaseSeeder` memanggil seeder module yang relevan.
+
 ### 5. Tutup dokumentasi dan review
 
 Sebelum module dinyatakan selesai, tinjau checklist sebelum dan sesudah kerja.

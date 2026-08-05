@@ -53,6 +53,15 @@ final class AccessControlSeederTest extends TestCase
         $this->assertSame(2, Role::count());
     }
 
+    public function test_database_seeder_global_menjalankan_seeder_module(): void
+    {
+        $this->seed();
+
+        $this->assertSame(5, Permission::count());
+        $this->assertSame(2, Role::count());
+        $this->assertSame(2, User::count());
+    }
+
     public function test_seeder_tidak_membuat_dummy_data_di_production(): void
     {
         Config::set('app.env', 'production');

@@ -192,6 +192,25 @@ mengembalikan diagnostic yang membutuhkan pemeriksaan lebih dalam.
 Jangan membuat module dengan name, path, namespace, provider, atau permission key
 yang sudah dimiliki module valid.
 
+## Aturan Migration dan Seeder Global
+
+- Migration tetap berada pada owner module di
+  `app/Modules/{Domain}/{SubModule}/Database/Migrations` agar ownership schema
+  dan dependency tetap jelas.
+- `ServiceProvider` module wajib mendaftarkan migration melalui
+  `loadMigrationsFrom()`. Jangan menyalin migration module ke
+  `database/migrations` karena dapat membuat duplicate migration atau konflik
+  urutan relation.
+- Seeder tetap berada pada owner module di folder `Database/Seeders`, tetapi
+  `database/seeders/DatabaseSeeder.php` menjadi entry point global.
+- `DatabaseSeeder` wajib memanggil seeder module berdasarkan dependency order.
+  Dengan begitu `php artisan migrate:fresh --seed` menjalankan seluruh schema
+  dan data awal tanpa command module satu per satu.
+- Command seeder module boleh dipertahankan untuk focused test atau operasi
+  module tertentu, tetapi bukan alur bootstrap utama.
+- Setiap module yang menambah migration atau seeder wajib menambahkan test
+  untuk fresh migration, relation, idempotency, dan global `DatabaseSeeder`.
+
 ## Baseline Module Order
 
 Baseline implementasi mengikuti urutan:

@@ -2,13 +2,13 @@ import { Head, router, usePage } from '@inertiajs/react';
 import { Keyboard } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
+import SystemDashboardLayout from '@/layouts/system-dashboard-layout';
 import route from '@/lib/route';
 import { AddRoleDialog } from '../components/AddRoleDialog';
 import { DeleteRoleDialog } from '../components/DeleteRoleDialog';
 import { PermissionModulePanel } from '../components/PermissionModulePanel';
 import { RoleControlCard } from '../components/RoleControlCard';
 import type { RoleControlCardHandle } from '../components/RoleControlCard';
-import SystemDashboardLayout from '../layouts/system-dashboard-layout';
 import type { AccessControlPageProps } from '../types';
 
 export default function Index() {

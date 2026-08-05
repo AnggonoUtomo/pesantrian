@@ -18,6 +18,21 @@ model adapter ULID milik module. Capability dasar, policy role, middleware
 coarse-grained, shared authorization context, page role/permission, mutation
 role, dan browser verification sudah tersedia.
 
+## Migration dan seeder global
+
+Migration dan seeder tetap dimiliki module. Provider mendaftarkan migration
+melalui `loadMigrationsFrom()`, sedangkan `database/seeders/DatabaseSeeder.php`
+memanggil `AccessControlSeeder` sebagai bagian dari bootstrap global.
+
+Gunakan alur standar berikut:
+
+```bash
+php artisan migrate:fresh --seed
+```
+
+Command `php artisan access-control:seed` tetap tersedia untuk focused operation
+atau test module, bukan sebagai alur bootstrap satu-satunya.
+
 ## Urutan baca
 
 1. [Specification](specification.md)

@@ -229,8 +229,11 @@ seeder demo, browser review, dan accessibility check sudah tersedia.
 - `AccessControlSeeder` membuat lima permission, role `SuperSystem`, role
   `SecurityAdmin`, serta dua user demo. Seeder memakai `firstOrCreate`,
   `syncPermissions`, dan `syncRoles`, sehingga aman dijalankan berulang.
-- Seeder dipanggil melalui command module `php artisan access-control:seed`.
-  `DatabaseSeeder` Laravel tidak lagi menjadi entry point AccessControl.
+- Seeder dipanggil oleh `database/seeders/DatabaseSeeder.php` melalui dependency
+  order global, sehingga `php artisan migrate:fresh --seed` menjalankan
+  bootstrap AccessControl tanpa command module satu per satu.
+- Command `php artisan access-control:seed` tetap tersedia sebagai adapter untuk
+  focused operation atau test module.
 - Seeder tidak membuat data jika `app.env` adalah `production`. Password demo
   berasal dari `ACCESS_CONTROL_DUMMY_PASSWORD` atau dibuat acak.
 - Jika env password diisi, command module dapat menyetel ulang password user

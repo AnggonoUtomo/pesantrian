@@ -1,6 +1,6 @@
 import { Head } from '@inertiajs/react';
+import SystemDashboardLayout from '@/layouts/system-dashboard-layout';
 import { SystemDashboardWidgets } from './AccessControl/components/SystemDashboardWidgets';
-import SystemDashboardLayout from './AccessControl/layouts/system-dashboard-layout';
 import type { AccessControlPageProps } from './AccessControl/types';
 
 export default function Dashboard({

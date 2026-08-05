@@ -2,11 +2,25 @@
 
 ## Status
 
-`Ready for Task 05`.
+`Ready for Task 09`.
 
 UserManagement adalah module business pertama setelah AccessControl. Module ini
 mengelola lifecycle user di atas tabel `users` starter kit. Authentication,
 Passkey, 2FA, dan password flow bawaan Laravel tetap digunakan kembali.
+
+Panduan migration shared/production tersedia pada
+[`migration-runbook.md`](migration-runbook.md).
+
+Migration tetap dimiliki module dan didaftarkan oleh `ServiceProvider` melalui
+`loadMigrationsFrom()`. Bootstrap database memakai satu entry point global:
+
+```bash
+php artisan migrate:fresh --seed
+```
+
+UserManagement belum memiliki seeder data awal sendiri; jika nanti ditambahkan,
+class seeder tetap berada di module dan wajib didaftarkan ke
+`database/seeders/DatabaseSeeder.php` sesuai dependency order.
 
 Keputusan boundary dan scope awal sudah disetujui. Implementasi dimulai dari
 vertical slice read-only user list sebelum mutation, role assignment, atau

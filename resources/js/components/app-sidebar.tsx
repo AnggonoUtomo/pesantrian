@@ -1,5 +1,11 @@
 import { Link, usePage } from '@inertiajs/react';
-import { LayoutGrid, Palette, ShieldCheck, UserRound } from 'lucide-react';
+import {
+    LayoutGrid,
+    Palette,
+    ShieldCheck,
+    UserRound,
+    UsersRound,
+} from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavMain } from '@/components/nav-main';
 import {
@@ -23,6 +29,8 @@ export function AppSidebar() {
     const canAccessControl =
         auth.superSystem === true ||
         auth.permissions?.['access_control.role.manage'] === true;
+    const canManageUsers =
+        auth.superSystem === true || auth.permissions?.['user.view'] === true;
 
     const mainNavItems: NavItem[] = [
         {
@@ -37,6 +45,14 @@ export function AppSidebar() {
             title: 'Access Control',
             href: route('access-control.index'),
             icon: ShieldCheck,
+        });
+    }
+
+    if (canManageUsers) {
+        mainNavItems.push({
+            title: 'User Management',
+            href: route('system.users.index'),
+            icon: UsersRound,
         });
     }
 

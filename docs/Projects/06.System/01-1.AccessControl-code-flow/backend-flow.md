@@ -153,11 +153,12 @@ application action.
 
 ## 9. Seeder Module
 
-Seeder tidak dipanggil dari `DatabaseSeeder` Laravel.
+Seeder tetap berada pada owner module, tetapi dipanggil dari `DatabaseSeeder`
+global sesuai dependency order.
 
 ```text
-php artisan access-control:seed
-    -> SeedAccessControlCommand
+php artisan migrate:fresh --seed
+    -> DatabaseSeeder
     -> AccessControlSeeder
     -> baca permissions.php
     -> buat permission

@@ -7,6 +7,7 @@ import {
     Search,
     Settings,
     UserRound,
+    UsersRound,
 } from 'lucide-react';
 import { useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import { Button } from '@/components/ui/button';
@@ -61,6 +62,9 @@ export function CommandPalette() {
             auth.superSystem ||
             auth.permissions?.['access_control.role.manage'],
         );
+        const canManageUsers = Boolean(
+            auth.superSystem || auth.permissions?.['user.view'],
+        );
 
         return [
             ...(canViewSystemDashboard
@@ -82,6 +86,17 @@ export function CommandPalette() {
                           keywords: 'access control role permission otorisasi',
                           href: route('access-control.index'),
                           icon: LockKeyhole,
+                      },
+                  ]
+                : []),
+            ...(canManageUsers
+                ? [
+                      {
+                          title: 'User Management',
+                          description: 'Kelola identity dan status user.',
+                          keywords: 'user management pengguna identity status',
+                          href: route('system.users.index'),
+                          icon: UsersRound,
                       },
                   ]
                 : []),

@@ -4,17 +4,22 @@ declare(strict_types=1);
 
 namespace App\Modules\System\UserManagement\Presentation\Controllers;
 
+use App\Models\User;
 use App\Modules\System\UserManagement\Application\Actions\ChangeUserStatus;
 use App\Modules\System\UserManagement\Application\Actions\CreateUser;
 use App\Modules\System\UserManagement\Application\Actions\SoftDeleteUser;
+use App\Modules\System\UserManagement\Application\Actions\StartImpersonation;
 use App\Modules\System\UserManagement\Application\Actions\UpdateUser;
+use App\Modules\System\UserManagement\Application\Contracts\ImpersonationSession;
 use App\Modules\System\UserManagement\Application\DTO\CreateUserData;
+use App\Modules\System\UserManagement\Application\DTO\ImpersonationRequestData;
 use App\Modules\System\UserManagement\Application\DTO\UpdateUserData;
 use App\Modules\System\UserManagement\Application\DTO\UserListFilter;
 use App\Modules\System\UserManagement\Application\Queries\GetUser;
 use App\Modules\System\UserManagement\Application\Queries\ListUsers;
 use App\Modules\System\UserManagement\Domain\ValueObjects\UserStatus;
 use App\Modules\System\UserManagement\Presentation\Requests\ChangeUserStatusRequest;
+use App\Modules\System\UserManagement\Presentation\Requests\StartImpersonationRequest;
 use App\Modules\System\UserManagement\Presentation\Requests\StoreUserRequest;
 use App\Modules\System\UserManagement\Presentation\Requests\UpdateUserRequest;
 use App\Modules\System\UserManagement\Presentation\Resources\UserResource;
@@ -34,6 +39,8 @@ final class UserController implements HasMiddleware
         private readonly UpdateUser $updateUser,
         private readonly ChangeUserStatus $changeUserStatus,
         private readonly SoftDeleteUser $softDeleteUser,
+        private readonly StartImpersonation $startImpersonation,
+        private readonly ImpersonationSession $impersonationSession,
     ) {}
 
     public static function middleware(): array
@@ -44,6 +51,7 @@ final class UserController implements HasMiddleware
             new Middleware('can:user.update', only: ['update']),
             new Middleware('can:user.status.manage', only: ['changeStatus']),
             new Middleware('can:user.delete', only: ['destroy']),
+            new Middleware('can:impersonate,user', only: ['impersonate']),
         ];
     }
 
@@ -109,5 +117,25 @@ final class UserController implements HasMiddleware
         $this->softDeleteUser->execute($request->user(), $user);
 
         return back()->with('success', 'User berhasil dihapus.');
+    }
+
+    public function impersonate(StartImpersonationRequest $request, User $user): RedirectResponse
+    {
+        $this->startImpersonation->execute(
+            $request->user(),
+            new ImpersonationRequestData(
+                targetUserId: $user->getKey(),
+                reason: (string) $request->validated('reason'),
+            ),
+        );
+
+        return to_route('system.dashboard')->with('success', 'Impersonation dimulai.');
+    }
+
+    public function leaveImpersonation(Request $request): RedirectResponse
+    {
+        $this->impersonationSession->leave($request->user());
+
+        return to_route('system.dashboard')->with('success', 'Impersonation selesai.');
     }
 }

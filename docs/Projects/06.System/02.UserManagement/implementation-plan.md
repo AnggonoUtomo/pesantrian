@@ -2,7 +2,7 @@
 
 ## Status
 
-`Ready for Task 09`.
+`Task 09 selesai; mutation UI umum masih menjadi increment berikutnya`.
 
 ## Architecture
 
@@ -112,6 +112,22 @@ User list
 Setelah slice baca lulus, lanjut create/update, status, role assignment melalui
 `RoleAssignmentCapability`, lalu impersonation. Mutation berisiko tidak dibuat
 bersamaan dengan list pertama.
+
+## Adaptasi Frontend dari Referensi
+
+Referensi `FrontendContoh/users` digunakan untuk mempelajari struktur tabel,
+summary card, search, action, shortcut, dan alur impersonation. Implementasi
+nyata tetap memakai contract module `System/UserManagement`.
+
+Keputusan UI:
+
+- add, edit, view, dan impersonation menggunakan Dialog modal, bukan Sheet;
+- route memakai Ziggy `system.users.*`;
+- `FrontendContoh` tidak diubah dan tidak ikut dikomit;
+- role assignment, avatar, archive, dan restore tidak ditampilkan sebelum
+  contract backend tersedia;
+- `/` fokus search, `Shift+A` membuka modal create, dan `Ctrl/Cmd+K` tetap
+  dimiliki command palette global.
 
 ## Dependency dan Boundary
 

@@ -10,9 +10,11 @@ Route::middleware(['web', 'auth', 'verified'])
     ->name('system.users.')
     ->group(function (): void {
         Route::get('/', [UserController::class, 'index'])->name('index');
+        Route::post('/impersonation/leave', [UserController::class, 'leaveImpersonation'])->name('impersonation.leave');
         Route::get('/{user}', [UserController::class, 'show'])->name('show');
         Route::post('/', [UserController::class, 'store'])->name('store');
         Route::put('/{user}', [UserController::class, 'update'])->name('update');
         Route::patch('/{user}/status', [UserController::class, 'changeStatus'])->name('status');
         Route::delete('/{user}', [UserController::class, 'destroy'])->name('destroy');
+        Route::post('/{user}/impersonate', [UserController::class, 'impersonate'])->name('impersonate');
     });

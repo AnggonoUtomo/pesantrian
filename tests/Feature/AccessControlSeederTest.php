@@ -20,7 +20,7 @@ final class AccessControlSeederTest extends TestCase
     {
         $this->seed(AccessControlSeeder::class);
 
-        $this->assertSame(5, Permission::count());
+        $this->assertSame(11, Permission::count());
         $this->assertTrue(Role::where('name', 'SuperSystem')->exists());
         $this->assertTrue(Role::where('name', 'SecurityAdmin')->exists());
 
@@ -28,6 +28,7 @@ final class AccessControlSeederTest extends TestCase
 
         $this->assertTrue($securityAdmin->hasRole('SecurityAdmin'));
         $this->assertTrue($securityAdmin->hasPermissionTo('access_control.role.manage'));
+        $this->assertTrue($securityAdmin->hasPermissionTo('user.impersonate'));
     }
 
     public function test_seeder_idempotent_dan_tidak_menduplikasi_data(): void
@@ -35,7 +36,7 @@ final class AccessControlSeederTest extends TestCase
         $this->seed(AccessControlSeeder::class);
         $this->seed(AccessControlSeeder::class);
 
-        $this->assertSame(5, Permission::count());
+        $this->assertSame(11, Permission::count());
         $this->assertSame(2, Role::count());
         $this->assertSame(2, User::whereIn('email', [
             'super-system@example.test',
@@ -49,7 +50,7 @@ final class AccessControlSeederTest extends TestCase
             ->assertSuccessful()
             ->expectsOutput('Seeder AccessControl selesai.');
 
-        $this->assertSame(5, Permission::count());
+        $this->assertSame(11, Permission::count());
         $this->assertSame(2, Role::count());
     }
 
@@ -57,9 +58,9 @@ final class AccessControlSeederTest extends TestCase
     {
         $this->seed();
 
-        $this->assertSame(5, Permission::count());
+        $this->assertSame(11, Permission::count());
         $this->assertSame(2, Role::count());
-        $this->assertSame(2, User::count());
+        $this->assertSame(12, User::count());
     }
 
     public function test_seeder_tidak_membuat_dummy_data_di_production(): void

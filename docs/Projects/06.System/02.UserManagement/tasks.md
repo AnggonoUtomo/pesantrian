@@ -398,7 +398,8 @@ dijalankan ulang pada fresh verification.
 
 `DatabaseSeeder` global memanggil seeder module berdasarkan dependency order.
 `AccessControlSeederTest::test_database_seeder_global_menjalankan_seeder_module`
-membuktikan `seed()` global membuat lima permission, dua role, dan dua user demo.
+membuktikan `seed()` global membuat sebelas permission, dua role, dan dua user
+demo.
 
 ## Task 07 — Presentation dan authorization
 
@@ -535,6 +536,79 @@ seperti create, update, status, delete, dan impersonation tetap menjadi task
 lanjutan karena membutuhkan flow form, audit, dan negative browser test yang
 lebih luas.
 
+## Task 08A — Adaptasi UI tabel dan modal UserManagement
+
+**Tujuan:** mengadaptasi pola `FrontendContoh/users` ke module System tanpa
+  membawa route lama atau fitur yang belum tersedia pada backend.
+
+**Files:** `resources/js/pages/System/UserManagement/pages/Index.tsx`,
+`resources/js/pages/System/UserManagement/components/*`, `types.ts`, serta
+README dan specification module.
+
+**Checklist sebelum kerja:**
+
+- [x] Referensi dan contract backend sudah dibandingkan.
+  - Kondisi awal: `FrontendContoh/users` menggunakan route `users.*`, tipe
+    numerik, role, avatar, archive, dan restore; module saat ini memakai
+    `system.users.*` dan data user minimal.
+  - Perubahan: hanya pola tabel, search, summary, action, shortcut, dan
+    impersonation yang diadaptasi.
+  - Alasan: UI tidak boleh membuat contract palsu atau menampilkan kemampuan
+    yang belum didukung backend.
+  - Evidence: route module, `UserResource`, FormRequest, dan reference folder
+    sudah dibaca sebelum coding.
+
+**Acceptance criteria:**
+
+- [x] Tabel dan search tersedia.
+  - Kondisi awal: page hanya menampilkan tabel sederhana dan link detail.
+  - Perubahan: ditambahkan `UserTable.tsx` dengan search Ziggy,
+    status badge, protected indicator, avatar fallback, dan action icon.
+  - Alasan: operator perlu menemukan user dan memilih aksi dari satu workspace.
+  - Evidence: browser menampilkan dua user, search input, status, protected,
+    dan action view/edit/impersonate.
+- [x] Add, edit, dan view menggunakan modal.
+  - Kondisi awal: create/edit belum tersedia pada page; detail memakai route
+    page terpisah.
+  - Perubahan: `UserFormDialog.tsx` memakai `system.users.store` dan
+    `system.users.update`; `UserViewDialog.tsx` menampilkan detail tanpa
+    Sheet; modal create, edit, dan view dapat ditutup dengan Escape.
+  - Alasan: user meminta alur tetap berada dalam workspace UserManagement.
+  - Evidence: Chrome DevTools membuka modal tambah, edit, dan view.
+- [x] Impersonation memakai modal dengan reason wajib.
+  - Kondisi awal: reason hanya tersedia pada `Show.tsx`.
+  - Perubahan: `ImpersonateUserDialog.tsx` mengirim reason ke
+    `system.users.impersonate` dan hanya tersedia untuk user yang tidak
+    protected serta actor yang memiliki permission.
+  - Alasan: alasan adalah bagian dari security contract dan audit event.
+  - Evidence: browser menampilkan input reason, validasi required, dan tombol
+    Login-as pada user non-protected.
+- [x] Shortcut mengikuti AccessControl tanpa konflik command palette.
+  - Kondisi awal: shortcut reference memakai `Ctrl/Cmd+K`, yang juga digunakan
+    command palette global.
+  - Perubahan: `UserShortcutBar.tsx` dan `Index.tsx` memakai `/` untuk search,
+    `Shift+A` untuk tambah, `Enter` untuk detail, dan `Escape` untuk modal.
+  - Alasan: mencegah dua handler membuka dua focus layer sekaligus.
+  - Evidence: `Shift+A` membuka modal tambah; setelah `Ctrl+K` diuji sebagai
+    command palette, console tidak lagi memiliki warning aria-hidden.
+- [x] Responsive, permission visibility, dan empty/error state tetap tersedia.
+  - Kondisi awal: state dasar sudah ada pada Task 08.
+  - Perubahan: state dipertahankan pada page; action create/edit/impersonate
+    disembunyikan berdasarkan permission dan user protected.
+  - Alasan: frontend hanya membantu UX, sedangkan backend tetap menjadi
+    security authority.
+  - Evidence: TypeScript, ESLint, Vite build, dan browser snapshot lulus.
+
+**Verification:** `npm run types:check`, `npm run lint:check`, `npm run build`,
+dan browser test Chrome DevTools pada `/system/users`.
+
+**Hasil implementasi:** selesai pada 2026-08-06 untuk scope UI tabel, search,
+summary, modal create/edit/view, modal impersonation, dan shortcut.
+
+**Open risk Task 08A:** mutation status/delete dan role assignment belum
+  ditambahkan ke UI karena contract form dan capability terkait perlu increment
+  terpisah. Fitur tersebut tidak disamarkan sebagai fitur yang sudah tersedia.
+
 **Verification:** ESLint, Prettier, TypeScript, build, browser, dan axe-core.
 
 **Hasil implementasi:** belum dikerjakan.
@@ -549,31 +623,202 @@ UI control, dan security test.
 
 **Acceptance criteria:**
 
-- [ ] Permission dan reason wajib.
-- [ ] Target `SuperSystem` selalu ditolak.
-- [ ] Actor asli dapat kembali dengan aman.
-- [ ] Session actor asli dan target tidak tertukar.
-- [ ] Sensitive event memiliki audit contract tanpa secret atau password.
-- [ ] Negative security test dan browser flow tersedia.
+- [x] Permission dan reason wajib.
+    - Kondisi awal: `StartImpersonation` dan DTO sudah memeriksa permission serta
+      reason, tetapi route dan FormRequest belum tersedia.
+    - Perubahan: `StartImpersonationRequest` mewajibkan reason 3–500 karakter;
+      route memakai `can:impersonate,user`; Application Action memeriksa
+      `user.impersonate` sebelum session diubah.
+    - Alasan: input dan authorization harus berhenti sebelum side effect login.
+    - Evidence: test tanpa permission menerima `403`, test tanpa reason memiliki
+      validation error, dan test positif berhasil memulai impersonation.
+- [x] Target `SuperSystem` selalu ditolak.
+    - Kondisi awal: policy `impersonate()` sudah memiliki protected guard,
+      tetapi belum diuji melalui route.
+    - Perubahan: policy dan action tetap melakukan penolakan ganda terhadap
+      target protected.
+    - Alasan: bypass `SuperSystem` tidak boleh berlaku untuk ability
+      impersonation.
+    - Evidence: `UserManagementImpersonationTest` menerima `403` dan actor
+      tetap berada pada akun asli.
+- [x] Actor asli dapat kembali dengan aman.
+    - Kondisi awal: `ImpersonationSession::leave()` baru berupa contract.
+    - Perubahan: `LaravelImpersonationSession` menyimpan actor asli, melakukan
+      login kembali saat leave, menghapus key impersonation, dan meregenerasi
+      session ID.
+    - Alasan: leave path wajib tersedia bersamaan dengan start path untuk
+      mencegah actor kehilangan konteks asli.
+    - Evidence: feature test dan browser test kembali ke `Super System Demo`.
+- [x] Session actor asli dan target tidak tertukar.
+    - Kondisi awal: belum ada adapter Laravel yang menyimpan konteks session.
+    - Perubahan: key `impersonation.actor_id`, `target_id`, `started_at`, dan
+      `reason` dikelola oleh `LaravelImpersonationSession`.
+    - Alasan: actor asli harus dapat dibedakan dari user target sepanjang flow.
+    - Evidence: test memeriksa actor target setelah start, actor asli setelah
+      leave, dan session key hilang setelah leave.
+- [x] Sensitive event memiliki audit contract tanpa secret atau password.
+    - Kondisi awal: AuditLog belum tersedia dan UserManagement belum memiliki
+      event impersonation.
+    - Perubahan: ditambahkan `UserImpersonationStarted` dan
+      `UserImpersonationEnded` pada `Domain/Events`; event hanya membawa actor,
+      target, reason, timestamp, dan correlation-safe context.
+    - Alasan: AuditLog berikutnya dapat menjadi consumer tanpa membuat audit
+      storage kedua atau membawa credential sensitif.
+    - Evidence: event test memastikan field password, token, credential, dan
+      session cookie tidak tersedia.
+- [x] Negative security test dan browser flow tersedia.
+    - Kondisi awal: Task 09 belum memiliki route, UI, atau security test.
+    - Perubahan: ditambahkan `UserManagementImpersonationTest`, form reason pada
+      `Show.tsx`, banner leave pada `system-dashboard-layout.tsx`, dan route
+      Ziggy start/leave.
+    - Alasan: capability sensitif harus terbukti dari backend sampai browser.
+    - Evidence: 4 test dan 30 assertions lulus; browser start/leave berhasil;
+      console kosong; Lighthouse desktop seluruh kategori bernilai `100`.
 
-**Verification:** security test, session test, browser test, dan audit contract test.
+**Verification:** `php artisan test tests/Feature/UserManagementImpersonationTest.php`,
+`npm run lint:check`, `npm run format:check`, `npm run types:check`, `npm run build`,
+browser test Chrome DevTools, dan Lighthouse accessibility.
 
-**Hasil implementasi:** ditunda sampai Task 09 memiliki ADR session, audit,
-route leave, dan redaction yang disetujui.
+**Hasil implementasi:** selesai pada 2026-08-06. ADR-0002, session adapter,
+route start/leave, event audit, redaction test, UI reason/banner, dan browser
+flow sudah tersedia.
+
+**Open risk Task 09:** tidak ada untuk scope impersonation. AuditLog consumer
+dan persistence audit tetap menjadi dependency module AuditLog berikutnya.
+
+## Task 10 — Seeder 10 user dummy
+
+**Tujuan:** menyediakan data user development agar tabel, search, status, role,
+dan permission dapat diuji tanpa membuat user manual satu per satu.
+
+**Files:** `app/Modules/System/UserManagement/Database/Seeders/UserManagementSeeder.php`,
+`database/seeders/DatabaseSeeder.php`, dan
+`tests/Feature/UserManagementSeederTest.php`.
+
+**Checklist sebelum kerja:**
+
+- [x] Owner module dan dependency sudah ditinjau.
+  - Kondisi awal: `DatabaseSeeder` hanya memanggil `AccessControlSeeder`;
+    UserManagement belum memiliki seeder.
+  - Perubahan: seeder baru ditempatkan pada owner module dan dipanggil setelah
+    AccessControl agar role `SecurityAdmin` sudah tersedia.
+  - Alasan: seeder harus mengikuti ownership module dan dependency order global.
+  - Evidence: `AGENTS.md`, `docs/AGENTS.md`, `DatabaseSeeder`, dan
+    `AccessControlSeeder` dibaca sebelum implementasi.
+
+**Acceptance criteria:**
+
+- [x] Sepuluh user dummy dibuat dengan status bervariasi.
+  - Kondisi awal: fresh database hanya memiliki `SuperSystem` dan
+    `SecurityAdmin`.
+  - Perubahan: `UserManagementSeeder` menambahkan 10 email `example.test`
+    dengan status active, inactive, dan suspended.
+  - Alasan: data bervariasi diperlukan untuk meninjau tabel dan filter UI.
+  - Evidence: focused test memverifikasi total 12 user global, 8 active, 2
+    inactive, dan 2 suspended.
+- [x] Role dan password mengikuti aturan keamanan development.
+  - Kondisi awal: role dummy belum tersedia dari UserManagement.
+  - Perubahan: semua dummy user diberi role `SecurityAdmin`; password memakai
+    `config('access_control.dummy_password')` atau random runtime.
+  - Alasan: user dapat dipakai untuk menguji authorization tanpa menyimpan
+    credential di source.
+  - Evidence: focused test memverifikasi 11 user ber-role `SecurityAdmin`,
+    termasuk akun baseline SecurityAdmin.
+- [x] Seeder global dan idempotency tersedia.
+  - Kondisi awal: `php artisan migrate:fresh --seed` hanya membuat dua user.
+  - Perubahan: `DatabaseSeeder` memanggil `UserManagementSeeder`;
+    `firstOrCreate` dan `syncRoles` menjaga seed dapat diulang.
+  - Alasan: bootstrap global harus menjadi satu entry point dan tidak boleh
+    menggandakan user.
+  - Evidence: test global dua kali tetap menghasilkan 12 user; semua 8 focused
+    test seeder lulus dengan 27 assertion.
+- [x] Production guard tetap aktif.
+  - Kondisi awal: dummy seeder tidak boleh mengisi database production.
+  - Perubahan: seeder berhenti ketika `config('app.env') === 'production'`.
+  - Alasan: data demo tidak boleh masuk environment production.
+  - Evidence: test production guard menghasilkan 0 user.
+
+**Verification:**
+
+```bash
+php artisan test tests/Feature/UserManagementSeederTest.php tests/Feature/AccessControlSeederTest.php
+php artisan migrate:fresh --seed --force
+```
+
+**Hasil implementasi:** selesai pada 2026-08-06. Bootstrap development sekarang
+menghasilkan 10 user dummy tambahan dan dua akun baseline.
+
+**Open risk Task 10:** tidak ada untuk scope dummy seeder. Akun demo hanya untuk
+development dan tidak boleh digunakan sebagai data production.
 
 ## Final Quality Checkpoint
 
-- [ ] Semua task selesai dengan evidence detail.
-- [ ] Test positif dan negatif lulus.
-- [ ] Discovery, validation, dan list lulus.
-- [ ] Migration fresh dan upgrade terverifikasi.
-- [ ] PHPStan, Pint, Pest, ESLint, TypeScript, build, browser, dan accessibility lulus.
-- [ ] README dan execution evidence diperbarui.
-- [ ] Open risk ditutup atau dilaporkan.
+- [x] Semua task dalam scope UserManagement selesai dengan evidence detail.
+    - Kondisi awal: checklist checkpoint masih kosong dan evidence tersebar di
+      Task 04 sampai Task 09 serta Task 08A.
+    - Perubahan: seluruh task yang sudah dikerjakan ditinjau ulang; Task 08A
+      mencatat adaptasi tabel, search, summary, shortcut, dan modal.
+    - Alasan: status selesai harus dapat ditelusuri tanpa membaca percakapan.
+    - Evidence: task memiliki kondisi awal, perubahan, alasan, acceptance,
+      command, hasil, dan batasan.
+- [x] Test positif dan negatif lulus.
+    - Kondisi awal: test backend dan security tersebar pada beberapa focused
+      test.
+    - Perubahan: quality gate menjalankan seluruh Pest suite dan test
+      impersonation, authorization, schema, migration, serta architecture.
+    - Alasan: module harus membuktikan jalur berhasil dan jalur ditolak.
+    - Evidence: `composer ci:check` lulus dengan 149 test dan 569 assertion;
+      PHPStan menemukan 0 error.
+- [x] Discovery, validation, dan list lulus.
+    - Kondisi awal: module UserManagement sudah tersedia tetapi checkpoint
+      belum memiliki evidence terbaru.
+    - Perubahan: discovery, validation, dan list dijalankan ulang untuk
+      `AccessControl` dan `UserManagement`.
+    - Alasan: registry dan boundary module harus valid sebelum release.
+    - Evidence: dua module ditemukan, dua module valid, tanpa diagnostic.
+- [x] Migration fresh dan upgrade terverifikasi.
+    - Kondisi awal: fresh migration dan upgrade simulation sudah diuji pada
+      Task 06, tetapi belum dicatat pada checkpoint akhir.
+    - Perubahan: `php artisan migrate:fresh --seed --force` dijalankan ulang;
+      seluruh 7 migration dan global `AccessControlSeeder` berhasil. Status
+      migration kemudian diperiksa dengan `php artisan migrate:status`.
+    - Alasan: bootstrap global harus dapat dibuat ulang tanpa konflik relation.
+    - Evidence: semua migration berstatus `Ran`; upgrade simulation Task 06
+      mempertahankan data existing, 2FA, dan Passkey.
+    - Batasan: shared/production tetap membutuhkan backup, operator, dan
+      rehearsal sesuai `migration-runbook.md`.
+- [x] PHPStan, Pint, Pest, ESLint, TypeScript, build, browser, dan accessibility lulus.
+    - Kondisi awal: Lighthouse sempat menemukan contrast header tabel 4.46:1.
+    - Perubahan: header tabel memakai `text-foreground/80`, lalu lint, type
+      check, build, browser, dan Lighthouse diulang.
+    - Alasan: contrast minimal 4.5:1 wajib dipenuhi agar tabel mudah dibaca.
+    - Evidence: `composer ci:check` lulus; `npm run build` lulus; browser
+      menampilkan list, modal view/edit/create, impersonation, dan shortcut;
+      Lighthouse desktop/mobile menghasilkan Accessibility 100, Best
+      Practices 100, SEO 100, Agentic Browsing 100; console kosong.
+- [x] README dan execution evidence diperbarui.
+    - Kondisi awal: README, specification, implementation plan, dan tasks
+      belum mencatat final quality checkpoint serta konflik shortcut.
+    - Perubahan: dokumen tersebut diperbarui dengan aturan modal, referensi
+      `FrontendContoh`, shortcut `/`, ownership `Ctrl/Cmd+K`, dan evidence.
+    - Alasan: keputusan UI dan batas contract harus dapat dipakai tim saat
+      melanjutkan module.
+    - Evidence: revision history dan Task 08A memuat perubahan serta command.
+- [x] Open risk ditutup atau dilaporkan.
+    - Kondisi awal: status/delete dan role assignment belum menjadi bagian dari
+      UI increment saat ini.
+    - Perubahan: risiko dicatat eksplisit sebagai scope lanjutan; tidak ada
+      fitur palsu yang ditampilkan pada UI.
+    - Alasan: risiko yang belum memiliki contract tidak boleh dianggap selesai.
+    - Evidence: Open risk Task 08A dan batasan migration production tercatat;
+      tidak ada unresolved error pada scope yang sudah diimplementasikan.
 
 ## Revision History
 
 | Version | Date       | Description                                             |
 | ------- | ---------- | ------------------------------------------------------- |
 | 1.7     | 2026-08-06 | Menyelesaikan frontend vertical slice dan browser verification Task 08 |
+| 1.8     | 2026-08-06 | Menyelesaikan impersonation session, audit event, dan browser flow Task 09 |
+| 1.9     | 2026-08-06 | Menutup final quality checkpoint dan memperbaiki contrast tabel |
+| 2.0     | 2026-08-06 | Menambahkan seeder 10 user dummy dan test idempotency |
 | 1.1     | 2026-08-06 | Menetapkan keputusan scope dan status task siap dimulai |

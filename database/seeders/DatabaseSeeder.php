@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Modules\System\AccessControl\Database\Seeders\AccessControlSeeder;
+use App\Modules\System\UserManagement\Database\Seeders\UserManagementSeeder;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -20,6 +21,7 @@ class DatabaseSeeder extends Seeder
         // yang memakai capability tersebut.
         $this->call([
             AccessControlSeeder::class,
+            UserManagementSeeder::class,
         ]);
     }
 }

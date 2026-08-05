@@ -50,6 +50,11 @@ class HandleInertiaRequests extends Middleware
                 'roles' => $request->user()?->getUserRoles() ?? [],
                 'permissions' => $request->user()?->getUserPermissions() ?? [],
                 'superSystem' => $request->user()?->isSuperSystem() ?? false,
+                'impersonation' => $request->hasSession() && $request->session()->has('impersonation.actor_id') ? [
+                    'actorId' => $request->session()->get('impersonation.actor_id'),
+                    'targetId' => $request->session()->get('impersonation.target_id'),
+                    'startedAt' => $request->session()->get('impersonation.started_at'),
+                ] : null,
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
         ];

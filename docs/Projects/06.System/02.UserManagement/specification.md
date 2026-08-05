@@ -2,7 +2,8 @@
 
 ## Status
 
-Status terbaru: `Ready for Task 09` — Task 01 sampai Task 08 sudah diverifikasi.
+Status terbaru: `Task 09 selesai` — impersonation session, audit event, route,
+dan browser flow sudah diverifikasi.
 
 `Ready for Task 08` — Task 01 sampai Task 07 sudah diverifikasi.
 
@@ -119,6 +120,9 @@ POST   /system/users/{user}/impersonate
 POST   /system/users/impersonation/leave
 ```
 
+Session key, actor restore, event audit, dan aturan redaction mengikuti
+[ADR-0002](decisions/ADR-0002-IMPERSONATION-SESSION-AUDIT.md).
+
 Route mutation harus memakai middleware coarse-grained, policy owner module, dan
 application action. Frontend route dibuat dengan Ziggy.
 
@@ -214,6 +218,18 @@ Focused test yang akan dibuat:
 - Never: direct import private AccessControl class, hard delete user,
   menyimpan password/secret di log atau response, dan menjadikan frontend
   permission sebagai security boundary.
+
+## Aturan Adaptasi Frontend
+
+- `FrontendContoh/users` hanya menjadi referensi pola tabel, pencarian,
+  summary, action, dan impersonation. Komponen tidak boleh menyalin route lama
+  atau payload yang belum tersedia pada module.
+- Modal `create`, `edit`, `view`, dan `impersonation` harus menggunakan Dialog
+  dan route Ziggy `system.users.*`.
+- UI tidak boleh menampilkan fitur role, avatar, archive, atau restore sebelum
+  contract backend dan permission-nya tersedia.
+- Shortcut `/` untuk search dan `Shift+A` untuk create. `Ctrl/Cmd+K` tidak boleh
+  diambil alih karena dipakai command palette global.
 
 ## Revision History
 

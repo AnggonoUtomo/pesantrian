@@ -2,7 +2,8 @@
 
 ## Status
 
-`Ready for Task 09`.
+`Final quality checkpoint lulus untuk scope UserManagement; status/delete dan
+role assignment menjadi scope lanjutan.`
 
 UserManagement adalah module business pertama setelah AccessControl. Module ini
 mengelola lifecycle user di atas tabel `users` starter kit. Authentication,
@@ -18,9 +19,15 @@ Migration tetap dimiliki module dan didaftarkan oleh `ServiceProvider` melalui
 php artisan migrate:fresh --seed
 ```
 
-UserManagement belum memiliki seeder data awal sendiri; jika nanti ditambahkan,
-class seeder tetap berada di module dan wajib didaftarkan ke
-`database/seeders/DatabaseSeeder.php` sesuai dependency order.
+UserManagement memiliki `UserManagementSeeder` untuk membuat 10 user dummy pada
+development. Seeder tetap berada di module dan dipanggil oleh
+`database/seeders/DatabaseSeeder.php` setelah `AccessControlSeeder` sesuai
+dependency order. Dengan dua akun baseline, bootstrap global menghasilkan 12
+user.
+
+Password user dummy memakai `ACCESS_CONTROL_DUMMY_PASSWORD`. Jika konfigurasi
+tersebut kosong, password acak dibuat hanya di runtime development dan tidak
+ditulis ke source atau log.
 
 Keputusan boundary dan scope awal sudah disetujui. Implementasi dimulai dari
 vertical slice read-only user list sebelum mutation, role assignment, atau
@@ -50,6 +57,7 @@ mengambil alih private implementation AccessControl.
 2. [Implementation plan](implementation-plan.md)
 3. [Tasks](tasks.md)
 4. [ADR boundary](decisions/ADR-0001-USERMANAGEMENT-BOUNDARY.md)
+5. [ADR impersonation session dan audit](decisions/ADR-0002-IMPERSONATION-SESSION-AUDIT.md)
 
 ## Dokumen Terkait
 
@@ -69,6 +77,18 @@ mengambil alih private implementation AccessControl.
 - assignment role melalui public contract AccessControl;
 - flow impersonation dengan permission, alasan, dan perlindungan
   `SuperSystem`.
+
+## Aturan UI UserManagement
+
+- Referensi visual boleh diambil dari `FrontendContoh/users`, tetapi route,
+  tipe data, permission, dan payload wajib mengikuti contract module saat ini.
+- Add, edit, dan view wajib menggunakan `Dialog` modal. Jangan memakai `Sheet`
+  untuk alur tersebut.
+- Shortcut mengikuti pola AccessControl. `/` dipakai untuk fokus search dan
+  `Shift+A` untuk membuka modal tambah user. `Ctrl/Cmd+K` tetap menjadi milik
+  command palette global.
+- Tabel wajib memiliki state kosong, error, loading request, action yang aman,
+  dan indicator protected user.
 
 ## Keputusan Scope Awal
 
@@ -119,12 +139,13 @@ business secara otomatis.
 
 ## Status Keputusan
 
-Keputusan scope awal sudah disetujui. Detail session impersonation, audit event,
-dan route keluar tetap harus ditetapkan dalam ADR khusus pada Task 09 sebelum
-fitur impersonation dibuat.
+Keputusan scope awal dan ADR impersonation session/audit sudah disetujui. Coding
+Task 09 mengikuti key session, public event, route leave, dan redaction pada ADR
+khusus tersebut.
 
 ## Revision History
 
 | Version | Date | Description |
 | --- | --- | --- |
 | 1.1 | 2026-08-06 | Menetapkan keputusan scope awal dan vertical slice |
+| 1.2 | 2026-08-06 | Menyelesaikan impersonation session, audit event, dan browser flow |

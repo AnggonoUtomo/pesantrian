@@ -7,8 +7,8 @@ authorization context, dan page frontend dasar.
 
 ## Seeder demo
 
-Seeder module membuat lima permission dari `permissions.php`, role
-`SuperSystem` dan `SecurityAdmin`, serta user demo berikut di luar environment
+Seeder module membaca seluruh permission identity dari module valid melalui
+`ModuleRegistry`, lalu membuat role `SuperSystem` dan `SecurityAdmin`, serta user demo berikut di luar environment
 production:
 
 - `super-system@example.test`

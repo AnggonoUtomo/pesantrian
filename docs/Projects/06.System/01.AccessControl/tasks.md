@@ -74,7 +74,8 @@ permission AccessControl dengan owner, format key, dan metadata `sensitive`.
 
 - [x] Scope task selesai.
   - Kondisi awal: `permissions.php` masih kosong dari generator.
-  - Perubahan: menambahkan lima permission, termasuk `system.dashboard.view`,
+  - Perubahan: menambahkan permission identity AccessControl, termasuk
+    `system.dashboard.view`,
     dan focused permission test.
   - Alasan: vocabulary permission harus tersedia sebelum adapter Spatie.
   - Evidence: focused test lulus dengan 13 test dan 30 assertion.
@@ -226,8 +227,9 @@ seeder demo, browser review, dan accessibility check sudah tersedia.
 
 **Evidence tambahan untuk seeder dan sidebar:**
 
-- `AccessControlSeeder` membuat lima permission, role `SuperSystem`, role
-  `SecurityAdmin`, serta dua user demo. Seeder memakai `firstOrCreate`,
+- `AccessControlSeeder` membaca permission identity seluruh module valid melalui
+  `ModuleRegistry`, lalu membuat role `SuperSystem`, role `SecurityAdmin`, serta
+  dua user demo. Seeder memakai `firstOrCreate`,
   `syncPermissions`, dan `syncRoles`, sehingga aman dijalankan berulang.
 - Seeder dipanggil oleh `database/seeders/DatabaseSeeder.php` melalui dependency
   order global, sehingga `php artisan migrate:fresh --seed` menjalankan

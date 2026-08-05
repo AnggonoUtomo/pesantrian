@@ -1,6 +1,9 @@
-import { Head, Link, usePage } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import { ArrowLeft, Mail, ShieldCheck, UserRound } from 'lucide-react';
+import { useState } from 'react';
+import type { FormEvent } from 'react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import SystemDashboardLayout from '@/layouts/system-dashboard-layout';
 import route from '@/lib/route';
 import type { Auth } from '@/types/auth';
@@ -9,12 +12,30 @@ import type { UserManagementUser } from '../types';
 type UserDetailPageProps = {
     auth: Auth;
     user: UserManagementUser;
+    errors?: Record<string, string>;
 };
 
 export default function Show() {
-    const { user, auth } = usePage<UserDetailPageProps>().props;
+    const { user, auth, errors } = usePage<UserDetailPageProps>().props;
+    const [reason, setReason] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const canView =
         auth.superSystem === true || auth.permissions?.['user.view'] === true;
+    const canImpersonate =
+        !user.isProtected &&
+        auth.impersonation == null &&
+        (auth.superSystem === true ||
+            auth.permissions?.['user.impersonate'] === true);
+
+    const submitImpersonation = (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        setIsSubmitting(true);
+        router.post(
+            route('system.users.impersonate', user.id),
+            { reason },
+            { onFinish: () => setIsSubmitting(false) },
+        );
+    };
 
     return (
         <>
@@ -88,6 +109,49 @@ export default function Show() {
                                 </dd>
                             </div>
                         </dl>
+
+                        {canImpersonate ? (
+                            <form
+                                onSubmit={submitImpersonation}
+                                className="mt-6 space-y-3 border-t pt-5"
+                            >
+                                <div>
+                                    <label
+                                        htmlFor="impersonation-reason"
+                                        className="text-sm font-medium"
+                                    >
+                                        Alasan impersonation
+                                    </label>
+                                    <p className="mt-1 text-xs text-muted-foreground">
+                                        Alasan ini dicatat pada event audit.
+                                    </p>
+                                </div>
+                                <Input
+                                    id="impersonation-reason"
+                                    value={reason}
+                                    onChange={(event) =>
+                                        setReason(event.target.value)
+                                    }
+                                    placeholder="Contoh: pemeriksaan tiket support"
+                                    minLength={3}
+                                    maxLength={500}
+                                    required
+                                />
+                                {errors?.reason ? (
+                                    <p
+                                        role="alert"
+                                        className="text-sm text-rose-500"
+                                    >
+                                        {errors.reason}
+                                    </p>
+                                ) : null}
+                                <Button type="submit" disabled={isSubmitting}>
+                                    {isSubmitting
+                                        ? 'Memulai...'
+                                        : 'Mulai impersonation'}
+                                </Button>
+                            </form>
+                        ) : null}
                     </section>
                 )}
             </SystemDashboardLayout>

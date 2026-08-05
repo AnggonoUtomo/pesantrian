@@ -15,6 +15,8 @@ return [
         'system.users.update',
         'system.users.status',
         'system.users.destroy',
+        'system.users.impersonate',
+        'system.users.impersonation.leave',
         'login',
         'system.login',
         'login.store',

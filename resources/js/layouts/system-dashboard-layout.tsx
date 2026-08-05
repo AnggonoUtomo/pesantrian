@@ -1,4 +1,9 @@
+import { router, usePage } from '@inertiajs/react';
+import { ShieldAlert } from 'lucide-react';
 import type { PropsWithChildren, ReactNode } from 'react';
+import { Button } from '@/components/ui/button';
+import route from '@/lib/route';
+import type { Auth } from '@/types/auth';
 
 interface SystemDashboardLayoutProps extends PropsWithChildren {
     eyebrow?: string;
@@ -14,8 +19,41 @@ export default function SystemDashboardLayout({
     actions,
     children,
 }: SystemDashboardLayoutProps) {
+    const { auth } = usePage<{ auth: Auth }>().props;
+
+    const leaveImpersonation = () => {
+        router.post(route('system.users.impersonation.leave'));
+    };
+
     return (
         <div className="theme-dashboard-shell mx-auto flex size-full max-w-7xl flex-1 flex-col px-4 py-6 sm:px-6">
+            {auth.impersonation ? (
+                <div className="mb-5 flex flex-col gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex items-start gap-3">
+                        <ShieldAlert
+                            className="mt-0.5 size-5 shrink-0 text-amber-500"
+                            aria-hidden="true"
+                        />
+                        <div>
+                            <p className="font-medium">
+                                Mode impersonation aktif
+                            </p>
+                            <p className="text-foreground/75">
+                                Anda sedang melihat aplikasi sebagai user
+                                target.
+                            </p>
+                        </div>
+                    </div>
+                    <Button
+                        type="button"
+                        variant="outline"
+                        onClick={leaveImpersonation}
+                    >
+                        Kembali ke akun asli
+                    </Button>
+                </div>
+            ) : null}
+
             <header className="dashboard-section-header mb-6 flex flex-col gap-4 border-b border-border/70 pb-6 sm:flex-row sm:items-end sm:justify-between">
                 <div className="space-y-1">
                     <p className="text-xs font-medium tracking-wide text-primary uppercase">

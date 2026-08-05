@@ -15,6 +15,11 @@ export type Auth = {
     roles?: Record<string, boolean>;
     permissions?: Record<string, boolean>;
     superSystem?: boolean;
+    impersonation?: {
+        actorId: string;
+        targetId: string;
+        startedAt: string;
+    } | null;
 };
 
 /* @chisel-passkeys */

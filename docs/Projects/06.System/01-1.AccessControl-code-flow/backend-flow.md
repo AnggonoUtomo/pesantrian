@@ -160,8 +160,8 @@ global sesuai dependency order.
 php artisan migrate:fresh --seed
     -> DatabaseSeeder
     -> AccessControlSeeder
-    -> baca permissions.php
-    -> buat permission
+    -> ModuleRegistry membaca permissions.php setiap module valid
+    -> buat seluruh permission identity
     -> buat SuperSystem dan SecurityAdmin
     -> buat user demo saat bukan production
 ```

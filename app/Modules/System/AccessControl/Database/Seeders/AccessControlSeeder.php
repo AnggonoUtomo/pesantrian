@@ -9,6 +9,7 @@ use App\Modules\System\AccessControl\Infrastructure\Persistence\Models\Permissio
 use App\Modules\System\AccessControl\Infrastructure\Persistence\Models\Role;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
+use StarterKit\Modules\ModuleRegistry;
 
 final class AccessControlSeeder extends Seeder
 {
@@ -74,22 +75,30 @@ final class AccessControlSeeder extends Seeder
     /** @return list<string> */
     private function permissionKeys(): array
     {
-        $definitions = require __DIR__.'/../../permissions.php';
+        $keys = [];
+        $discovery = app(ModuleRegistry::class)->discover(app_path('Modules'));
 
-        if (! is_array($definitions)) {
-            throw new \UnexpectedValueException('Permission definitions harus berupa array.');
+        if ($discovery['diagnostics'] !== []) {
+            throw new \UnexpectedValueException('Permission module tidak valid.');
         }
 
-        $keys = [];
+        foreach ($discovery['modules'] as $module) {
+            $path = base_path($module->path.'/'.$module->permissionSource);
+            $definitions = require $path;
 
-        foreach ($definitions as $definition) {
-            if (! is_array($definition) || ! isset($definition['key']) || ! is_string($definition['key'])) {
-                throw new \UnexpectedValueException('Setiap permission definition wajib memiliki key string.');
+            if (! is_array($definitions)) {
+                throw new \UnexpectedValueException("Permission source [$path] harus berupa array.");
             }
 
-            $keys[] = $definition['key'];
+            foreach ($definitions as $definition) {
+                if (! is_array($definition) || ! isset($definition['key']) || ! is_string($definition['key'])) {
+                    throw new \UnexpectedValueException('Setiap permission definition wajib memiliki key string.');
+                }
+
+                $keys[] = $definition['key'];
+            }
         }
 
-        return $keys;
+        return array_values(array_unique($keys));
     }
 }

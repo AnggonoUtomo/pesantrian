@@ -1,43 +1,101 @@
-import { Head, Link, router, usePage } from '@inertiajs/react';
-import { Search, ShieldCheck, UsersRound } from 'lucide-react';
-import { useState } from 'react';
-import type { FormEvent } from 'react';
+import { Head, usePage } from '@inertiajs/react';
+import { ShieldCheck } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import SystemDashboardLayout from '@/layouts/system-dashboard-layout';
-import route from '@/lib/route';
-import type { UserManagementPageProps, UserManagementUser } from '../types';
-
-function statusLabel(status: UserManagementUser['status']): string {
-    return {
-        active: 'Aktif',
-        inactive: 'Tidak aktif',
-        suspended: 'Ditangguhkan',
-    }[status];
-}
+import { ImpersonateUserDialog } from '../components/ImpersonateUserDialog';
+import { UserFormDialog } from '../components/UserFormDialog';
+import { UserShortcutBar } from '../components/UserShortcutBar';
+import { UserSummaryCards } from '../components/UserSummaryCards';
+import { UserTable } from '../components/UserTable';
+import { UserViewDialog } from '../components/UserViewDialog';
+import type {
+    UserManagementDialogMode,
+    UserManagementPageProps,
+    UserManagementUser,
+} from '../types';
 
 export default function Index() {
     const { auth, users, filters, errors } =
         usePage<UserManagementPageProps>().props;
     const [search, setSearch] = useState(filters.search ?? '');
-    const [isLoading, setIsLoading] = useState(false);
-    const canView =
-        auth.superSystem === true || auth.permissions?.['user.view'] === true;
+    const [mode, setMode] = useState<UserManagementDialogMode | null>(null);
+    const [selectedUser, setSelectedUser] = useState<UserManagementUser | null>(
+        null,
+    );
+    const [impersonatingUser, setImpersonatingUser] =
+        useState<UserManagementUser | null>(null);
+    const can = (permission: string) =>
+        auth.superSystem === true || auth.permissions?.[permission] === true;
+    const canView = can('user.view');
+    const canCreate = can('user.create');
+    const canEdit = can('user.update');
+    const canImpersonate = can('user.impersonate');
 
-    const submitSearch = (event: FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        setIsLoading(true);
-        router.get(
-            route('system.users.index'),
-            { search: search || undefined },
-            {
-                preserveState: true,
-                preserveScroll: true,
-                replace: true,
-                onFinish: () => setIsLoading(false),
-            },
-        );
+    const closeModal = () => {
+        setMode(null);
+        setSelectedUser(null);
     };
+
+    const openCreate = () => {
+        setSelectedUser(null);
+        setMode('create');
+    };
+
+    const openView = (user: UserManagementUser) => {
+        setSelectedUser(user);
+        setMode('view');
+    };
+
+    const openEdit = (user: UserManagementUser) => {
+        setSelectedUser(user);
+        setMode('edit');
+    };
+
+    const openImpersonate = (user: UserManagementUser) => {
+        setImpersonatingUser(user);
+    };
+
+    useEffect(() => {
+        const isTyping = (target: EventTarget | null) =>
+            target instanceof HTMLElement &&
+            (['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName) ||
+                target.isContentEditable);
+        const handleShortcut = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') {
+                if (mode) {
+                    closeModal();
+                }
+
+                if (impersonatingUser) {
+                    setImpersonatingUser(null);
+                }
+
+                return;
+            }
+
+            if (isTyping(event.target)) {
+                return;
+            }
+
+            const key = event.key.toLowerCase();
+
+            if (event.key === '/') {
+                event.preventDefault();
+                document.getElementById('user-search')?.focus();
+
+                return;
+            }
+
+            if (event.shiftKey && key === 'a' && canCreate) {
+                event.preventDefault();
+                openCreate();
+            }
+        };
+        window.addEventListener('keydown', handleShortcut);
+
+        return () => window.removeEventListener('keydown', handleShortcut);
+    }, [canCreate, mode, impersonatingUser]);
 
     if (!canView) {
         return (
@@ -68,57 +126,15 @@ export default function Index() {
             <SystemDashboardLayout
                 title="User Management"
                 description="Tinjau identity, status, dan akses user pada area System."
+                actions={
+                    canCreate ? (
+                        <Button onClick={openCreate}>Tambah user</Button>
+                    ) : null
+                }
             >
                 <div className="space-y-5">
-                    <section className="dashboard-card dashboard-card--blue rounded-2xl border p-5">
-                        <div className="mb-4 flex items-center gap-3">
-                            <div className="dashboard-icon dashboard-accent--blue flex size-10 items-center justify-center rounded-lg">
-                                <UsersRound
-                                    aria-hidden="true"
-                                    className="size-5"
-                                />
-                            </div>
-                            <div>
-                                <h2 className="font-semibold">Daftar user</h2>
-                                <p className="text-sm text-muted-foreground">
-                                    {users.length} user ditemukan
-                                </p>
-                            </div>
-                        </div>
-
-                        <form
-                            onSubmit={submitSearch}
-                            className="flex flex-col gap-2 sm:flex-row"
-                            role="search"
-                        >
-                            <label htmlFor="user-search" className="sr-only">
-                                Cari user
-                            </label>
-                            <div className="relative flex-1">
-                                <Search
-                                    aria-hidden="true"
-                                    className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
-                                />
-                                <Input
-                                    id="user-search"
-                                    value={search}
-                                    onChange={(event) =>
-                                        setSearch(event.target.value)
-                                    }
-                                    placeholder="Cari nama atau email..."
-                                    className="pl-9"
-                                />
-                            </div>
-                            <Button
-                                type="submit"
-                                variant="outline"
-                                disabled={isLoading}
-                            >
-                                {isLoading ? 'Memuat...' : 'Cari'}
-                            </Button>
-                        </form>
-                    </section>
-
+                    <UserSummaryCards users={users} />
+                    <UserShortcutBar />
                     {errors && Object.keys(errors).length > 0 ? (
                         <p
                             role="alert"
@@ -127,79 +143,48 @@ export default function Index() {
                             Data user tidak dapat dimuat. Silakan coba lagi.
                         </p>
                     ) : null}
-
-                    {users.length === 0 ? (
-                        <section className="dashboard-subcard rounded-2xl border border-dashed p-10 text-center">
-                            <UsersRound className="mx-auto mb-3 size-9 text-muted-foreground" />
-                            <h2 className="font-semibold">Belum ada user</h2>
-                            <p className="mt-2 text-sm text-muted-foreground">
-                                Tidak ada user yang cocok dengan pencarian saat
-                                ini.
-                            </p>
-                        </section>
-                    ) : (
-                        <section className="dashboard-card dashboard-card--cyan overflow-hidden rounded-2xl border">
-                            <div className="overflow-x-auto">
-                                <table className="w-full min-w-[640px] text-left text-sm">
-                                    <thead className="border-b bg-muted/40 text-xs tracking-wide text-muted-foreground uppercase">
-                                        <tr>
-                                            <th className="px-5 py-3 font-medium">
-                                                User
-                                            </th>
-                                            <th className="px-5 py-3 font-medium">
-                                                Status
-                                            </th>
-                                            <th className="px-5 py-3 text-right font-medium">
-                                                Aksi
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-border/70">
-                                        {users.map((user) => (
-                                            <tr
-                                                key={user.id}
-                                                className="transition-colors hover:bg-accent/40"
-                                            >
-                                                <td className="px-5 py-4">
-                                                    <div className="font-medium">
-                                                        {user.name}
-                                                    </div>
-                                                    <div className="text-xs text-muted-foreground">
-                                                        {user.email}
-                                                    </div>
-                                                </td>
-                                                <td className="px-5 py-4">
-                                                    <span className="dashboard-badge rounded-full px-2.5 py-1 text-xs font-medium">
-                                                        {statusLabel(
-                                                            user.status,
-                                                        )}
-                                                    </span>
-                                                </td>
-                                                <td className="px-5 py-4 text-right">
-                                                    <Button
-                                                        asChild
-                                                        size="sm"
-                                                        variant="outline"
-                                                    >
-                                                        <Link
-                                                            href={route(
-                                                                'system.users.show',
-                                                                user.id,
-                                                            )}
-                                                        >
-                                                            Lihat detail
-                                                        </Link>
-                                                    </Button>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </section>
-                    )}
+                    <UserTable
+                        users={users}
+                        search={search}
+                        canCreate={canCreate}
+                        canEdit={canEdit}
+                        canImpersonate={canImpersonate}
+                        onSearchChange={setSearch}
+                        onCreate={openCreate}
+                        onView={openView}
+                        onEdit={openEdit}
+                        onImpersonate={openImpersonate}
+                    />
                 </div>
             </SystemDashboardLayout>
+            <UserViewDialog
+                open={mode === 'view'}
+                user={selectedUser}
+                canEdit={canEdit}
+                canImpersonate={
+                    canImpersonate &&
+                    selectedUser?.isProtected !== true &&
+                    auth.impersonation == null
+                }
+                onOpenChange={(open) => !open && closeModal()}
+                onEdit={() => selectedUser && openEdit(selectedUser)}
+                onImpersonate={() => {
+                    if (selectedUser) {
+                        closeModal();
+                        openImpersonate(selectedUser);
+                    }
+                }}
+            />
+            <UserFormDialog
+                open={mode === 'create' || mode === 'edit'}
+                user={mode === 'edit' ? selectedUser : null}
+                onOpenChange={(open) => !open && closeModal()}
+            />
+            <ImpersonateUserDialog
+                open={impersonatingUser !== null}
+                user={impersonatingUser}
+                onOpenChange={(open) => !open && setImpersonatingUser(null)}
+            />
         </>
     );
 }

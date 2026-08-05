@@ -17,3 +17,5 @@ export type UserManagementPageProps = {
     };
     errors?: Record<string, string>;
 };
+
+export type UserManagementDialogMode = 'view' | 'create' | 'edit';

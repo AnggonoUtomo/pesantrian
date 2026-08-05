@@ -18,10 +18,13 @@ final class AccessControlSeeder extends Seeder
             return;
         }
 
-        $permissionKeys = collect(require __DIR__.'/../../permissions.php')
-            ->pluck('key')
-            ->values()
-            ->all();
+        /** @var array<int, array{key: string}> $permissionDefinitions */
+        $permissionDefinitions = require __DIR__.'/../../permissions.php';
+        $permissionKeys = [];
+
+        foreach ($permissionDefinitions as $permissionDefinition) {
+            $permissionKeys[] = $permissionDefinition['key'];
+        }
 
         foreach ($permissionKeys as $permissionKey) {
             Permission::firstOrCreate([
@@ -44,7 +47,7 @@ final class AccessControlSeeder extends Seeder
         ]);
         $securityAdmin->syncPermissions($allPermissions);
 
-        $configuredPassword = env('ACCESS_CONTROL_DUMMY_PASSWORD');
+        $configuredPassword = config('access-control.dummy_password');
         $password = $configuredPassword ?: Str::password(32);
 
         $superSystemUser = User::firstOrCreate(

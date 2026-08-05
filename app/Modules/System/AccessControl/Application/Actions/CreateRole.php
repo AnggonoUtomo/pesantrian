@@ -16,9 +16,11 @@ final class CreateRole
     {
         $this->authorization->ensureAllowed($actor);
 
-        return Role::create([
-            'name' => trim($name),
-            'guard_name' => 'web',
-        ]);
+        $role = new Role;
+        $role->name = trim($name);
+        $role->guard_name = 'web';
+        $role->save();
+
+        return $role;
     }
 }

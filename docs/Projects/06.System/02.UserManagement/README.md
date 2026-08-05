@@ -2,9 +2,9 @@
 
 ## Status
 
-`Task 11 evaluasi dan penyelarasan selesai untuk scope UserManagement saat ini;
-UI create, edit, detail, dan impersonation sudah diverifikasi. UI status,
-delete, dan role assignment tetap menjadi scope lanjutan.`
+`Task 12 Open Risk UI selesai untuk scope UserManagement saat ini; UI create,
+edit, detail, impersonation, status, soft delete, dan role assignment sudah
+diverifikasi.`
 
 UserManagement adalah module business pertama setelah AccessControl. Module ini
 mengelola lifecycle user di atas tabel `users` starter kit. Authentication,
@@ -120,8 +120,8 @@ sendiri:
 
 UserManagement memakai `UserRepository` dan `ImpersonationSession` sebagai
 contract internal/application boundary. Untuk lintas module, UserManagement
-memakai `AuthorizationCapability` dan `RoleAssignmentCapability` milik
-AccessControl.
+memakai `AuthorizationCapability`, `RoleAssignmentCapability`, dan
+`RoleCatalogCapability` milik AccessControl.
 
 `ListUsers` dan `GetUser` adalah Query internal dengan `UserData` typed.
 Mutation memakai Application Action. Event impersonation saat ini adalah Domain

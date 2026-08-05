@@ -16,9 +16,11 @@ type Props = {
     user: UserManagementUser | null;
     canEdit: boolean;
     canImpersonate: boolean;
+    canAssignRole: boolean;
     onOpenChange: (open: boolean) => void;
     onEdit: () => void;
     onImpersonate: () => void;
+    onAssignRole: () => void;
 };
 
 export function UserViewDialog({
@@ -26,9 +28,11 @@ export function UserViewDialog({
     user,
     canEdit,
     canImpersonate,
+    canAssignRole,
     onOpenChange,
     onEdit,
     onImpersonate,
+    onAssignRole,
 }: Props) {
     if (!user) {
         return null;
@@ -111,6 +115,15 @@ export function UserViewDialog({
                     {canEdit && !user.isProtected ? (
                         <Button type="button" onClick={onEdit}>
                             <Pencil className="size-4" /> Edit
+                        </Button>
+                    ) : null}
+                    {canAssignRole && !user.isProtected ? (
+                        <Button
+                            type="button"
+                            variant="secondary"
+                            onClick={onAssignRole}
+                        >
+                            Atur role
                         </Button>
                     ) : null}
                 </DialogFooter>

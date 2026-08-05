@@ -34,3 +34,22 @@ riwayat percakapan.
   mobile menghasilkan empat score 100.
 - Risiko tersisa: UI status, delete, dan role assignment belum tersedia;
   migration shared/production tetap membutuhkan database nyata dan backup.
+
+## Task 12 — Penutupan Open Risk UI
+
+- Kondisi awal: backend status, soft delete, dan role assignment sudah tersedia
+  sebagian, tetapi UserManagement belum memiliki vertical slice UI lengkap.
+- File code terdampak: `ChangeUserStatusDialog.tsx`, `DeleteUserDialog.tsx`,
+  `RoleAssignmentDialog.tsx`, `UserTable.tsx`, `UserViewDialog.tsx`,
+  `Index.tsx`, `UserController.php`, `AssignUserRoleRequest.php`, route
+  UserManagement, serta public role catalog AccessControl.
+- Perubahan: menambahkan modal status dan soft delete, role picker searchable,
+  route/form assignment, `RoleCatalogCapability`, dan typed role props.
+  `SuperSystem` dilindungi pada backend dan disaring dari picker actor biasa.
+- Evidence: focused backend test lulus 12 test/78 assertion; full CI lulus
+  171 test/646 assertion; TypeScript, ESLint, Prettier, Pint, dan PHPStan
+  lulus; browser membuka tiga dialog; console bersih; Lighthouse mobile
+  mendapat empat score 100.
+- Status: Open Risk Task 08A ditutup untuk status, soft delete, dan role
+  assignment. Migration shared/production tetap release gate external yang
+  membutuhkan database nyata dan backup.

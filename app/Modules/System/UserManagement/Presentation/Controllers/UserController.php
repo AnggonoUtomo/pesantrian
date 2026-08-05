@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\System\UserManagement\Presentation\Controllers;
 
 use App\Models\User;
+use App\Modules\System\AccessControl\Application\Contracts\RoleCatalogCapability;
+use App\Modules\System\UserManagement\Application\Actions\AssignUserRole;
 use App\Modules\System\UserManagement\Application\Actions\ChangeUserStatus;
 use App\Modules\System\UserManagement\Application\Actions\CreateUser;
 use App\Modules\System\UserManagement\Application\Actions\SoftDeleteUser;
@@ -18,6 +20,7 @@ use App\Modules\System\UserManagement\Application\DTO\UserListFilter;
 use App\Modules\System\UserManagement\Application\Queries\GetUser;
 use App\Modules\System\UserManagement\Application\Queries\ListUsers;
 use App\Modules\System\UserManagement\Domain\ValueObjects\UserStatus;
+use App\Modules\System\UserManagement\Presentation\Requests\AssignUserRoleRequest;
 use App\Modules\System\UserManagement\Presentation\Requests\ChangeUserStatusRequest;
 use App\Modules\System\UserManagement\Presentation\Requests\StartImpersonationRequest;
 use App\Modules\System\UserManagement\Presentation\Requests\StoreUserRequest;
@@ -41,6 +44,8 @@ final class UserController implements HasMiddleware
         private readonly SoftDeleteUser $softDeleteUser,
         private readonly StartImpersonation $startImpersonation,
         private readonly ImpersonationSession $impersonationSession,
+        private readonly AssignUserRole $assignUserRole,
+        private readonly RoleCatalogCapability $roleCatalog,
     ) {}
 
     public static function middleware(): array
@@ -49,6 +54,7 @@ final class UserController implements HasMiddleware
             new Middleware('can:user.view', only: ['index', 'show']),
             new Middleware('can:user.create', only: ['store']),
             new Middleware('can:user.update', only: ['update']),
+            new Middleware('can:user.update', only: ['assignRole']),
             new Middleware('can:user.status.manage', only: ['changeStatus']),
             new Middleware('can:user.delete', only: ['destroy']),
             new Middleware('can:impersonate,user', only: ['impersonate']),
@@ -66,6 +72,10 @@ final class UserController implements HasMiddleware
         return Inertia::render('System/UserManagement/pages/Index', [
             'users' => $users,
             'filters' => ['search' => $filter->search],
+            'roles' => array_map(
+                static fn ($role): array => $role->toArray(),
+                $this->roleCatalog->listRoles(),
+            ),
         ]);
     }
 
@@ -110,6 +120,17 @@ final class UserController implements HasMiddleware
         );
 
         return back()->with('success', 'Status user berhasil diperbarui.');
+    }
+
+    public function assignRole(AssignUserRoleRequest $request, User $user): RedirectResponse
+    {
+        $this->assignUserRole->execute(
+            $request->user(),
+            $user,
+            (string) $request->validated('role'),
+        );
+
+        return back()->with('success', 'Role user berhasil diperbarui.');
     }
 
     public function destroy(Request $request, string $user): RedirectResponse

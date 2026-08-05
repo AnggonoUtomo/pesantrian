@@ -2,8 +2,8 @@
 
 ## Status
 
-`Task 11 evaluasi dan penyelarasan selesai; UI status, delete, dan role
-assignment masih menjadi increment berikutnya`.
+`Task 12 Open Risk UI selesai; mutation status, soft delete, dan role assignment
+sudah memiliki vertical slice frontend dan backend yang terverifikasi`.
 
 ## Architecture
 
@@ -132,7 +132,8 @@ Keputusan UI:
 
 ## Dependency dan Boundary
 
-- AccessControl: public authorization capability dan `RoleAssignmentCapability`.
+- AccessControl: public authorization capability, `RoleAssignmentCapability`,
+  dan `RoleCatalogCapability`.
 - Laravel starter kit: authentication, password, Passkey, 2FA, dan User model.
 - UserManagement: lifecycle user, status, soft delete, route, page, dan policy
   resource user.

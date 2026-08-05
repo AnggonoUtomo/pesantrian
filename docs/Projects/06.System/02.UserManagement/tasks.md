@@ -1008,6 +1008,59 @@ development dan tidak boleh digunakan sebagai data production.
   - Sesudah: setiap temuan diberi status dan evidence; fitur yang belum ada
     tidak ditandai selesai; perubahan kode hanya menyentuh bug state dialog.
 
+## Task 12 — Penutupan Open Risk UI UserManagement
+
+- [x] UI perubahan status selesai.
+  - Kondisi awal: backend `ChangeUserStatus`, FormRequest, route, dan policy
+    sudah ada, tetapi UserTable belum menyediakan action dan dialog status.
+  - Perubahan: menambahkan `ChangeUserStatusDialog.tsx`, wiring permission
+    `user.status.manage`, route Ziggy `system.users.status`, dan guard agar
+    `SuperSystem` tidak dapat dipilih.
+  - Evidence: dialog status terbuka pada browser untuk user biasa; submit
+    backend memiliki test lifecycle; TypeScript, ESLint, dan Prettier lulus.
+
+- [x] UI soft delete selesai.
+  - Kondisi awal: backend soft delete sudah ada, tetapi belum ada confirmation
+    dialog dan action pada tabel.
+  - Perubahan: menambahkan `DeleteUserDialog.tsx`, visibility permission
+    `user.delete`, route Ziggy `system.users.destroy`, dan confirmation sebelum
+    mutation.
+  - Evidence: dialog arsip terbuka pada browser; tombol tidak tersedia untuk
+    protected user; backend test tetap lulus; tidak ada data development yang
+    dihapus saat browser review.
+
+- [x] Public role catalog dan role assignment selesai.
+  - Kondisi awal: `RoleAssignmentCapability` sudah dapat melakukan assignment,
+    tetapi UserManagement belum memiliki route, FormRequest, role catalog, atau
+    UI assignment.
+  - Perubahan: AccessControl menambahkan `RoleCatalogCapability`, `RoleOption`,
+    dan `SpatieRoleCatalogAdapter`. UserManagement menambahkan
+    `AssignUserRoleRequest`, route `system.users.roles`, controller orchestration,
+    typed `roles` page prop, dan `RoleAssignmentDialog` dengan pencarian role.
+  - Alasan: module UserManagement tetap memakai public API AccessControl tanpa
+    mengimpor model atau adapter Spatie.
+  - Evidence: test positive assignment, negative permission denial, dan role
+    catalog lulus; role picker dan search role terbuka pada browser; actor
+    biasa tidak melihat `SuperSystem` pada picker.
+
+- [x] Security dan frontend quality checkpoint ditutup.
+  - Kondisi awal: Open Risk Task 08A menyatakan status/delete/role assignment
+    belum tersedia pada UI.
+  - Perubahan: Open Risk ditutup setelah vertical slice backend/frontend,
+    protected guard, permission visibility, dan browser evidence tersedia.
+  - Evidence: `composer ci:check` lulus dengan 171 test dan 646 assertion;
+    `module:validate` dan `module:inspect` lulus; console browser bersih;
+    Lighthouse mobile Accessibility, Best Practices, SEO, dan Agentic Browsing
+    masing-masing 100; `git diff --check` lulus.
+  - Batasan: status soft delete tetap membutuhkan prosedur restore terpisah
+    jika fitur restore diminta kemudian.
+
+- [x] Checklist ditinjau sebelum dan sesudah pekerjaan.
+  - Sebelum: status, delete, dan role assignment dipecah menjadi increment
+    terurut dengan acceptance dan negative path.
+  - Sesudah: seluruh item Open Risk memiliki file perubahan dan evidence;
+    tidak ada checklist terbuka pada folder UserManagement.
+
 ## Revision History
 
 | Version | Date       | Description                                             |

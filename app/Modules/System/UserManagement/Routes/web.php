@@ -15,6 +15,7 @@ Route::middleware(['web', 'auth', 'verified'])
         Route::post('/', [UserController::class, 'store'])->name('store');
         Route::put('/{user}', [UserController::class, 'update'])->name('update');
         Route::patch('/{user}/status', [UserController::class, 'changeStatus'])->name('status');
+        Route::patch('/{user}/roles', [UserController::class, 'assignRole'])->name('roles');
         Route::delete('/{user}', [UserController::class, 'destroy'])->name('destroy');
         Route::post('/{user}/impersonate', [UserController::class, 'impersonate'])->name('impersonate');
     });

@@ -28,6 +28,44 @@ it('mengizinkan actor dengan user.view dan menolak actor tanpa permission', func
     $this->actingAs($unauthorized)->get(route('system.users.index'))->assertForbidden();
 });
 
+it('mengirim role option typed dan mengizinkan assignment melalui capability publik', function (): void {
+    $view = Permission::create(['name' => 'user.view', 'guard_name' => 'web']);
+    $update = Permission::create(['name' => 'user.update', 'guard_name' => 'web']);
+    $assign = Permission::create(['name' => 'access_control.role.assign', 'guard_name' => 'web']);
+    $actor = User::factory()->create();
+    $target = User::factory()->create();
+    $actor->givePermissionTo([$view, $update, $assign]);
+    Role::create(['name' => 'SecurityAdmin', 'guard_name' => 'web']);
+
+    $this->actingAs($actor)
+        ->get(route('system.users.index'))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->has('roles', 1)
+            ->where('roles.0.name', 'SecurityAdmin')
+        );
+
+    $this->actingAs($actor)
+        ->patch(route('system.users.roles', $target), ['role' => 'SecurityAdmin'])
+        ->assertRedirect();
+
+    expect($target->refresh()->hasRole('SecurityAdmin'))->toBeTrue();
+});
+
+it('menolak assignment role jika actor tidak memiliki permission assignment', function (): void {
+    $update = Permission::create(['name' => 'user.update', 'guard_name' => 'web']);
+    $actor = User::factory()->create();
+    $target = User::factory()->create();
+    $actor->givePermissionTo($update);
+    Role::create(['name' => 'SecurityAdmin', 'guard_name' => 'web']);
+
+    $this->actingAs($actor)
+        ->patch(route('system.users.roles', $target), ['role' => 'SecurityAdmin'])
+        ->assertForbidden();
+
+    expect($target->refresh()->hasRole('SecurityAdmin'))->toBeFalse();
+});
+
 it('policy menolak mutation terhadap SuperSystem', function (): void {
     $actor = User::factory()->create();
     $target = User::factory()->create();

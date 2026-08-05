@@ -68,10 +68,10 @@ atau test module, bukan sebagai alur bootstrap satu-satunya.
 
 ## Pola komunikasi module
 
-AccessControl memiliki dua public capability: `AuthorizationCapability` dan
-`RoleAssignmentCapability`. Keduanya sudah memiliki binding runtime melalui
-adapter internal. Module lain wajib memakai interface tersebut, bukan model,
-repository, atau adapter Spatie private.
+AccessControl memiliki tiga public capability: `AuthorizationCapability`,
+`RoleAssignmentCapability`, dan `RoleCatalogCapability`. Ketiganya sudah
+memiliki binding runtime melalui adapter internal. Module lain wajib memakai
+interface tersebut, bukan model, repository, atau adapter Spatie private.
 
 Mutation AccessControl memakai Application Action dan read memakai Application
 Query. Domain Event, Integration Event, Command Bus, Queue/Job, Facade, dan

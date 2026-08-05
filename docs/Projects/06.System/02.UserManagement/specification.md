@@ -2,10 +2,10 @@
 
 ## Status
 
-Status terbaru: `Task 11 evaluasi dan penyelarasan selesai` — module valid,
-backend test, frontend quality gate, browser smoke test, dan perbaikan state
-dialog edit sudah diverifikasi untuk scope list/detail, create, edit, dan
-impersonation.
+Status terbaru: `Task 12 Open Risk UI selesai` — module valid, backend test,
+frontend quality gate, browser smoke test, dan state dialog sudah diverifikasi
+untuk scope list/detail, create, edit, impersonation, status, soft delete, dan
+role assignment.
 
 UI status, delete, dan role assignment tetap menjadi increment berikutnya.
 
@@ -77,8 +77,8 @@ UserManagement wajib mengikuti pola visual AccessControl:
 
 ## Pola komunikasi dan eksekusi
 
-- Contract lintas module hanya melalui `AuthorizationCapability` dan
-  `RoleAssignmentCapability`.
+- Contract lintas module hanya melalui `AuthorizationCapability`,
+  `RoleAssignmentCapability`, dan `RoleCatalogCapability`.
 - `UserRepository` dan `ImpersonationSession` adalah port internal
   UserManagement yang diimplementasikan Infrastructure.
 - `ListUsers` dan `GetUser` adalah Query/read contract internal.
@@ -182,9 +182,9 @@ application action. Frontend route dibuat dengan Ziggy.
 - Backend adalah security authority.
 - Frontend hanya menyembunyikan atau menampilkan action untuk UX.
 - UserManagement tidak membuat authorization implementation kedua.
-- Assignment role memakai public contract terpisah `RoleAssignmentCapability`
-  dari AccessControl. Contract tersebut harus tersedia sebelum task role
-  assignment dimulai.
+- Assignment role memakai `RoleAssignmentCapability`, sedangkan daftar role
+  memakai `RoleCatalogCapability` dari AccessControl. UserManagement tidak boleh
+  mengimpor model atau adapter private.
 - Target `SuperSystem` tidak boleh diubah statusnya, dihapus, atau dijadikan
   target impersonation.
 - Impersonation harus memiliki permission dan alasan eksplisit.

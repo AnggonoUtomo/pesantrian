@@ -9,9 +9,15 @@ export type UserManagementUser = {
     deletedAt: string | null;
 };
 
+export type UserManagementRole = {
+    id: string;
+    name: string;
+};
+
 export type UserManagementPageProps = {
     auth: Auth;
     users: UserManagementUser[];
+    roles: UserManagementRole[];
     filters: {
         search: string | null;
     };

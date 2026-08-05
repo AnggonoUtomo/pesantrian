@@ -3,7 +3,10 @@ import { ShieldCheck } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import SystemDashboardLayout from '@/layouts/system-dashboard-layout';
+import { ChangeUserStatusDialog } from '../components/ChangeUserStatusDialog';
+import { DeleteUserDialog } from '../components/DeleteUserDialog';
 import { ImpersonateUserDialog } from '../components/ImpersonateUserDialog';
+import { RoleAssignmentDialog } from '../components/RoleAssignmentDialog';
 import { UserFormDialog } from '../components/UserFormDialog';
 import { UserShortcutBar } from '../components/UserShortcutBar';
 import { UserSummaryCards } from '../components/UserSummaryCards';
@@ -16,7 +19,7 @@ import type {
 } from '../types';
 
 export default function Index() {
-    const { auth, users, filters, errors } =
+    const { auth, users, roles, filters, errors } =
         usePage<UserManagementPageProps>().props;
     const [search, setSearch] = useState(filters.search ?? '');
     const [mode, setMode] = useState<UserManagementDialogMode | null>(null);
@@ -25,12 +28,26 @@ export default function Index() {
     );
     const [impersonatingUser, setImpersonatingUser] =
         useState<UserManagementUser | null>(null);
+    const [statusUser, setStatusUser] = useState<UserManagementUser | null>(
+        null,
+    );
+    const [deletingUser, setDeletingUser] = useState<UserManagementUser | null>(
+        null,
+    );
+    const [roleUser, setRoleUser] = useState<UserManagementUser | null>(null);
     const can = (permission: string) =>
         auth.superSystem === true || auth.permissions?.[permission] === true;
     const canView = can('user.view');
     const canCreate = can('user.create');
     const canEdit = can('user.update');
     const canImpersonate = can('user.impersonate');
+    const canChangeStatus = can('user.status.manage');
+    const canDelete = can('user.delete');
+    const canAssignRole =
+        can('user.update') && can('access_control.role.assign');
+    const assignableRoles = auth.superSystem
+        ? roles
+        : roles.filter((role) => role.name !== 'SuperSystem');
 
     const closeModal = () => {
         setMode(null);
@@ -71,6 +88,18 @@ export default function Index() {
                     setImpersonatingUser(null);
                 }
 
+                if (statusUser) {
+                    setStatusUser(null);
+                }
+
+                if (deletingUser) {
+                    setDeletingUser(null);
+                }
+
+                if (roleUser) {
+                    setRoleUser(null);
+                }
+
                 return;
             }
 
@@ -95,7 +124,14 @@ export default function Index() {
         window.addEventListener('keydown', handleShortcut);
 
         return () => window.removeEventListener('keydown', handleShortcut);
-    }, [canCreate, mode, impersonatingUser]);
+    }, [
+        canCreate,
+        deletingUser,
+        mode,
+        impersonatingUser,
+        roleUser,
+        statusUser,
+    ]);
 
     if (!canView) {
         return (
@@ -149,11 +185,17 @@ export default function Index() {
                         canCreate={canCreate}
                         canEdit={canEdit}
                         canImpersonate={canImpersonate}
+                        canChangeStatus={canChangeStatus}
+                        canDelete={canDelete}
+                        canAssignRole={canAssignRole}
                         onSearchChange={setSearch}
                         onCreate={openCreate}
                         onView={openView}
                         onEdit={openEdit}
                         onImpersonate={openImpersonate}
+                        onChangeStatus={setStatusUser}
+                        onDelete={setDeletingUser}
+                        onAssignRole={setRoleUser}
                     />
                 </div>
             </SystemDashboardLayout>
@@ -166,12 +208,21 @@ export default function Index() {
                     selectedUser?.isProtected !== true &&
                     auth.impersonation == null
                 }
+                canAssignRole={
+                    canAssignRole && selectedUser?.isProtected !== true
+                }
                 onOpenChange={(open) => !open && closeModal()}
                 onEdit={() => selectedUser && openEdit(selectedUser)}
                 onImpersonate={() => {
                     if (selectedUser) {
                         closeModal();
                         openImpersonate(selectedUser);
+                    }
+                }}
+                onAssignRole={() => {
+                    if (selectedUser) {
+                        closeModal();
+                        setRoleUser(selectedUser);
                     }
                 }}
             />
@@ -185,6 +236,24 @@ export default function Index() {
                 open={impersonatingUser !== null}
                 user={impersonatingUser}
                 onOpenChange={(open) => !open && setImpersonatingUser(null)}
+            />
+            <ChangeUserStatusDialog
+                key={`status-${statusUser?.id ?? 'new'}`}
+                open={statusUser !== null}
+                user={statusUser}
+                onOpenChange={(open) => !open && setStatusUser(null)}
+            />
+            <DeleteUserDialog
+                open={deletingUser !== null}
+                user={deletingUser}
+                onOpenChange={(open) => !open && setDeletingUser(null)}
+            />
+            <RoleAssignmentDialog
+                key={`role-${roleUser?.id ?? 'new'}`}
+                open={roleUser !== null}
+                user={roleUser}
+                roles={assignableRoles}
+                onOpenChange={(open) => !open && setRoleUser(null)}
             />
         </>
     );

@@ -24,6 +24,8 @@ bootstrap aplikasi seperti welcome, login area, dan settings.
 Sebelum increment CQRS berikutnya, status fondasi harus tetap dapat ditelusuri:
 
 - Contract/Interface: sudah aktif untuk authorization dan role assignment.
+- Role catalog: sudah aktif melalui `RoleCatalogCapability` dan DTO
+  `RoleOption` untuk consumer yang membutuhkan daftar role.
 - Domain Event: disiapkan sebagai boundary fakta role/permission, tetapi belum
   dibuat tanpa consumer atau kebutuhan audit yang jelas.
 - Application Event: belum diperlukan karena mutation belum memiliki beberapa

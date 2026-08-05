@@ -6,6 +6,7 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use App\Modules\System\AccessControl\Application\Contracts\RoleAssignmentCapability;
+use App\Modules\System\AccessControl\Application\Contracts\RoleCatalogCapability;
 use App\Modules\System\AccessControl\Infrastructure\Persistence\Models\Permission;
 use App\Modules\System\AccessControl\Infrastructure\Persistence\Models\Role;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -56,5 +57,17 @@ final class AccessControlRoleAssignmentCapabilityTest extends TestCase
 
         $this->expectException(AuthorizationException::class);
         $capability->assignRole($actor, $target, 'SuperSystem');
+    }
+
+    public function test_role_catalog_is_resolved_through_public_capability(): void
+    {
+        Role::create(['name' => 'SecurityAdmin', 'guard_name' => 'web']);
+        Role::create(['name' => 'SuperSystem', 'guard_name' => 'web']);
+        $catalog = $this->app->make(RoleCatalogCapability::class);
+
+        self::assertSame(
+            ['SecurityAdmin', 'SuperSystem'],
+            array_map(static fn ($role): string => $role->name, $catalog->listRoles()),
+        );
     }
 }

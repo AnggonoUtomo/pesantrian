@@ -439,6 +439,16 @@ seeder demo, browser review, dan accessibility check sudah tersedia.
   - Evidence: `git diff --check` lulus; dokumentasi AccessControl dan referensi
     UserManagement menyebut status adapter runtime yang sama.
 
+- [x] Public role catalog capability tersedia untuk consumer module.
+  - Kondisi awal: UserManagement membutuhkan daftar role untuk UI assignment,
+    tetapi tidak boleh membaca model Role atau adapter Spatie AccessControl.
+  - Perubahan: menambahkan `RoleCatalogCapability`, DTO `RoleOption`, adapter
+    `SpatieRoleCatalogAdapter`, dan binding pada `ServiceProvider`.
+  - Alasan: daftar role harus tersedia melalui public API owner tanpa concrete
+    dependency lintas module.
+  - Evidence: `AccessControlRoleAssignmentCapabilityTest` memverifikasi binding
+    dan hasil role catalog; PHPStan dan full CI lulus.
+
 - [x] Seluruh Open Risk AccessControl ditinjau dan statusnya ditetapkan.
   - Kondisi awal: daftar risiko mencampur defect runtime, keputusan scope
     CQRS-lite, dan release gate migrasi database existing.

@@ -1,11 +1,14 @@
 import { router } from '@inertiajs/react';
 import {
+    Activity,
     Edit3,
     Eye,
     LogIn,
     Plus,
     Search,
     ShieldCheck,
+    ShieldPlus,
+    Trash2,
     UserRound,
 } from 'lucide-react';
 import { useState } from 'react';
@@ -22,11 +25,17 @@ type Props = {
     canCreate: boolean;
     canEdit: boolean;
     canImpersonate: boolean;
+    canChangeStatus: boolean;
+    canDelete: boolean;
+    canAssignRole: boolean;
     onSearchChange: (value: string) => void;
     onCreate: () => void;
     onView: (user: UserManagementUser) => void;
     onEdit: (user: UserManagementUser) => void;
     onImpersonate: (user: UserManagementUser) => void;
+    onChangeStatus: (user: UserManagementUser) => void;
+    onDelete: (user: UserManagementUser) => void;
+    onAssignRole: (user: UserManagementUser) => void;
 };
 
 const statusLabels: Record<UserManagementUser['status'], string> = {
@@ -41,11 +50,17 @@ export function UserTable({
     canCreate,
     canEdit,
     canImpersonate,
+    canChangeStatus,
+    canDelete,
+    canAssignRole,
     onSearchChange,
     onCreate,
     onView,
     onEdit,
     onImpersonate,
+    onChangeStatus,
+    onDelete,
+    onAssignRole,
 }: Props) {
     const [isSearching, setIsSearching] = useState(false);
     const submitSearch = (event: React.FormEvent<HTMLFormElement>) => {
@@ -210,6 +225,44 @@ export function UserTable({
                                                     }
                                                 >
                                                     <LogIn className="size-4" />
+                                                </Button>
+                                            ) : null}
+                                            {canChangeStatus &&
+                                            !user.isProtected ? (
+                                                <Button
+                                                    size="icon"
+                                                    variant="ghost"
+                                                    aria-label={`Ubah status ${user.name}`}
+                                                    onClick={() =>
+                                                        onChangeStatus(user)
+                                                    }
+                                                >
+                                                    <Activity className="size-4" />
+                                                </Button>
+                                            ) : null}
+                                            {canDelete && !user.isProtected ? (
+                                                <Button
+                                                    size="icon"
+                                                    variant="ghost"
+                                                    aria-label={`Arsipkan ${user.name}`}
+                                                    onClick={() =>
+                                                        onDelete(user)
+                                                    }
+                                                >
+                                                    <Trash2 className="size-4" />
+                                                </Button>
+                                            ) : null}
+                                            {canAssignRole &&
+                                            !user.isProtected ? (
+                                                <Button
+                                                    size="icon"
+                                                    variant="ghost"
+                                                    aria-label={`Atur role ${user.name}`}
+                                                    onClick={() =>
+                                                        onAssignRole(user)
+                                                    }
+                                                >
+                                                    <ShieldPlus className="size-4" />
                                                 </Button>
                                             ) : null}
                                         </div>

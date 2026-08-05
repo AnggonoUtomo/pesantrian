@@ -2,6 +2,11 @@ import { useSyncExternalStore } from 'react';
 
 export const themePalettes = [
     { value: 'urban', label: 'Urban', color: 'oklch(0.47 0.11 252)' },
+    { value: 'slate', label: 'Slate', color: 'oklch(0.45 0.05 255)' },
+    { value: 'gray', label: 'Gray', color: 'oklch(0.45 0.03 257)' },
+    { value: 'zinc', label: 'Zinc', color: 'oklch(0.45 0.03 285)' },
+    { value: 'neutral', label: 'Neutral', color: 'oklch(0.45 0 0)' },
+    { value: 'stone', label: 'Stone', color: 'oklch(0.45 0.04 75)' },
     { value: 'graphite', label: 'Graphite', color: 'oklch(0.43 0.055 245)' },
     { value: 'mist', label: 'Mist', color: 'oklch(0.46 0.085 135)' },
     { value: 'harbor', label: 'Harbor', color: 'oklch(0.49 0.11 245)' },

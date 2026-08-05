@@ -58,7 +58,10 @@ export function AddRoleDialog({
                 </DialogHeader>
                 <form onSubmit={submit} className="space-y-4">
                     <div className="space-y-2">
-                        <label htmlFor="new-role-name" className="text-sm font-medium">
+                        <label
+                            htmlFor="new-role-name"
+                            className="text-sm font-medium"
+                        >
                             Nama role
                         </label>
                         <Input
@@ -78,7 +81,10 @@ export function AddRoleDialog({
                         >
                             Batal
                         </Button>
-                        <Button type="submit" disabled={isProcessing || !name.trim()}>
+                        <Button
+                            type="submit"
+                            disabled={isProcessing || !name.trim()}
+                        >
                             {isProcessing ? 'Menyimpan...' : 'Simpan role'}
                         </Button>
                     </DialogFooter>

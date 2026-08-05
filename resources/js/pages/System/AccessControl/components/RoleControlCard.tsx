@@ -1,3 +1,4 @@
+import { UsersRound } from 'lucide-react';
 import type { AccessControlRole } from '../types';
 
 interface RoleControlCardProps {
@@ -14,14 +15,24 @@ export function RoleControlCard({
     return (
         <section
             aria-labelledby="role-control-title"
-            className="rounded-xl border bg-card p-5 shadow-xs"
+            className="dashboard-card dashboard-module-card dashboard-card--blue rounded-2xl p-5"
         >
-            <h2 id="role-control-title" className="text-sm font-semibold">
-                Role
-            </h2>
-            <p className="mt-1 text-xs text-muted-foreground">
-                Pilih role untuk melihat permission yang dimiliki.
-            </p>
+            <div className="flex items-center gap-3">
+                <div className="dashboard-icon dashboard-accent--blue flex size-10 shrink-0 items-center justify-center rounded-lg">
+                    <UsersRound aria-hidden="true" className="size-5" />
+                </div>
+                <div>
+                    <h2
+                        id="role-control-title"
+                        className="text-sm font-semibold"
+                    >
+                        Role
+                    </h2>
+                    <p className="mt-1 text-xs text-foreground/70">
+                        Pilih role untuk melihat permission yang dimiliki.
+                    </p>
+                </div>
+            </div>
             <label
                 className="mt-4 block text-sm font-medium"
                 htmlFor="access-control-role"
@@ -32,7 +43,7 @@ export function RoleControlCard({
                 id="access-control-role"
                 value={activeRole?.id ?? ''}
                 onChange={(event) => onRoleChange(event.target.value)}
-                className="mt-2 h-10 w-full rounded-md border bg-background px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="dashboard-control mt-2 h-10 w-full rounded-md px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 disabled={roles.length === 0}
             >
                 {roles.length === 0 ? (
@@ -45,16 +56,16 @@ export function RoleControlCard({
                 ))}
             </select>
             {activeRole ? (
-                <div className="mt-5 rounded-lg border bg-muted/30 p-3 text-sm">
+                <div className="dashboard-subcard dashboard-accent--blue mt-5 rounded-xl p-3 text-sm">
                     <div className="flex items-center justify-between gap-3">
                         <span className="font-medium">{activeRole.name}</span>
                         {activeRole.is_protected ? (
-                            <span className="rounded-full bg-amber-500/10 px-2 py-1 text-xs text-amber-800">
+                            <span className="dashboard-badge dashboard-badge--amber rounded-full px-2 py-1 text-xs">
                                 Protected
                             </span>
                         ) : null}
                     </div>
-                    <p className="mt-2 text-xs text-muted-foreground">
+                    <p className="mt-2 text-xs text-foreground/70">
                         {activeRole.permissions.length} permission terpasang
                     </p>
                 </div>

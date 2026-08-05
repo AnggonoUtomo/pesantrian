@@ -55,7 +55,11 @@ export function DeleteRoleDialog({
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
-                    <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+                    <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setOpen(false)}
+                    >
                         Batal
                     </Button>
                     <Button

@@ -23,9 +23,7 @@ export default function Index() {
     const [roleAction, setRoleAction] = useState<'create' | 'delete' | null>(
         null,
     );
-    const [roleActionError, setRoleActionError] = useState<string | null>(
-        null,
-    );
+    const [roleActionError, setRoleActionError] = useState<string | null>(null);
     const [saveStatus, setSaveStatus] = useState<'success' | 'error' | null>(
         null,
     );
@@ -123,9 +121,12 @@ export default function Index() {
                 title="Access Control"
                 description="Pilih role, lalu tinjau dan kelola permission berdasarkan module."
             >
-                <div className="mb-4 flex flex-wrap justify-end gap-2">
+                <div className="dashboard-toolbar mb-4 flex flex-wrap justify-end gap-2">
                     {roleActionError ? (
-                        <p role="alert" className="mr-auto self-center text-sm text-destructive">
+                        <p
+                            role="alert"
+                            className="dashboard-message--error mr-auto self-center text-sm"
+                        >
                             {roleActionError}
                         </p>
                     ) : null}

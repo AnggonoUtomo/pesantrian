@@ -15,8 +15,8 @@ export default function SystemDashboardLayout({
     children,
 }: SystemDashboardLayoutProps) {
     return (
-        <div className="mx-auto flex size-full max-w-7xl flex-1 flex-col px-4 py-6 sm:px-6">
-            <header className="mb-6 flex flex-col gap-4 border-b pb-6 sm:flex-row sm:items-end sm:justify-between">
+        <div className="theme-dashboard-shell mx-auto flex size-full max-w-7xl flex-1 flex-col px-4 py-6 sm:px-6">
+            <header className="dashboard-section-header mb-6 flex flex-col gap-4 border-b border-border/70 pb-6 sm:flex-row sm:items-end sm:justify-between">
                 <div className="space-y-1">
                     <p className="text-xs font-medium tracking-wide text-primary uppercase">
                         {eyebrow}

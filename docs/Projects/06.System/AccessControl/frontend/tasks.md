@@ -63,7 +63,7 @@ menampilkan role `SecurityAdmin`, module `Access Control`, dan permission
   - Evidence: `AccessControlPageTest` lulus untuk create, delete, actor tanpa
     permission, dan perlindungan `SuperSystem`.
 - [x] Loading, empty, error, success, dan read-only state tersedia untuk flow
-  penyimpanan permission.
+      penyimpanan permission.
 - [x] Permission visibility memakai shared authorization context.
 - [x] Backend tetap menolak request yang tidak berwenang.
 
@@ -98,16 +98,16 @@ menolak role `SuperSystem`; positive/negative feature test endpoint lulus.
 - [x] Browser snapshot desktop/mobile dan console review lulus untuk page dasar.
 - [x] Browser menegaskan `SecurityAdmin` editable dan `SuperSystem` disabled.
 - [x] Page tidak memasang `AppLayout` kedua; layout berasal dari resolver
-  `createInertiaApp`.
+      `createInertiaApp`.
 - [x] Layout module dipisahkan menjadi `system-dashboard-layout` sesuai
-  namespace `System/AccessControl`.
+      namespace `System/AccessControl`.
 - [x] Seluruh komponen pola dashboard diadaptasi ke data AccessControl:
-  statistics cards, insight, coverage, metrics, activity table, dropdown, dan
-  progress visual.
+      statistics cards, insight, coverage, metrics, activity table, dropdown, dan
+      progress visual.
 - [x] Halaman `System/Dashboard` dibuat terpisah dari page AccessControl.
 - [x] Menu `System Dashboard` dan route Ziggy `system.dashboard` tersedia.
 - [x] Route `/dashboard` diarahkan ke page system dashboard sehingga placeholder
-  bawaan tidak lagi tampil.
+      bawaan tidak lagi tampil.
 - [x] Welcome hanya menyediakan satu link login System ke `system.login`.
   - Kondisi awal: card System dan card Access Control sama-sama menuju
     `system.login`, sehingga AccessControl terlihat seperti area login sendiri.
@@ -119,11 +119,11 @@ menolak role `SuperSystem`; positive/negative feature test endpoint lulus.
     `route('system.login')`; route module tetap dilindungi `auth` dan
     authorization server-side.
 - [x] Halaman login menampilkan konteks System tanpa membuat authentication
-  backend terpisah.
+      backend terpisah.
 - [x] Halaman Unauthorized memiliki visual state 403, tombol beranda, login
-  ulang, dan navigasi kembali.
+      ulang, dan navigasi kembali.
 - [x] Top nav sticky mengikuti pola dashboard shell dan tidak hanya memakai
-  sidebar.
+      sidebar.
 - [x] Positive dan negative browser flow lulus.
   - Evidence: actor berizin dapat melihat action role; `SuperSystem` tidak
     mendapat action hapus dan checkbox permission disabled.
@@ -353,6 +353,245 @@ yang dapat membingungkan user.
 browser karena mode reduced motion menggunakan HTML biasa, sedangkan mode
 normal tetap menggunakan Framer Motion.
 
+## Revisi visual — warna terang dan sidebar footer
+
+- [x] Background dashboard dikembalikan ke pola bersih.
+  - Kondisi awal: increment sebelumnya menambahkan gradient besar, grid
+    ambient, dan glow pada `theme-dashboard-shell`.
+  - Perubahan: `resources/css/app.css` mengubah `theme-dashboard-shell` kembali
+    memakai `var(--background)` tanpa pseudo-element grid, gradient background,
+    atau glow. Depth card tetap dipertahankan melalui border, blur, shadow, dan
+    hover lift yang ringan.
+  - Alasan: user memilih pola dashboard shell yang bersih; warna terang cukup
+    digunakan pada data dan komponen penting, bukan seluruh background.
+  - Evidence: browser light dan dark menampilkan background tanpa pola kotak;
+    card tetap memiliki pemisahan yang jelas dan tidak flat.
+- [x] Warna chart, progress, dan badge dibuat lebih terang.
+  - Kondisi awal: progress dan badge masih memakai `var(--primary)` yang sama
+    sehingga status dan data kurang memiliki pembeda visual.
+  - Perubahan: token `--dashboard-chart-cyan`, `--dashboard-chart-orange`,
+    `--dashboard-chart-yellow`, `--dashboard-chart-blue`, dan
+    `--dashboard-chart-red` ditambahkan. Progress coverage memakai cyan dan
+    emerald, sedangkan badge role memakai emerald untuk protected dan blue
+    untuk editable.
+  - Alasan: mengikuti pola Dashboard Shell 7 yang memakai warna semantic
+    terang pada icon, badge, dan grafik tanpa mengubah struktur AccessControl.
+  - Evidence: browser dark menampilkan progress cyan, coverage cyan, badge
+    semantic, dan console bersih. Type check, ESLint terarah, Prettier, dan
+    `git diff --check` lulus.
+- [x] Footer sidebar icon-only horizontal selesai.
+  - Kondisi awal: sidebar hanya memiliki menu Platform dan tidak menyediakan
+    shortcut pengaturan akun di bagian bawah.
+  - Perubahan: `resources/js/components/app-sidebar.tsx` menambahkan
+    `SidebarFooter` sebagai toolbar horizontal berisi icon `Profile`,
+    `Security`, dan `Appearance`. Teks permanen dihapus; setiap icon tetap
+    memiliki tooltip dan `<span className="sr-only">` untuk aksesibilitas.
+    Route Ziggy dan active state dari `useCurrentUrl` tetap dipakai.
+  - Alasan: shortcut akun tetap mudah ditemukan dengan footprint visual kecil,
+    tanpa menambah baris teks di footer sidebar.
+  - Acceptance: tiga shortcut tersusun horizontal, tidak menampilkan label
+    visual, tooltip tetap muncul saat hover, nama link tetap terbaca oleh
+    screen reader, dan active state tetap mengikuti URL.
+  - Evidence: snapshot browser desktop tetap menampilkan nama link
+    `Profile`, `Security`, dan `Appearance` untuk aksesibilitas; screenshot
+    desktop menunjukkan label tidak tampil secara visual dan footer tersusun
+    horizontal. Type check dan ESLint terarah lulus.
+
+## Baseline visual baru — dashboard depth dan semantic icon
+
+- [x] Visual depth dashboard selesai.
+  - Kondisi awal: `system-dashboard-layout.tsx` memakai background dan border
+    token biasa, sedangkan card dashboard terlihat datar karena semua surface
+    memiliki perlakuan yang hampir sama.
+  - Perubahan: `resources/css/app.css` memakai token
+    `--dashboard-surface` dan `--dashboard-surface-strong`. Class
+    `theme-dashboard-shell` memakai background bersih. Class `dashboard-card`
+    tetap menambahkan translucent surface, blur, border accent, shadow lembut,
+    dan hover lift 2px.
+  - Alasan: dashboard perlu memiliki depth pada card tanpa membuat background
+    menjadi landing page atau dipenuhi gradient dan grid.
+  - Evidence: browser light dan dark menampilkan background bersih, card tetap
+    terbaca, hover card tidak mengganggu layout, type check, ESLint terarah,
+    Prettier terarah, build, dan `git diff --check` lulus. Viewport mobile
+    tidak memiliki horizontal overflow.
+- [x] Semantic color icon dashboard selesai.
+  - Kondisi awal: semua icon memakai `bg-primary/10 text-primary`, sehingga
+    fungsi setiap metric sulit dibedakan secara cepat.
+  - Perubahan: `SystemDashboardWidgets.tsx` memakai accent class
+    `dashboard-card--blue`, `dashboard-card--cyan`,
+    `dashboard-card--violet`, dan `dashboard-card--emerald`. Class
+    `dashboard-icon` memberi background, border, dan warna icon berdasarkan
+    accent semantic.
+  - Alasan: icon perlu membantu user memahami kategori metric tanpa
+    menambahkan teks atau dekorasi yang berlebihan.
+  - Evidence: browser menampilkan icon Total role berwarna blue, Permission
+    cyan, Permission insight violet, dan status role emerald pada mode light
+    maupun dark. Console browser tidak memiliki error atau warning.
+
+**Batasan verifikasi:** Lighthouse Accessibility, Best Practices, SEO, dan
+Agentic Browsing memberi nilai 100 pada snapshot mobile.
+
 **Batasan:** palette saat ini disimpan per browser melalui `localStorage`, belum
 disimpan ke profil user atau database. Jika nanti diperlukan sinkronisasi lintas
 perangkat, perlu contract backend dan keputusan baru.
+
+## Increment visual semantic glow
+
+- [x] Token visual semantic diperkuat.
+  - Kondisi awal: background icon hanya memakai accent 13%, border 25%, dan
+    tidak memiliki outer glow. Card masih terlalu dekat dengan hue palette
+    sehingga beberapa warna semantic terlihat flat pada dark mode.
+  - Perubahan: `resources/css/app.css` memperkuat icon, badge,
+    progress, dan garis accent card dengan opacity terkontrol. Surface card
+    dibuat lebih netral tanpa mengubah background aplikasi. Accent memakai
+    pasangan warna yang berdekatan agar garis card dan progress terlihat hidup.
+  - Alasan: teknik Ryan RL menghasilkan kesan hidup melalui kontras surface,
+    tint warna, border, dan blur kecil, bukan melalui glow besar.
+  - Acceptance: background halaman tetap bersih; icon dan badge lebih hidup
+    pada light/dark; teks tetap mudah dibaca.
+  - Evidence: computed style browser membuktikan icon memakai tint 20%, border
+    35%, dan glow 12% pada light serta 18% pada dark. Background halaman tetap
+    tanpa background image. Lighthouse mobile memberi nilai 100 untuk seluruh
+    kategori yang diperiksa.
+- [x] Collision class komponen diselesaikan.
+  - Kondisi awal: `Badge` membawa `bg-primary text-primary-foreground` sehingga
+    class semantic blue/emerald tidak muncul pada runtime. `AvatarFallback`
+    membawa `bg-muted` yang menimpa background icon metric kecil.
+  - Perubahan: `SystemDashboardWidgets.tsx` memakai variant/class yang
+    tidak bertabrakan dan memberi accent semantic yang eksplisit untuk metric.
+    Icon metric kecil tidak lagi memakai `AvatarFallback`. Badge memakai
+    `variant="outline"` dan foreground dari token `--badge-foreground`.
+  - Alasan: semantic style harus terbukti melalui computed style, bukan hanya
+    tercantum pada nama class source.
+  - Acceptance: `Editable` blue, `Protected` emerald, dan icon metric kecil
+    memiliki background semantic pada runtime.
+  - Evidence: computed style runtime menunjukkan badge `Editable` berwarna
+    blue dan `Protected` berwarna emerald pada light/dark. Icon metric memakai
+    blue, violet, amber, dan emerald. TypeScript dan ESLint terarah lulus.
+- [x] Quality gate dan evidence selesai.
+  - Kondisi awal: perubahan visual baru belum memiliki evidence final.
+  - Verifikasi: jalankan type check, lint terarah, format check, build,
+    `git diff --check`, browser responsive, console, dan Lighthouse.
+  - Acceptance: gate file terdampak lulus, console tidak memiliki error, dan
+    tidak ada horizontal overflow. Warning baseline yang tidak berasal dari
+    increment wajib dicatat.
+  - Evidence: `npm run types:check`, ESLint terarah, Prettier terarah,
+    `npm run format:check`, `npm run build`, `git diff --check`, dan
+    `php artisan module:discover --json` lulus. Viewport 500x844 tidak memiliki
+    overflow horizontal. Lighthouse snapshot mobile mendapat nilai 100 pada
+    Accessibility, Best Practices, SEO, dan Agentic Browsing. Console bersih.
+- [x] OPEN RISK Coverage goal dan warning tooling ditutup.
+  - Kondisi awal: panel `Coverage goal` memakai `bg-muted/20` sehingga dark mode
+    terlihat transparan dan tidak match dengan surface dashboard. Class
+    `bg-card` bawaan `Card` juga menimpa token `--dashboard-surface`. Console
+    menampilkan tiga warning preload font, dan `npm run format:check` global
+    gagal pada empat file frontend.
+  - Perubahan: `SystemDashboardWidgets.tsx` menghapus `bg-muted/20` dari panel
+    Coverage goal. `resources/css/app.css` menambahkan selector surface card
+    yang lebih spesifik agar `dashboard-card` mengalahkan `bg-card`. Pada
+    `vite.config.ts`, preload Instrument Sans dimatikan karena asset preload
+    WOFF2 tidak sama dengan asset WOFF yang dipilih CSS. Empat file frontend
+    yang gagal format dirapikan dengan Prettier.
+  - Alasan: surface semantic harus konsisten pada light/dark, preload yang
+    tidak dipakai harus dihilangkan, dan quality gate global harus dapat
+    dijalankan tanpa noise baseline.
+  - Acceptance: Coverage goal memakai surface yang sama dengan dashboard,
+    font tetap dimuat, tidak ada console error/warning, dan format check global
+    lulus.
+  - Evidence: computed style browser menunjukkan surface Coverage goal
+    konsisten pada light dan dark. Tidak ada preload font tersisa; font dimuat
+    melalui CSS. Console kosong, `npm run format:check` lulus, dan Lighthouse
+    mobile memberi nilai 100 pada seluruh kategori.
+
+## Increment baseline sidebar dan AccessControl
+
+- [x] Sidebar memakai baseline visual dashboard.
+  - Kondisi awal: sidebar masih memakai surface dan state bawaan
+    `bg-sidebar`, sehingga terlihat flat dan icon menu belum memiliki pembeda
+    semantic yang cukup.
+  - Perubahan: `app-sidebar.tsx` menambahkan scope `dashboard-sidebar` pada
+    shell. `resources/css/app.css` menambahkan surface sidebar lebih dalam,
+    border, shadow, active/hover state, separator header/footer, dan warna icon
+    cyan/violet untuk menu utama serta blue/violet/emerald untuk footer.
+  - Alasan: sidebar adalah shell bersama untuk System Dashboard dan seluruh
+    module System, sehingga visualnya harus menjadi bagian dari baseline yang
+    sama.
+  - Acceptance: active dan hover terlihat pada light/dark, icon memiliki warna
+    semantic, footer tetap icon-only horizontal, dan tooltip/accessibility tetap
+    tersedia.
+  - Evidence: computed style dark menunjukkan surface sidebar
+    `oklch(0.1584 0.01232 145)`, border dan glow aktif. Icon menu serta footer
+    memiliki warna semantic berbeda. Snapshot browser tetap membaca link
+    Profile, Security, dan Appearance.
+- [x] Warna icon Appearance pada footer tidak lagi kuning.
+  - Kondisi awal: icon footer `Appearance` memakai token chart yellow sehingga
+    terlihat terlalu mencolok dibanding Profile dan Security.
+  - Perubahan: `resources/css/app.css` mengganti warna icon footer item ketiga
+    menjadi emerald `oklch(0.62 0.17 160)` pada light dan
+    `oklch(0.78 0.18 160)` pada dark.
+  - Alasan: emerald memberi variasi semantic yang lebih tenang dan tetap
+    berbeda dari blue Profile serta violet Security.
+  - Acceptance: icon Appearance tidak kuning, tetap terlihat pada light/dark,
+    tooltip dan link tidak berubah.
+  - Evidence: computed style footer pada light membaca emerald
+    `oklch(0.62 0.17 160)` dan pada dark membaca
+    `oklch(0.78 0.18 160)`. Console bersih, footer tetap memuat tiga link
+    icon-only, dan Lighthouse mobile seluruh kategori 100.
+- [x] Halaman AccessControl memakai pola dashboard System.
+  - Kondisi awal: role panel dan permission panel masih memakai `bg-card` polos;
+    group permission belum memiliki icon dan toolbar action belum memiliki
+    surface semantic.
+  - Perubahan: `Index.tsx` memakai `dashboard-toolbar`. `RoleControlCard.tsx`
+    memakai panel blue, icon `UsersRound`, control semantic, dan subcard role.
+    `PermissionModulePanel.tsx` memakai panel violet, icon `ShieldCheck`,
+    subcard cyan dengan icon `KeyRound`, badge amber, dan message semantic.
+  - Alasan: AccessControl harus dapat menjadi contoh visual yang dapat diikuti
+    module System berikutnya tanpa membuat layout baru yang terpisah.
+  - Acceptance: panel dan icon konsisten dengan dashboard, permission checkbox
+    tetap dapat diuji, state protected/read-only tetap terlihat, dan backend
+    authorization tidak berubah.
+  - Evidence: browser light/dark menunjukkan panel netral dengan accent blue,
+    violet, dan cyan. Viewport 500x844 tidak overflow. Lighthouse mobile
+    Accessibility, Best Practices, SEO, dan Agentic Browsing mendapat nilai
+    100. Console tidak memiliki error/warning.
+- [x] Card dan subcard memakai surface neutral Dashboard Shell 01.
+  - Kondisi awal: tint accent 3% pada light dan 6% pada dark masih membuat
+    card AccessControl terlihat berwarna, terutama pada mode light.
+  - Perubahan: `resources/css/app.css` menetapkan `--dashboard-surface` dan
+    `--dashboard-surface-strong` menjadi bone white pada light serta charcoal
+    netral pada dark. Aturan tint background pada `dashboard-module-card` dan
+    subcard dihapus. Main card memakai `rounded-2xl`, subcard memakai
+    `rounded-xl`. Accent tetap dipakai pada icon, badge, garis card, dan state
+    interaksi.
+  - Alasan: mengikuti pola clean Dashboard Shell 01 tanpa menghilangkan
+    identitas warna semantic pada elemen fungsi.
+  - Acceptance: main card dan subcard memakai surface bone white/charcoal,
+    tepian membulat, warna semantic tetap terlihat pada elemen pendukung,
+    tidak overflow di mobile, dan teks tetap memenuhi kontras minimum.
+  - Evidence: computed style browser light membaca card `oklch(0.985 0.008 90)`
+    dan dark membaca card `oklch(0.19 0.012 260)`. Console bersih, Lighthouse mobile
+    seluruh kategori 100, `npm run types:check`, `npm run build`, dan
+    `git diff --check` lulus.
+
+## Increment palette default Appearance
+
+- [x] Palette netral default ditambahkan pada Appearance.
+  - Kondisi awal: Appearance hanya menyediakan palette project seperti Urban,
+    Forest, Ocean, dan palette berwarna lain. Pilihan netral `slate`, `gray`,
+    `zinc`, `neutral`, dan `stone` belum tersedia.
+  - Perubahan: `resources/js/hooks/use-theme-palette.ts` menambahkan lima
+    palette netral dengan swatch dan type `ThemePalette` yang ikut diperbarui
+    secara otomatis. `resources/css/app.css` menambahkan token primary,
+    accent, ring, dan foreground untuk mode light serta dark pada kelima
+    palette tersebut.
+  - Alasan: user perlu pilihan theme default yang lebih tenang untuk UI
+    dashboard, tanpa menghapus palette project yang sudah digunakan.
+  - Acceptance: lima palette baru tampil pada halaman Appearance, dapat dipilih,
+    tersimpan di `localStorage`, dan tetap bekerja setelah reload serta saat
+    mode light/dark diganti.
+  - Evidence: Appearance menampilkan 17 tombol palette. Browser berhasil
+    memilih `Slate`, membaca `data-theme="slate"`, membaca primary light
+    `oklch(0.45 0.05 255)` dan primary dark `oklch(0.72 0.06 255)`.
+    Console bersih. Lighthouse mobile seluruh kategori 100. `npm run
+    types:check`, `npm run format:check`, `npm run build`, dan
+    `git diff --check` lulus.

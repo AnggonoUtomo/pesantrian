@@ -113,9 +113,57 @@ Frontend hanya mengatur visibility/UX; backend tetap memeriksa authorization.
 
 Palette diambil dari referensi `FrontendContoh/app.css` dan memakai atribut
 `data-theme` pada elemen `html`. Palette yang tersedia adalah `urban`,
-`graphite`, `mist`, `harbor`, `quartz`, `aurora`, `saffron`, `ruby`, `forest`,
-`ocean`, `plum`, dan `copper`.
+`slate`, `gray`, `zinc`, `neutral`, `stone`, `graphite`, `mist`, `harbor`,
+`quartz`, `aurora`, `saffron`, `ruby`, `forest`, `ocean`, `plum`, dan `copper`.
+
+`slate`, `gray`, `zinc`, `neutral`, dan `stone` adalah palette netral default
+yang mengikuti pola shadcn. Palette project seperti `Urban`, `Forest`, dan
+`Ocean` tetap dipertahankan untuk pilihan yang lebih berwarna.
 
 State palette disimpan pada `localStorage` dengan key `theme-palette`. Fitur ini
 hanya mengubah warna tampilan. Pilihan mode `light`, `dark`, atau `system` tetap
 dikelola terpisah oleh `use-appearance`.
+
+## Baseline visual semantic
+
+Dashboard memakai background bersih tanpa gradient besar, pola grid, atau glow
+ambient. Surface card dibuat lebih netral agar warna semantic mudah dibedakan
+dari theme palette.
+
+Warna semantic diterapkan dengan aturan berikut:
+
+- icon memakai tint background sekitar 18-22%, border sekitar 32-38%, warna
+  foreground yang jelas, dan glow tipis;
+- badge memakai warna yang sesuai status, termasuk foreground, border,
+  background, dan glow ringan;
+- progress memakai gradient pendek antarwarna yang masih satu konteks;
+- garis accent card boleh memakai dua warna yang berdekatan;
+- mode light dan dark mempertahankan arti warna yang sama dengan tingkat
+  kontras yang sesuai;
+- efek visual tidak boleh mengubah route, data, permission visibility, atau
+  authorization backend.
+
+Teknik visual ini diadaptasi dari referensi, tetapi layout dan identitas visual
+AccessControl tetap milik project ini.
+
+## Baseline penerapan module System
+
+AccessControl dan module System berikutnya memakai `system-dashboard-layout` dan
+shell sidebar aplikasi yang sama. Panel utama memakai `dashboard-card`, panel
+turunan memakai `dashboard-subcard`, dan icon fungsi memakai
+`dashboard-icon` dengan warna semantic.
+
+Card module dan subcard memakai surface neutral seperti Dashboard Shell 01:
+bone white pada mode light dan charcoal netral pada mode dark. Main card
+memakai radius besar, subcard radius sedang. Warna accent tidak dipakai
+sebagai background card; accent hanya dipakai pada icon, badge, progress,
+grafik, garis card, dan state interaksi.
+
+Aturan ini menjaga pengalaman antar module tetap konsisten:
+
+- sidebar lebih dalam dari topnav, tetapi tetap memakai theme palette;
+- active dan hover sidebar memiliki border, indikator, dan glow ringan;
+- warna icon menunjukkan fungsi, bukan dekorasi acak;
+- light dan dark mode memakai hue semantic yang sama;
+- perubahan visual tidak boleh mengubah permission, route, atau security
+  boundary.

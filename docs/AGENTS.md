@@ -191,9 +191,38 @@ berikutnya. Module baru yang memiliki frontend wajib mengikuti pola berikut:
 - animasi interaksi memakai `framer-motion` secara hemat, menghormati
   `prefers-reduced-motion`, dan tidak boleh mengganggu fokus, keyboard, atau
   aturan permission;
+- dashboard memakai struktur application shell yang rapi dengan background
+  bersih, surface card yang memiliki depth secukupnya, dan warna semantic yang
+  terang pada icon, badge, progress, dan grafik. Gradient besar, grid ambient,
+  serta glow pada background bukan default karena dapat mengganggu
+  keterbacaan;
+- glow dengan opacity rendah boleh dipakai pada icon, badge, progress, dan
+  garis accent card. Background accent sekitar 18-22% dan border sekitar
+  32-38% dipakai sebagai titik awal, lalu wajib diperiksa pada mode light dan
+  dark;
+- icon dashboard memakai warna semantic per capability, misalnya blue/cyan
+  untuk insight, violet untuk access control, emerald untuk status sehat, dan
+  amber/rose untuk warning atau destructive state. Mode light dan dark wajib
+  mempertahankan hue yang sama dengan tingkat kontras yang sesuai;
+- sidebar dan halaman module System wajib memakai baseline shell yang sama:
+  surface sidebar lebih dalam dari topnav, active/hover memiliki border dan
+  glow ringan, serta icon menu memakai warna semantic sesuai fungsi;
+- halaman module System menggunakan `system-dashboard-layout`,
+  `dashboard-card`, `dashboard-subcard`, `dashboard-icon`, dan
+  `dashboard-badge` bila jenis UI-nya sesuai. Jangan mengembalikan panel baru
+  ke `bg-card` polos tanpa alasan yang dicatat;
+- card module dan subcard memakai surface neutral sesuai Dashboard Shell 01:
+  bone white pada light dan charcoal netral pada dark. Main card memakai
+  radius besar, subcard radius sedang, dan accent warna hanya dipakai pada
+  icon, badge, progress, grafik, garis card, serta state interaksi;
 - sidebar utama dengan warna yang mengikuti theme palette, state active dan
   hover yang jelas, indikator active, serta separator icon saat hover;
+- footer sidebar berisi shortcut `Profile`, `Security`, dan `Appearance` dalam
+  toolbar horizontal icon-only. Label tetap tersedia untuk screen reader dan
+  tooltip, tetapi tidak tampil sebagai teks permanen;
 - halaman Appearance dengan mode `light`, `dark`, `system`, dan theme palette;
+- theme palette default minimal mencakup `slate`, `gray`, `zinc`, `neutral`,
+  dan `stone`; palette project boleh ditambahkan tanpa menghapus pilihan lama;
 - state active normal memakai warna primary yang soft, sedangkan active-hover
   memakai warna primary yang lebih kuat dan font primary;
 - menu settings memakai pola hover dan active yang sama dengan halaman
@@ -209,6 +238,16 @@ berikutnya. Module baru yang memiliki frontend wajib mengikuti pola berikut:
 `resources/js/hooks/use-theme-palette.ts`, dan `resources/css/app.css` menjadi
 referensi implementasi. Folder `FrontendContoh/` hanya bahan referensi visual
 dan tidak boleh menjadi dependency atau target commit.
+
+## Baseline visual yang disetujui
+
+Per 5 Agustus 2026, desain, warna, dan theme pada System Dashboard serta
+AccessControl dianggap sebagai baseline sementara project. Module baru wajib
+mengikuti shell, token palette, surface bone white/charcoal, radius card,
+semantic icon, badge, hover, active state, dan dukungan light/dark yang sama.
+Penyesuaian berikutnya boleh dilakukan melalui increment terpisah setelah
+hasilnya ditinjau; jangan membuat module baru dengan gaya visual yang berdiri
+sendiri tanpa keputusan dan dokumentasi.
 
 ## Kualitas dan Verifikasi
 

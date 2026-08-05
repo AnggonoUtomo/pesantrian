@@ -1,3 +1,4 @@
+import { KeyRound, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { AccessControlPermissionGroup, AccessControlRole } from '../types';
 
@@ -26,7 +27,7 @@ export function PermissionModulePanel({
 }: PermissionModulePanelProps) {
     if (!activeRole) {
         return (
-            <section className="flex min-h-64 items-center justify-center rounded-xl border border-dashed bg-card p-6 text-center">
+            <section className="dashboard-card dashboard-module-card dashboard-card--violet flex min-h-64 items-center justify-center rounded-2xl border-dashed p-6 text-center">
                 <div>
                     <h2 className="font-semibold">Role belum tersedia</h2>
                     <p className="mt-1 text-sm text-muted-foreground">
@@ -40,22 +41,27 @@ export function PermissionModulePanel({
     return (
         <section
             aria-labelledby="permission-module-title"
-            className="rounded-xl border bg-card p-5 shadow-xs"
+            className="dashboard-card dashboard-module-card dashboard-card--violet rounded-2xl p-5"
         >
             <div className="flex flex-wrap items-start justify-between gap-3">
-                <div>
-                    <h2
-                        id="permission-module-title"
-                        className="text-sm font-semibold"
-                    >
-                        Permission Module
-                    </h2>
-                    <p className="mt-1 text-xs text-muted-foreground">
-                        Permission untuk role {activeRole.name}.
-                    </p>
+                <div className="flex items-center gap-3">
+                    <div className="dashboard-icon dashboard-accent--violet flex size-10 shrink-0 items-center justify-center rounded-lg">
+                        <ShieldCheck aria-hidden="true" className="size-5" />
+                    </div>
+                    <div>
+                        <h2
+                            id="permission-module-title"
+                            className="text-sm font-semibold"
+                        >
+                            Permission Module
+                        </h2>
+                        <p className="mt-1 text-xs text-muted-foreground">
+                            Permission untuk role {activeRole.name}.
+                        </p>
+                    </div>
                 </div>
                 {!canManage || activeRole.is_protected ? (
-                    <p className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-800">
+                    <p className="dashboard-badge dashboard-badge--amber rounded-lg px-3 py-2 text-xs">
                         {activeRole.is_protected
                             ? 'Role SuperSystem dilindungi dan tidak dapat diubah.'
                             : 'Mode baca saja. Kamu tidak memiliki izin mengelola role.'}
@@ -73,7 +79,7 @@ export function PermissionModulePanel({
                 ) : null}
             </div>
             {saveStatus === 'success' ? (
-                <p className="mt-3 text-sm text-emerald-700">
+                <p className="dashboard-message--success mt-3 text-sm">
                     Perubahan berhasil disimpan.
                 </p>
             ) : null}
@@ -83,7 +89,7 @@ export function PermissionModulePanel({
                 </p>
             ) : null}
             {groups.length === 0 ? (
-                <div className="mt-5 rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">
+                <div className="dashboard-subcard mt-5 rounded-xl border-dashed p-6 text-center text-sm text-muted-foreground">
                     Permission belum tersedia.
                 </div>
             ) : (
@@ -91,9 +97,14 @@ export function PermissionModulePanel({
                     {groups.map((group) => (
                         <div
                             key={group.module}
-                            className="rounded-lg border p-4"
+                            className="dashboard-subcard dashboard-accent--cyan rounded-xl p-4"
                         >
-                            <h3 className="font-medium">{group.label}</h3>
+                            <h3 className="flex items-center gap-2 font-medium">
+                                <span className="dashboard-icon dashboard-accent--cyan flex size-7 items-center justify-center rounded-md [&>svg]:size-4">
+                                    <KeyRound aria-hidden="true" />
+                                </span>
+                                {group.label}
+                            </h3>
                             <ul className="mt-3 space-y-2">
                                 {group.permissions.map((permission) => (
                                     <li

@@ -88,27 +88,33 @@ function SystemStatisticsGrid({
             value: roles.length,
             title: 'Total role',
             change: '+12% dari baseline',
+            accent: 'dashboard-card--blue',
         },
         {
             icon: <ShieldCheck />,
             value: permissionCount,
             title: 'Permission tersedia',
             change: '+8% dari baseline',
+            accent: 'dashboard-card--cyan',
         },
         {
             icon: <LockKeyhole />,
             value: protectedCount,
             title: 'Role terlindungi',
             change: 'Aturan tetap aktif',
+            accent: 'dashboard-card--emerald',
         },
     ];
 
     return (
         <div className="grid gap-6 sm:grid-cols-3">
             {cards.map((card) => (
-                <Card key={card.title}>
+                <Card
+                    key={card.title}
+                    className={`dashboard-card ${card.accent}`}
+                >
                     <CardHeader className="flex items-center gap-3">
-                        <div className="flex size-9 items-center justify-center rounded-md bg-primary/10 text-primary">
+                        <div className="dashboard-icon flex size-10 items-center justify-center rounded-lg">
                             {card.icon}
                         </div>
                         <span className="text-2xl font-semibold">
@@ -135,7 +141,7 @@ function SystemInsightCard({
     permissionCount: number;
 }) {
     return (
-        <Card className="justify-between">
+        <Card className="dashboard-card dashboard-card--violet justify-between">
             <CardHeader className="flex flex-row items-start justify-between gap-4">
                 <div>
                     <CardTitle className="text-lg">
@@ -145,7 +151,7 @@ function SystemInsightCard({
                         Ringkasan cakupan permission setiap role.
                     </p>
                 </div>
-                <div className="rounded-md bg-primary/10 p-2 text-primary">
+                <div className="dashboard-icon rounded-lg p-2">
                     <BarChart3 className="size-5" />
                 </div>
             </CardHeader>
@@ -168,7 +174,7 @@ function SystemInsightCard({
                             </div>
                             <div className="h-2 rounded-full bg-primary/10">
                                 <div
-                                    className="h-2 rounded-full bg-primary transition-all"
+                                    className="dashboard-progress--cyan h-2 rounded-full transition-all"
                                     style={{ width: `${percentage}%` }}
                                 />
                             </div>
@@ -204,7 +210,7 @@ function SystemCoverageCard({
         : 0;
 
     return (
-        <Card>
+        <Card className="dashboard-card dashboard-card--blue">
             <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle className="text-lg">Permission coverage</CardTitle>
                 <DropdownMenu>
@@ -232,7 +238,7 @@ function SystemCoverageCard({
                     <div
                         className="relative flex size-28 shrink-0 items-center justify-center rounded-full"
                         style={{
-                            background: `conic-gradient(var(--primary) ${coverage}%, color-mix(in oklab, var(--primary) 10%, transparent) 0)`,
+                            background: `conic-gradient(var(--dashboard-chart-cyan) ${coverage}%, color-mix(in oklab, var(--dashboard-chart-cyan) 10%, transparent) 0)`,
                         }}
                     >
                         <div className="flex size-20 items-center justify-center rounded-full bg-card text-2xl font-semibold">
@@ -248,7 +254,7 @@ function SystemCoverageCard({
                     </div>
                 </div>
                 <div className="grid gap-3 sm:grid-cols-2">
-                    <div className="rounded-lg border p-3">
+                    <div className="rounded-lg border border-border/70 bg-background/20 p-3">
                         <p className="text-sm text-muted-foreground">
                             Role aktif
                         </p>
@@ -256,7 +262,7 @@ function SystemCoverageCard({
                             {roles.length}
                         </p>
                     </div>
-                    <div className="rounded-lg border p-3">
+                    <div className="rounded-lg border border-border/70 bg-background/20 p-3">
                         <p className="text-sm text-muted-foreground">
                             Permission identity
                         </p>
@@ -286,18 +292,30 @@ function SystemMetricsCard({
             icon: <Activity />,
             title: 'Role terkelola',
             value: roleCount.toString(),
+            accent: 'dashboard-accent--blue',
         },
         {
             icon: <LockKeyhole />,
             title: 'Permission terpasang',
             value: assignedCount.toString(),
+            accent: 'dashboard-accent--violet',
         },
-        { icon: <CircleDollarSign />, title: 'Guard aktif', value: 'web' },
-        { icon: <Clock3 />, title: 'Status policy', value: 'Aktif' },
+        {
+            icon: <CircleDollarSign />,
+            title: 'Guard aktif',
+            value: 'web',
+            accent: 'dashboard-accent--amber',
+        },
+        {
+            icon: <Clock3 />,
+            title: 'Status policy',
+            value: 'Aktif',
+            accent: 'dashboard-accent--emerald',
+        },
     ];
 
     return (
-        <Card>
+        <Card className="dashboard-card dashboard-card--cyan">
             <CardContent className="grid gap-6 lg:grid-cols-5">
                 <div className="flex flex-col justify-between gap-5 lg:col-span-3">
                     <div>
@@ -312,13 +330,13 @@ function SystemMetricsCard({
                         {metrics.map((metric) => (
                             <div
                                 key={metric.title}
-                                className="flex items-center gap-3 rounded-lg border p-3"
+                                className="dashboard-metric flex items-center gap-3 rounded-lg border border-border/70 bg-background/20 p-3"
                             >
-                                <Avatar className="rounded-md">
-                                    <AvatarFallback className="rounded-md bg-primary/10 text-primary">
-                                        {metric.icon}
-                                    </AvatarFallback>
-                                </Avatar>
+                                <div
+                                    className={`dashboard-icon ${metric.accent} flex size-8 shrink-0 items-center justify-center rounded-md [&>svg]:size-4`}
+                                >
+                                    {metric.icon}
+                                </div>
                                 <div>
                                     <p className="text-sm text-muted-foreground">
                                         {metric.title}
@@ -331,7 +349,7 @@ function SystemMetricsCard({
                         ))}
                     </div>
                 </div>
-                <div className="flex flex-col justify-center gap-4 rounded-xl border bg-muted/20 p-5 lg:col-span-2">
+                <div className="dashboard-card dashboard-card--emerald flex flex-col justify-center gap-4 rounded-xl border p-5 lg:col-span-2">
                     <p className="text-lg font-semibold">Coverage goal</p>
                     <div className="flex items-center justify-between">
                         <span className="text-5xl font-semibold">
@@ -344,7 +362,7 @@ function SystemMetricsCard({
                     </p>
                     <div className="h-2 rounded-full bg-primary/10">
                         <div
-                            className="h-2 rounded-full bg-primary"
+                            className="dashboard-progress--emerald h-2 rounded-full"
                             style={{ width: `${averageCoverage}%` }}
                         />
                     </div>
@@ -359,7 +377,7 @@ function SystemMetricsCard({
 
 function SystemActivityTable({ roles }: { roles: AccessControlRole[] }) {
     return (
-        <Card className="overflow-hidden py-0">
+        <Card className="dashboard-card dashboard-card--violet overflow-hidden py-0">
             <CardHeader className="flex flex-row items-center justify-between border-b py-5">
                 <div>
                     <CardTitle>Role permission activity</CardTitle>
@@ -405,7 +423,14 @@ function SystemActivityTable({ roles }: { roles: AccessControlRole[] }) {
                                     {role.permissions.length} permission
                                 </td>
                                 <td className="px-5 py-4">
-                                    <Badge className="bg-primary/10 text-primary">
+                                    <Badge
+                                        variant="outline"
+                                        className={`dashboard-badge text-[var(--badge-foreground)] ${
+                                            role.is_protected
+                                                ? 'dashboard-badge--emerald'
+                                                : 'dashboard-badge--blue'
+                                        }`}
+                                    >
                                         {role.is_protected
                                             ? 'Protected'
                                             : 'Editable'}

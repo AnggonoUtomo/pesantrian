@@ -67,7 +67,9 @@ export default function Welcome() {
                             <p className="mt-4 text-[10px] font-semibold tracking-[0.16em] text-primary uppercase">
                                 System module
                             </p>
-                            <h2 className="mt-1 font-semibold">Access Control</h2>
+                            <h2 className="mt-1 font-semibold">
+                                Access Control
+                            </h2>
                             <p className="mt-1 text-sm text-[#706f6c] dark:text-[#A1A09A]">
                                 Role, permission, dan policy akses setelah login
                                 System sesuai hak akun.

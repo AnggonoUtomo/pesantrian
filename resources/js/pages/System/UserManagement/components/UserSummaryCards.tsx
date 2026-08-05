@@ -11,18 +11,21 @@ export function UserSummaryCards({ users }: Props) {
             label: 'Total user',
             value: users.length,
             icon: UsersRound,
+            cardTone: 'dashboard-card--blue',
             tone: 'dashboard-accent--blue',
         },
         {
             label: 'User aktif',
             value: active,
             icon: UserCheck,
+            cardTone: 'dashboard-card--emerald',
             tone: 'dashboard-accent--emerald',
         },
         {
             label: 'User terlindungi',
             value: protectedUsers,
             icon: ShieldCheck,
+            cardTone: 'dashboard-card--violet',
             tone: 'dashboard-accent--violet',
         },
     ];
@@ -32,7 +35,7 @@ export function UserSummaryCards({ users }: Props) {
             {items.map((item) => (
                 <section
                     key={item.label}
-                    className="dashboard-card rounded-2xl border p-4"
+                    className={`dashboard-card ${item.cardTone} rounded-2xl border p-4`}
                 >
                     <div className="flex items-center gap-3">
                         <span

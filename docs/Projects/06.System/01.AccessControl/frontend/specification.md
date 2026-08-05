@@ -166,7 +166,8 @@ grafik, garis card, dan state interaksi.
 
 Aturan ini menjaga pengalaman antar module tetap konsisten:
 
-- sidebar lebih dalam dari topnav, tetapi tetap memakai theme palette;
+- sidebar dan topnav memakai surface yang sama: putih bersih pada light dan
+  palette aktif pada dark;
 - active dan hover sidebar memiliki border, indikator, dan glow ringan;
 - warna icon menunjukkan fungsi, bukan dekorasi acak;
 - light dan dark mode memakai hue semantic yang sama;

@@ -295,16 +295,18 @@ berikutnya. Module baru yang memiliki frontend wajib mengikuti pola berikut:
   amber/rose untuk warning atau destructive state. Mode light dan dark wajib
   mempertahankan hue yang sama dengan tingkat kontras yang sesuai;
 - sidebar dan halaman module System wajib memakai baseline shell yang sama:
-  surface sidebar lebih dalam dari topnav, active/hover memiliki border dan
-  glow ringan, serta icon menu memakai warna semantic sesuai fungsi;
+  pada light sidebar dan topnav memakai putih bersih; pada dark keduanya
+  mengikuti warna palette aktif. Active/hover memiliki border dan glow ringan,
+  serta icon menu memakai warna semantic sesuai fungsi;
 - halaman module System menggunakan `system-dashboard-layout`,
   `dashboard-card`, `dashboard-subcard`, `dashboard-icon`, dan
   `dashboard-badge` bila jenis UI-nya sesuai. Jangan mengembalikan panel baru
   ke `bg-card` polos tanpa alasan yang dicatat;
-- card module dan subcard memakai surface neutral sesuai Dashboard Shell 01:
-  bone white pada light dan charcoal netral pada dark. Main card memakai
-  radius besar, subcard radius sedang, dan accent warna hanya dipakai pada
-  icon, badge, progress, grafik, garis card, serta state interaksi;
+- card module light memakai putih bersih dan subcard memakai abu-abu netral
+  yang sedikit lebih gelap. Pada dark, card utama mengikuti surface sidebar
+  dan subcard sedikit lebih gelap. Main card memakai radius besar, subcard
+  radius sedang, dan accent warna hanya dipakai pada icon, badge, progress,
+  grafik, garis card, serta state interaksi;
 - sidebar utama dengan warna yang mengikuti theme palette, state active dan
   hover yang jelas, indikator active, serta separator icon saat hover;
 - header sidebar memakai surface transparan tanpa block background atau border
@@ -321,8 +323,10 @@ berikutnya. Module baru yang memiliki frontend wajib mengikuti pola berikut:
   memakai warna primary yang lebih kuat dan font primary;
 - menu settings memakai pola hover dan active yang sama dengan halaman
   Appearance;
-- background, card, popover, sidebar, dan hover harus mengikuti hue palette
-  pada light maupun dark mode;
+- background content dan state interaksi mengikuti hue palette. Surface global
+  light (topnav, sidebar, card) sengaja putih bersih; subcard light sedikit
+  lebih gelap. Pada dark, topnav, sidebar, dan card mengikuti palette aktif,
+  sedangkan subcard sedikit lebih gelap;
 - komponen baru harus memakai token theme yang sudah ada, bukan warna hardcode
   yang membuat module terlihat berbeda dari shell aplikasi;
 - notifikasi status boleh menjadi pengecualian terkontrol: toast `success`,
@@ -363,10 +367,11 @@ dan tidak boleh menjadi dependency atau target commit.
 
 ## Baseline visual yang disetujui
 
-Per 5 Agustus 2026, desain, warna, dan theme pada System Dashboard serta
-AccessControl dianggap sebagai baseline sementara project. Module baru wajib
-mengikuti shell, token palette, surface bone white/charcoal, radius card,
-semantic icon, badge, hover, active state, dan dukungan light/dark yang sama.
+Per 6 Agustus 2026, desain, warna, dan theme pada System Dashboard serta
+AccessControl menjadi baseline visual project. Module baru wajib mengikuti
+shell, token palette, surface putih bersih dan subcard netral pada light,
+surface palette aktif dan subcard lebih gelap pada dark, radius card, semantic
+icon, badge, hover, active state, dan dukungan light/dark yang sama.
 Penyesuaian berikutnya boleh dilakukan melalui increment terpisah setelah
 hasilnya ditinjau; jangan membuat module baru dengan gaya visual yang berdiri
 sendiri tanpa keputusan dan dokumentasi.

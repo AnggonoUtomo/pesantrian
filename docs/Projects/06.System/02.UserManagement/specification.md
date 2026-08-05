@@ -60,6 +60,19 @@ di `app/Models`, `packages/StarterKit`, atau private layer AccessControl.
 | Role/permission context | `HandleInertiaRequests` | Dipakai frontend untuk UX, bukan security boundary |
 | UI shell | `system-dashboard-layout` dan shared theme | Menjadi baseline frontend module |
 
+### Baseline warna dan surface frontend
+
+UserManagement wajib mengikuti pola visual AccessControl:
+
+- Light memakai putih bersih untuk shell dan card utama, lalu abu-abu netral
+  sedikit lebih gelap untuk subcard.
+- Dark memakai palette aktif untuk shell dan card utama, lalu subcard sedikit
+  lebih gelap.
+- Accent hanya dipakai untuk icon, badge, border, garis card, hover, active,
+  dan focus. Implementasi memakai token `dashboard-*` yang sudah ada.
+- Tabel dan modal tidak boleh kembali ke `bg-card` atau surface hardcode tanpa
+  alasan dan evidence visual.
+
 ## Pola komunikasi dan eksekusi
 
 - Contract lintas module hanya melalui `AuthorizationCapability` dan

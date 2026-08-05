@@ -115,7 +115,7 @@ export function UserTable({
             ) : (
                 <div className="overflow-x-auto">
                     <table className="w-full min-w-[680px] text-left text-sm">
-                        <thead className="border-b bg-muted/40 text-xs tracking-wide text-foreground/80 uppercase">
+                        <thead className="dashboard-table-header border-b text-xs tracking-wide text-foreground/80 uppercase">
                             <tr>
                                 <th className="px-5 py-3 font-medium">User</th>
                                 <th className="px-5 py-3 font-medium">
@@ -133,7 +133,7 @@ export function UserTable({
                             {users.map((user, index) => (
                                 <tr
                                     key={user.id}
-                                    className="transition-colors hover:bg-accent/40"
+                                    className="dashboard-table-row transition-colors"
                                 >
                                     <td className="px-5 py-4">
                                         <button

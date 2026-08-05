@@ -554,7 +554,8 @@ perangkat, perlu contract backend dan keputusan baru.
     browser belum memiliki `theme-palette` atau nilainya tidak valid.
   - Perubahan: `use-theme-palette.ts` mengganti initial state, fallback
     storage, dan server snapshot menjadi `neutral`.
-  - Alasan: Neutral paling sesuai dengan baseline surface putih bersih/charcoal
+  - Alasan: Neutral paling sesuai dengan baseline surface putih bersih pada
+    light dan palette netral pada dark
     dan menjadi titik awal yang clean untuk user baru.
   - Acceptance: user baru menerima `Neutral`, pilihan tersimpan tetap dipakai,
     dan palette invalid kembali ke `Neutral`.
@@ -911,3 +912,58 @@ perangkat, perlu contract backend dan keputusan baru.
     pada palette `neutral` membaca topnav dan card `oklch(0.1782 0 0)` dari
     `--sidebar`, sedangkan subcard membaca surface yang sedikit lebih gelap
     melalui `color-mix` dengan black. Console tidak memiliki error/warning.
+- [x] Hover card dan row mengikuti palette aktif pada light dan dark.
+  - Kondisi awal: `.dashboard-card:hover` dan `.dashboard-table-row:hover`
+    membaca `--dashboard-accent`. Accent semantic seperti violet atau rose
+    dapat membuat hover terlihat seperti palette lain saat user memilih
+    Saffron atau Ruby.
+  - Perubahan: state hover card, shadow card, dan hover row di
+    `resources/css/app.css` sekarang membaca `--primary`. Accent semantic tetap
+    dipertahankan untuk icon, badge, garis atas card, dan grafik.
+  - Alasan: state interaksi harus mengikuti theme aktif, sedangkan accent
+    semantic tetap membedakan fungsi komponen.
+  - Acceptance: seluruh 17 palette pada light dan dark menghasilkan hover
+    dengan token `--primary` palette masing-masing, tanpa state hover yang
+    tertinggal dari palette sebelumnya.
+  - Evidence: browser menguji `urban`, `slate`, `gray`, `zinc`, `neutral`,
+    `stone`, `graphite`, `mist`, `harbor`, `quartz`, `aurora`, `saffron`,
+    `ruby`, `forest`, `ocean`, `plum`, dan `copper` pada light serta dark.
+    Seluruh 34 kombinasi menghasilkan warna teks dan background hover yang
+    sama dengan `--primary`, dengan `:hover` aktif. Type check, lint, format,
+    build, dan console browser lulus.
+- [x] Surface table dan dropdown role tidak menggeser hue palette.
+  - Kondisi awal: `color-mix` antara primary dan surface netral menghasilkan
+    hue yang bergeser pada opacity rendah. Saffron dapat terlihat merah pada
+    hover table dan input dropdown role.
+  - Perubahan: hover table memakai overlay primary transparan; toolbar dan
+    `dashboard-control` memakai surface dashboard langsung. Dropdown role tetap
+    memakai surface theme untuk container dan surface strong untuk input.
+  - Alasan: surface netral harus tetap clean, sementara accent theme harus
+    mempertahankan hue aslinya.
+  - Acceptance: Saffron light table hover memakai primary Saffron; dropdown
+    light tetap putih/neutral; dark dropdown mengikuti surface Saffron; tidak
+    muncul hue Ruby dari color mixing.
+  - Evidence: UserManagement Saffron light membaca row hover
+    `oklch(0.62 0.13 78 / 0.08)`. AccessControl Saffron light membaca combo
+    `oklch(1 0 0)` dan input `oklch(0.97 0 0)`; dark membaca surface combo
+    dengan hue `82`. Type check, lint, format, build, dan console browser
+    lulus.
+- [x] Dropdown permission tidak mendorong group pada kolom sebelah.
+  - Kondisi awal: group permission berada dalam satu CSS grid. Saat `System`
+    dibuka, tinggi baris grid mengikuti card yang terbuka sehingga `User` di
+    bawah `AccessControl` ikut bergeser turun.
+  - Perubahan: `PermissionModulePanel.tsx` memakai dua stack kolom independen.
+    Group `System` ditempatkan pada stack kanan; `AccessControl` dan `User`
+    tetap pada stack kiri. State `expandedGroup` tetap memastikan hanya satu
+    dropdown yang terbuka.
+  - Alasan: tinggi dropdown hanya boleh memengaruhi stack pemiliknya, bukan
+    posisi group pada kolom sebelah.
+  - Acceptance: membuka `System` tidak mengubah posisi `AccessControl` atau
+    `User`; membuka `AccessControl` hanya mengubah stack kiri; accordion tetap
+    eksklusif; mobile tetap tersusun satu kolom tanpa overflow.
+  - Evidence: browser desktop `1364px` mencatat `User` tetap pada `y=427`
+    sebelum dan sesudah `System` dibuka, sedangkan `System` tetap pada `y=353`
+    dan tingginya berubah dari `62px` menjadi `110px`. Saat `AccessControl`
+    dibuka, `System` tetap `y=353` dan `User` berada di bawah `AccessControl`.
+    Viewport mobile `500px` tidak overflow; type check, lint, format, dan
+    console browser lulus.

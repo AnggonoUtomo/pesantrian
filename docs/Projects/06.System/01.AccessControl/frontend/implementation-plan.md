@@ -161,9 +161,9 @@ masih membuat card light terlihat kurang clean.
 
 - `RoleControlCard.tsx` dan `PermissionModulePanel.tsx` memakai class
   `dashboard-module-card` pada main card.
-- `resources/css/app.css` menetapkan `--dashboard-surface` dan
-  `--dashboard-surface-strong` menjadi putih bersih pada light dan sedikit
-  lebih gelap dari sidebar pada dark. Main card dark mengikuti warna sidebar.
+- `resources/css/app.css` menetapkan `--dashboard-surface` menjadi putih
+  bersih pada light dan mengikuti warna sidebar pada dark. Subcard memakai
+  `--dashboard-surface-strong` yang sedikit lebih gelap dari main card.
   Aturan tint background card module dihapus.
 - `RoleControlCard.tsx` dan `PermissionModulePanel.tsx` memakai
   `rounded-2xl` pada main card dan `rounded-xl` pada subcard.

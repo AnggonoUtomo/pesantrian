@@ -91,6 +91,20 @@ mengambil alih private implementation AccessControl.
 - Tabel wajib memiliki state kosong, error, loading request, action yang aman,
   dan indicator protected user.
 
+### Baseline warna module
+
+UserManagement mengikuti baseline visual AccessControl dan tidak membuat surface
+sendiri:
+
+- Light: topnav, sidebar, dan card utama putih bersih; subcard sedikit lebih
+  gelap dengan abu-abu netral.
+- Dark: topnav, sidebar, dan card utama mengikuti palette aktif; subcard sedikit
+  lebih gelap dari card utama.
+- Accent summary card, icon, badge, border, hover, dan focus mengikuti fungsi
+  user. Token visual berasal dari `resources/css/app.css`.
+- Tabel, modal, search, dan empty state harus memakai surface serta state yang
+  sama agar UserManagement menjadi contoh module System yang konsisten.
+
 ## Keputusan Scope Awal
 
 - Status user memakai enum `active`, `inactive`, dan `suspended`.

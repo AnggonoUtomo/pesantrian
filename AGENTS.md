@@ -245,6 +245,25 @@ policy, atau service dari AccessControl.
 - Secret, token, password, credential, dan sensitive payload tidak boleh masuk
   ke source, log, output, diagnostic, atau generated artifact.
 
+## Baseline Visual Module
+
+Setiap module yang memiliki frontend wajib memakai baseline visual AccessControl
+dan token `resources/css/app.css`:
+
+- Light: topnav, sidebar, dan card utama memakai putih bersih; subcard memakai
+  abu-abu netral yang sedikit lebih gelap.
+- Dark: topnav, sidebar, dan card utama mengikuti palette aktif; subcard sedikit
+  lebih gelap dari card utama.
+- Accent theme dipakai pada icon, badge, border, garis card, hover, active state,
+  dan focus; jangan membuat surface module dengan warna hardcode baru.
+- Gunakan `system-dashboard-layout`, `dashboard-card`, `dashboard-subcard`,
+  `dashboard-icon`, dan `dashboard-badge` bila sesuai dengan jenis UI.
+- Periksa light/dark, responsive, accessibility, dan console browser sebelum
+  module dinyatakan selesai.
+
+Acuan detail berada pada bagian `Baseline UI/UX Module` di
+[`docs/AGENTS.md`](docs/AGENTS.md).
+
 ## Pola Komunikasi dan Eksekusi Module
 
 Acuan detail berada pada

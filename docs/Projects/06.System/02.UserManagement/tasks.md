@@ -855,6 +855,43 @@ development dan tidak boleh digunakan sebagai data production.
   - Evidence: `git diff --check` lulus; perubahan hanya berada pada folder
     `docs/`.
 
+## Increment baseline visual module System
+
+- [x] UserManagement mengikuti pola surface dan accent AccessControl.
+  - Kondisi awal: shared `dashboard-card` sudah dipakai, tetapi summary card
+    belum memiliki accent card. Header tabel dan hover row masih memakai
+    `bg-muted/40` serta `hover:bg-accent/40` secara langsung.
+  - Perubahan: `UserSummaryCards.tsx` memakai
+    `dashboard-card--blue/emerald/violet` untuk membedakan total user, user
+    aktif, dan user terlindungi. `UserTable.tsx` memakai
+    `dashboard-table-header` dan `dashboard-table-row`. `app.css` menambahkan
+    surface header tabel serta hover row memakai overlay transparan `--primary`
+    dengan opacity rendah agar hue palette tidak bergeser.
+  - Alasan: seluruh module System harus memiliki hierarki surface yang sama
+    pada light/dark tanpa mengubah behavior tabel dan modal.
+  - Acceptance: light card utama putih bersih, subcard sedikit lebih gelap;
+    dark card mengikuti palette aktif, subcard lebih gelap; accent icon dan
+    border tetap jelas; tidak ada horizontal overflow.
+  - Evidence: `npm run types:check`, `npm run lint:check`,
+    `npm run format:check`, dan `npm run build` lulus. Browser pada
+    `/system/users` memverifikasi light dengan card
+    `oklch(1 0 0)` dan header tabel `oklch(0.97 0 0)`. Mode dark
+    memverifikasi card `oklch(0.1782 0 0)` dan header tabel
+    `oklch(0.156816 0 0)`. Viewport desktop `1364x637` dan mobile `500x637`
+    tidak memiliki horizontal overflow; console hanya berisi pesan debug HMR
+    tanpa error.
+- [x] Checklist ditinjau kembali setelah implementasi dan browser verification.
+  - Kondisi awal: checklist visual belum dapat ditutup sebelum implementasi
+    dan pemeriksaan browser selesai.
+  - Perubahan: item ini ditinjau setelah component, CSS, build, dan browser
+    verification selesai; status visual UserManagement sekarang konsisten
+    dengan baseline AccessControl.
+  - Alasan: task hanya boleh selesai setelah bukti implementasi dan runtime
+    tersedia untuk direview tim.
+  - Evidence: `git diff --check` lulus; snapshot accessibility menampilkan
+    summary card, tabel user, shortcut, dan aksi user; browser light/dark/mobile
+    lulus tanpa error console.
+
 ## Revision History
 
 | Version | Date       | Description                                             |
@@ -863,4 +900,5 @@ development dan tidak boleh digunakan sebagai data production.
 | 1.8     | 2026-08-06 | Menyelesaikan impersonation session, audit event, dan browser flow Task 09 |
 | 1.9     | 2026-08-06 | Menutup final quality checkpoint dan memperbaiki contrast tabel |
 | 2.0     | 2026-08-06 | Menambahkan seeder 10 user dummy dan test idempotency |
+| 2.1     | 2026-08-06 | Menyamakan baseline warna module dengan AccessControl |
 | 1.1     | 2026-08-06 | Menetapkan keputusan scope dan status task siap dimulai |

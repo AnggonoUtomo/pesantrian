@@ -3,6 +3,7 @@
 ## Panduan Belajar Code
 
 - [Alur Code Phase 1 sampai Phase 3](05.phase-1-2-code-flow/README.md)
+- [Alur Code System/AccessControl](06.System/01-1.AccessControl-code-flow/README.md)
 - [Phase 3 Module Generator](03.phase-3-module-generator/README.md)
 
 ## Document Information
@@ -37,4 +38,4 @@ Gunakan skill incremental-implementation.
 
 | Version | Date       | Description            |
 | ------- | ---------- | ---------------------- |
-| 1.1     | 2026-07-31 | Metadata normalization |
+| 1.2     | 2026-08-06 | Menambahkan index code-flow AccessControl |

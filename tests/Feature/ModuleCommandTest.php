@@ -19,6 +19,29 @@ it('menyediakan command module dengan output JSON', function () {
     }
 });
 
+it('menginspeksi module target dengan output JSON tanpa side effect', function () {
+    $manifestPath = app_path('Modules/System/AccessControl/module.json');
+    $before = file_get_contents($manifestPath);
+
+    $this->artisan('module:inspect', ['module' => 'System/AccessControl', '--json' => true])
+        ->assertExitCode(0)
+        ->expectsOutputToContain('MODULE_INSPECTED');
+
+    expect(file_get_contents($manifestPath))->toBe($before);
+});
+
+it('mengembalikan failure JSON jika module target tidak ditemukan', function () {
+    $this->artisan('module:inspect', ['module' => 'System/MissingModule', '--json' => true])
+        ->assertExitCode(1)
+        ->expectsOutputToContain('MODULE_NOT_FOUND');
+});
+
+it('menolak format target module yang tidak valid', function () {
+    $this->artisan('module:inspect', ['module' => 'AccessControl', '--json' => true])
+        ->assertExitCode(1)
+        ->expectsOutputToContain('MODULE_INSPECTION_FAILED');
+});
+
 it('mengembalikan failure JSON saat discover menemukan module invalid', function () {
     createInvalidModuleFixture();
 

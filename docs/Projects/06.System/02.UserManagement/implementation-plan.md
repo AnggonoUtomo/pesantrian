@@ -1,0 +1,163 @@
+# Implementation Plan: System/UserManagement
+
+## Status
+
+`Discovery`.
+
+## Architecture
+
+Alur utama yang direncanakan:
+
+```text
+Route middleware
+    -> Policy UserManagement
+    -> Controller tipis
+    -> FormRequest
+    -> Application Action/Query
+    -> public AuthorizationCapability AccessControl
+    -> UserManagement Domain rule
+    -> Infrastructure repository/model
+    -> DTO/Resource
+    -> Inertia page atau response
+```
+
+UserManagement memiliki ownership lifecycle user. AccessControl tetap owner
+authorization dan role/permission persistence. Tidak ada concrete dependency
+lintas module.
+
+## Urutan Increment
+
+1. **Prompt, inventory, dan dry-run generator**: gunakan prompt standar,
+   verifikasi module existing dengan `module:inspect`, dan pastikan target `System/UserManagement`
+   belum duplicate.
+2. **Pembuatan skeleton generator**: setelah dry-run disetujui, jalankan
+   `module:make` dengan `--force --yes --json`; verifikasi manifest, provider,
+   path, namespace, dan struktur canonical.
+3. **Permission identity dan public contract**: tetapkan permission dan contract
+   lifecycle user yang perlu dikonsumsi module lain.
+4. **Domain boundary**: definisikan status, lifecycle rule, exception, dan
+   value object setelah keputusan status disetujui.
+5. **Application boundary**: buat action/query/DTO untuk list, create, update,
+   status, soft delete, role assignment, dan impersonation.
+6. **Infrastructure**: siapkan migration additive, model/repository, factory,
+   dan seeder dengan ULID.
+7. **Authorization dan security**: policy, middleware, reason validation,
+   protected `SuperSystem`, session separation, dan redaction.
+8. **Presentation dan routes**: controller tipis, FormRequest, resource, dan
+   route module.
+9. **Frontend vertical slice**: page user list/detail, dialog mutation, role
+   assignment, state loading/empty/error, Ziggy, permission visibility,
+   responsive layout, dan browser accessibility test.
+10. **Quality gate dan documentation evidence**: update README, task, execution
+    log, test, CI, dan open risk.
+
+## Prompt Pelaksanaan Generator
+
+```text
+Lakukan Project Intake dan Existing Module Inventory terlebih dahulu.
+Verifikasi module yang sudah ada dengan module:discover, module:validate,
+module:list, dan module:inspect System/AccessControl. Jangan membuat duplicate
+module.
+
+Buat module UserManagement pada domain System dengan profile default-v1
+menggunakan:
+
+php artisan module:make UserManagement --domain=System --profile=default-v1 --dry-run --json
+
+Setelah hasil dry-run disetujui, jalankan pembuatan aktual dengan:
+
+php artisan module:make UserManagement --domain=System --profile=default-v1 --force --yes --json
+
+Ikuti struktur DDD-lite, manifest schema, permission schema, public contract,
+README module, dan test contract. Generator hanya membuat skeleton. Jangan
+membuat business logic sebelum skeleton lulus discovery dan validation.
+```
+
+## Hasil yang Diharapkan dari Generator
+
+### Dry-run
+
+- code `MODULE_PREVIEWED`;
+- target `app/Modules/System/UserManagement`;
+- planned file dan directory canonical terlihat;
+- tidak ada perubahan filesystem;
+- AccessControl tetap valid dan tidak tertimpa.
+
+### Pembuatan aktual
+
+- code `MODULE_CREATED`;
+- module berada pada parent boundary `System`;
+- `module.json`, `module.php`, `permissions.php`, provider, README, route entry
+  point, dan struktur DDD-lite tersedia;
+- tidak ada business logic palsu, secret, atau dependency private
+  AccessControl;
+- module dapat ditemukan dan divalidasi.
+
+## First Vertical Slice yang Disarankan
+
+Slice pertama yang paling aman adalah:
+
+```text
+User list
+    -> permission user.view
+    -> filter/search sederhana
+    -> empty/loading/error state
+    -> detail link
+```
+
+Setelah slice baca lulus, lanjut create/update, status, role assignment, lalu
+impersonation. Mutation berisiko tidak dibuat bersamaan dengan list pertama.
+
+## Dependency dan Boundary
+
+- AccessControl: public authorization capability dan role assignment contract.
+- Laravel starter kit: authentication, password, Passkey, 2FA, dan User model.
+- UserManagement: lifecycle user, status, soft delete, route, page, dan policy
+  resource user.
+- AuditLog: akan menerima event/audit contract setelah module tersedia.
+
+Jika role assignment contract belum tersedia dari AccessControl, coding task
+role assignment harus berhenti dan keputusan contract harus dibuat terlebih
+dahulu.
+
+## Risiko
+
+| Risiko | Mitigasi |
+| --- | --- |
+| Tabel `users` belum memiliki status dan `deleted_at` | Gunakan migration additive setelah keputusan field disetujui; uji fresh dan upgrade |
+| Assignment role mencampur private AccessControl | Tambahkan public contract/capability dan architecture test |
+| Impersonation membuka akses ke `SuperSystem` | Policy dan application action melakukan penolakan ganda |
+| Password/invitation belum jelas | Jangan coding flow create user sebelum keputusan dibuat |
+| UserManagement terlalu besar pada increment awal | Mulai dari read-only list vertical slice |
+| AuditLog belum tersedia | Sediakan event/contract boundary; jangan membuat audit storage kedua |
+| Frontend hanya selesai sebagai mock | Wajib browser flow sampai response backend |
+
+## Rollback
+
+- Skeleton generator dapat dihapus sebelum business implementation jika belum
+  memiliki data atau route yang dipakai.
+- Migration additive tidak boleh dihapus setelah dipakai shared environment;
+  gunakan forward fix atau rollback runbook.
+- Permission baru dapat dinonaktifkan melalui module status/registry setelah
+  mekanisme lifecycle tersedia; jangan menghapus permission identity tanpa
+  keputusan migrasi.
+- Impersonation harus memiliki exit path dan pemulihan session actor asli.
+- Setiap increment memiliki commit terpisah setelah user meminta commit.
+
+## Definition of Ready
+
+Coding UserManagement siap dimulai setelah:
+
+- Open Decision utama disetujui;
+- dry-run generator menunjukkan target yang benar;
+- prompt generator dan hasil yang diharapkan sudah ditinjau;
+- public role-assignment contract disepakati;
+- field status dan soft delete diputuskan;
+- permission identity final tersedia;
+- acceptance criteria dan focused test disetujui.
+
+## Revision History
+
+| Version | Date | Description |
+| --- | --- | --- |
+| 1.0 | 2026-08-06 | Discovery implementation plan UserManagement |

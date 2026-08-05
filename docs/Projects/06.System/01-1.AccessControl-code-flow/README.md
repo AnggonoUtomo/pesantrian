@@ -14,10 +14,10 @@ route, controller, application layer, policy, database, dan frontend.
 
 ## Sumber Utama
 
-- [Dokumentasi module AccessControl](../AccessControl/README.md)
-- [Specification AccessControl](../AccessControl/specification.md)
-- [Implementation plan AccessControl](../AccessControl/implementation-plan.md)
-- [Task AccessControl](../AccessControl/tasks.md)
+- [Dokumentasi module AccessControl](../01.AccessControl/README.md)
+- [Specification AccessControl](../01.AccessControl/specification.md)
+- [Implementation plan AccessControl](../01.AccessControl/implementation-plan.md)
+- [Task AccessControl](../01.AccessControl/tasks.md)
 - [Aturan module dan authorization](../../../AGENTS.md)
 
 ## Ringkasan Alur

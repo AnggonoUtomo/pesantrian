@@ -4,6 +4,13 @@
 
 {Jelaskan tujuan utama project dengan kalimat singkat.}
 
+## Parent boundary dan ownership
+
+- Parent boundary: `{System atau domain bisnis}`.
+- Code path: `app/Modules/{Domain}/{Module}`.
+- Namespace: `App\\Modules\\{Domain}\\{Module}`.
+- Owner data, permission, contract, dan capability: `{jelaskan}`.
+
 ## Scope saat ini
 
 - {Kemampuan yang termasuk dalam pekerjaan.}
@@ -41,6 +48,16 @@ Permissions: `{permission.key}`.
 ```bash
 {command test atau verifikasi}
 ```
+
+## Generator contract
+
+- Prompt: `{prompt generator yang disetujui}`.
+- Dry-run command: `{command --dry-run --json}`.
+- Expected dry-run: `MODULE_PREVIEWED`, planned structure terlihat, filesystem
+  tidak berubah.
+- Actual command: `{command --force --yes --json}`.
+- Expected actual output: `MODULE_CREATED`, path, namespace, manifest, provider,
+  permission source, dan structure valid.
 
 ## Boundaries
 

@@ -184,11 +184,11 @@ Untuk module target:
 php artisan module:validate {Domain}/{Module} --json
 ```
 
-Command target-specific seperti `module:inspect` dan
-`module:validate {Domain}/{Module}` belum tersedia pada implementasi saat ini.
-Gunakan `module:discover --json`, `module:validate --json`, dan
-`module:list --json`; lakukan read-only scan tambahan bila membutuhkan target
-spesifik. Laporkan keterbatasan tersebut dalam evidence.
+`module:inspect {Domain}/{Module}` sekarang menjadi command wajib untuk membaca
+detail target module sebelum generator atau perubahan module dijalankan.
+Gunakan bersama `module:discover --json`, `module:validate --json`, dan
+`module:list --json`. Read-only scan tambahan hanya digunakan bila command
+mengembalikan diagnostic yang membutuhkan pemeriksaan lebih dalam.
 Jangan membuat module dengan name, path, namespace, provider, atau permission key
 yang sudah dimiliki module valid.
 

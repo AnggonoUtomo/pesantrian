@@ -18,10 +18,7 @@ final class AccessControlSeeder extends Seeder
             return;
         }
 
-        $permissionKeys = collect(require __DIR__.'/../../permissions.php')
-            ->pluck('key')
-            ->values()
-            ->all();
+        $permissionKeys = $this->permissionKeys();
 
         foreach ($permissionKeys as $permissionKey) {
             Permission::firstOrCreate([
@@ -44,7 +41,7 @@ final class AccessControlSeeder extends Seeder
         ]);
         $securityAdmin->syncPermissions($allPermissions);
 
-        $configuredPassword = env('ACCESS_CONTROL_DUMMY_PASSWORD');
+        $configuredPassword = config('access_control.dummy_password');
         $password = $configuredPassword ?: Str::password(32);
 
         $superSystemUser = User::firstOrCreate(
@@ -72,5 +69,27 @@ final class AccessControlSeeder extends Seeder
             $securityAdminUser->forceFill(['password' => $configuredPassword])->save();
         }
         $securityAdminUser->syncRoles([$securityAdmin]);
+    }
+
+    /** @return list<string> */
+    private function permissionKeys(): array
+    {
+        $definitions = require __DIR__.'/../../permissions.php';
+
+        if (! is_array($definitions)) {
+            throw new \UnexpectedValueException('Permission definitions harus berupa array.');
+        }
+
+        $keys = [];
+
+        foreach ($definitions as $definition) {
+            if (! is_array($definition) || ! isset($definition['key']) || ! is_string($definition['key'])) {
+                throw new \UnexpectedValueException('Setiap permission definition wajib memiliki key string.');
+            }
+
+            $keys[] = $definition['key'];
+        }
+
+        return $keys;
     }
 }

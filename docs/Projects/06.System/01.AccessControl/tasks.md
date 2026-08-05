@@ -8,7 +8,7 @@ UserManagement, AuditLog, atau SystemSetting.
 **Tujuan:** menetapkan `System/AccessControl` sebagai module authorization
 baseline dengan namespace yang konsisten.
 
-**Files:** folder `docs/Projects/06.System/AccessControl/`, ADR namespace,
+**Files:** folder `docs/Projects/06.System/01.AccessControl/`, ADR namespace,
 manifest module, dan README module.
 
 **Acceptance criteria:**
@@ -259,6 +259,18 @@ seeder demo, browser review, dan accessibility check sudah tersedia.
 - [x] Seeder demo dan menu sidebar ditinjau ulang setelah implementasi.
 - [x] Open risk migration upgrade baseline lokal ditutup dan risiko deployment
   existing dikendalikan melalui runbook release.
+- [x] OPEN RISK quality gate PHPStan ditutup.
+  - Kondisi awal: `CreateRole` mengembalikan hasil `Spatie\Permission\Contracts\Role`,
+    seeder memakai `collect(require ...)` tanpa tipe yang dapat diinferensikan,
+    dan membaca `env()` langsung.
+  - Perubahan: `CreateRole` memakai `Role::query()->create()`, permission
+    definition diproses melalui method typed `permissionKeys()`, dan password
+    demo dibaca dari `config('access_control.dummy_password')` melalui
+    `config/access_control.php`.
+  - Alasan: memastikan return type model module jelas, generic PHPStan dapat
+    diinferensikan, dan konfigurasi tetap aman saat config cache aktif.
+  - Evidence: `vendor/bin/phpstan analyse --no-progress` lulus 0 error;
+    `composer ci:check` lulus dengan 118 test dan 401 assertion.
 
 ## Increment review boundary controller
 

@@ -19,7 +19,7 @@ seperti `UserManagement` dapat dikelompokkan tanpa mencampur ownership.
 ```text
 Path: app/Modules/System/AccessControl
 Namespace: App\Modules\System\AccessControl
-Dokumentasi: docs/Projects/06.System/AccessControl
+Dokumentasi: docs/Projects/06.System/01.AccessControl
 ```
 
 Dokumentasi module lain di bawah domain yang sama akan mengikuti pola:

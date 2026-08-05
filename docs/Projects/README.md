@@ -3,7 +3,9 @@
 ## Panduan Belajar Code
 
 - [Alur Code Phase 1 sampai Phase 3](05.phase-1-2-code-flow/README.md)
+- [System/AccessControl](06.System/01.AccessControl/README.md)
 - [Alur Code System/AccessControl](06.System/01-1.AccessControl-code-flow/README.md)
+- [System/UserManagement](06.System/02.UserManagement/README.md)
 - [Phase 3 Module Generator](03.phase-3-module-generator/README.md)
 
 ## Document Information
@@ -18,6 +20,10 @@ Folder ini berisi dokumentasi spesifik project turunan atau module extension.
 Baseline global berada pada folder 00–07 dan tidak disalin ke setiap project.
 Folder ini dirancang untuk ditempatkan di dalam `docs/Projects/` pada project
 Laravel. Gunakan relative link; jangan referensikan nama workspace lokal.
+
+Pembuatan module baru mengikuti [standar module global](../AGENTS.md) dan
+[prosedur module baseline](../03-IMPLEMENTATION/03.07-MODULES.md). Dokumen
+module wajib dibuat dan ditinjau sebelum generator atau coding dimulai.
 
 ## Project Intake
 
@@ -38,4 +44,4 @@ Gunakan skill incremental-implementation.
 
 | Version | Date       | Description            |
 | ------- | ---------- | ---------------------- |
-| 1.2     | 2026-08-06 | Menambahkan index code-flow AccessControl |
+| 1.4     | 2026-08-06 | Menetapkan prosedur standar pembuatan module |

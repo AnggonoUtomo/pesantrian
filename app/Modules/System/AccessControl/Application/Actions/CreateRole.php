@@ -16,7 +16,7 @@ final class CreateRole
     {
         $this->authorization->ensureAllowed($actor);
 
-        return Role::create([
+        return Role::query()->create([
             'name' => trim($name),
             'guard_name' => 'web',
         ]);

@@ -56,6 +56,77 @@ slice pertama diimplementasikan dalam urutan berikut:
 Urutan ini memastikan UserManagement tidak perlu membuat authorization sendiri
 atau bergantung pada private implementation AccessControl.
 
+## Standar Pembuatan Module Baru
+
+Setiap module baru wajib mengikuti prosedur berikut. Aturan ini berlaku untuk
+module System maupun module pada domain bisnis lain.
+
+### 1. Siapkan dokumen sebelum perubahan
+
+Sebelum generator atau coding dijalankan, buat atau perbarui folder project
+bernomor di `docs/Projects/`. Minimal folder tersebut memiliki `README.md`,
+`specification.md`, `implementation-plan.md`, `tasks.md`, dan ADR bila ada
+keputusan arsitektur atau trade-off yang sulit dibalik.
+
+Dokumen wajib menyebut parent boundary. Contoh module di dalam System harus
+menjelaskan target `app/Modules/System/{Module}` dan namespace
+`App\\Modules\\System\\{Module}`. Nama folder dokumentasi module diberi nomor
+agar mudah ditelusuri.
+
+### 2. Jalankan preflight dan inventory
+
+Catat mode project, versi stack, package, module existing, manifest, provider,
+route, permission, event, migration, contract, test, dan frontend. Jalankan:
+
+```bash
+php artisan module:discover --json
+php artisan module:validate --json
+php artisan module:list --json
+php artisan module:inspect {Domain}/{ExistingModule} --json
+```
+
+Pastikan name, domain, path, namespace, provider, dan permission key target
+belum dimiliki module valid. Jika ada konflik, hentikan pekerjaan dan buat
+keputusan melalui ADR atau konfirmasi langsung.
+
+Gunakan `module:inspect` untuk membaca detail module existing yang menjadi
+dependency atau baseline. Command ini harus tersedia sebagai framework
+prerequisite sebelum module business baru dibuat.
+
+### 3. Gunakan prompt generator dan dry-run
+
+`tasks.md` dan `implementation-plan.md` wajib mencantumkan prompt generator,
+command dry-run, serta hasil yang diharapkan. Dry-run harus membuktikan target,
+profile, planned structure, kode output, dan tidak adanya perubahan filesystem.
+Generator aktual hanya boleh dijalankan setelah hasil dry-run ditinjau.
+
+Pembuatan aktual wajib memakai profile yang disetujui dan output JSON. Setelah
+itu verifikasi manifest, runtime config, provider, permission source, README,
+struktur canonical, discovery, validation, dan list. Generator hanya membuat
+skeleton; business logic, migration, test, seeder, dan frontend dibuat dalam
+increment berikutnya.
+
+### 4. Kerjakan secara incremental dan vertical slice
+
+Urutan minimum module baru adalah inventory/dry-run, skeleton, permission dan
+public contract, domain/application, infrastructure, presentation, frontend
+vertical slice, lalu test dan documentation evidence.
+
+Setiap increment wajib memiliki scope kecil, dependency, acceptance criteria,
+positive test, negative test, verification command, dan evidence. Increment
+berikutnya tidak boleh dimulai sebelum increment sebelumnya diverifikasi.
+Module dengan alur pengguna tidak boleh dinyatakan selesai tanpa frontend yang
+terhubung ke backend, state loading/empty/error, permission visibility,
+responsive layout, route Ziggy, serta browser/accessibility test.
+
+### 5. Tutup dokumentasi dan review
+
+Sebelum module dinyatakan selesai, tinjau checklist sebelum dan sesudah kerja.
+Perbarui task, implementation plan, README module, execution log, revision
+history, ADR atau Open Decision, dan daftar risiko berdasarkan hasil nyata.
+Lakukan review correctness, readability, architecture, security, performance,
+dan dependency. Module hanya selesai bila Definition of Done global terpenuhi.
+
 Authentication, notifikasi, profil, dan setting default dari Laravel React starter kit digunakan kembali dan diintegrasikan, bukan dibangun ulang, kecuali ada spesifikasi yang mengubahnya secara eksplisit.
 
 ## Aturan Identifier dan Keamanan

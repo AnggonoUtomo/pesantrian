@@ -6,6 +6,7 @@ namespace StarterKit;
 
 use Illuminate\Support\ServiceProvider;
 use StarterKit\Console\Commands\ModuleDiscoverCommand;
+use StarterKit\Console\Commands\ModuleInspectCommand;
 use StarterKit\Console\Commands\ModuleListCommand;
 use StarterKit\Console\Commands\ModuleMakeCommand;
 use StarterKit\Console\Commands\ModuleValidateCommand;
@@ -22,6 +23,7 @@ final class StarterKitServiceProvider extends ServiceProvider
                 ModuleDiscoverCommand::class,
                 ModuleValidateCommand::class,
                 ModuleListCommand::class,
+                ModuleInspectCommand::class,
                 ModuleMakeCommand::class,
             ]);
         }

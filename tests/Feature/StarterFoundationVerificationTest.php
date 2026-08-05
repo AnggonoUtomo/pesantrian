@@ -18,3 +18,17 @@ it('tidak membocorkan forbidden dependency pada output verification', function (
     expect($output)->not->toContain('wayfinder')
         ->and($output)->not->toContain('laravel boost');
 });
+
+it('menyediakan diagnosis dan health dalam format json tanpa secret', function () {
+    $diagnose = Artisan::call('starter:diagnose', ['--json' => true]);
+    $diagnoseOutput = Artisan::output();
+    $health = Artisan::call('starter:health', ['--json' => true]);
+    $healthOutput = Artisan::output();
+
+    expect($diagnose)->toBe(0)
+        ->and($diagnoseOutput)->toContain('STARTER_DIAGNOSED')
+        ->and($diagnoseOutput)->toContain('modules')
+        ->and($health)->toBe(0)
+        ->and($healthOutput)->toContain('STARTER_HEALTHY')
+        ->and($healthOutput)->not->toContain((string) config('app.key'));
+});

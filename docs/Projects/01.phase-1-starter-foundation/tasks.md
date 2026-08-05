@@ -1,13 +1,14 @@
 # Task Phase 1 Starter Foundation
 
-| ID       | Increment | Task                 | Acceptance                                                     | Verifikasi                            | Status  |
-| -------- | --------- | -------------------- | -------------------------------------------------------------- | ------------------------------------- | ------- |
-| TASK-001 | INC-001   | Inventory foundation | Versi, stack, package, service tercatat                        | Review inventory                      | Selesai |
-| TASK-002 | INC-002   | Dependency baseline  | Package wajib dan forbidden package terverifikasi              | Composer, npm, scan                   | Selesai |
-| TASK-003 | INC-003   | Runtime service      | PostgreSQL, Redis, cache, queue, session, storage, ULID teruji | Health check dan migration            | Selesai |
-| TASK-004 | INC-004   | Verification command | Command tersedia dalam output biasa dan JSON                   | `starter:verify`                      | Selesai |
-| TASK-005 | INC-005   | Quality gate         | Semua gate relevan lulus                                       | Pint, Pest, ESLint, TypeScript, build | Selesai |
-| TASK-006 | INC-006   | Tutup Phase 1        | Evidence, risiko, dan docs lengkap                             | Review akhir                          | Selesai |
+| ID       | Increment | Task                 | Acceptance                                                     | Verifikasi                            | Status   |
+| -------- | --------- | -------------------- | -------------------------------------------------------------- | ------------------------------------- | -------- |
+| TASK-001 | INC-001   | Inventory foundation | Versi, stack, package, service tercatat                        | Review inventory                      | Selesai  |
+| TASK-002 | INC-002   | Dependency baseline  | Package wajib dan forbidden package terverifikasi              | Composer, npm, scan                   | Selesai  |
+| TASK-003 | INC-003   | Runtime service      | PostgreSQL, Redis, cache, queue, session, storage, ULID teruji | Health check dan migration            | Selesai  |
+| TASK-004 | INC-004   | Verification command | Command tersedia dalam output biasa dan JSON                   | `starter:verify`                      | Selesai  |
+| TASK-005 | INC-005   | Quality gate         | Semua gate relevan lulus                                       | Pint, Pest, ESLint, TypeScript, build | Selesai  |
+| TASK-006 | INC-006   | Tutup Phase 1        | Evidence, risiko, dan docs lengkap                             | Review akhir                          | Selesai  |
+| TASK-007 | INC-007   | Hardening foundation | Constraint, command, scanner, sanitasi, test, dan docs selaras | Full CI dan command JSON              | Selesai  |
 
 ## Detail Task
 
@@ -96,3 +97,39 @@
 - [x] Checklist ditinjau sebelum dan sesudah pekerjaan.
     - Checklist awal menentukan scope.
     - Checklist akhir diperiksa setelah test dan build selesai.
+
+## TASK-007 — Hardening framework foundation
+
+- [x] Constraint PHP diselaraskan ke PHP 8.4.
+    - Kondisi awal: root dan package StarterKit memakai constraint berbeda.
+    - Perubahan: root memakai `^8.4`; package StarterKit sudah memakai `^8.4`.
+    - Evidence: `composer.lock` diperbarui dan `composer ci:check` lulus.
+- [x] Command `starter:diagnose` dan `starter:health` tersedia.
+    - Kondisi awal: dokumentasi menyebut command, runtime belum mendaftarkannya.
+    - Perubahan: menambah command berbasis service check bersama dengan output
+      JSON/human-readable dan exit code stabil.
+    - Evidence: dua command terdaftar, output `STARTER_DIAGNOSED` dan
+      `STARTER_HEALTHY`, serta feature test lulus.
+- [x] Cakupan `starter:verify` selaras dengan dokumentasi.
+    - Kondisi awal: check frontend stack dan approved package belum lengkap.
+    - Perubahan: menambah check Inertia, React, TypeScript, Vite, Tailwind,
+      shadcn/ui, PostgreSQL, dan package baseline.
+    - Evidence: JSON command menunjukkan 0 pemeriksaan gagal, termasuk driver
+      PostgreSQL, stack frontend, dan package baseline.
+- [x] Scanner forbidden dependency recursive dan diagnostic aman.
+    - Kondisi awal: `glob('**/*.php')` tidak menjamin scan nested dan exception
+      database/Redis dapat membawa detail internal.
+    - Perubahan: memakai recursive directory iterator dan pesan diagnostic
+      generik tanpa credential, SQL, host detail, atau absolute path.
+    - Evidence: unit test fixture nested lulus; exception runtime memakai pesan
+      generik; scan source tidak menemukan dependency terlarang.
+- [x] Test package/framework foundation ditambah.
+    - Kondisi awal: test package hanya memeriksa provider dan installed package.
+    - Perubahan: menambah test contract command, scanner, sanitasi, dan JSON.
+    - Evidence: focused test lulus; full CI lulus dengan 154 test dan 589
+      assertion tanpa warning.
+- [x] Mojibake dokumen foundation dibersihkan.
+    - Kondisi awal: beberapa dokumen memiliki karakter hasil encoding yang rusak.
+    - Perubahan: mengganti ke karakter ASCII/UTF-8 yang benar pada dokumen yang
+      relevan.
+    - Evidence: pencarian mojibake pada folder docs tidak menemukan hasil.

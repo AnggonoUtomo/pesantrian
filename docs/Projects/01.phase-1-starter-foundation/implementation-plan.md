@@ -15,6 +15,7 @@ kecil, test, review, dokumentasi, dan verifikasi ulang.
 | INC-004   | Command `starter:verify`          | INC-002, INC-003 | Command JSON dan test               | Selesai |
 | INC-005   | Quality gate foundation           | INC-004          | Pint, test, lint, type check, build | Selesai |
 | INC-006   | Penutupan dan evidence            | INC-005          | Review checklist dan docs           | Selesai |
+| INC-007   | Hardening framework foundation    | INC-006          | Command, scanner, test, dan CI      | Selesai |
 
 ## Detail Pelaksanaan Increment
 
@@ -77,6 +78,30 @@ kecil, test, review, dokumentasi, dan verifikasi ulang.
 - Alasan: status selesai harus dapat diaudit tanpa membaca percakapan agent.
 - Evidence: `git diff --check` bersih dan checklist Phase 1 lengkap.
 
+### INC-007 — Hardening framework foundation
+
+- Kondisi awal: root project mengizinkan PHP `^8.3`, package StarterKit
+  meminta `^8.4`, dokumentasi menyebut `starter:diagnose` dan `starter:health`
+  tetapi command belum tersedia, serta `starter:verify` belum memeriksa seluruh
+  stack yang dijanjikan.
+- File diubah: `composer.json`, `composer.lock`, command foundation, service
+  pemeriksaan, scanner, test, dan dokumentasi command.
+- Perubahan: menyelaraskan constraint PHP ke `^8.4`, membuat service pemeriksaan
+  bersama, menambah `starter:diagnose` dan `starter:health`, memperluas cakupan
+  `starter:verify`, membuat scanner recursive, dan menyederhanakan diagnostic
+  agar aman.
+- Alasan: framework foundation harus memiliki contract runtime yang sama dengan
+  dokumentasi dan tidak boleh menghasilkan diagnostic yang membocorkan detail
+  internal.
+- Acceptance: tiga command mendukung output human-readable/JSON, exit code
+  stabil, tidak mencetak secret, scanner menemukan file nested, dan full CI
+  lulus tanpa warning.
+- Evidence: tiga command lulus dengan `failed: 0`; focused test lulus;
+  `composer ci:check` lulus dengan 154 test dan 589 assertion; pencarian
+  mojibake foundation bersih.
+- Rollback: commit increment ini dapat dibatalkan tanpa mengubah schema atau
+  data module.
+
 ## Technical Tasks
 
 - [x] Catat inventory project dan environment.
@@ -96,3 +121,8 @@ kecil, test, review, dokumentasi, dan verifikasi ulang.
 - [x] Perbarui checklist dan execution evidence.
     - File: task, plan, roadmap, discovery, milestones, dan log.
     - Hasil: status selesai memiliki alasan dan bukti.
+- [x] Selesaikan hardening framework foundation.
+    - File target: `composer.json`, `packages/StarterKit/composer.json`,
+      command foundation, service pemeriksaan, test, dan dokumen command.
+    - Hasil: PHP 8.4 konsisten, tiga command tersedia, scanner recursive,
+      diagnostic disanitasi, test foundation ditambah, dan quality gate lulus.

@@ -8,7 +8,7 @@
 | Mode    | Existing Starter Kit       |
 | Laravel | 13.23.0                    |
 | PHP     | 8.4.16                     |
-| Status  | Selesai                    |
+| Status  | Selesai |
 
 ## Tujuan
 
@@ -22,6 +22,7 @@ Memastikan fondasi Laravel starter kit siap dipakai sebelum membangun
 - Memeriksa database, Redis, cache, queue, session, storage, dan ULID.
 - Menyediakan verification command bila belum tersedia.
 - Menjalankan quality gate dan menyimpan evidence.
+- Menjaga command verification, diagnosis, dan health tetap sesuai contract.
 
 ## Di Luar Ruang Lingkup
 

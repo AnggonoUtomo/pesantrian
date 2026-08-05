@@ -184,7 +184,13 @@ UI/UX yang sudah selesai pada AccessControl menjadi baseline untuk module
 berikutnya. Module baru yang memiliki frontend wajib mengikuti pola berikut:
 
 - `AppLayout` global dengan sticky top navigation, breadcrumb, language action,
-  notification action, theme toggle, dan profile dropdown;
+  command palette, notification action, theme toggle, dan profile dropdown;
+- command palette global dibuka melalui tombol `Cari menu...` atau shortcut
+  `Ctrl+K`/`⌘K`, memakai route Ziggy dan menyembunyikan fitur yang tidak
+  tersedia pada permission context actor;
+- animasi interaksi memakai `framer-motion` secara hemat, menghormati
+  `prefers-reduced-motion`, dan tidak boleh mengganggu fokus, keyboard, atau
+  aturan permission;
 - sidebar utama dengan warna yang mengikuti theme palette, state active dan
   hover yang jelas, indikator active, serta separator icon saat hover;
 - halaman Appearance dengan mode `light`, `dark`, `system`, dan theme palette;

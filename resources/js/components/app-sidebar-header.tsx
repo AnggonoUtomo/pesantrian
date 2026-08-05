@@ -1,6 +1,7 @@
 import { usePage } from '@inertiajs/react';
 import { Bell, Languages, Moon, Sun } from 'lucide-react';
 import { Breadcrumbs } from '@/components/breadcrumbs';
+import { CommandPalette } from '@/components/command-palette';
 import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
@@ -48,6 +49,7 @@ export function AppSidebarHeader({
                 </div>
             </div>
             <div className="flex shrink-0 items-center gap-1">
+                <CommandPalette />
                 <Toggle
                     pressed={isDarkMode}
                     onPressedChange={(pressed) =>

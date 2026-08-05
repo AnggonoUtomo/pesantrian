@@ -303,6 +303,56 @@ langsung melalui halaman Appearance.
     campuran primary 30% dengan font primary. Active normal juga menggunakan
     font primary; lint, type check, build, dan diff check lulus.
 
+## Baseline topnav — command palette
+
+- [x] Command palette tersedia pada topnav global.
+  - Kondisi awal: topnav belum memiliki pencarian menu terpusat.
+  - Perubahan: `resources/js/components/command-palette.tsx` menambahkan
+    dialog pencarian, shortcut `Ctrl+K`/`⌘K`, filter keyword, empty state, dan
+    navigasi menggunakan route Ziggy. Palette ditempatkan di action group kanan
+    topnav, tepat sebelum tombol theme.
+  - Alasan: user dapat berpindah ke halaman penting tanpa membuka sidebar;
+    menu Access Control tetap disaring berdasarkan permission server context.
+  - Evidence: browser snapshot menampilkan System Dashboard, Access Control,
+    Profil, Appearance, dan Security; query `access` hanya menampilkan Access
+    Control; shortcut `Control+K` membuka dialog.
+- [x] Command palette mengikuti baseline accessibility dan theme.
+  - Kondisi awal: komponen baru belum memiliki evidence browser.
+  - Perubahan: dialog memiliki title/description, input berlabel, listbox,
+    keyboard focus, hover/focus state, dan token warna theme.
+  - Evidence: Lighthouse mobile Accessibility 100, Best Practices 100, SEO
+    100, Agentic Browsing 100; console browser bersih.
+- [x] Framer Motion terpasang dan diterapkan pada command palette.
+  - Kondisi awal: project belum memiliki dependency `framer-motion` dan hasil
+    pencarian command palette belum memiliki transisi masuk, keluar, atau
+    perubahan posisi.
+  - Perubahan: `package.json` dan `package-lock.json` menambahkan
+    `framer-motion`. `resources/js/components/command-palette.tsx` memakai
+    `MotionConfig`, `AnimatePresence`, `motion.button`, dan `motion.div` untuk
+    transisi hasil pencarian serta empty state. Komponen juga membaca
+    `prefers-reduced-motion` dan mematikan transisi saat user memintanya.
+  - Alasan: interaksi pencarian menjadi lebih mudah dipahami tanpa mengubah
+    route, permission, atau security boundary backend.
+  - Acceptance: dependency dapat di-resolve, hasil pencarian tetap bisa
+    dipakai dengan keyboard, animasi tidak mengubah filter permission, dan
+    reduced motion tidak memaksa animasi.
+  - Evidence: `npm install framer-motion` selesai dengan 0 vulnerability;
+    `npm run types:check`, `npm run lint:check`, `npm run build`, dan
+    `git diff --check` lulus. Lighthouse mobile tetap memberi Accessibility
+    100, Best Practices 100, SEO 100, dan Agentic Browsing 100. Saat reduced
+    motion aktif, browser memakai elemen HTML biasa tanpa `motion.*` dan
+    console tidak memiliki error atau warning. Saat reduced motion dimatikan,
+    browser menampilkan elemen animasi dan console tetap bersih.
+
+**Batasan animasi:** implementasi pertama hanya diterapkan pada command palette.
+Animasi module berikutnya harus memakai token dan pola yang sama, menghormati
+`prefers-reduced-motion`, serta tidak menambahkan animasi pada state otorisasi
+yang dapat membingungkan user.
+
+**Status OPEN RISK:** ditutup. Warning reduced motion tidak lagi muncul pada
+browser karena mode reduced motion menggunakan HTML biasa, sedangkan mode
+normal tetap menggunakan Framer Motion.
+
 **Batasan:** palette saat ini disimpan per browser melalui `localStorage`, belum
 disimpan ke profil user atau database. Jika nanti diperlukan sinkronisasi lintas
 perangkat, perlu contract backend dan keputusan baru.

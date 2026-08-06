@@ -1,0 +1,16 @@
+{
+    "name": "AuditLog",
+    "namespace": "App\\Modules\\System\\AuditLog",
+    "version": "1.0.0",
+    "schema_version": 1,
+    "status": "enabled",
+    "domain": "System",
+    "path": "app/Modules/System/AuditLog",
+    "provider": "App\\Modules\\System\\AuditLog\\ServiceProvider",
+    "dependencies": [
+        "AccessControl",
+        "UserManagement"
+    ],
+    "permission_source": "permissions.php",
+    "config_source": "module.php"
+}

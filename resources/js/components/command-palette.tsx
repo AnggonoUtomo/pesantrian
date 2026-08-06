@@ -5,6 +5,7 @@ import {
     LayoutDashboard,
     LockKeyhole,
     Search,
+    ScrollText,
     Settings,
     UserRound,
     UsersRound,
@@ -65,6 +66,9 @@ export function CommandPalette() {
         const canManageUsers = Boolean(
             auth.superSystem || auth.permissions?.['user.view'],
         );
+        const canViewAuditLogs = Boolean(
+            auth.superSystem || auth.permissions?.['audit_log.view'],
+        );
 
         return [
             ...(canViewSystemDashboard
@@ -97,6 +101,17 @@ export function CommandPalette() {
                           keywords: 'user management pengguna identity status',
                           href: route('system.users.index'),
                           icon: UsersRound,
+                      },
+                  ]
+                : []),
+            ...(canViewAuditLogs
+                ? [
+                      {
+                          title: 'Audit Log',
+                          description: 'Telusuri aktivitas keamanan System.',
+                          keywords: 'audit log aktivitas security correlation',
+                          href: route('system.audit-logs.index'),
+                          icon: ScrollText,
                       },
                   ]
                 : []),

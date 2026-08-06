@@ -19,7 +19,9 @@ it('menghasilkan plan default-v1 dengan struktur canonical', function () {
         ->and($plan->directories)->toContain('Tests/Integration')
         ->and(array_keys($plan->files))->toContain('module.json', 'ServiceProvider.php', 'README.md')
         ->and($plan->files['module.json'])->toContain('App\\\\Modules\\\\System\\\\AccessControl')
-        ->and($plan->files['ServiceProvider.php'])->toContain('namespace App\\Modules\\System\\AccessControl;');
+        ->and($plan->files['ServiceProvider.php'])->toContain('namespace App\\Modules\\System\\AccessControl;')
+        ->and($plan->files['ServiceProvider.php'])->toContain('use Illuminate\\Support\\ServiceProvider as FrameworkServiceProvider;')
+        ->and($plan->files['ServiceProvider.php'])->toContain('final class ServiceProvider extends FrameworkServiceProvider');
 });
 
 it('menghasilkan plan deterministik untuk input yang sama', function () {

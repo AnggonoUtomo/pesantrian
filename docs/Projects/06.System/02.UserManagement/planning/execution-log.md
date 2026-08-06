@@ -75,3 +75,21 @@ riwayat percakapan.
   dan quality gate masing-masing selesai. Migration shared/production tetap
   membutuhkan database nyata, backup yang dapat dipulihkan, rehearsal, dan
   persetujuan operator.
+
+## Task 14 - Aktivasi Integration Event untuk AuditLog
+
+- Kondisi awal: Task 13 mencatat AuditLog consumer sebagai backlog karena belum
+  ada module penerima yang nyata.
+- File code terdampak: contract dan publisher activity UserManagement,
+  Application Action lifecycle/role, impersonation session, public integration
+  event, provider binding, serta listener dan persistence System/AuditLog.
+- Perubahan: UserManagement menerbitkan
+  `UserManagementActivityOccurred` version 1. AuditLog mengonsumsi event secara
+  synchronous, mempertahankan correlation ID, meredaksi metadata, dan memakai
+  event ID unik agar idempotent.
+- Alasan: consumer nyata sekarang tersedia dan mutation sensitif harus gagal
+  bila audit tidak dapat disimpan.
+- Evidence: `AuditLogIntegrationEventTest` membuktikan lifecycle producer,
+  impersonation correlation, unsupported version, dan failure rollback.
+- Risiko tersisa: mode queue, retry worker, dan dead-letter tidak dibutuhkan
+  untuk ingestion synchronous. Perubahan ke asynchronous memerlukan ADR baru.

@@ -685,8 +685,8 @@ browser test Chrome DevTools, dan Lighthouse accessibility.
 route start/leave, event audit, redaction test, UI reason/banner, dan browser
 flow sudah tersedia.
 
-**Open risk Task 09:** tidak ada untuk scope impersonation. AuditLog consumer
-dan persistence audit tetap menjadi dependency module AuditLog berikutnya.
+**Open risk Task 09:** dependency AuditLog sudah ditutup pada increment
+System/AuditLog melalui consumer synchronous dan persistence append-only.
 
 ## Task 10 — Seeder 10 user dummy
 
@@ -1069,9 +1069,9 @@ development dan tidak boleh digunakan sebagai data production.
     batasan, acceptance awal, dan bukti yang harus disiapkan.
   - Perubahan: memperbarui `README.md`, `specification.md`,
     `implementation-plan.md`, `migration-runbook.md`, dan execution log dengan
-    lima backlog resmi: restore user, invitation email, role revoke atau
-    multi-role management, AuditLog consumer production, dan migration
-    shared/production.
+    empat backlog resmi: restore user, invitation email, role revoke atau
+    multi-role management, dan migration shared/production. AuditLog consumer
+    ditutup oleh increment System/AuditLog.
   - Alasan: tim perlu membedakan fitur yang sudah selesai dari fitur yang baru
     direncanakan agar implementasi, review, dan rollback dapat ditelusuri.
   - Evidence: setiap scope memiliki batasan dan bukti minimum sebelum coding;
@@ -1089,9 +1089,17 @@ development dan tidak boleh digunakan sebagai data production.
   - Syarat selesai: public contract, operasi atomik, protected-role guard,
     audit, positive/negative test, dan browser flow tersedia.
 
-- [ ] AuditLog consumer production belum dibuat.
-  - Syarat selesai: event versioning, correlation ID, idempotency, retry,
-    redaction, monitoring, dan consumer test tersedia.
+- [x] AuditLog consumer synchronous sudah dibuat.
+  - Kondisi awal: lifecycle UserManagement belum memiliki Integration Event dan
+    persistence audit lintas module.
+  - Perubahan: `UserManagementActivityOccurred` version 1 diterbitkan oleh
+    mutation lifecycle, role, dan impersonation. AuditLog mengonsumsi event
+    secara synchronous, idempotent, ter-redaksi, serta fail-closed.
+  - Alasan: consumer nyata sudah tersedia. Retry/monitoring queue tidak berlaku
+    pada mode synchronous; perubahan ke async memerlukan ADR baru.
+  - Evidence: `AuditLogIntegrationEventTest` membuktikan envelope, persistence,
+    correlation impersonation, unsupported version, dan rollback saat audit
+    gagal.
 
 - [ ] Migration shared/production belum dilakukan.
   - Syarat selesai: rehearsal, backup/restore test, lock/downtime check,
@@ -1116,3 +1124,4 @@ development dan tidak boleh digunakan sebagai data production.
 | 2.3     | 2026-08-06 | Menutup Task 10 quality checkpoint dan menyelaraskan evidence dokumentasi |
 | 1.1     | 2026-08-06 | Menetapkan keputusan scope dan status task siap dimulai |
 | 2.4     | 2026-08-06 | Mencatat lima scope lanjutan yang belum dibuat |
+| 2.5     | 2026-08-06 | Menutup AuditLog consumer synchronous dan menyisakan empat scope lanjutan |

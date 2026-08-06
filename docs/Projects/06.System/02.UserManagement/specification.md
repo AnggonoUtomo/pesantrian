@@ -51,9 +51,7 @@ Scope berikut belum termasuk implementasi saat ini:
    memiliki expiry, redaction, mail-fake test, dan failure handling.
 3. **Role revoke atau multi-role management**: mencabut role tertentu serta
    mengatur banyak role dalam satu operasi yang atomik dan aman.
-4. **AuditLog consumer production**: mengonsumsi event module secara idempotent
-   dengan correlation ID, retry, redaction, dan monitoring failure.
-5. **Migration shared/production**: rehearsal pada database yang menyerupai
+4. **Migration shared/production**: rehearsal pada database yang menyerupai
    target, backup/restore test, pemeriksaan lock/downtime, dan persetujuan
    operator sebelum deployment.
 
@@ -105,8 +103,9 @@ UserManagement wajib mengikuti pola visual AccessControl:
 - `CreateUser`, `UpdateUser`, `ChangeUserStatus`, `SoftDeleteUser`, dan
   `StartImpersonation` adalah Application Action.
 - `UserImpersonationStarted` dan `UserImpersonationEnded` adalah Domain Event
-  synchronous untuk boundary internal. Promosi ke Integration Event menunggu
-  consumer AuditLog yang nyata.
+  synchronous untuk boundary internal. `UserManagementActivityOccurred`
+  version 1 adalah Integration Event synchronous dengan AuditLog sebagai
+  consumer nyata.
 - Module mengikuti CQRS-lite. Command Bus, Queue/Job, Facade, dan Shared Kernel
   tidak digunakan pada scope saat ini.
 - Detail global berada pada
@@ -121,7 +120,7 @@ Setiap increment wajib memperbarui status fondasi berikut sebelum coding:
 | Contract/Interface | `implemented` | Port internal dan public capability AccessControl harus typed |
 | Domain Event | `implemented terbatas` | Event impersonation synchronous tanpa secret |
 | Application Event | `planned` | Hanya jika beberapa handler application perlu dikoordinasikan |
-| Integration Event | `planned` | Menunggu consumer AuditLog atau external system nyata |
+| Integration Event | `implemented synchronous` | AuditLog mengonsumsi event version 1 dengan event ID, correlation ID, redaction, dan failure propagation |
 | Command | `planned` | Action dapat dinaikkan menjadi Command + Handler melalui ADR |
 | Query/Read Contract | `implemented` internal | Query typed, pagination jelas, tanpa side effect |
 | Shared Kernel | `not applicable` | Value object lintas module memerlukan owner dan dua consumer |

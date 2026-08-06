@@ -74,9 +74,9 @@ memiliki binding runtime melalui adapter internal. Module lain wajib memakai
 interface tersebut, bukan model, repository, atau adapter Spatie private.
 
 Mutation AccessControl memakai Application Action dan read memakai Application
-Query. Domain Event, Integration Event, Command Bus, Queue/Job, Facade, dan
-Shared Kernel belum menjadi bagian runtime AccessControl. Baseline keseluruhan
-menggunakan CQRS-lite.
+Query. Integration Event activity version 1 sudah aktif karena AuditLog menjadi
+consumer nyata. Domain Event, Command Bus, Queue/Job, Facade, dan Shared Kernel
+belum menjadi bagian runtime AccessControl. Baseline tetap CQRS-lite.
 
 ## Fondasi Enterprise Module
 
@@ -88,7 +88,7 @@ kosong sebelum increment baru dimulai:
 | Contract/Interface | `implemented` melalui `AuthorizationCapability` dan `RoleAssignmentCapability` | Semua consumer memakai contract publik, bukan model Spatie |
 | Domain Event | `planned` | Tambahkan untuk fakta mutation role/permission bila consumer internal nyata sudah ditetapkan |
 | Application Event | `not applicable` pada scope saat ini | Aktifkan jika beberapa handler application perlu dikoordinasikan |
-| Integration Event | `planned` | Aktifkan saat AuditLog atau consumer eksternal tersedia; wajib versioned dan sanitized |
+| Integration Event | `implemented synchronous` | `AccessControlActivityOccurred` version 1 dikonsumsi AuditLog dengan event ID, correlation ID, dan metadata aman |
 | Command | `planned` | Mutation dapat dinaikkan dari Action ke Command + Handler melalui increment dan ADR |
 | Query/Read Contract | `implemented` internal | Query typed tidak boleh mengubah state; public read contract memerlukan consumer nyata |
 | Shared Kernel | `not applicable` | `packages/StarterKit` tetap framework package, bukan Shared Kernel bisnis |

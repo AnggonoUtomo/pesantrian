@@ -82,8 +82,9 @@ mengambil alih private implementation AccessControl.
 
 ## Scope Lanjutan yang Belum Dibuat
 
-Lima scope berikut dicatat sebagai pekerjaan lanjutan. Item ini belum dianggap
-selesai dan tidak boleh dibuat hanya dengan menambahkan tombol pada frontend.
+Empat scope berikut masih menjadi pekerjaan lanjutan. AuditLog consumer sudah
+ditutup melalui increment `System/AuditLog`. Item berikut belum dianggap selesai
+dan tidak boleh dibuat hanya dengan menambahkan tombol pada frontend.
 Setiap item harus memiliki specification, acceptance criteria, focused test,
 permission atau contract yang sesuai, browser flow bila memiliki UI, dan
 execution evidence sebelum ditandai selesai.
@@ -98,10 +99,7 @@ execution evidence sebelum ditandai selesai.
 3. **Role revoke dan multi-role management** — mencabut role tertentu dan
    mengelola beberapa role user secara atomik. Perlu aturan agar role terakhir,
    role `SuperSystem`, dan perubahan tanpa permission tidak dapat disalahgunakan.
-4. **AuditLog consumer production** — membuat consumer production untuk event
-   lifecycle, role, dan impersonation. Consumer harus memiliki schema event,
-   correlation ID, redaction, idempotency, retry, serta failure handling.
-5. **Migration shared/production** — melakukan rehearsal migration pada salinan
+4. **Migration shared/production** — melakukan rehearsal migration pada salinan
    database, backup/restore test, verifikasi lock dan downtime, serta prosedur
    rollback. Workspace lokal tidak dapat membuktikan deployment production tanpa
    database nyata, backup, dan persetujuan operator.
@@ -150,15 +148,17 @@ memakai `AuthorizationCapability`, `RoleAssignmentCapability`, dan
 `RoleCatalogCapability` milik AccessControl.
 
 `ListUsers` dan `GetUser` adalah Query internal dengan `UserData` typed.
-Mutation memakai Application Action. Event impersonation saat ini adalah Domain
-Event synchronous; belum ada Application Event, Integration Event, Command Bus,
+Mutation memakai Application Action. Event impersonation tetap menjadi Domain
+Event internal. `UserManagementActivityOccurred` version 1 menjadi Integration
+Event synchronous untuk AuditLog. Belum ada Application Event, Command Bus,
 Queue/Job, Facade, atau Shared Kernel domain.
 
 Fondasi enterprise wajib tetap dipetakan pada setiap increment UserManagement.
 Status saat ini menjadi acuan: Contract/Interface dan Query/Read Contract
 `implemented`; Domain Event `implemented terbatas` untuk impersonation;
-Application Event, Integration Event, Command Bus, Queue/Job, Facade, dan
-Shared Kernel `planned` atau `not applicable` sesuai consumer nyata. Perubahan
+Integration Event `implemented synchronous` untuk AuditLog; Application Event,
+Command Bus, Queue/Job, Facade, dan Shared Kernel `planned` atau
+`not applicable` sesuai consumer nyata. Perubahan
 status wajib memperbarui specification, plan, tasks, test, dan ADR terkait.
 
 ## Cara Verifikasi Awal
@@ -211,3 +211,4 @@ khusus tersebut.
 | 1.1 | 2026-08-06 | Menetapkan keputusan scope awal dan vertical slice |
 | 1.2 | 2026-08-06 | Menyelesaikan impersonation session, audit event, dan browser flow |
 | 1.3 | 2026-08-06 | Mencatat lima scope lanjutan yang belum dibuat |
+| 1.4 | 2026-08-06 | Menutup scope AuditLog consumer synchronous dan memperbarui fondasi event |

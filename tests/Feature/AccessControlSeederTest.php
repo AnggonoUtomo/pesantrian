@@ -10,6 +10,7 @@ use App\Modules\System\AccessControl\Infrastructure\Persistence\Models\Permissio
 use App\Modules\System\AccessControl\Infrastructure\Persistence\Models\Role;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
+use StarterKit\Modules\ModuleRegistry;
 use Tests\TestCase;
 
 final class AccessControlSeederTest extends TestCase
@@ -20,7 +21,7 @@ final class AccessControlSeederTest extends TestCase
     {
         $this->seed(AccessControlSeeder::class);
 
-        $this->assertSame(11, Permission::count());
+        $this->assertSame($this->expectedPermissionCount(), Permission::count());
         $this->assertTrue(Role::where('name', 'SuperSystem')->exists());
         $this->assertTrue(Role::where('name', 'SecurityAdmin')->exists());
 
@@ -36,7 +37,7 @@ final class AccessControlSeederTest extends TestCase
         $this->seed(AccessControlSeeder::class);
         $this->seed(AccessControlSeeder::class);
 
-        $this->assertSame(11, Permission::count());
+        $this->assertSame($this->expectedPermissionCount(), Permission::count());
         $this->assertSame(2, Role::count());
         $this->assertSame(2, User::whereIn('email', [
             'super-system@example.test',
@@ -50,7 +51,7 @@ final class AccessControlSeederTest extends TestCase
             ->assertSuccessful()
             ->expectsOutput('Seeder AccessControl selesai.');
 
-        $this->assertSame(11, Permission::count());
+        $this->assertSame($this->expectedPermissionCount(), Permission::count());
         $this->assertSame(2, Role::count());
     }
 
@@ -58,7 +59,7 @@ final class AccessControlSeederTest extends TestCase
     {
         $this->seed();
 
-        $this->assertSame(11, Permission::count());
+        $this->assertSame($this->expectedPermissionCount(), Permission::count());
         $this->assertSame(2, Role::count());
         $this->assertSame(12, User::count());
     }
@@ -72,5 +73,21 @@ final class AccessControlSeederTest extends TestCase
         $this->assertSame(0, Permission::count());
         $this->assertSame(0, Role::count());
         $this->assertSame(0, User::count());
+    }
+
+    private function expectedPermissionCount(): int
+    {
+        $discovery = app(ModuleRegistry::class)->discover(app_path('Modules'));
+        $keys = [];
+
+        foreach ($discovery['modules'] as $module) {
+            $definitions = require base_path($module->path.'/'.$module->permissionSource);
+
+            foreach ($definitions as $definition) {
+                $keys[] = $definition['key'];
+            }
+        }
+
+        return count(array_unique($keys));
     }
 }

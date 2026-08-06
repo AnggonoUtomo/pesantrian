@@ -145,8 +145,9 @@ dahulu.
 
 Pola eksekusi mengikuti ADR-0003. UserManagement memakai Application Action
 untuk write, Application Query dan DTO untuk read, serta Domain Event internal
-untuk impersonation. Command Bus, Integration Event, Queue/Job, Facade, dan
-Shared Kernel belum menjadi dependency module.
+untuk impersonation. Integration Event version 1 sudah aktif untuk AuditLog.
+Command Bus, Queue/Job, Facade, dan Shared Kernel belum menjadi dependency
+module.
 
 ## Fondasi Enterprise
 
@@ -159,7 +160,7 @@ README, test, dan ADR terkait.
 | Contract / Interface | `implemented` | Gunakan contract publik AccessControl untuk authorization dan role assignment; jangan memakai class internal module lain. |
 | Domain Event | `implemented` terbatas | Event impersonation boleh tetap menjadi fakta domain internal; payload harus typed, aman, dan tidak memuat credential. |
 | Application Event | `planned` | Tambahkan hanya jika koordinasi beberapa handler memang diperlukan dan failure handler dapat diuji. |
-| Integration Event | `planned` | Menunggu consumer seperti AuditLog; event harus versioned, memiliki event ID/correlation ID, dan payload tersanitasi. |
+| Integration Event | `implemented synchronous` | `UserManagementActivityOccurred` version 1 dikonsumsi AuditLog; event ID, correlation ID, redaction, idempotency, dan failure path diuji. |
 | Command | `planned` | Action saat ini dapat dievolusikan menjadi Command + Handler setelah ada kebutuhan idempotency, audit, atau async; perubahan wajib memiliki ADR/increment. |
 | Query / Read Contract | `implemented` | Read list/detail memakai Query dan DTO; query tidak boleh mengubah state atau mengembalikan model persistence secara langsung. |
 | Shared Kernel | `not applicable` | Jangan membuat shared model; gunakan contract/value object publik yang memiliki owner dan consumer jelas bila kebutuhan lintas module muncul. |
@@ -192,7 +193,6 @@ selesai untuk item berikut pada increment saat ini:
 | Restore user | Policy, permission, action, audit event, aturan `SuperSystem`, dan migration/read model yang diperlukan | Test restore aktif/terhapus, negative authorization test, dan browser flow |
 | Invitation email | Token sekali pakai, expiry, mail contract, redaction, dan failure path | Mail-fake test, token expiry test, dan UI invitation yang dapat diuji |
 | Role revoke atau multi-role management | Contract AccessControl, operasi atomik, guard role terlindungi, dan audit | Positive/negative test, concurrency/atomicity evidence, dan browser flow |
-| AuditLog consumer production | Versioned event, consumer idempotency, correlation ID, retry, redaction, dan monitoring | Consumer test, failure/retry evidence, serta deployment configuration |
 | Migration shared/production | Rehearsal, backup/restore, lock/downtime check, approval, dan rollback runbook | Output rehearsal dan catatan operator pada environment target |
 
 Migration shared/production adalah release gate eksternal. CI dan workspace

@@ -12,5 +12,6 @@ final readonly class UserImpersonationEnded
         public string $reason,
         public string $startedAt,
         public string $endedAt,
+        public string $correlationId,
     ) {}
 }

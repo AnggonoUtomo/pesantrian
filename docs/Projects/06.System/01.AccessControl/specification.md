@@ -61,8 +61,9 @@ Contract awal memakai `AuthorizationCapability`, dengan result typed
 - Application Action menjadi pola mutation synchronous.
 - Application Query menjadi pola read typed.
 - Domain Event hanya dipakai untuk fakta internal module.
-- Integration Event, Application Event, Command Bus, Queue/Job, Facade, dan
-  Shared Kernel belum aktif pada AccessControl baseline.
+- Integration Event activity version 1 sudah aktif untuk AuditLog. Application
+  Event, Command Bus, Queue/Job, Facade, dan Shared Kernel belum aktif pada
+  AccessControl baseline.
 - Detail target dan status implementasi mengikuti
   [`03.12-MODULE-COMMUNICATION-AND-EXECUTION.md`](../../../03-IMPLEMENTATION/03.12-MODULE-COMMUNICATION-AND-EXECUTION.md).
 
@@ -75,7 +76,7 @@ Specification ini menjadi sumber keputusan sebelum implementasi lanjutan:
 | Contract/Interface | `implemented` | Contract typed tidak mengembalikan model private atau object Spatie |
 | Domain Event | `planned` | Event past tense, payload typed, ULID actor/correlation, tanpa secret |
 | Application Event | `not applicable` | Diaktifkan hanya jika ada beberapa handler application yang perlu dikoordinasikan |
-| Integration Event | `planned` | Memiliki consumer nyata, version, event ID, correlation ID, dan redaction test |
+| Integration Event | `implemented synchronous` | AuditLog mengonsumsi event version 1; event ID, correlation ID, failure propagation, dan redaction diuji |
 | Command | `planned` | Command immutable, Handler terpisah, authorization dan idempotency jelas |
 | Query/Read Contract | `implemented` | Query dashboard mengembalikan DTO typed dan tidak memiliki side effect |
 | Shared Kernel | `not applicable` | Value object tidak dipindahkan ke shared package tanpa dua consumer dan owner |

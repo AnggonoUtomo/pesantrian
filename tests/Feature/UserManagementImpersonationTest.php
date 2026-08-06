@@ -5,11 +5,13 @@ declare(strict_types=1);
 use App\Models\User;
 use App\Modules\System\AccessControl\Infrastructure\Persistence\Models\Permission;
 use App\Modules\System\AccessControl\Infrastructure\Persistence\Models\Role;
+use App\Modules\System\UserManagement\Application\Events\UserManagementActivityOccurred;
 use App\Modules\System\UserManagement\Domain\Events\UserImpersonationEnded;
 use App\Modules\System\UserManagement\Domain\Events\UserImpersonationStarted;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Str;
 use Spatie\Permission\PermissionRegistrar;
 
 uses(RefreshDatabase::class);
@@ -43,13 +45,18 @@ it('memulai dan mengakhiri impersonation dengan actor restore serta event audit'
     $this->assertAuthenticatedAs($target);
     expect(session('impersonation.actor_id'))->toBe($actor->id)
         ->and(session('impersonation.target_id'))->toBe($target->id)
-        ->and(session('impersonation.reason'))->toBe('Permintaan support terverifikasi');
+        ->and(session('impersonation.reason'))->toBe('Permintaan support terverifikasi')
+        ->and(Str::isUlid(session('impersonation.correlation_id')))->toBeTrue();
 
     Event::assertDispatched(UserImpersonationStarted::class, function (UserImpersonationStarted $event) use ($actor, $target): bool {
         return $event->actorId === $actor->id
             && $event->targetId === $target->id
             && $event->reason === 'Permintaan support terverifikasi';
     });
+    Event::assertDispatched(
+        UserManagementActivityOccurred::class,
+        fn (UserManagementActivityOccurred $event): bool => $event->action === 'user.impersonation_started',
+    );
 
     $this->post(route('system.users.impersonation.leave'))
         ->assertRedirect(route('system.dashboard'));
@@ -63,6 +70,10 @@ it('memulai dan mengakhiri impersonation dengan actor restore serta event audit'
             && $event->targetId === $target->id
             && $event->reason === 'Permintaan support terverifikasi';
     });
+    Event::assertDispatched(
+        UserManagementActivityOccurred::class,
+        fn (UserManagementActivityOccurred $event): bool => $event->action === 'user.impersonation_ended',
+    );
 });
 
 it('menolak impersonation tanpa permission dan tanpa reason', function (): void {
@@ -102,6 +113,7 @@ it('event impersonation tidak membawa password atau token', function (): void {
         targetId: '01JTARGET000000000000000001',
         reason: 'support request',
         startedAt: now()->toIso8601String(),
+        correlationId: '01JCORRELATION0000000000001',
     );
 
     expect(get_object_vars($event))->not->toHaveKeys([

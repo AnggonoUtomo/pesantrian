@@ -17,6 +17,8 @@ return [
         'system.users.destroy',
         'system.users.impersonate',
         'system.users.impersonation.leave',
+        'system.audit-logs.index',
+        'system.audit-logs.show',
         'login',
         'system.login',
         'login.store',

@@ -30,7 +30,8 @@ Sebelum increment CQRS berikutnya, status fondasi harus tetap dapat ditelusuri:
   dibuat tanpa consumer atau kebutuhan audit yang jelas.
 - Application Event: belum diperlukan karena mutation belum memiliki beberapa
   handler application yang perlu dikoordinasikan.
-- Integration Event: menunggu AuditLog atau consumer eksternal nyata.
+- Integration Event: sudah aktif melalui `AccessControlActivityOccurred`
+  version 1 dengan AuditLog sebagai consumer synchronous.
 - Command: Action saat ini dapat dinaikkan menjadi Command + Handler melalui
   ADR dan focused migration increment.
 - Query/Read Contract: sudah aktif melalui `BuildAccessControlDashboard` dan
@@ -49,8 +50,9 @@ Setiap perubahan pada status tersebut wajib memiliki acceptance criteria,
 focused positive/negative test, failure behavior, dan rollback trace.
 
 Pola execution baseline adalah CQRS-lite: Action untuk mutation dan Query untuk
-read. Command Bus, Integration Event, Queue/Job, Facade, dan Shared Kernel
-tidak ditambahkan tanpa consumer nyata dan keputusan ADR-0003.
+read. Integration Event sudah ditambahkan karena AuditLog menjadi consumer
+nyata. Command Bus, Queue/Job, Facade, dan Shared Kernel tidak ditambahkan tanpa
+kebutuhan serta keputusan baru.
 
 ### Pembagian tanggung jawab runtime
 

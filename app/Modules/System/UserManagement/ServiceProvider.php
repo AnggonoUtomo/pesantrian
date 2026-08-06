@@ -6,8 +6,10 @@ namespace App\Modules\System\UserManagement;
 
 use App\Models\User;
 use App\Modules\System\UserManagement\Application\Contracts\ImpersonationSession;
+use App\Modules\System\UserManagement\Application\Contracts\UserManagementActivityPublisher;
 use App\Modules\System\UserManagement\Application\Contracts\UserRepository;
 use App\Modules\System\UserManagement\Infrastructure\Authentication\LaravelImpersonationSession;
+use App\Modules\System\UserManagement\Infrastructure\Events\LaravelUserManagementActivityPublisher;
 use App\Modules\System\UserManagement\Infrastructure\Persistence\Repositories\EloquentUserRepository;
 use App\Modules\System\UserManagement\Presentation\Policies\UserManagementPolicy;
 use Illuminate\Support\Facades\Gate;
@@ -19,6 +21,7 @@ final class ServiceProvider extends FrameworkServiceProvider
     {
         $this->app->bind(UserRepository::class, EloquentUserRepository::class);
         $this->app->bind(ImpersonationSession::class, LaravelImpersonationSession::class);
+        $this->app->bind(UserManagementActivityPublisher::class, LaravelUserManagementActivityPublisher::class);
     }
 
     public function boot(): void

@@ -2,6 +2,7 @@ import { Link, usePage } from '@inertiajs/react';
 import {
     LayoutGrid,
     Palette,
+    ScrollText,
     ShieldCheck,
     UserRound,
     UsersRound,
@@ -31,6 +32,9 @@ export function AppSidebar() {
         auth.permissions?.['access_control.role.manage'] === true;
     const canManageUsers =
         auth.superSystem === true || auth.permissions?.['user.view'] === true;
+    const canViewAuditLogs =
+        auth.superSystem === true ||
+        auth.permissions?.['audit_log.view'] === true;
 
     const mainNavItems: NavItem[] = [
         {
@@ -53,6 +57,14 @@ export function AppSidebar() {
             title: 'User Management',
             href: route('system.users.index'),
             icon: UsersRound,
+        });
+    }
+
+    if (canViewAuditLogs) {
+        mainNavItems.push({
+            title: 'Audit Log',
+            href: route('system.audit-logs.index'),
+            icon: ScrollText,
         });
     }
 

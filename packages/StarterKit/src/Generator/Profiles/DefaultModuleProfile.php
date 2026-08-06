@@ -82,7 +82,7 @@ final class DefaultModuleProfile
             'module.json' => json_encode($manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES).PHP_EOL,
             'module.php' => "<?php\n\nreturn [];\n",
             'permissions.php' => "<?php\n\nreturn [];\n",
-            'ServiceProvider.php' => "<?php\n\ndeclare(strict_types=1);\n\nnamespace {$namespace};\n\nuse Illuminate\\Support\\ServiceProvider;\n\nfinal class ServiceProvider extends ServiceProvider\n{\n}\n",
+            'ServiceProvider.php' => "<?php\n\ndeclare(strict_types=1);\n\nnamespace {$namespace};\n\nuse Illuminate\\Support\\ServiceProvider as FrameworkServiceProvider;\n\nfinal class ServiceProvider extends FrameworkServiceProvider\n{\n}\n",
             'README.md' => "# {$request->module}\n\nModule {$request->module} pada domain {$request->domain}.\n",
             'Routes/api.php' => "<?php\n",
             'Routes/web.php' => "<?php\n",

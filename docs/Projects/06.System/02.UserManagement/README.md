@@ -63,6 +63,8 @@ mengambil alih private implementation AccessControl.
 7. [ADR urutan increment daftar dan lifecycle](decisions/ADR-0004-USERMANAGEMENT-INCREMENTAL-LIST-SCOPE.md) — diterima
 8. [01. Filter daftar user](01.user-list-filters/README.md) — selesai
 
+9. [02. Archive, force delete, dan perlindungan](02.archive-force-delete-and-protection/README.md) — selesai
+
 ## Dokumen Terkait
 
 - [AccessControl](../01.AccessControl/README.md)
@@ -122,8 +124,9 @@ execution evidence sebelum ditandai selesai.
 - Shortcut mengikuti pola AccessControl. `/` dipakai untuk fokus search dan
   `Shift+A` untuk membuka modal tambah user. `Ctrl/Cmd+K` tetap menjadi milik
   command palette global.
-- Tabel wajib memiliki state kosong, error, loading request, action yang aman,
-  dan indicator protected user.
+- Tabel wajib memiliki state kosong, error, loading request, serta action aman.
+  Perlindungan `SuperSystem` tetap dipastikan backend; kolom khusus tidak lagi
+  ditampilkan pada tabel.
 
 ### Baseline warna module
 
@@ -226,3 +229,6 @@ khusus tersebut.
 | 1.7 | 2026-08-06 | Menambahkan Open Decision archive, force delete, dan perlindungan SuperSystem |
 | 1.8 | 2026-08-06 | Mencatat roadmap incremental pagination, role efektif, toolbar, dan scope lifecycle besar |
 | 1.9 | 2026-08-06 | Menandai urutan increment daftar dan lifecycle sebagai keputusan diterima |
+| 2.0 | 2026-08-06 | Menambahkan increment ADR-0003 dan memprioritaskan guard SuperSystem. |
+| 2.1 | 2026-08-06 | Menyelesaikan restore dan force delete serta menghapus kolom Perlindungan tabel. |
+| 2.2 | 2026-08-06 | Menyelaraskan Ziggy, toast Sonner, LoadingButton, dan aturan operasi frontend. |

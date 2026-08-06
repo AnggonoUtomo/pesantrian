@@ -1,5 +1,5 @@
 import { useForm } from '@inertiajs/react';
-import { AlertTriangle, Trash2 } from 'lucide-react';
+import { RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -19,15 +19,15 @@ type Props = {
     onOpenChange: (open: boolean) => void;
 };
 
-export function DeleteUserDialog({ open, user, onOpenChange }: Props) {
+export function RestoreUserDialog({ open, user, onOpenChange }: Props) {
     const form = useForm<Record<string, never>>({});
 
     const submit = () => {
-        if (!user || user.isProtected) {
+        if (!user || user.isProtected || user.deletedAt === null) {
             return;
         }
 
-        form.delete(route('system.users.destroy', user.id), {
+        form.post(route('system.users.restore', user.id), {
             preserveScroll: true,
             onSuccess: () => onOpenChange(false),
         });
@@ -43,14 +43,14 @@ export function DeleteUserDialog({ open, user, onOpenChange }: Props) {
             <DialogContent className="max-w-md">
                 <DialogHeader>
                     <div className="flex items-center gap-3">
-                        <span className="dashboard-icon dashboard-accent--rose flex size-10 items-center justify-center rounded-lg">
-                            <AlertTriangle className="size-5" />
+                        <span className="dashboard-icon dashboard-accent--emerald flex size-10 items-center justify-center rounded-lg">
+                            <RotateCcw className="size-5" />
                         </span>
                         <div>
-                            <DialogTitle>Arsipkan user?</DialogTitle>
+                            <DialogTitle>Pulihkan user?</DialogTitle>
                             <DialogDescription className="mt-1">
-                                User tidak akan dihapus permanen dan tidak dapat
-                                masuk daftar aktif.
+                                User kembali ke daftar aktif dengan status
+                                lifecycle terakhir.
                             </DialogDescription>
                         </div>
                     </div>
@@ -72,13 +72,14 @@ export function DeleteUserDialog({ open, user, onOpenChange }: Props) {
                     </Button>
                     <LoadingButton
                         type="button"
-                        variant="destructive"
                         onClick={submit}
                         loading={form.processing}
-                        disabled={!user || user.isProtected}
+                        disabled={
+                            !user || user.isProtected || user.deletedAt === null
+                        }
                     >
-                        <Trash2 className="size-4" />
-                        {form.processing ? 'Mengarsipkan...' : 'Arsipkan user'}
+                        <RotateCcw className="size-4" />
+                        {form.processing ? 'Memulihkan...' : 'Pulihkan user'}
                     </LoadingButton>
                 </DialogFooter>
             </DialogContent>

@@ -9,6 +9,8 @@ use App\Modules\System\AccessControl\Application\Contracts\RoleCatalogCapability
 use App\Modules\System\UserManagement\Application\Actions\AssignUserRole;
 use App\Modules\System\UserManagement\Application\Actions\ChangeUserStatus;
 use App\Modules\System\UserManagement\Application\Actions\CreateUser;
+use App\Modules\System\UserManagement\Application\Actions\ForceDeleteUser;
+use App\Modules\System\UserManagement\Application\Actions\RestoreUser;
 use App\Modules\System\UserManagement\Application\Actions\SoftDeleteUser;
 use App\Modules\System\UserManagement\Application\Actions\StartImpersonation;
 use App\Modules\System\UserManagement\Application\Actions\UpdateUser;
@@ -43,6 +45,8 @@ final class UserController implements HasMiddleware
         private readonly UpdateUser $updateUser,
         private readonly ChangeUserStatus $changeUserStatus,
         private readonly SoftDeleteUser $softDeleteUser,
+        private readonly RestoreUser $restoreUser,
+        private readonly ForceDeleteUser $forceDeleteUser,
         private readonly StartImpersonation $startImpersonation,
         private readonly ImpersonationSession $impersonationSession,
         private readonly AssignUserRole $assignUserRole,
@@ -58,6 +62,8 @@ final class UserController implements HasMiddleware
             new Middleware('can:user.update', only: ['assignRole']),
             new Middleware('can:user.status.manage', only: ['changeStatus']),
             new Middleware('can:user.delete', only: ['destroy']),
+            new Middleware('can:restore,user', only: ['restore']),
+            new Middleware('can:forceDelete,user', only: ['forceDelete']),
             new Middleware('can:impersonate,user', only: ['impersonate']),
         ];
     }
@@ -109,7 +115,9 @@ final class UserController implements HasMiddleware
             password: (string) $data['password'],
         ));
 
-        return back()->with('success', 'User berhasil dibuat.');
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'User berhasil dibuat.']);
+
+        return back();
     }
 
     public function update(UpdateUserRequest $request, string $user): RedirectResponse
@@ -120,7 +128,9 @@ final class UserController implements HasMiddleware
             email: (string) $data['email'],
         ));
 
-        return back()->with('success', 'User berhasil diperbarui.');
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'User berhasil diperbarui.']);
+
+        return back();
     }
 
     public function changeStatus(ChangeUserStatusRequest $request, string $user): RedirectResponse
@@ -131,7 +141,9 @@ final class UserController implements HasMiddleware
             UserStatus::from((string) $request->validated('status')),
         );
 
-        return back()->with('success', 'Status user berhasil diperbarui.');
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Status user berhasil diperbarui.']);
+
+        return back();
     }
 
     public function assignRole(AssignUserRoleRequest $request, User $user): RedirectResponse
@@ -142,14 +154,36 @@ final class UserController implements HasMiddleware
             (string) $request->validated('role'),
         );
 
-        return back()->with('success', 'Role user berhasil diperbarui.');
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Role user berhasil diperbarui.']);
+
+        return back();
     }
 
     public function destroy(Request $request, string $user): RedirectResponse
     {
         $this->softDeleteUser->execute($request->user(), $user);
 
-        return back()->with('success', 'User berhasil dihapus.');
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'User berhasil diarsipkan.']);
+
+        return back();
+    }
+
+    public function restore(Request $request, User $user): RedirectResponse
+    {
+        $this->restoreUser->execute($request->user(), $user->getKey());
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'User berhasil dipulihkan.']);
+
+        return back();
+    }
+
+    public function forceDelete(Request $request, User $user): RedirectResponse
+    {
+        $this->forceDeleteUser->execute($request->user(), $user->getKey());
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'User dihapus permanen.']);
+
+        return back();
     }
 
     public function impersonate(StartImpersonationRequest $request, User $user): RedirectResponse
@@ -162,13 +196,17 @@ final class UserController implements HasMiddleware
             ),
         );
 
-        return to_route('system.dashboard')->with('success', 'Impersonation dimulai.');
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Impersonation dimulai.']);
+
+        return to_route('system.dashboard');
     }
 
     public function leaveImpersonation(Request $request): RedirectResponse
     {
         $this->impersonationSession->leave($request->user());
 
-        return to_route('system.dashboard')->with('success', 'Impersonation selesai.');
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Impersonation selesai.']);
+
+        return to_route('system.dashboard');
     }
 }

@@ -9,6 +9,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { LoadingButton } from '@/components/ui/loading-button';
 import {
     Select,
     SelectContent,
@@ -112,14 +113,13 @@ export function ChangeUserStatusDialog({ open, user, onOpenChange }: Props) {
                         >
                             Batal
                         </Button>
-                        <Button
+                        <LoadingButton
                             type="submit"
-                            disabled={
-                                form.processing || !user || user.isProtected
-                            }
+                            loading={form.processing}
+                            disabled={!user || user.isProtected}
                         >
                             {form.processing ? 'Menyimpan...' : 'Simpan status'}
-                        </Button>
+                        </LoadingButton>
                     </DialogFooter>
                 </form>
             </DialogContent>

@@ -12,6 +12,8 @@ it('membagikan route yang dibutuhkan frontend', function () {
         'profile.edit',
         'access-control.roles.store',
         'access-control.roles.destroy',
+        'system.users.restore',
+        'system.users.force-delete',
         'system.audit-logs.index',
         'system.audit-logs.show',
         'two-factor.qr-code',

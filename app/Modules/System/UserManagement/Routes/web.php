@@ -17,5 +17,7 @@ Route::middleware(['web', 'auth', 'verified'])
         Route::patch('/{user}/status', [UserController::class, 'changeStatus'])->name('status');
         Route::patch('/{user}/roles', [UserController::class, 'assignRole'])->name('roles');
         Route::delete('/{user}', [UserController::class, 'destroy'])->name('destroy');
+        Route::post('/{user}/restore', [UserController::class, 'restore'])->withTrashed()->name('restore');
+        Route::delete('/{user}/force', [UserController::class, 'forceDelete'])->withTrashed()->name('force-delete');
         Route::post('/{user}/impersonate', [UserController::class, 'impersonate'])->name('impersonate');
     });

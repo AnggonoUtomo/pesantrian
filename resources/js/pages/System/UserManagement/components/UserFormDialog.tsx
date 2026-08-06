@@ -10,6 +10,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { LoadingButton } from '@/components/ui/loading-button';
 import route from '@/lib/route';
 import type { UserManagementUser } from '../types';
 
@@ -163,13 +164,13 @@ export function UserFormDialog({ open, user, onOpenChange }: Props) {
                         >
                             Batal
                         </Button>
-                        <Button type="submit" disabled={form.processing}>
+                        <LoadingButton type="submit" loading={form.processing}>
                             {form.processing
                                 ? 'Menyimpan...'
                                 : isEdit
                                   ? 'Simpan perubahan'
                                   : 'Buat user'}
-                        </Button>
+                        </LoadingButton>
                     </DialogFooter>
                 </form>
             </DialogContent>

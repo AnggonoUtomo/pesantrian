@@ -24,4 +24,8 @@ interface UserRepository
     public function changeStatus(string $userId, UserStatus $status): UserData;
 
     public function softDelete(string $userId): void;
+
+    public function restore(string $userId): void;
+
+    public function forceDelete(string $userId): void;
 }

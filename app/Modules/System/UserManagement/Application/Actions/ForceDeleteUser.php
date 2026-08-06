@@ -6,13 +6,11 @@ namespace App\Modules\System\UserManagement\Application\Actions;
 
 use App\Modules\System\UserManagement\Application\Contracts\UserManagementActivityPublisher;
 use App\Modules\System\UserManagement\Application\Contracts\UserRepository;
-use App\Modules\System\UserManagement\Application\DTO\UpdateUserData;
-use App\Modules\System\UserManagement\Application\DTO\UserData;
 use App\Modules\System\UserManagement\Application\Services\AuthorizeUserAction;
 use App\Modules\System\UserManagement\Domain\Exceptions\ProtectedUserMutation;
 use Illuminate\Contracts\Auth\Authenticatable;
 
-final readonly class UpdateUser
+final readonly class ForceDeleteUser
 {
     public function __construct(
         private AuthorizeUserAction $authorization,
@@ -20,22 +18,26 @@ final readonly class UpdateUser
         private UserManagementActivityPublisher $activities,
     ) {}
 
-    public function execute(?Authenticatable $actor, string $userId, UpdateUserData $data): UserData
+    public function execute(?Authenticatable $actor, string $userId): void
     {
-        $this->authorization->ensure($actor, 'user.update');
+        $this->authorization->ensure($actor, 'user.force.delete');
         $user = $this->repository->find($userId);
 
-        if ($user === null || $user->isProtected) {
+        if ($user === null || $user->isProtected || $user->deletedAt === null) {
             throw new ProtectedUserMutation;
         }
 
-        return $this->activities->publish(
+        $this->activities->publish(
             actorId: $actor ? (string) $actor->getAuthIdentifier() : null,
-            action: 'user.updated',
+            action: 'user.force_deleted',
             subjectType: 'user',
-            mutation: fn (): UserData => $this->repository->update($userId, $data),
-            subjectId: static fn (UserData $user): string => $user->id,
-            metadata: static fn (UserData $user): array => ['changed_fields' => ['name', 'email']],
+            mutation: function () use ($userId): string {
+                $this->repository->forceDelete($userId);
+
+                return $userId;
+            },
+            subjectId: static fn (string $deletedUserId): string => $deletedUserId,
+            metadata: static fn (string $deletedUserId): array => ['changed_fields' => ['deleted_at']],
         );
     }
 }

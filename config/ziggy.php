@@ -15,6 +15,8 @@ return [
         'system.users.update',
         'system.users.status',
         'system.users.destroy',
+        'system.users.restore',
+        'system.users.force-delete',
         'system.users.impersonate',
         'system.users.impersonation.leave',
         'system.audit-logs.index',

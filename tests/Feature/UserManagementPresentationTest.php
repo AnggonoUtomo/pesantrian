@@ -6,8 +6,10 @@ use App\Models\User;
 use App\Modules\System\AccessControl\Infrastructure\Persistence\Models\Permission;
 use App\Modules\System\AccessControl\Infrastructure\Persistence\Models\Role;
 use App\Modules\System\UserManagement\Domain\ValueObjects\UserStatus;
+use App\Modules\System\UserManagement\Application\Events\UserManagementActivityOccurred;
 use App\Modules\System\UserManagement\Presentation\Policies\UserManagementPolicy;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 
 uses(RefreshDatabase::class);
@@ -27,6 +29,24 @@ it('mengizinkan actor dengan user.view dan menolak actor tanpa permission', func
 
     $this->actingAs($authorized)->get(route('system.users.index'))->assertOk();
     $this->actingAs($unauthorized)->get(route('system.users.index'))->assertForbidden();
+});
+
+it('mengirim flash toast setelah mutation user berhasil', function (): void {
+    $create = Permission::create(['name' => 'user.create', 'guard_name' => 'web']);
+    $actor = User::factory()->create();
+    $actor->givePermissionTo($create);
+
+    $this->actingAs($actor)
+        ->post(route('system.users.store'), [
+            'name' => 'Toast User',
+            'email' => 'toast-user@example.test',
+            'password' => 'password',
+        ])
+        ->assertRedirect()
+        ->assertSessionHas('inertia.flash_data.toast', [
+            'type' => 'success',
+            'message' => 'User berhasil dibuat.',
+        ]);
 });
 
 it('mengirim role option typed dan mengizinkan assignment melalui capability publik', function (): void {
@@ -132,6 +152,59 @@ it('menolak assignment role jika actor tidak memiliki permission assignment', fu
         ->assertForbidden();
 
     expect($target->refresh()->hasRole('SecurityAdmin'))->toBeFalse();
+});
+
+it('memulihkan dan menghapus permanen user arsip dengan permission terpisah serta audit', function (): void {
+    Event::fake([UserManagementActivityOccurred::class]);
+    $restore = Permission::create(['name' => 'user.restore', 'guard_name' => 'web']);
+    $forceDelete = Permission::create(['name' => 'user.force.delete', 'guard_name' => 'web']);
+    $actor = User::factory()->create();
+    $actor->givePermissionTo([$restore, $forceDelete]);
+    $restorable = User::factory()->create();
+    $forceDeletable = User::factory()->create();
+    $restorable->delete();
+    $forceDeletable->delete();
+
+    $this->actingAs($actor)
+        ->post(route('system.users.restore', $restorable))
+        ->assertRedirect();
+
+    expect($restorable->fresh()->trashed())->toBeFalse();
+    Event::assertDispatched(
+        UserManagementActivityOccurred::class,
+        fn (UserManagementActivityOccurred $event): bool => $event->action === 'user.restored'
+            && $event->subjectId === $restorable->id,
+    );
+
+    $this->actingAs($actor)
+        ->delete(route('system.users.force-delete', $forceDeletable))
+        ->assertRedirect();
+
+    expect(User::query()->withTrashed()->find($forceDeletable->id))->toBeNull();
+    Event::assertDispatched(
+        UserManagementActivityOccurred::class,
+        fn (UserManagementActivityOccurred $event): bool => $event->action === 'user.force_deleted'
+            && $event->subjectId === $forceDeletable->id,
+    );
+});
+
+it('menolak restore dan force delete untuk user aktif atau SuperSystem', function (): void {
+    $restore = Permission::create(['name' => 'user.restore', 'guard_name' => 'web']);
+    $forceDelete = Permission::create(['name' => 'user.force.delete', 'guard_name' => 'web']);
+    $actor = User::factory()->create();
+    $actor->givePermissionTo([$restore, $forceDelete]);
+    $active = User::factory()->create();
+    $superSystem = User::factory()->create();
+    $superSystem->assignRole(Role::create(['name' => 'SuperSystem', 'guard_name' => 'web']));
+    $superSystem->delete();
+
+    $this->actingAs($actor)
+        ->post(route('system.users.restore', $active))
+        ->assertForbidden();
+
+    $this->actingAs($actor)
+        ->delete(route('system.users.force-delete', $superSystem))
+        ->assertForbidden();
 });
 
 it('policy menolak mutation terhadap SuperSystem', function (): void {

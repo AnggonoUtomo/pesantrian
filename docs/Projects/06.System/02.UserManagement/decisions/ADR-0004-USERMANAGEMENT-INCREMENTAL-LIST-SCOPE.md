@@ -87,6 +87,13 @@ Satu scope berikut dipilih sebagai increment berikutnya, tidak dikerjakan bersam
 - Toolbar dan shortcut dirapikan setelah contract list stabil.
 - Lifecycle besar ditunda agar restore/force delete, invitation, atau multi-role tidak bercampur dalam satu perubahan besar.
 
+## Penyesuaian Prioritas
+
+Pada 2026-08-06, implementasi ADR-0003 diprioritaskan sebelum poin 3. Alasannya,
+guard backend terhadap mutation target `SuperSystem` adalah temuan security yang
+harus ditutup lebih dahulu. Setelah ADR-0003 selesai, roadmap kembali ke poin
+3, 4, dan 5.
+
 ## Batasan
 
 - Backend tetap security authority.
@@ -106,3 +113,4 @@ Satu scope berikut dipilih sebagai increment berikutnya, tidak dikerjakan bersam
 | --- | --- | --- |
 | 1.0 | 2026-08-06 | Mencatat filter selesai dan roadmap pagination, role efektif, toolbar, serta lifecycle besar. |
 | 1.1 | 2026-08-06 | Menyetujui urutan increment dan usulan ukuran halaman awal. |
+| 1.2 | 2026-08-06 | Menunda pagination sementara untuk menutup invariant security ADR-0003. |

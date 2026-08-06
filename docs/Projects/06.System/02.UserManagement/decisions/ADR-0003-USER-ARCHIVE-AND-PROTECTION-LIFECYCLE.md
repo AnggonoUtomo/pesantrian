@@ -59,19 +59,24 @@ Tidak boleh lagi menampilkan aksi soft delete pada record yang sudah diarsipkan.
 
 ### 3. Permission dan policy force delete
 
-Usulan permission: `user.force-delete` dengan status `sensitive: true`.
+Permission force delete: `user.force.delete` dengan status `sensitive: true`.
 
-Usulan policy: `forceDelete()` hanya mengizinkan actor yang memiliki permission
+Policy `forceDelete()` hanya mengizinkan actor yang memiliki permission
 tersebut terhadap target yang sudah terarsip dan bukan `SuperSystem`. Controller
 middleware, Application Action, repository adapter, audit event, dan frontend
 harus memakai aturan yang sama.
+
+Restore memakai permission terpisah `user.restore` dengan status `sensitive:
+true`. Restore hanya diizinkan untuk user yang sedang terarsip dan bukan
+`SuperSystem`. Restore serta force delete wajib menerbitkan audit activity
+terpisah agar pemberian akses kedua capability tidak saling membuka akses.
 
 ### 4. Invariant perlindungan SuperSystem
 
 `isProtected=true` berarti target memiliki role `SuperSystem`, bukan role biasa
 yang kebetulan tidak dapat diubah oleh UI.
 
-Usulan: seluruh mutation administratif terhadap target ini ditolak server-side:
+Seluruh mutation administratif terhadap target ini ditolak server-side:
 update profil administratif, status, role assignment/revoke, soft delete,
 restore, force delete, dan impersonation. View tetap diizinkan untuk actor
 yang memiliki `user.view`.
@@ -88,18 +93,20 @@ yang memiliki `user.view`.
 ## Non-scope
 
 - Tidak mengubah authentication starter kit.
-- Tidak menjalankan force delete pada database nyata saat ADR masih proposed.
+- Tidak menjalankan force delete pada database nyata tanpa prosedur operasi yang
+  disetujui.
 - Tidak mengubah status user existing melalui migration massal.
 
 ## Acceptance saat Implementasi Nanti
 
-- User terarsip tidak dapat menerima soft delete kedua.
-- Force delete ditolak tanpa `user.force-delete`, untuk user aktif, dan untuk
-  target `SuperSystem`.
-- Semua mutation target `SuperSystem` ditolak server-side.
-- Audit menyimpan actor, subject, action, dan correlation ID tanpa data sensitif.
-- UI daftar arsip membedakan `Diarsipkan`, lifecycle status, restore, dan force
-  delete secara jelas.
+- [x] User terarsip tidak dapat menerima soft delete kedua melalui UI.
+- [x] Force delete ditolak tanpa `user.force.delete`, untuk user aktif, dan
+  untuk target `SuperSystem`.
+- [x] Mutation update, role assignment, status, soft delete, restore, force
+  delete, dan impersonation target `SuperSystem` ditolak server-side.
+- [x] Audit menyimpan actor, subject, action, dan correlation ID tanpa data sensitif.
+- [x] UI daftar arsip membedakan `Diarsipkan`, lifecycle status, restore, dan
+  force delete secara jelas.
 
 ## Revision History
 
@@ -107,3 +114,6 @@ yang memiliki `user.view`.
 | --- | --- | --- |
 | 1.0 | 2026-08-06 | Mencatat keputusan terbuka archive, force delete, dan invariant SuperSystem. |
 | 1.1 | 2026-08-06 | Menetapkan archive dan status sebagai state terpisah serta menyetujui arah force delete. |
+| 1.2 | 2026-08-06 | Memprioritaskan guard backend SuperSystem sebagai task implementasi pertama. |
+| 1.3 | 2026-08-06 | Menetapkan `user.restore` dan `user.force.delete` sebagai permission sensitif terpisah serta diaudit. |
+| 1.4 | 2026-08-06 | Menyelesaikan lifecycle restore dan force delete berikut test, audit, serta UI. |

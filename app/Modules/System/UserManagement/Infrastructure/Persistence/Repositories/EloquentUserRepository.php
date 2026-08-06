@@ -93,6 +93,16 @@ final class EloquentUserRepository implements UserRepository
         User::query()->findOrFail($userId)->delete();
     }
 
+    public function restore(string $userId): void
+    {
+        User::query()->withTrashed()->findOrFail($userId)->restore();
+    }
+
+    public function forceDelete(string $userId): void
+    {
+        User::query()->withTrashed()->findOrFail($userId)->forceDelete();
+    }
+
     private function toData(User $user): UserData
     {
         return new UserData(

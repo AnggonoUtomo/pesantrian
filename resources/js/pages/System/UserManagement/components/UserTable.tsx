@@ -5,8 +5,8 @@ import {
     Eye,
     LogIn,
     Plus,
+    RotateCcw,
     Search,
-    ShieldCheck,
     ShieldPlus,
     Trash2,
     UserRound,
@@ -47,6 +47,8 @@ type Props = {
     canImpersonate: boolean;
     canChangeStatus: boolean;
     canDelete: boolean;
+    canRestore: boolean;
+    canForceDelete: boolean;
     canAssignRole: boolean;
     onSearchChange: (value: string) => void;
     onCreate: () => void;
@@ -55,6 +57,8 @@ type Props = {
     onImpersonate: (user: UserManagementUser) => void;
     onChangeStatus: (user: UserManagementUser) => void;
     onDelete: (user: UserManagementUser) => void;
+    onRestore: (user: UserManagementUser) => void;
+    onForceDelete: (user: UserManagementUser) => void;
     onAssignRole: (user: UserManagementUser) => void;
 };
 
@@ -109,6 +113,8 @@ export function UserTable({
     canImpersonate,
     canChangeStatus,
     canDelete,
+    canRestore,
+    canForceDelete,
     canAssignRole,
     onSearchChange,
     onCreate,
@@ -117,6 +123,8 @@ export function UserTable({
     onImpersonate,
     onChangeStatus,
     onDelete,
+    onRestore,
+    onForceDelete,
     onAssignRole,
 }: Props) {
     const [isSearching, setIsSearching] = useState(false);
@@ -366,9 +374,6 @@ export function UserTable({
                                 <th className="px-5 py-3 font-medium">
                                     Status
                                 </th>
-                                <th className="px-5 py-3 font-medium">
-                                    Perlindungan
-                                </th>
                                 <th className="px-5 py-3 text-right font-medium">
                                     Aksi
                                 </th>
@@ -376,144 +381,214 @@ export function UserTable({
                         </thead>
                         <tbody className="divide-y divide-border/70">
                             {users.map((user, index) => (
-                                <tr
+                                <UserTableRow
                                     key={user.id}
-                                    className="dashboard-table-row transition-colors"
-                                >
-                                    <td className="px-5 py-4">
-                                        <button
-                                            id={`user-table-row-${index}`}
-                                            type="button"
-                                            onClick={() => onView(user)}
-                                            className="flex items-center gap-3 rounded-md text-left outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                                        >
-                                            <Avatar className="size-9 rounded-lg">
-                                                <AvatarFallback className="rounded-lg bg-primary/10 text-primary">
-                                                    {user.name
-                                                        .split(' ')
-                                                        .map((part) => part[0])
-                                                        .slice(0, 2)
-                                                        .join('')
-                                                        .toUpperCase()}
-                                                </AvatarFallback>
-                                            </Avatar>
-                                            <span className="min-w-0">
-                                                <span className="block truncate font-medium">
-                                                    {user.name}
-                                                </span>
-                                                <span className="block truncate text-xs text-muted-foreground">
-                                                    {user.email}
-                                                </span>
-                                            </span>
-                                        </button>
-                                    </td>
-                                    <td className="px-5 py-4">
-                                        <Badge
-                                            variant="outline"
-                                            className={cn(
-                                                'gap-1.5 font-medium',
-                                                statusAccentClasses[
-                                                    user.status
-                                                ],
-                                            )}
-                                        >
-                                            {statusLabels[user.status]}
-                                        </Badge>
-                                    </td>
-                                    <td className="px-5 py-4">
-                                        {user.isProtected ? (
-                                            <Badge className="gap-1.5 border border-emerald-500/30 bg-emerald-500/10 text-emerald-700 shadow-none hover:bg-emerald-500/15 dark:text-emerald-300">
-                                                <ShieldCheck className="size-3.5" />
-                                                Terlindungi
-                                            </Badge>
-                                        ) : (
-                                            <Badge
-                                                variant="outline"
-                                                className="border-sky-500/25 bg-sky-500/8 text-sky-700 dark:text-sky-300"
-                                            >
-                                                Standard
-                                            </Badge>
-                                        )}
-                                    </td>
-                                    <td className="px-5 py-4">
-                                        <div className="flex justify-end gap-1">
-                                            <UserActionButton
-                                                aria-label={`Lihat ${user.name}`}
-                                                onClick={() => onView(user)}
-                                                tooltip={`Lihat detail ${user.name}`}
-                                                className="text-sky-600 hover:bg-sky-500/10 hover:text-sky-700 dark:text-sky-300 dark:hover:text-sky-200"
-                                            >
-                                                <Eye className="size-4" />
-                                            </UserActionButton>
-                                            {canEdit && !user.isProtected ? (
-                                                <UserActionButton
-                                                    aria-label={`Edit ${user.name}`}
-                                                    onClick={() => onEdit(user)}
-                                                    tooltip={`Edit ${user.name}`}
-                                                    className="text-violet-600 hover:bg-violet-500/10 hover:text-violet-700 dark:text-violet-300 dark:hover:text-violet-200"
-                                                >
-                                                    <Edit3 className="size-4" />
-                                                </UserActionButton>
-                                            ) : null}
-                                            {canImpersonate &&
-                                            !user.isProtected ? (
-                                                <UserActionButton
-                                                    aria-label={`Impersonate ${user.name}`}
-                                                    onClick={() =>
-                                                        onImpersonate(user)
-                                                    }
-                                                    tooltip={`Masuk sebagai ${user.name}`}
-                                                    className="text-amber-600 hover:bg-amber-500/10 hover:text-amber-700 dark:text-amber-300 dark:hover:text-amber-200"
-                                                >
-                                                    <LogIn className="size-4" />
-                                                </UserActionButton>
-                                            ) : null}
-                                            {canChangeStatus &&
-                                            !user.isProtected ? (
-                                                <UserActionButton
-                                                    aria-label={`Ubah status ${user.name}`}
-                                                    onClick={() =>
-                                                        onChangeStatus(user)
-                                                    }
-                                                    tooltip={`Ubah status ${user.name}`}
-                                                    className="text-cyan-600 hover:bg-cyan-500/10 hover:text-cyan-700 dark:text-cyan-300 dark:hover:text-cyan-200"
-                                                >
-                                                    <Activity className="size-4" />
-                                                </UserActionButton>
-                                            ) : null}
-                                            {canDelete && !user.isProtected ? (
-                                                <UserActionButton
-                                                    aria-label={`Arsipkan ${user.name}`}
-                                                    onClick={() =>
-                                                        onDelete(user)
-                                                    }
-                                                    tooltip={`Arsipkan ${user.name}`}
-                                                    className="text-rose-600 hover:bg-rose-500/10 hover:text-rose-700 dark:text-rose-300 dark:hover:text-rose-200"
-                                                >
-                                                    <Trash2 className="size-4" />
-                                                </UserActionButton>
-                                            ) : null}
-                                            {canAssignRole &&
-                                            !user.isProtected ? (
-                                                <UserActionButton
-                                                    aria-label={`Atur role ${user.name}`}
-                                                    onClick={() =>
-                                                        onAssignRole(user)
-                                                    }
-                                                    tooltip={`Atur role ${user.name}`}
-                                                    className="text-fuchsia-600 hover:bg-fuchsia-500/10 hover:text-fuchsia-700 dark:text-fuchsia-300 dark:hover:text-fuchsia-200"
-                                                >
-                                                    <ShieldPlus className="size-4" />
-                                                </UserActionButton>
-                                            ) : null}
-                                        </div>
-                                    </td>
-                                </tr>
+                                    user={user}
+                                    index={index}
+                                    canEdit={canEdit}
+                                    canImpersonate={canImpersonate}
+                                    canChangeStatus={canChangeStatus}
+                                    canDelete={canDelete}
+                                    canRestore={canRestore}
+                                    canForceDelete={canForceDelete}
+                                    canAssignRole={canAssignRole}
+                                    onView={onView}
+                                    onEdit={onEdit}
+                                    onImpersonate={onImpersonate}
+                                    onChangeStatus={onChangeStatus}
+                                    onDelete={onDelete}
+                                    onRestore={onRestore}
+                                    onForceDelete={onForceDelete}
+                                    onAssignRole={onAssignRole}
+                                />
                             ))}
                         </tbody>
                     </table>
                 </div>
             )}
         </section>
+    );
+}
+
+type UserTableRowProps = Pick<
+    Props,
+    | 'canEdit'
+    | 'canImpersonate'
+    | 'canChangeStatus'
+    | 'canDelete'
+    | 'canRestore'
+    | 'canForceDelete'
+    | 'canAssignRole'
+    | 'onView'
+    | 'onEdit'
+    | 'onImpersonate'
+    | 'onChangeStatus'
+    | 'onDelete'
+    | 'onRestore'
+    | 'onForceDelete'
+    | 'onAssignRole'
+> & {
+    user: UserManagementUser;
+    index: number;
+};
+
+function UserTableRow({
+    user,
+    index,
+    canEdit,
+    canImpersonate,
+    canChangeStatus,
+    canDelete,
+    canRestore,
+    canForceDelete,
+    canAssignRole,
+    onView,
+    onEdit,
+    onImpersonate,
+    onChangeStatus,
+    onDelete,
+    onRestore,
+    onForceDelete,
+    onAssignRole,
+}: UserTableRowProps) {
+    const isArchived = user.deletedAt !== null;
+
+    return (
+        <tr className="dashboard-table-row transition-colors">
+            <td className="px-5 py-4">
+                <button
+                    id={`user-table-row-${index}`}
+                    type="button"
+                    onClick={() => onView(user)}
+                    className="flex items-center gap-3 rounded-md text-left outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                    <Avatar className="size-9 rounded-lg">
+                        <AvatarFallback className="rounded-lg bg-primary/10 text-primary">
+                            {user.name
+                                .split(' ')
+                                .map((part) => part[0])
+                                .slice(0, 2)
+                                .join('')
+                                .toUpperCase()}
+                        </AvatarFallback>
+                    </Avatar>
+                    <span className="min-w-0">
+                        <span className="block truncate font-medium">
+                            {user.name}
+                        </span>
+                        <span className="block truncate text-xs text-muted-foreground">
+                            {user.email}
+                        </span>
+                    </span>
+                </button>
+            </td>
+            <td className="px-5 py-4">
+                {isArchived ? (
+                    <div className="space-y-1.5">
+                        <Badge
+                            variant="outline"
+                            className="gap-1.5 border-slate-500/30 bg-slate-500/10 font-medium text-slate-700 dark:text-slate-300"
+                        >
+                            Diarsipkan
+                        </Badge>
+                        <p className="text-xs text-muted-foreground">
+                            Status terakhir: {statusLabels[user.status]}
+                        </p>
+                    </div>
+                ) : (
+                    <Badge
+                        variant="outline"
+                        className={cn(
+                            'gap-1.5 font-medium',
+                            statusAccentClasses[user.status],
+                        )}
+                    >
+                        {statusLabels[user.status]}
+                    </Badge>
+                )}
+            </td>
+            <td className="px-5 py-4">
+                <div className="flex justify-end gap-1">
+                    <UserActionButton
+                        aria-label={`Lihat ${user.name}`}
+                        onClick={() => onView(user)}
+                        tooltip={`Lihat detail ${user.name}`}
+                        className="text-sky-600 hover:bg-sky-500/10 hover:text-sky-700 dark:text-sky-300 dark:hover:text-sky-200"
+                    >
+                        <Eye className="size-4" />
+                    </UserActionButton>
+                    {isArchived && canRestore && !user.isProtected ? (
+                        <UserActionButton
+                            aria-label={`Pulihkan ${user.name}`}
+                            onClick={() => onRestore(user)}
+                            tooltip={`Pulihkan ${user.name}`}
+                            className="text-emerald-600 hover:bg-emerald-500/10 hover:text-emerald-700 dark:text-emerald-300 dark:hover:text-emerald-200"
+                        >
+                            <RotateCcw className="size-4" />
+                        </UserActionButton>
+                    ) : null}
+                    {isArchived && canForceDelete && !user.isProtected ? (
+                        <UserActionButton
+                            aria-label={`Hapus permanen ${user.name}`}
+                            onClick={() => onForceDelete(user)}
+                            tooltip={`Hapus permanen ${user.name}`}
+                            className="text-rose-600 hover:bg-rose-500/10 hover:text-rose-700 dark:text-rose-300 dark:hover:text-rose-200"
+                        >
+                            <Trash2 className="size-4" />
+                        </UserActionButton>
+                    ) : null}
+                    {canEdit && !user.isProtected && !isArchived ? (
+                        <UserActionButton
+                            aria-label={`Edit ${user.name}`}
+                            onClick={() => onEdit(user)}
+                            tooltip={`Edit ${user.name}`}
+                            className="text-violet-600 hover:bg-violet-500/10 hover:text-violet-700 dark:text-violet-300 dark:hover:text-violet-200"
+                        >
+                            <Edit3 className="size-4" />
+                        </UserActionButton>
+                    ) : null}
+                    {canImpersonate && !user.isProtected && !isArchived ? (
+                        <UserActionButton
+                            aria-label={`Impersonate ${user.name}`}
+                            onClick={() => onImpersonate(user)}
+                            tooltip={`Masuk sebagai ${user.name}`}
+                            className="text-amber-600 hover:bg-amber-500/10 hover:text-amber-700 dark:text-amber-300 dark:hover:text-amber-200"
+                        >
+                            <LogIn className="size-4" />
+                        </UserActionButton>
+                    ) : null}
+                    {canChangeStatus && !user.isProtected && !isArchived ? (
+                        <UserActionButton
+                            aria-label={`Ubah status ${user.name}`}
+                            onClick={() => onChangeStatus(user)}
+                            tooltip={`Ubah status ${user.name}`}
+                            className="text-cyan-600 hover:bg-cyan-500/10 hover:text-cyan-700 dark:text-cyan-300 dark:hover:text-cyan-200"
+                        >
+                            <Activity className="size-4" />
+                        </UserActionButton>
+                    ) : null}
+                    {canDelete && !user.isProtected && !isArchived ? (
+                        <UserActionButton
+                            aria-label={`Arsipkan ${user.name}`}
+                            onClick={() => onDelete(user)}
+                            tooltip={`Arsipkan ${user.name}`}
+                            className="text-rose-600 hover:bg-rose-500/10 hover:text-rose-700 dark:text-rose-300 dark:hover:text-rose-200"
+                        >
+                            <Trash2 className="size-4" />
+                        </UserActionButton>
+                    ) : null}
+                    {canAssignRole && !user.isProtected && !isArchived ? (
+                        <UserActionButton
+                            aria-label={`Atur role ${user.name}`}
+                            onClick={() => onAssignRole(user)}
+                            tooltip={`Atur role ${user.name}`}
+                            className="text-fuchsia-600 hover:bg-fuchsia-500/10 hover:text-fuchsia-700 dark:text-fuchsia-300 dark:hover:text-fuchsia-200"
+                        >
+                            <ShieldPlus className="size-4" />
+                        </UserActionButton>
+                    ) : null}
+                </div>
+            </td>
+        </tr>
     );
 }

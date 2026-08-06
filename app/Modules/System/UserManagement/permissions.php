@@ -32,6 +32,18 @@ return [
         'sensitive' => true,
     ],
     [
+        'key' => 'user.restore',
+        'description' => 'Memulihkan user yang telah diarsipkan.',
+        'module' => 'UserManagement',
+        'sensitive' => true,
+    ],
+    [
+        'key' => 'user.force.delete',
+        'description' => 'Menghapus permanen user yang telah diarsipkan.',
+        'module' => 'UserManagement',
+        'sensitive' => true,
+    ],
+    [
         'key' => 'user.impersonate',
         'description' => 'Memulai impersonation user dengan reason.',
         'module' => 'UserManagement',

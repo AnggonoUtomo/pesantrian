@@ -11,6 +11,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { LoadingButton } from '@/components/ui/loading-button';
 import {
     Select,
     SelectContent,
@@ -143,17 +144,17 @@ export function RoleAssignmentDialog({
                         >
                             Batal
                         </Button>
-                        <Button
+                        <LoadingButton
                             type="submit"
+                            loading={form.processing}
                             disabled={
-                                form.processing ||
                                 !user ||
                                 user.isProtected ||
                                 form.data.role === ''
                             }
                         >
                             {form.processing ? 'Menyimpan...' : 'Simpan role'}
-                        </Button>
+                        </LoadingButton>
                     </DialogFooter>
                 </form>
             </DialogContent>

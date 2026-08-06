@@ -5,7 +5,9 @@ import { Button } from '@/components/ui/button';
 import SystemDashboardLayout from '@/layouts/system-dashboard-layout';
 import { ChangeUserStatusDialog } from '../components/ChangeUserStatusDialog';
 import { DeleteUserDialog } from '../components/DeleteUserDialog';
+import { ForceDeleteUserDialog } from '../components/ForceDeleteUserDialog';
 import { ImpersonateUserDialog } from '../components/ImpersonateUserDialog';
+import { RestoreUserDialog } from '../components/RestoreUserDialog';
 import { RoleAssignmentDialog } from '../components/RoleAssignmentDialog';
 import { UserFormDialog } from '../components/UserFormDialog';
 import { UserShortcutBar } from '../components/UserShortcutBar';
@@ -35,6 +37,10 @@ export default function Index() {
         null,
     );
     const [roleUser, setRoleUser] = useState<UserManagementUser | null>(null);
+    const [restoringUser, setRestoringUser] =
+        useState<UserManagementUser | null>(null);
+    const [forceDeletingUser, setForceDeletingUser] =
+        useState<UserManagementUser | null>(null);
     const can = (permission: string) =>
         auth.superSystem === true || auth.permissions?.[permission] === true;
     const canView = can('user.view');
@@ -43,6 +49,8 @@ export default function Index() {
     const canImpersonate = can('user.impersonate');
     const canChangeStatus = can('user.status.manage');
     const canDelete = can('user.delete');
+    const canRestore = can('user.restore');
+    const canForceDelete = can('user.force.delete');
     const canAssignRole =
         can('user.update') && can('access_control.role.assign');
     const assignableRoles = auth.superSystem
@@ -100,6 +108,14 @@ export default function Index() {
                     setRoleUser(null);
                 }
 
+                if (restoringUser) {
+                    setRestoringUser(null);
+                }
+
+                if (forceDeletingUser) {
+                    setForceDeletingUser(null);
+                }
+
                 return;
             }
 
@@ -130,7 +146,9 @@ export default function Index() {
         mode,
         impersonatingUser,
         roleUser,
+        restoringUser,
         statusUser,
+        forceDeletingUser,
     ]);
 
     if (!canView) {
@@ -189,6 +207,8 @@ export default function Index() {
                         canImpersonate={canImpersonate}
                         canChangeStatus={canChangeStatus}
                         canDelete={canDelete}
+                        canRestore={canRestore}
+                        canForceDelete={canForceDelete}
                         canAssignRole={canAssignRole}
                         onSearchChange={setSearch}
                         onCreate={openCreate}
@@ -197,6 +217,8 @@ export default function Index() {
                         onImpersonate={openImpersonate}
                         onChangeStatus={setStatusUser}
                         onDelete={setDeletingUser}
+                        onRestore={setRestoringUser}
+                        onForceDelete={setForceDeletingUser}
                         onAssignRole={setRoleUser}
                     />
                 </div>
@@ -256,6 +278,16 @@ export default function Index() {
                 user={roleUser}
                 roles={assignableRoles}
                 onOpenChange={(open) => !open && setRoleUser(null)}
+            />
+            <RestoreUserDialog
+                open={restoringUser !== null}
+                user={restoringUser}
+                onOpenChange={(open) => !open && setRestoringUser(null)}
+            />
+            <ForceDeleteUserDialog
+                open={forceDeletingUser !== null}
+                user={forceDeletingUser}
+                onOpenChange={(open) => !open && setForceDeletingUser(null)}
             />
         </>
     );

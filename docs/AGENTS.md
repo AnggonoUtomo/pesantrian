@@ -311,6 +311,12 @@ berikutnya. Module baru yang memiliki frontend wajib mengikuti pola berikut:
   hover yang jelas, indikator active, serta separator icon saat hover;
 - header sidebar memakai surface transparan tanpa block background atau border
   permanen; state hover tetap boleh mengikuti token interaksi sidebar;
+- mutation/CRUD mengirim flash `toast` dari backend memakai
+  `Inertia::flash('toast', ...)`. `<Toaster />` global menjadi satu-satunya
+  renderer Sonner agar tidak terjadi notifikasi ganda;
+- tombol mutation wajib disabled saat request berjalan dan menampilkan spinner
+  atau indikator loading. Gunakan `LoadingButton` untuk pola tombol standar
+  serta label proses yang jelas seperti `Menyimpan...` atau `Menghapus...`;
 - footer sidebar berisi shortcut `Profile`, `Security`, dan `Appearance` dalam
   toolbar horizontal icon-only. Label tetap tersedia untuk screen reader dan
   tooltip, tetapi tidak tampil sebagai teks permanen;

@@ -44,6 +44,20 @@ final readonly class UserManagementPolicy
             && $this->authorization->can($actor, 'user.delete')->allowed;
     }
 
+    public function restore(?Authenticatable $actor, User $user): bool
+    {
+        return $user->trashed()
+            && ! $user->isSuperSystem()
+            && $this->authorization->can($actor, 'user.restore')->allowed;
+    }
+
+    public function forceDelete(?Authenticatable $actor, User $user): bool
+    {
+        return $user->trashed()
+            && ! $user->isSuperSystem()
+            && $this->authorization->can($actor, 'user.force.delete')->allowed;
+    }
+
     public function impersonate(?Authenticatable $actor, User $user): bool
     {
         return ! $user->isSuperSystem()

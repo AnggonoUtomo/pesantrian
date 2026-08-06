@@ -260,6 +260,12 @@ dan token `resources/css/app.css`:
   `dashboard-icon`, dan `dashboard-badge` bila sesuai dengan jenis UI.
 - Periksa light/dark, responsive, accessibility, dan console browser sebelum
   module dinyatakan selesai.
+- Semua mutation/CRUD frontend wajib memakai toast Sonner global melalui
+  `Inertia::flash('toast', ...)` pada backend. Jangan membuat toast lokal yang
+  menggandakan notifikasi server.
+- Tombol mutation wajib disabled saat request berjalan dan memakai indikator
+  loading. Gunakan `LoadingButton` bila bentuk tombol sesuai; label proses
+  harus menjelaskan tindakan seperti `Menyimpan...` atau `Menghapus...`.
 
 Acuan detail berada pada bagian `Baseline UI/UX Module` di
 [`docs/AGENTS.md`](docs/AGENTS.md).

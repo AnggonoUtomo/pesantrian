@@ -19,15 +19,15 @@ type Props = {
     onOpenChange: (open: boolean) => void;
 };
 
-export function DeleteUserDialog({ open, user, onOpenChange }: Props) {
+export function ForceDeleteUserDialog({ open, user, onOpenChange }: Props) {
     const form = useForm<Record<string, never>>({});
 
     const submit = () => {
-        if (!user || user.isProtected) {
+        if (!user || user.isProtected || user.deletedAt === null) {
             return;
         }
 
-        form.delete(route('system.users.destroy', user.id), {
+        form.delete(route('system.users.force-delete', user.id), {
             preserveScroll: true,
             onSuccess: () => onOpenChange(false),
         });
@@ -47,10 +47,9 @@ export function DeleteUserDialog({ open, user, onOpenChange }: Props) {
                             <AlertTriangle className="size-5" />
                         </span>
                         <div>
-                            <DialogTitle>Arsipkan user?</DialogTitle>
+                            <DialogTitle>Hapus permanen user?</DialogTitle>
                             <DialogDescription className="mt-1">
-                                User tidak akan dihapus permanen dan tidak dapat
-                                masuk daftar aktif.
+                                Tindakan ini tidak dapat dibatalkan.
                             </DialogDescription>
                         </div>
                     </div>
@@ -75,10 +74,12 @@ export function DeleteUserDialog({ open, user, onOpenChange }: Props) {
                         variant="destructive"
                         onClick={submit}
                         loading={form.processing}
-                        disabled={!user || user.isProtected}
+                        disabled={
+                            !user || user.isProtected || user.deletedAt === null
+                        }
                     >
                         <Trash2 className="size-4" />
-                        {form.processing ? 'Mengarsipkan...' : 'Arsipkan user'}
+                        {form.processing ? 'Menghapus...' : 'Hapus permanen'}
                     </LoadingButton>
                 </DialogFooter>
             </DialogContent>

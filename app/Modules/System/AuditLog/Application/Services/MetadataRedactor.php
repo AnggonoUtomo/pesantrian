@@ -14,6 +14,9 @@ final readonly class MetadataRedactor
         'changed_fields',
         'from_status',
         'to_status',
+        'setting_key',
+        'before_value',
+        'after_value',
         'result',
     ];
 

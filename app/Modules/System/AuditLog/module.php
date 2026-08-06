@@ -12,6 +12,9 @@ return [
             'changed_fields',
             'from_status',
             'to_status',
+            'setting_key',
+            'before_value',
+            'after_value',
             'result',
         ],
         'sensitive_patterns' => [

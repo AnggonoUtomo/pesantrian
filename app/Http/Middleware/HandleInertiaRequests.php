@@ -2,12 +2,15 @@
 
 namespace App\Http\Middleware;
 
+use App\Modules\System\SystemSetting\Application\Contracts\SystemRuntimeSettings;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Tighten\Ziggy\Ziggy;
 
 class HandleInertiaRequests extends Middleware
 {
+    public function __construct(private readonly SystemRuntimeSettings $settings) {}
+
     /**
      * The root template that's loaded on the first page visit.
      *
@@ -36,6 +39,8 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $runtime = $this->settings->current();
+
         return [
             ...parent::share($request),
             'ziggy' => array_merge(
@@ -44,7 +49,9 @@ class HandleInertiaRequests extends Middleware
                     'location' => $request->url(),
                 ],
             ),
-            'name' => config('app.name'),
+            'name' => $runtime->appName,
+            'branding' => $runtime->branding(),
+            'runtime' => $runtime->runtime(),
             'auth' => [
                 'user' => $request->user(),
                 'roles' => $request->user()?->getUserRoles() ?? [],

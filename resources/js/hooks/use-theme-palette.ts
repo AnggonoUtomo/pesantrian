@@ -32,8 +32,14 @@ const getStoredPalette = (): ThemePalette => {
 
     const stored = localStorage.getItem('theme-palette');
 
-    return themePalettes.some((palette) => palette.value === stored)
-        ? (stored as ThemePalette)
+    if (themePalettes.some((palette) => palette.value === stored)) {
+        return stored as ThemePalette;
+    }
+
+    const fallback = document.documentElement.dataset.defaultPalette;
+
+    return themePalettes.some((palette) => palette.value === fallback)
+        ? (fallback as ThemePalette)
         : 'neutral';
 };
 

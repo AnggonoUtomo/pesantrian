@@ -69,6 +69,7 @@ export function CommandPalette() {
         const canViewAuditLogs = Boolean(
             auth.superSystem || auth.permissions?.['audit_log.view'],
         );
+        const canManageSystemSettings = auth.superSystem === true;
 
         return [
             ...(canViewSystemDashboard
@@ -112,6 +113,18 @@ export function CommandPalette() {
                           keywords: 'audit log aktivitas security correlation',
                           href: route('system.audit-logs.index'),
                           icon: ScrollText,
+                      },
+                  ]
+                : []),
+            ...(canManageSystemSettings
+                ? [
+                      {
+                          title: 'SystemSetting',
+                          description: 'Kelola konfigurasi runtime global.',
+                          keywords:
+                              'system setting konfigurasi runtime branding',
+                          href: route('system.system-settings.index'),
+                          icon: Settings,
                       },
                   ]
                 : []),

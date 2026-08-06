@@ -19,6 +19,9 @@
 | `Infrastructure/Persistence/Models/Role.php` | Model Spatie Role dengan ULID |
 | `Infrastructure/Persistence/Models/Permission.php` | Model Spatie Permission dengan ULID |
 | `Infrastructure/Services/SpatieAuthorizationAdapter.php` | Adapter Spatie ke public capability |
+| `Application/Contracts/AccessControlActivityPublisher.php` | Contract publisher aktivitas sensitif |
+| `Application/Events/AccessControlActivityOccurred.php` | Integration Event publik versi 1 untuk AuditLog |
+| `Infrastructure/Events/LaravelAccessControlActivityPublisher.php` | Adapter dispatch Integration Event |
 | `Presentation/Controllers/RoleController.php` | Orchestration request dan response |
 | `Presentation/Policies/AccessControlPolicy.php` | Rule resource dan protected role |
 | `Presentation/Requests/StoreRoleRequest.php` | Validasi pembuatan role |
@@ -61,7 +64,8 @@
 | Public Module API | `AuthorizationCapability` dan `RoleAssignmentCapability` |
 | Mutation | Application Action synchronous |
 | Read | Application Query dan DTO |
-| Domain/Application/Integration Event | Belum dipakai pada runtime module |
+| Integration Event | `AccessControlActivityOccurred` dipakai untuk AuditLog secara synchronous |
+| Domain/Application Event | Belum dipakai pada runtime module |
 | Command Bus dan Queue/Job | Belum menjadi dependency module |
 | Facade dan Shared Kernel domain | Tidak digunakan; `packages/StarterKit` bukan Shared Kernel |
 | Pola keseluruhan | CQRS-lite |

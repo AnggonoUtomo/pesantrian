@@ -37,10 +37,11 @@ User login
 
 Pola eksekusi ini adalah CQRS-lite: Application Action menangani mutation dan
 Application Query menangani read. `AuthorizationCapability` dan
-`RoleAssignmentCapability` adalah public Module API. AccessControl belum
-memakai Application Event, Integration Event, Command Bus, Queue/Job, Facade,
-atau Shared Kernel domain. Domain Event juga belum menjadi bagian runtime
-AccessControl; event impersonation berada pada UserManagement.
+`RoleAssignmentCapability` adalah public Module API. Mutation sensitif juga
+menerbitkan `AccessControlActivityOccurred` sebagai Integration Event versi 1
+untuk AuditLog. AccessControl belum memakai Application Event, Command Bus,
+Queue/Job, Facade, atau Shared Kernel domain. Domain Event belum menjadi bagian
+runtime AccessControl; event impersonation berada pada UserManagement.
 
 ## Checklist Fondasi Enterprise
 
@@ -51,7 +52,7 @@ Code-flow AccessControl harus selalu dipetakan terhadap sembilan fondasi:
 | Contract/Interface | `implemented` melalui public capability dan contract internal |
 | Domain Event | `planned` untuk fakta role/permission yang memiliki consumer |
 | Application Event | `not applicable` pada flow saat ini |
-| Integration Event | `planned` setelah AuditLog memiliki consumer nyata |
+| Integration Event | `implemented` melalui `AccessControlActivityOccurred` yang dikonsumsi AuditLog |
 | Command | `planned`; Action tetap menjadi command-like use case saat ini |
 | Query/Read Contract | `implemented` melalui Query dan DTO dashboard |
 | Shared Kernel | `not applicable`; StarterKit bukan domain shared kernel |
@@ -81,3 +82,4 @@ frontend page, seeder demo, authorization, dan quality gate.
 | --- | --- | --- |
 | 1.0 | 2026-08-06 | Menambahkan alur code AccessControl |
 | 1.1 | 2026-08-06 | Menambahkan batas Contract, Action/Query, event, dan eksekusi module |
+| 1.2 | 2026-08-06 | Menyelaraskan Integration Event setelah AuditLog aktif |

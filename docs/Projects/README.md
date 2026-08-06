@@ -6,13 +6,16 @@
 - [System/AccessControl](06.System/01.AccessControl/README.md)
 - [Alur Code System/AccessControl](06.System/01-1.AccessControl-code-flow/README.md)
 - [System/UserManagement](06.System/02.UserManagement/README.md)
+- [System/AuditLog](06.System/03.AuditLog/README.md)
+- [Alur Code System/AuditLog](06.System/03-1.AuditLog-code-flow/README.md)
+- [System/SystemSetting](06.System/04.SystemSetting/README.md)
 - [Phase 3 Module Generator](03.phase-3-module-generator/README.md)
 
 ## Document Information
 
 | Item    | Value     |
 | ------- | --------- |
-| Version | 1.1       |
+| Version | 1.6       |
 | Status  | Accepted  |
 | Owner   | Tech Lead |
 
@@ -45,3 +48,5 @@ Gunakan skill incremental-implementation.
 | Version | Date       | Description            |
 | ------- | ---------- | ---------------------- |
 | 1.4     | 2026-08-06 | Menetapkan prosedur standar pembuatan module |
+| 1.5     | 2026-08-06 | Menambahkan index AuditLog dan rencana SystemSetting |
+| 1.6     | 2026-08-06 | Menandai implementasi SystemSetting selesai |

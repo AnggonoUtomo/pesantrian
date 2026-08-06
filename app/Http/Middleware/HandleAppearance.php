@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Modules\System\SystemSetting\Application\Contracts\SystemRuntimeSettings;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
@@ -9,6 +10,8 @@ use Symfony\Component\HttpFoundation\Response;
 
 class HandleAppearance
 {
+    public function __construct(private readonly SystemRuntimeSettings $settings) {}
+
     /**
      * Handle an incoming request.
      *
@@ -16,7 +19,16 @@ class HandleAppearance
      */
     public function handle(Request $request, Closure $next): Response
     {
-        View::share('appearance', $request->cookie('appearance') ?? 'system');
+        $runtime = $this->settings->current();
+        $preference = $request->cookie('appearance');
+        $appearance = in_array($preference, ['light', 'dark', 'system'], true)
+            ? $preference
+            : $runtime->appearanceDefault;
+
+        View::share([
+            'appearance' => $appearance,
+            'branding' => $runtime->branding(),
+        ]);
 
         return $next($request);
     }

@@ -1,0 +1,16 @@
+{
+    "name": "SystemSetting",
+    "namespace": "App\\Modules\\System\\SystemSetting",
+    "version": "1.0.0",
+    "schema_version": 1,
+    "status": "enabled",
+    "domain": "System",
+    "path": "app/Modules/System/SystemSetting",
+    "provider": "App\\Modules\\System\\SystemSetting\\ServiceProvider",
+    "dependencies": [
+        "AccessControl",
+        "AuditLog"
+    ],
+    "permission_source": "permissions.php",
+    "config_source": "module.php"
+}

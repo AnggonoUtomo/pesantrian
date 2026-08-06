@@ -3,6 +3,7 @@ import {
     LayoutGrid,
     Palette,
     ScrollText,
+    Settings2,
     ShieldCheck,
     UserRound,
     UsersRound,
@@ -35,6 +36,7 @@ export function AppSidebar() {
     const canViewAuditLogs =
         auth.superSystem === true ||
         auth.permissions?.['audit_log.view'] === true;
+    const canManageSystemSettings = auth.superSystem === true;
 
     const mainNavItems: NavItem[] = [
         {
@@ -65,6 +67,14 @@ export function AppSidebar() {
             title: 'Audit Log',
             href: route('system.audit-logs.index'),
             icon: ScrollText,
+        });
+    }
+
+    if (canManageSystemSettings) {
+        mainNavItems.push({
+            title: 'SystemSetting',
+            href: route('system.system-settings.index'),
+            icon: Settings2,
         });
     }
 

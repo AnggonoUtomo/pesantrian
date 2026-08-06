@@ -1,5 +1,8 @@
 # System/AuditLog
 
+Dokumen alur code setelah implementasi tersedia pada
+[03-1.AuditLog-code-flow](../03-1.AuditLog-code-flow/README.md).
+
 AuditLog adalah module ketiga di dalam boundary `System`. Module ini menyimpan
 aktivitas keamanan dan bisnis penting secara append-only agar perubahan dapat
 ditelusuri tanpa membuka data sensitif.

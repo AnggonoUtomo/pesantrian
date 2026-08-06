@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Modules\System\AccessControl\Database\Seeders\AccessControlSeeder;
 use App\Modules\System\AuditLog\Database\Seeders\AuditLogSeeder;
+use App\Modules\System\SystemSetting\Database\Seeders\SystemSettingSeeder;
 use App\Modules\System\UserManagement\Database\Seeders\UserManagementSeeder;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -24,6 +25,7 @@ class DatabaseSeeder extends Seeder
             AccessControlSeeder::class,
             UserManagementSeeder::class,
             AuditLogSeeder::class,
+            SystemSettingSeeder::class,
         ]);
     }
 }

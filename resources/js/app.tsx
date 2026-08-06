@@ -3,12 +3,16 @@ import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { initializeTheme } from '@/hooks/use-appearance';
 import { initializeThemePalette } from '@/hooks/use-theme-palette';
+import { initializeTypography } from '@/hooks/use-typography';
 import AppLayout from '@/layouts/app-layout';
 import AuthLayout from '@/layouts/auth-layout';
 import SettingsLayout from '@/layouts/settings/layout';
 import { setZiggy } from '@/lib/ziggy';
 
-const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+const appName =
+    document.documentElement.dataset.appName ||
+    import.meta.env.VITE_APP_NAME ||
+    'Laravel';
 
 createInertiaApp({
     title: (title) => (title ? `${title} - ${appName}` : appName),
@@ -49,3 +53,4 @@ createInertiaApp({
 
 initializeTheme();
 initializeThemePalette();
+initializeTypography();

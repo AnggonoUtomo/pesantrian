@@ -36,7 +36,7 @@ it('mengembalikan typed DTO dari detail query', function (): void {
     $repository = Mockery::mock(UserRepository::class);
     $repository->expects('find')->with($user->id)->andReturn($user);
 
-    expect(new GetUser($repository)->execute($user->id))->toBe($user);
+    expect((new GetUser($repository))->execute($user->id))->toBe($user);
 });
 
 it('menolak DTO create dengan email tidak valid', function (): void {
@@ -54,7 +54,7 @@ it('menolak action create tanpa permission', function (): void {
 
     $repository = Mockery::mock(UserRepository::class);
 
-    expect(fn (): UserData => new CreateUser($authorizer, $repository)
+    expect(fn (): UserData => (new CreateUser($authorizer, $repository))
         ->execute($actor, new CreateUserData('User Satu', 'user@example.test', 'password')))
         ->toThrow(AuthorizationException::class);
     $repository->shouldNotReceive('create');
@@ -71,7 +71,7 @@ it('menggunakan public contract AccessControl untuk assignment role', function (
     $roles = Mockery::mock(RoleAssignmentCapability::class);
     $roles->expects('assignRole')->with($actor, $target, 'SecurityAdmin');
 
-    new AssignUserRole($authorizer, $roles)->execute($actor, $target, 'SecurityAdmin');
+    (new AssignUserRole($authorizer, $roles))->execute($actor, $target, 'SecurityAdmin');
 });
 
 it('mengotorisasi update user melalui action dan repository contract', function (): void {
@@ -92,7 +92,7 @@ it('mengotorisasi update user melalui action dan repository contract', function 
     $data = new UpdateUserData('User Updated', 'updated@example.test');
     $repository->expects('update')->with($expected->id, $data)->andReturn($expected);
 
-    expect(new UpdateUser(new AuthorizeUserAction($authorization), $repository)
+    expect((new UpdateUser(new AuthorizeUserAction($authorization), $repository))
         ->execute($actor, $expected->id, $data))->toBe($expected);
 });
 
@@ -116,7 +116,7 @@ it('mengubah status user biasa melalui action terotorisasi', function (): void {
         ->with($user->id, UserStatus::SUSPENDED)
         ->andReturn($user);
 
-    new ChangeUserStatus(new AuthorizeUserAction($authorization), $repository)
+    (new ChangeUserStatus(new AuthorizeUserAction($authorization), $repository))
         ->execute($actor, $user->id, UserStatus::SUSPENDED);
 });
 
@@ -139,7 +139,7 @@ it('menolak soft delete pada user protected sebelum repository dipanggil', funct
     $repository->expects('find')->with($user->id)->andReturn($user);
 
     expect(function () use ($actor, $authorizer, $repository, $user): void {
-        new SoftDeleteUser($authorizer, $repository)->execute($actor, $user->id);
+        (new SoftDeleteUser($authorizer, $repository))->execute($actor, $user->id);
     })
         ->toThrow(ProtectedUserMutation::class);
     $repository->shouldNotReceive('softDelete');
@@ -164,7 +164,7 @@ it('memisahkan actor asli dan target pada session impersonation', function (): v
     $session = Mockery::mock(ImpersonationSession::class);
     $session->expects('start')->with($actor, '01JUSERMANAGEMENT000000000012', 'support request');
 
-    new StartImpersonation($authorizer, $repository, $session)->execute(
+    (new StartImpersonation($authorizer, $repository, $session))->execute(
         $actor,
         new ImpersonationRequestData('01JUSERMANAGEMENT000000000012', 'support request'),
     );

@@ -143,7 +143,7 @@ contract test.
   - Alasan: database lokal saat ini adalah baseline development dan tidak boleh
     menyimpan schema campuran.
   - Evidence: `migrate:status` seluruh migration berstatus `Ran`, audit tabel
-    PostgreSQL menunjukkan kolom ULID, dan `AccessControlSchemaTest` memeriksa
+    MySQL menunjukkan kolom ULID, dan `AccessControlSchemaTest` memeriksa
     seluruh ID terkait.
   - Perubahan tambahan: menambahkan `upgrade-runbook.md` dengan prosedur
     backup, mapping immutable, expand-and-contract, validasi, dan rollback.

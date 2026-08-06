@@ -29,12 +29,12 @@ environment Laravel baseline.
 
 ## 3. Runtime Foundation
 
-`.env` lokal diarahkan ke PostgreSQL. File ini tidak dimasukkan ke Git karena
+`.env` lokal diarahkan ke MySQL. File ini tidak dimasukkan ke Git karena
 berisi konfigurasi lokal.
 
 Runtime diverifikasi dengan langkah berikut:
 
-1. PostgreSQL dapat dihubungi.
+1. MySQL dapat dihubungi.
 2. Redis merespons `PONG`.
 3. Cache dapat menyimpan dan membaca kembali nilai.
 4. Migration dapat dijalankan.
@@ -50,7 +50,7 @@ Alur method `handle()`:
 ```text
 handle()
   -> check versi PHP dan Laravel
-  -> check extension PostgreSQL dan package baseline
+  -> check extension MySQL dan package baseline
   -> checkDatabase()
   -> checkRedis()
   -> checkStorage()

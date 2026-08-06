@@ -8,6 +8,7 @@ it('menyediakan starter verify dalam format json tanpa secret', function () {
 
     expect($result)->toBe(0)
         ->and($output)->toContain('STARTER_VERIFIED')
+        ->and($output)->toContain('mysql_driver')
         ->and($output)->not->toContain((string) config('app.key'));
 });
 

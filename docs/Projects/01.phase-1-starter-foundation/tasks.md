@@ -4,7 +4,7 @@
 | -------- | --------- | -------------------- | -------------------------------------------------------------- | ------------------------------------- | -------- |
 | TASK-001 | INC-001   | Inventory foundation | Versi, stack, package, service tercatat                        | Review inventory                      | Selesai  |
 | TASK-002 | INC-002   | Dependency baseline  | Package wajib dan forbidden package terverifikasi              | Composer, npm, scan                   | Selesai  |
-| TASK-003 | INC-003   | Runtime service      | PostgreSQL, Redis, cache, queue, session, storage, ULID teruji | Health check dan migration            | Selesai  |
+| TASK-003 | INC-003   | Runtime service      | MySQL, Redis, cache, queue, session, storage, ULID teruji | Health check dan migration            | Selesai  |
 | TASK-004 | INC-004   | Verification command | Command tersedia dalam output biasa dan JSON                   | `starter:verify`                      | Selesai  |
 | TASK-005 | INC-005   | Quality gate         | Semua gate relevan lulus                                       | Pint, Pest, ESLint, TypeScript, build | Selesai  |
 | TASK-006 | INC-006   | Tutup Phase 1        | Evidence, risiko, dan docs lengkap                             | Review akhir                          | Selesai  |
@@ -43,10 +43,10 @@
     - Kondisi awal: `.env` memakai MySQL dan database baru belum memiliki
       migration table.
     - File diubah: `.env` lokal, tidak di-commit.
-    - Perubahan: memakai PostgreSQL port 5432, menjalankan
+    - Perubahan: memakai MySQL port 3306, menjalankan
       `php artisan migrate --force`, dan memastikan `public/storage` valid.
-    - Alasan: runtime harus sesuai baseline PostgreSQL/Redis.
-    - Evidence: driver `pgsql`, Redis `PONG`, cache database `ok`, migration
+    - Alasan: runtime harus sesuai baseline MySQL/Redis.
+    - Evidence: driver `mysql`, Redis `PONG`, cache database `ok`, migration
       status `Ran`, storage tersedia, dan ULID valid.
 
 ### TASK-004 — Verification command
@@ -89,7 +89,7 @@
 - [x] Dampak keamanan dan runtime ditinjau.
     - Backend tetap security authority.
     - Output verification tidak mencetak password atau application key.
-    - PostgreSQL dan Redis diuji pada runtime lokal.
+    - MySQL dan Redis diuji pada runtime lokal.
 - [x] Evidence tersimpan.
     - Command, hasil penting, dan risiko dicatat pada execution log.
 - [x] Dokumentasi diperbarui.
@@ -113,9 +113,9 @@
 - [x] Cakupan `starter:verify` selaras dengan dokumentasi.
     - Kondisi awal: check frontend stack dan approved package belum lengkap.
     - Perubahan: menambah check Inertia, React, TypeScript, Vite, Tailwind,
-      shadcn/ui, PostgreSQL, dan package baseline.
+      shadcn/ui, MySQL, dan package baseline.
     - Evidence: JSON command menunjukkan 0 pemeriksaan gagal, termasuk driver
-      PostgreSQL, stack frontend, dan package baseline.
+      MySQL, stack frontend, dan package baseline.
 - [x] Scanner forbidden dependency recursive dan diagnostic aman.
     - Kondisi awal: `glob('**/*.php')` tidak menjamin scan nested dan exception
       database/Redis dapat membawa detail internal.
@@ -132,4 +132,40 @@
     - Kondisi awal: beberapa dokumen memiliki karakter hasil encoding yang rusak.
     - Perubahan: mengganti ke karakter ASCII/UTF-8 yang benar pada dokumen yang
       relevan.
-    - Evidence: pencarian mojibake pada folder docs tidak menemukan hasil.
+     - Evidence: pencarian mojibake pada folder docs tidak menemukan hasil.
+
+## TASK-008 — Migrasi baseline database ke MySQL
+
+- [x] Runtime utama diarahkan ke MySQL.
+  - Kondisi awal: `.env`, `.env.example`, default database, queue database,
+    health check, dan CI masih memakai PostgreSQL atau SQLite sebagai default.
+  - Perubahan: default runtime menjadi `mysql`, `.env.example` memakai port
+    `3306` dan user `root`, queue batching/failed jobs memakai MySQL, serta CI
+    memakai service MySQL 8.
+  - Alasan: MySQL ditetapkan sebagai database utama project dan harus konsisten
+    dari Laragon sampai quality gate CI.
+  - Evidence: `pdo_mysql` tersedia; MySQL 8.0.30 merespons; database `starter13`
+    tersedia; `php artisan migrate --force` menyelesaikan migration pending.
+
+- [x] Dukungan test tetap terisolasi.
+  - Kondisi awal: PHPUnit memakai SQLite in-memory untuk menghindari test saling
+    mengubah database development.
+  - Perubahan: PHPUnit tetap memakai SQLite in-memory; health check membedakan
+    pengecualian testing ini dari driver runtime MySQL.
+  - Alasan: test tidak boleh bergantung pada data lokal atau menghapus database
+    development, sedangkan runtime dan CI tetap menguji MySQL.
+  - Evidence: `starter:verify --json` pada runtime MySQL lulus dengan
+    `mysql_extension`, `mysql_driver`, dan koneksi database aktif.
+
+- [x] Dokumentasi baseline database diselaraskan.
+  - File: `docs/AGENTS.md`, `docs/README.md`, design database, environment,
+    CI/CD, test plan, Phase 1, code flow, dan runbook module terkait.
+  - Perubahan: PostgreSQL tidak lagi disebut sebagai database utama; tipe JSON
+    dan aturan schema disesuaikan dengan MySQL.
+  - Evidence: pencarian referensi baseline menunjukkan MySQL sebagai database
+    utama; riwayat lama tetap diberi konteks sebagai catatan historis.
+
+- [x] Checklist ditinjau sebelum dan sesudah pekerjaan.
+  - Sebelum: scope mencakup runtime, test isolation, CI, migration, dan docs.
+  - Sesudah: kode, konfigurasi, test, CI, dan dokumen sudah diperiksa; fresh
+    migration belum dijalankan karena bersifat destruktif terhadap database lokal.

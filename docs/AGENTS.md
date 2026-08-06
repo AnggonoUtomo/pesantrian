@@ -16,7 +16,7 @@ Membangun starter kit Laravel 13 yang reusable sehingga developer, QA, DevOps en
 - Laravel 13 dan PHP 8.4+.
 - Laravel React starter kit bawaan, Inertia, React, TypeScript, dan Vite.
 - Tailwind CSS dan shadcn/ui.
-- PostgreSQL dan Redis.
+- MySQL dan Redis.
 - Ziggy untuk route frontend.
 - Spatie Permission dan package Spatie yang disetujui, termasuk Media Library saat modul membutuhkan media.
 - Laragon pada Windows untuk lingkungan baseline lokal pertama.

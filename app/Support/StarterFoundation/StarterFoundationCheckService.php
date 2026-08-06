@@ -25,14 +25,14 @@ final class StarterFoundationCheckService
         $checks = [];
         $this->check($checks, 'php', version_compare(PHP_VERSION, '8.4.0', '>='), 'PHP '.PHP_VERSION);
         $this->check($checks, 'laravel', version_compare((string) app()->version(), '13.0.0', '>='), 'Laravel '.app()->version());
-        $this->check($checks, 'pgsql_extension', extension_loaded('pdo_pgsql'), 'Extension pdo_pgsql tersedia');
+        $this->check($checks, 'mysql_extension', extension_loaded('pdo_mysql'), 'Extension pdo_mysql tersedia');
         $databaseDriver = config('database.default');
         $testingDatabase = app()->environment('testing') && $databaseDriver === 'sqlite';
         $this->check(
             $checks,
-            'postgresql_driver',
-            $databaseDriver === 'pgsql' || $testingDatabase,
-            $testingDatabase ? 'Testing memakai SQLite in-memory; PostgreSQL extension tersedia' : 'Driver database PostgreSQL aktif',
+            'mysql_driver',
+            $databaseDriver === 'mysql' || $testingDatabase,
+            $testingDatabase ? 'Testing memakai SQLite in-memory; extension MySQL tersedia' : 'Driver database MySQL aktif',
         );
         $this->check($checks, 'redis_client', class_exists('Predis\\Client'), 'Predis tersedia');
         $this->check($checks, 'ziggy', class_exists('Tighten\\Ziggy\\Ziggy'), 'Ziggy Laravel tersedia');

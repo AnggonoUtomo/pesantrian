@@ -22,5 +22,5 @@
 
 | ID     | Pertanyaan                                                    | Dampak                                     | Status                                                                          |
 | ------ | ------------------------------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------- |
-| OD-001 | Apakah PostgreSQL dan Redis lokal aktif pada environment ini? | Menentukan hasil health check runtime      | Diputuskan: aktif dan terverifikasi                                             |
+| OD-001 | Apakah MySQL dan Redis lokal aktif pada environment ini? | Menentukan hasil health check runtime      | Diputuskan: aktif dan terverifikasi                                             |
 | OD-002 | Package Spatie mana yang wajib untuk foundation?              | Menentukan package baseline sebelum module | Diputuskan: Permission wajib; Media Library hanya saat module membutuhkan media |

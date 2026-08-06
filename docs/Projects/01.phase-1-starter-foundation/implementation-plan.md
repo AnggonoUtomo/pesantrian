@@ -44,12 +44,12 @@ kecil, test, review, dokumentasi, dan verifikasi ulang.
 
 ### INC-003 — Database dan service runtime
 
-- Kondisi awal: `.env` memakai MySQL dan migration table belum tersedia.
+- Kondisi awal: `.env` memakai PostgreSQL dan migration table belum tersedia.
 - File diubah: `.env` lokal, tidak dimasukkan ke Git.
-- Perubahan: mengarahkan `.env` ke PostgreSQL port 5432, menjalankan migration,
+- Perubahan: mengarahkan `.env` ke MySQL port 3306, menjalankan migration,
   dan membuat storage link.
-- Alasan: runtime harus sesuai baseline PostgreSQL/Redis.
-- Evidence: PostgreSQL terkoneksi, Redis `PONG`, cache round-trip `ok`,
+- Alasan: runtime harus sesuai baseline MySQL/Redis.
+- Evidence: MySQL terkoneksi, Redis `PONG`, cache round-trip `ok`,
   migration selesai, storage link dan ULID berhasil.
 
 ### INC-004 — Command `starter:verify`
@@ -112,7 +112,7 @@ kecil, test, review, dokumentasi, dan verifikasi ulang.
     - Hasil: Spatie Permission dan Predis tersedia; forbidden dependency bersih.
 - [x] Verifikasi database, Redis, cache, queue, session, storage, dan ULID.
     - Command: `starter:verify`, migration, cache round-trip, migration status.
-    - Hasil: PostgreSQL, Redis, migration, storage, dan ULID lulus.
+    - Hasil: MySQL, Redis, migration, storage, dan ULID lulus.
 - [x] Sediakan `starter:verify`.
     - File: command dan test feature.
     - Hasil: output human-readable/JSON dan exit code tersedia.

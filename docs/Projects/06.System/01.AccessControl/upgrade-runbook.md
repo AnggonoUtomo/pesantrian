@@ -25,7 +25,7 @@ development, tetapi tetap menjadi release gate sebelum deployment existing.
 
 ## Syarat sebelum eksekusi
 
-- Backup PostgreSQL selesai dan restore ke database rehearsal lulus.
+- Backup MySQL selesai dan restore ke database rehearsal lulus.
 - Queue dan scheduler dihentikan atau di-drain.
 - Maintenance window dan downtime disetujui.
 - Aplikasi lama dan baru kompatibel dengan fase expand.

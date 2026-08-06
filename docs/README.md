@@ -9,7 +9,7 @@ Engineering Starter Kit. Dokumentasi harus cukup jelas agar implementasi dapat
 dilakukan tanpa instruksi lisan dan dapat diverifikasi end-to-end.
 
 Starter kit menggunakan Laravel 13, runtime PHP 8.4+, Laravel React starter kit, Inertia,
-React, TypeScript, Vite, Tailwind, shadcn/ui, PostgreSQL, Redis, Ziggy, dan
+React, TypeScript, Vite, Tailwind, shadcn/ui, MySQL, Redis, Ziggy, dan
 package Spatie yang disetujui.
 
 Runtime lokal terakhir terverifikasi pada PHP 8.4.16. `composer.json` saat ini

@@ -6,7 +6,7 @@
 |---|---|---|
 | `composer.json` | Dependency PHP dan script quality gate | Composer install |
 | `package.json` | Dependency frontend dan script npm | ESLint, TypeScript, build |
-| `.env.example` | Contoh konfigurasi PostgreSQL, Redis, dan aplikasi | `starter:verify` |
+| `.env.example` | Contoh konfigurasi MySQL, Redis, dan aplikasi | `starter:verify` |
 | `app/Console/Commands/VerifyStarterFoundation.php` | Check environment dan runtime | `StarterFoundationVerificationTest.php` |
 | `config/database.php` | Wiring database Laravel | Database health check |
 | `config/cache.php` | Driver cache | Cache round-trip |

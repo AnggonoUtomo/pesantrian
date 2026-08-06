@@ -36,7 +36,7 @@ module sebelum module generator dibangun pada Phase 3.
 ## Prasyarat
 
 - Phase 1 Starter Foundation selesai.
-- Laravel 13, PostgreSQL, Redis, Predis, Ziggy, dan Spatie Permission tersedia.
+- Laravel 13, MySQL, Redis, Predis, Ziggy, dan Spatie Permission tersedia.
 - Tidak ada module valid pada `app/Modules` yang boleh tertimpa.
 
 ## Aturan Kerja

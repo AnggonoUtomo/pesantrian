@@ -59,6 +59,9 @@ mengambil alih private implementation AccessControl.
 3. [Tasks](tasks.md)
 4. [ADR boundary](decisions/ADR-0001-USERMANAGEMENT-BOUNDARY.md)
 5. [ADR impersonation session dan audit](decisions/ADR-0002-IMPERSONATION-SESSION-AUDIT.md)
+6. [ADR archive, force delete, dan perlindungan](decisions/ADR-0003-USER-ARCHIVE-AND-PROTECTION-LIFECYCLE.md) — diterima
+7. [ADR urutan increment daftar dan lifecycle](decisions/ADR-0004-USERMANAGEMENT-INCREMENTAL-LIST-SCOPE.md) — diterima
+8. [01. Filter daftar user](01.user-list-filters/README.md) — selesai
 
 ## Dokumen Terkait
 
@@ -103,6 +106,12 @@ execution evidence sebelum ditandai selesai.
    database, backup/restore test, verifikasi lock dan downtime, serta prosedur
    rollback. Workspace lokal tidak dapat membuktikan deployment production tanpa
    database nyata, backup, dan persetujuan operator.
+5. **Restore dan force delete user** — keputusan archive, permission,
+   server-side guard `SuperSystem`, audit, dan UI tercatat pada
+   [ADR-0003](decisions/ADR-0003-USER-ARCHIVE-AND-PROTECTION-LIFECYCLE.md).
+5. **Restore dan force delete user** — keputusan archive, permission,
+   server-side guard `SuperSystem`, audit, dan UI tercatat pada
+   [ADR-0003](decisions/ADR-0003-USER-ARCHIVE-AND-PROTECTION-LIFECYCLE.md).
 
 ## Aturan UI UserManagement
 
@@ -212,3 +221,8 @@ khusus tersebut.
 | 1.2 | 2026-08-06 | Menyelesaikan impersonation session, audit event, dan browser flow |
 | 1.3 | 2026-08-06 | Mencatat lima scope lanjutan yang belum dibuat |
 | 1.4 | 2026-08-06 | Menutup scope AuditLog consumer synchronous dan memperbarui fondasi event |
+| 1.5 | 2026-08-06 | Menambahkan dokumen draft increment filter daftar user poin 1 |
+| 1.6 | 2026-08-06 | Menyelesaikan filter search, status, role, dan arsip UserManagement |
+| 1.7 | 2026-08-06 | Menambahkan Open Decision archive, force delete, dan perlindungan SuperSystem |
+| 1.8 | 2026-08-06 | Mencatat roadmap incremental pagination, role efektif, toolbar, dan scope lifecycle besar |
+| 1.9 | 2026-08-06 | Menandai urutan increment daftar dan lifecycle sebagai keputusan diterima |

@@ -17,13 +17,28 @@ final class EloquentUserRepository implements UserRepository
     /** @return list<UserData> */
     public function list(UserListFilter $filter): array
     {
-        $users = User::query()
-            ->withTrashed()
+        $query = User::query();
+
+        match ($filter->archive) {
+            'active' => $query->withoutTrashed(),
+            'archived' => $query->onlyTrashed(),
+            default => $query->withTrashed(),
+        };
+
+        $users = $query
             ->when($filter->search !== null, static function ($query) use ($filter): void {
                 $search = '%'.$filter->search.'%';
                 $query->where(static function ($query) use ($search): void {
                     $query->where('name', 'like', $search)
                         ->orWhere('email', 'like', $search);
+                });
+            })
+            ->when($filter->status !== null, static function ($query) use ($filter): void {
+                $query->where('status', $filter->status->value);
+            })
+            ->when($filter->role !== null, static function ($query) use ($filter): void {
+                $query->whereHas('roles', static function ($query) use ($filter): void {
+                    $query->where('name', $filter->role);
                 });
             })
             ->orderBy('name')

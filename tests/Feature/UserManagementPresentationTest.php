@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Models\User;
 use App\Modules\System\AccessControl\Infrastructure\Persistence\Models\Permission;
 use App\Modules\System\AccessControl\Infrastructure\Persistence\Models\Role;
+use App\Modules\System\UserManagement\Domain\ValueObjects\UserStatus;
 use App\Modules\System\UserManagement\Presentation\Policies\UserManagementPolicy;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Gate;
@@ -50,6 +51,73 @@ it('mengirim role option typed dan mengizinkan assignment melalui capability pub
         ->assertRedirect();
 
     expect($target->refresh()->hasRole('SecurityAdmin'))->toBeTrue();
+});
+
+it('memfilter daftar user berdasarkan pencarian, status, role, dan arsip', function (): void {
+    $view = Permission::create(['name' => 'user.view', 'guard_name' => 'web']);
+    $actor = User::factory()->create();
+    $actor->givePermissionTo($view);
+
+    $securityAdmin = Role::create(['name' => 'SecurityAdmin', 'guard_name' => 'web']);
+    $matched = User::factory()->create([
+        'name' => 'Target Security',
+        'email' => 'target-security@example.test',
+        'status' => UserStatus::ACTIVE->value,
+    ]);
+    $matched->assignRole($securityAdmin);
+
+    $inactive = User::factory()->create([
+        'name' => 'Target Inactive',
+        'email' => 'target-inactive@example.test',
+        'status' => UserStatus::INACTIVE->value,
+    ]);
+    $inactive->assignRole($securityAdmin);
+
+    $archived = User::factory()->create([
+        'name' => 'Target Archived',
+        'email' => 'target-archived@example.test',
+        'status' => UserStatus::ACTIVE->value,
+    ]);
+    $archived->assignRole($securityAdmin);
+    $archived->delete();
+
+    $this->actingAs($actor)
+        ->get(route('system.users.index', [
+            'search' => 'target',
+            'status' => UserStatus::ACTIVE->value,
+            'role' => 'SecurityAdmin',
+            'archive' => 'active',
+        ]))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->has('users', 1)
+            ->where('users.0.email', $matched->email)
+            ->where('filters.status', UserStatus::ACTIVE->value)
+            ->where('filters.role', 'SecurityAdmin')
+            ->where('filters.archive', 'active')
+        );
+
+    $this->actingAs($actor)
+        ->get(route('system.users.index', ['archive' => 'archived']))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->has('users', 1)
+            ->where('users.0.email', $archived->email)
+        );
+});
+
+it('menolak query filter daftar user yang tidak valid', function (): void {
+    $view = Permission::create(['name' => 'user.view', 'guard_name' => 'web']);
+    $actor = User::factory()->create();
+    $actor->givePermissionTo($view);
+
+    $this->actingAs($actor)
+        ->get(route('system.users.index', [
+            'status' => 'unknown',
+            'role' => 'RoleTidakAda',
+            'archive' => 'invalid',
+        ]))
+        ->assertInvalid(['status', 'role', 'archive']);
 });
 
 it('menolak assignment role jika actor tidak memiliki permission assignment', function (): void {

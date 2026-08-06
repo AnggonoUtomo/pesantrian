@@ -182,6 +182,8 @@ export default function Index() {
                     <UserTable
                         users={users}
                         search={search}
+                        filters={filters}
+                        roles={roles}
                         canCreate={canCreate}
                         canEdit={canEdit}
                         canImpersonate={canImpersonate}

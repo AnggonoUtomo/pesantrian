@@ -22,6 +22,7 @@ use App\Modules\System\UserManagement\Application\Queries\ListUsers;
 use App\Modules\System\UserManagement\Domain\ValueObjects\UserStatus;
 use App\Modules\System\UserManagement\Presentation\Requests\AssignUserRoleRequest;
 use App\Modules\System\UserManagement\Presentation\Requests\ChangeUserStatusRequest;
+use App\Modules\System\UserManagement\Presentation\Requests\ListUsersRequest;
 use App\Modules\System\UserManagement\Presentation\Requests\StartImpersonationRequest;
 use App\Modules\System\UserManagement\Presentation\Requests\StoreUserRequest;
 use App\Modules\System\UserManagement\Presentation\Requests\UpdateUserRequest;
@@ -61,9 +62,15 @@ final class UserController implements HasMiddleware
         ];
     }
 
-    public function index(Request $request): Response
+    public function index(ListUsersRequest $request): Response
     {
-        $filter = UserListFilter::from($request->string('search')->toString());
+        $filters = $request->validated();
+        $filter = UserListFilter::from(
+            $filters['search'] ?? null,
+            $filters['status'] ?? null,
+            $filters['role'] ?? null,
+            $filters['archive'] ?? null,
+        );
         $users = array_map(
             static fn ($user): array => (new UserResource($user))->toArray($request),
             $this->listUsers->execute($filter),
@@ -71,7 +78,12 @@ final class UserController implements HasMiddleware
 
         return Inertia::render('System/UserManagement/pages/Index', [
             'users' => $users,
-            'filters' => ['search' => $filter->search],
+            'filters' => [
+                'search' => $filter->search,
+                'status' => $filter->status?->value,
+                'role' => $filter->role,
+                'archive' => $filter->archive,
+            ],
             'roles' => array_map(
                 static fn ($role): array => $role->toArray(),
                 $this->roleCatalog->listRoles(),

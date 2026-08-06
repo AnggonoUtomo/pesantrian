@@ -14,13 +14,18 @@ export type UserManagementRole = {
     name: string;
 };
 
+export type UserManagementFilters = {
+    search: string | null;
+    status: UserManagementUser['status'] | null;
+    role: string | null;
+    archive: 'all' | 'active' | 'archived';
+};
+
 export type UserManagementPageProps = {
     auth: Auth;
     users: UserManagementUser[];
     roles: UserManagementRole[];
-    filters: {
-        search: string | null;
-    };
+    filters: UserManagementFilters;
     errors?: Record<string, string>;
 };
 

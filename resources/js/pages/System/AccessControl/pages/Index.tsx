@@ -39,6 +39,14 @@ export default function Index() {
         () => (activeRole ? (rolePermissions[activeRole.id] ?? []) : []),
         [activeRole, rolePermissions],
     );
+    const permissionCount = useMemo(
+        () =>
+            permissionGroups.reduce(
+                (total, group) => total + group.permissions.length,
+                0,
+            ),
+        [permissionGroups],
+    );
 
     const handlePermissionChange = (permission: string, checked: boolean) => {
         if (!activeRole || activeRole.is_protected || !canManage) {
@@ -198,6 +206,7 @@ export default function Index() {
                     <RoleControlCard
                         ref={roleControlRef}
                         roles={roles}
+                        permissionCount={permissionCount}
                         activeRole={activeRole}
                         onRoleChange={setActiveRoleId}
                         actions={

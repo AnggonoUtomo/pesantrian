@@ -10,7 +10,8 @@ import SettingsLayout from '@/layouts/settings/layout';
 import { setZiggy } from '@/lib/ziggy';
 
 const appName =
-    document.documentElement.dataset.appName ||
+    (typeof document !== 'undefined' &&
+        document.documentElement.dataset.appName) ||
     import.meta.env.VITE_APP_NAME ||
     'Laravel';
 
@@ -51,6 +52,8 @@ createInertiaApp({
     },
 });
 
-initializeTheme();
-initializeThemePalette();
-initializeTypography();
+if (typeof window !== 'undefined') {
+    initializeTheme();
+    initializeThemePalette();
+    initializeTypography();
+}

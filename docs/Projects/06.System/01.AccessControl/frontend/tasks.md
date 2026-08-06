@@ -954,12 +954,12 @@ perangkat, perlu contract backend dan keputusan baru.
     bawah `AccessControl` ikut bergeser turun.
   - Perubahan: `PermissionModulePanel.tsx` memakai dua stack kolom independen.
     Group `System` ditempatkan pada stack kanan; `AccessControl` dan `User`
-    tetap pada stack kiri. State `expandedGroup` tetap memastikan hanya satu
-    dropdown yang terbuka.
+    tetap pada stack kiri. Pada implementasi awal, state `expandedGroup`
+    memastikan hanya satu dropdown yang terbuka.
   - Alasan: tinggi dropdown hanya boleh memengaruhi stack pemiliknya, bukan
     posisi group pada kolom sebelah.
-  - Acceptance: membuka `System` tidak mengubah posisi `AccessControl` atau
-    `User`; membuka `AccessControl` hanya mengubah stack kiri; accordion tetap
+  - Acceptance awal: membuka `System` tidak mengubah posisi `AccessControl`
+    atau `User`; membuka `AccessControl` hanya mengubah stack kiri; accordion
     eksklusif; mobile tetap tersusun satu kolom tanpa overflow.
   - Evidence: browser desktop `1364px` mencatat `User` tetap pada `y=427`
     sebelum dan sesudah `System` dibuka, sedangkan `System` tetap pada `y=353`
@@ -991,3 +991,58 @@ perangkat, perlu contract backend dan keputusan baru.
     perilaku shell yang berbeda.
   - Evidence: `rg` tidak menemukan import aktif ke layout legacy; type check,
     lint, dan build lulus.
+
+## Increment ringkasan dan pencarian workspace AccessControl
+
+- [x] Menambahkan ringkasan kecil jumlah role dan permission pada panel Role.
+  - Kondisi awal: panel kiri hanya menampilkan role aktif, jumlah permission
+    pada role aktif, dan action tambah/hapus.
+  - Perubahan: `RoleControlCard.tsx` menampilkan dua card statistik kecil
+    `Total role` dan `Total permission` setelah detail role aktif, tepat di
+    atas action tambah/hapus. `Index.tsx` menghitung total permission dari
+    seluruh `permissionGroups` dan meneruskannya sebagai prop typed.
+  - Alasan: operator dapat memahami skala catalog role dan permission tanpa
+    mengubah role aktif atau membuka panel kanan.
+  - Acceptance: kedua card tampil di bawah detail role aktif; total permission
+    berasal dari seluruh workspace, bukan hanya role aktif; action role tetap
+    berada di bawah ringkasan.
+  - Evidence: browser menampilkan `Total role: 3` dan `Total permission: 11`;
+    `npm run lint:check`, `npm run types:check`, dan `npm run format:check`
+    lulus.
+
+- [x] Menambahkan pencarian permission pada panel kanan.
+  - Kondisi awal: operator perlu membuka setiap group untuk mencari permission.
+  - Perubahan: `PermissionModulePanel.tsx` menambahkan input
+    `Cari permission` dengan `id`, `name`, dan accessible label. Pencarian
+    lokal mencocokkan label serta key permission dan menyembunyikan group yang
+    tidak memiliki hasil.
+  - Alasan: pencarian mempercepat penemuan permission tanpa request baru atau
+    perubahan state checklist.
+  - Acceptance: query `impersonate` hanya menyisakan group User dengan
+    `user.impersonate`; query kosong mengembalikan seluruh group; checkbox dan
+    authorization tidak berubah.
+  - Evidence: browser menampilkan hasil `Impersonate` dan
+    `user.impersonate`; console bersih.
+
+- [x] Mengubah dropdown permission menjadi multi-expand manual.
+  - Kondisi awal: state tunggal `expandedGroup` membuat pembukaan satu group
+    menutup group lain secara otomatis.
+  - Perubahan: state diganti menjadi `expandedGroups: string[]`. Header group
+    menambah atau menghapus nama group miliknya sendiri dari daftar tersebut.
+    Pencarian tidak membuka atau menutup group secara otomatis; semua group
+    tetap collapsed saat halaman pertama dibuka.
+  - Alasan: operator dapat membandingkan permission dari beberapa module tanpa
+    kehilangan group yang sudah dibuka. Penutupan harus menjadi tindakan
+    eksplisit pada header group yang sama.
+  - Acceptance: Access Control dan System dapat terbuka bersamaan; klik ulang
+    pada salah satu header hanya menutup group itu; group lain tidak berubah;
+    layout dua stack tetap tidak menggeser kolom sebelah.
+  - Evidence: Chrome DevTools membuka Access Control lalu System dan snapshot
+    menunjukkan keduanya `expanded`; console browser bersih. `npm run
+    lint:check` dan `npm run types:check` lulus.
+
+## Revision History
+
+| Versi | Tanggal | Perubahan |
+| --- | --- | --- |
+| 1.0 | 2026-08-06 | Menambahkan dokumentasi ringkasan, pencarian, dan multi-expand permission |

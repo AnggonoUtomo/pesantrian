@@ -49,3 +49,9 @@ dan subcard dibuat sedikit lebih gelap,
 seperti pola Dashboard Shell 01. Main card memakai radius besar dan subcard
 radius sedang. Warna theme tetap dipakai pada icon, badge, grafik, progress,
 garis card, dan state interaksi.
+
+Workspace Role juga menyediakan ringkasan kecil jumlah role dan seluruh
+permission yang tersedia. Panel Permission memiliki pencarian lokal berdasarkan
+label atau key. Dropdown group bersifat multi-expand manual: seluruh group
+collapsed saat page dibuka, group terbuka tetap terbuka sampai header group itu
+sendiri diklik untuk menutupnya.

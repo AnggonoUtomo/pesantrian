@@ -12,6 +12,7 @@ import type { AccessControlRole } from '../types';
 
 interface RoleControlCardProps {
     roles: AccessControlRole[];
+    permissionCount: number;
     activeRole: AccessControlRole | null;
     onRoleChange: (roleId: string) => void;
     actions?: ReactNode;
@@ -24,7 +25,10 @@ export interface RoleControlCardHandle {
 export const RoleControlCard = forwardRef<
     RoleControlCardHandle,
     RoleControlCardProps
->(function RoleControlCard({ roles, activeRole, onRoleChange, actions }, ref) {
+>(function RoleControlCard(
+    { roles, permissionCount, activeRole, onRoleChange, actions },
+    ref,
+) {
     const [isRoleMenuOpen, setIsRoleMenuOpen] = useState(false);
     const [roleQuery, setRoleQuery] = useState('');
     const roleMenuRef = useRef<HTMLDivElement>(null);
@@ -203,6 +207,22 @@ export const RoleControlCard = forwardRef<
                     </p>
                 </div>
             ) : null}
+            <div className="mt-5 grid grid-cols-2 gap-2">
+                <div className="dashboard-subcard dashboard-accent--blue rounded-lg px-3 py-2.5">
+                    <p className="text-xs text-foreground/70">Total role</p>
+                    <p className="mt-1 text-lg font-semibold tabular-nums">
+                        {roles.length}
+                    </p>
+                </div>
+                <div className="dashboard-subcard dashboard-accent--cyan rounded-lg px-3 py-2.5">
+                    <p className="text-xs text-foreground/70">
+                        Total permission
+                    </p>
+                    <p className="mt-1 text-lg font-semibold tabular-nums">
+                        {permissionCount}
+                    </p>
+                </div>
+            </div>
             {actions ? (
                 <div className="mt-5 flex flex-wrap gap-2 border-t border-border/70 pt-4">
                     {actions}

@@ -19,6 +19,15 @@ export type UserManagementFilters = {
     status: UserManagementUser['status'] | null;
     role: string | null;
     archive: 'all' | 'active' | 'archived';
+    page: number;
+    perPage: 5 | 10 | 25 | 50;
+};
+
+export type UserManagementPagination = {
+    total: number;
+    currentPage: number;
+    lastPage: number;
+    perPage: 5 | 10 | 25 | 50;
 };
 
 export type UserManagementPageProps = {
@@ -26,6 +35,7 @@ export type UserManagementPageProps = {
     users: UserManagementUser[];
     roles: UserManagementRole[];
     filters: UserManagementFilters;
+    pagination: UserManagementPagination;
     errors?: Record<string, string>;
 };
 

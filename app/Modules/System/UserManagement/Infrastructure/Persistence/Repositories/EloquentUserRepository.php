@@ -7,15 +7,16 @@ namespace App\Modules\System\UserManagement\Infrastructure\Persistence\Repositor
 use App\Models\User;
 use App\Modules\System\UserManagement\Application\Contracts\UserRepository;
 use App\Modules\System\UserManagement\Application\DTO\CreateUserData;
+use App\Modules\System\UserManagement\Application\DTO\PaginatedUserData;
 use App\Modules\System\UserManagement\Application\DTO\UpdateUserData;
 use App\Modules\System\UserManagement\Application\DTO\UserData;
 use App\Modules\System\UserManagement\Application\DTO\UserListFilter;
 use App\Modules\System\UserManagement\Domain\ValueObjects\UserStatus;
+use Closure;
 
 final class EloquentUserRepository implements UserRepository
 {
-    /** @return list<UserData> */
-    public function list(UserListFilter $filter): array
+    public function paginate(UserListFilter $filter): PaginatedUserData
     {
         $query = User::query();
 
@@ -42,12 +43,15 @@ final class EloquentUserRepository implements UserRepository
                 });
             })
             ->orderBy('name')
-            ->get()
-            ->map(fn (User $user): UserData => $this->toData($user))
-            ->values()
-            ->all();
+            ->paginate($filter->perPage, ['*'], 'page', $filter->page);
 
-        return array_values($users);
+        return new PaginatedUserData(
+            data: array_values($users->getCollection()->map(fn (User $user): UserData => $this->toData($user))->all()),
+            total: $users->total(),
+            currentPage: $users->currentPage(),
+            lastPage: $users->lastPage(),
+            perPage: $users->perPage(),
+        );
     }
 
     public function find(string $userId): ?UserData
@@ -101,6 +105,11 @@ final class EloquentUserRepository implements UserRepository
     public function forceDelete(string $userId): void
     {
         User::query()->withTrashed()->findOrFail($userId)->forceDelete();
+    }
+
+    public function transaction(Closure $callback): mixed
+    {
+        return User::query()->getConnection()->transaction($callback);
     }
 
     private function toData(User $user): UserData

@@ -15,16 +15,18 @@ final class UserManagementSeederTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_seeder_membuat_sepuluh_user_dummy_dengan_status_bervariasi(): void
+    public function test_seeder_membuat_lima_puluh_user_dummy_dengan_status_bervariasi(): void
     {
         $this->seed(AccessControlSeeder::class);
         $this->seed(UserManagementSeeder::class);
 
-        $this->assertSame(12, User::count());
-        $this->assertSame(8, User::where('status', 'active')->count());
-        $this->assertSame(2, User::where('status', 'inactive')->count());
-        $this->assertSame(2, User::where('status', 'suspended')->count());
-        $this->assertSame(11, User::role('SecurityAdmin')->count());
+        $this->assertSame(52, User::count());
+        $dummyUsers = User::query()->where('email', 'like', 'user-management-dummy-%@example.test');
+
+        $this->assertSame(17, (clone $dummyUsers)->where('status', 'active')->count());
+        $this->assertSame(17, (clone $dummyUsers)->where('status', 'inactive')->count());
+        $this->assertSame(16, (clone $dummyUsers)->where('status', 'suspended')->count());
+        $this->assertSame(51, User::role('SecurityAdmin')->count());
     }
 
     public function test_seeder_idempotent_dan_global_database_seeder_memanggilnya(): void
@@ -32,8 +34,8 @@ final class UserManagementSeederTest extends TestCase
         $this->seed();
         $this->seed();
 
-        $this->assertSame(12, User::count());
-        $this->assertSame(10, User::where('email', 'like', '%@example.test')
+        $this->assertSame(52, User::count());
+        $this->assertSame(50, User::where('email', 'like', '%@example.test')
             ->where('email', 'not like', 'super-system@example.test')
             ->where('email', 'not like', 'security-admin@example.test')
             ->count());

@@ -21,7 +21,7 @@ import type {
 } from '../types';
 
 export default function Index() {
-    const { auth, users, roles, filters, errors } =
+    const { auth, users, roles, filters, pagination, errors } =
         usePage<UserManagementPageProps>().props;
     const [search, setSearch] = useState(filters.search ?? '');
     const [mode, setMode] = useState<UserManagementDialogMode | null>(null);
@@ -201,6 +201,7 @@ export default function Index() {
                         users={users}
                         search={search}
                         filters={filters}
+                        pagination={pagination}
                         roles={roles}
                         canCreate={canCreate}
                         canEdit={canEdit}

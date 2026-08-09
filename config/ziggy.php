@@ -17,6 +17,8 @@ return [
         'system.users.destroy',
         'system.users.restore',
         'system.users.force-delete',
+        'system.users.bulk-destroy',
+        'system.users.bulk-force-delete',
         'system.users.impersonate',
         'system.users.impersonation.leave',
         'system.audit-logs.index',

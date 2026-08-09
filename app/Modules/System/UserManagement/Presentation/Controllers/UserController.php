@@ -7,6 +7,7 @@ namespace App\Modules\System\UserManagement\Presentation\Controllers;
 use App\Models\User;
 use App\Modules\System\AccessControl\Application\Contracts\RoleCatalogCapability;
 use App\Modules\System\UserManagement\Application\Actions\AssignUserRole;
+use App\Modules\System\UserManagement\Application\Actions\BulkUserLifecycle;
 use App\Modules\System\UserManagement\Application\Actions\ChangeUserStatus;
 use App\Modules\System\UserManagement\Application\Actions\CreateUser;
 use App\Modules\System\UserManagement\Application\Actions\ForceDeleteUser;
@@ -23,6 +24,7 @@ use App\Modules\System\UserManagement\Application\Queries\GetUser;
 use App\Modules\System\UserManagement\Application\Queries\ListUsers;
 use App\Modules\System\UserManagement\Domain\ValueObjects\UserStatus;
 use App\Modules\System\UserManagement\Presentation\Requests\AssignUserRoleRequest;
+use App\Modules\System\UserManagement\Presentation\Requests\BulkUserLifecycleRequest;
 use App\Modules\System\UserManagement\Presentation\Requests\ChangeUserStatusRequest;
 use App\Modules\System\UserManagement\Presentation\Requests\ListUsersRequest;
 use App\Modules\System\UserManagement\Presentation\Requests\StartImpersonationRequest;
@@ -50,6 +52,7 @@ final class UserController implements HasMiddleware
         private readonly StartImpersonation $startImpersonation,
         private readonly ImpersonationSession $impersonationSession,
         private readonly AssignUserRole $assignUserRole,
+        private readonly BulkUserLifecycle $bulkUserLifecycle,
         private readonly RoleCatalogCapability $roleCatalog,
     ) {}
 
@@ -62,8 +65,10 @@ final class UserController implements HasMiddleware
             new Middleware('can:user.update', only: ['assignRole']),
             new Middleware('can:user.status.manage', only: ['changeStatus']),
             new Middleware('can:user.delete', only: ['destroy']),
+            new Middleware('can:user.delete', only: ['bulkDestroy']),
             new Middleware('can:restore,user', only: ['restore']),
             new Middleware('can:forceDelete,user', only: ['forceDelete']),
+            new Middleware('can:user.force.delete', only: ['bulkForceDelete']),
             new Middleware('can:impersonate,user', only: ['impersonate']),
         ];
     }
@@ -76,10 +81,13 @@ final class UserController implements HasMiddleware
             $filters['status'] ?? null,
             $filters['role'] ?? null,
             $filters['archive'] ?? null,
+            isset($filters['page']) ? (int) $filters['page'] : null,
+            isset($filters['per_page']) ? (int) $filters['per_page'] : null,
         );
+        $result = $this->listUsers->execute($filter);
         $users = array_map(
             static fn ($user): array => (new UserResource($user))->toArray($request),
-            $this->listUsers->execute($filter),
+            $result->data,
         );
 
         return Inertia::render('System/UserManagement/pages/Index', [
@@ -89,6 +97,14 @@ final class UserController implements HasMiddleware
                 'status' => $filter->status?->value,
                 'role' => $filter->role,
                 'archive' => $filter->archive,
+                'page' => $filter->page,
+                'perPage' => $filter->perPage,
+            ],
+            'pagination' => [
+                'total' => $result->total,
+                'currentPage' => $result->currentPage,
+                'lastPage' => $result->lastPage,
+                'perPage' => $result->perPage,
             ],
             'roles' => array_map(
                 static fn ($role): array => $role->toArray(),
@@ -168,6 +184,20 @@ final class UserController implements HasMiddleware
         return back();
     }
 
+    public function bulkDestroy(BulkUserLifecycleRequest $request): RedirectResponse
+    {
+        $result = $this->bulkUserLifecycle->archive(
+            $request->user(),
+            $request->validated('user_ids'),
+        );
+
+        Inertia::flash('toast', $result->completed
+            ? ['type' => 'success', 'message' => "{$result->processed} user berhasil diarsipkan."]
+            : ['type' => 'error', 'message' => $result->message]);
+
+        return back();
+    }
+
     public function restore(Request $request, User $user): RedirectResponse
     {
         $this->restoreUser->execute($request->user(), $user->getKey());
@@ -182,6 +212,20 @@ final class UserController implements HasMiddleware
         $this->forceDeleteUser->execute($request->user(), $user->getKey());
 
         Inertia::flash('toast', ['type' => 'success', 'message' => 'User dihapus permanen.']);
+
+        return back();
+    }
+
+    public function bulkForceDelete(BulkUserLifecycleRequest $request): RedirectResponse
+    {
+        $result = $this->bulkUserLifecycle->forceDelete(
+            $request->user(),
+            $request->validated('user_ids'),
+        );
+
+        Inertia::flash('toast', $result->completed
+            ? ['type' => 'success', 'message' => "{$result->processed} user berhasil dihapus permanen."]
+            : ['type' => 'error', 'message' => $result->message]);
 
         return back();
     }

@@ -30,6 +30,8 @@ final class ListUsersRequest extends FormRequest
             'status' => ['nullable', new Enum(UserStatus::class)],
             'role' => ['nullable', 'string', 'max:100', Rule::in($roleNames)],
             'archive' => ['nullable', 'string', Rule::in(['all', 'active', 'archived'])],
+            'page' => ['nullable', 'integer', 'min:1'],
+            'per_page' => ['nullable', 'integer', Rule::in([5, 10, 25, 50])],
         ];
     }
 }

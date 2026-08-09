@@ -5,16 +5,15 @@ declare(strict_types=1);
 namespace App\Modules\System\UserManagement\Application\Queries;
 
 use App\Modules\System\UserManagement\Application\Contracts\UserRepository;
-use App\Modules\System\UserManagement\Application\DTO\UserData;
+use App\Modules\System\UserManagement\Application\DTO\PaginatedUserData;
 use App\Modules\System\UserManagement\Application\DTO\UserListFilter;
 
 final readonly class ListUsers
 {
     public function __construct(private UserRepository $repository) {}
 
-    /** @return list<UserData> */
-    public function execute(UserListFilter $filter): array
+    public function execute(UserListFilter $filter): PaginatedUserData
     {
-        return $this->repository->list($filter);
+        return $this->repository->paginate($filter);
     }
 }

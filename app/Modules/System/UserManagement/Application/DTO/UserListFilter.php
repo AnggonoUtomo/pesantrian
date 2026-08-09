@@ -14,6 +14,8 @@ final readonly class UserListFilter
         public ?UserStatus $status,
         public ?string $role,
         public string $archive,
+        public int $page,
+        public int $perPage,
     ) {}
 
     public static function from(
@@ -21,8 +23,9 @@ final readonly class UserListFilter
         ?string $status = null,
         ?string $role = null,
         ?string $archive = null,
-    ): self
-    {
+        ?int $page = null,
+        ?int $perPage = null,
+    ): self {
         $search = trim((string) $search);
         $statusValue = trim((string) $status);
         $role = trim((string) $role);
@@ -38,11 +41,20 @@ final readonly class UserListFilter
             throw new InvalidArgumentException('Filter daftar user tidak valid.');
         }
 
+        $page ??= 1;
+        $perPage ??= 25;
+
+        if ($page < 1 || ! in_array($perPage, [5, 10, 25, 50], true)) {
+            throw new InvalidArgumentException('Pagination daftar user tidak valid.');
+        }
+
         return new self(
             $search === '' ? null : $search,
             $status,
             $role === '' ? null : $role,
             $archive === '' ? 'all' : $archive,
+            $page,
+            $perPage,
         );
     }
 }

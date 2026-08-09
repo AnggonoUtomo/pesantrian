@@ -5,9 +5,10 @@ declare(strict_types=1);
 use App\Models\User;
 use App\Modules\System\AccessControl\Infrastructure\Persistence\Models\Permission;
 use App\Modules\System\AccessControl\Infrastructure\Persistence\Models\Role;
-use App\Modules\System\UserManagement\Domain\ValueObjects\UserStatus;
 use App\Modules\System\UserManagement\Application\Events\UserManagementActivityOccurred;
+use App\Modules\System\UserManagement\Domain\ValueObjects\UserStatus;
 use App\Modules\System\UserManagement\Presentation\Policies\UserManagementPolicy;
+use Illuminate\Database\Eloquent\Factories\Sequence;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
@@ -126,6 +127,32 @@ it('memfilter daftar user berdasarkan pencarian, status, role, dan arsip', funct
         );
 });
 
+it('memaginasi daftar user di server dan mempertahankan filter aktif', function (): void {
+    $view = Permission::create(['name' => 'user.view', 'guard_name' => 'web']);
+    $actor = User::factory()->create();
+    $actor->givePermissionTo($view);
+    User::factory()->count(12)->sequence(
+        fn (Sequence $sequence): array => ['name' => "Pagination User {$sequence->index}", 'email' => "pagination-{$sequence->index}@example.test"],
+    )->create();
+
+    $this->actingAs($actor)
+        ->get(route('system.users.index', [
+            'search' => 'Pagination User',
+            'page' => 2,
+            'per_page' => 5,
+        ]))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->has('users', 5)
+            ->where('filters.search', 'Pagination User')
+            ->where('filters.page', 2)
+            ->where('filters.perPage', 5)
+            ->where('pagination.total', 12)
+            ->where('pagination.currentPage', 2)
+            ->where('pagination.lastPage', 3)
+        );
+});
+
 it('menolak query filter daftar user yang tidak valid', function (): void {
     $view = Permission::create(['name' => 'user.view', 'guard_name' => 'web']);
     $actor = User::factory()->create();
@@ -136,8 +163,10 @@ it('menolak query filter daftar user yang tidak valid', function (): void {
             'status' => 'unknown',
             'role' => 'RoleTidakAda',
             'archive' => 'invalid',
+            'page' => 0,
+            'per_page' => 15,
         ]))
-        ->assertInvalid(['status', 'role', 'archive']);
+        ->assertInvalid(['status', 'role', 'archive', 'page', 'per_page']);
 });
 
 it('menolak assignment role jika actor tidak memiliki permission assignment', function (): void {
@@ -186,6 +215,92 @@ it('memulihkan dan menghapus permanen user arsip dengan permission terpisah sert
         fn (UserManagementActivityOccurred $event): bool => $event->action === 'user.force_deleted'
             && $event->subjectId === $forceDeletable->id,
     );
+});
+
+it('menjalankan bulk lifecycle secara atomik dan memberi toast bila target tidak valid', function (): void {
+    Event::fake([UserManagementActivityOccurred::class]);
+    $delete = Permission::create(['name' => 'user.delete', 'guard_name' => 'web']);
+    $forceDelete = Permission::create(['name' => 'user.force.delete', 'guard_name' => 'web']);
+    $actor = User::factory()->create();
+    $actor->givePermissionTo([$delete, $forceDelete]);
+    $first = User::factory()->create();
+    $second = User::factory()->create();
+    $archived = User::factory()->create();
+    $active = User::factory()->create();
+    $archived->delete();
+
+    $this->actingAs($actor)
+        ->delete(route('system.users.bulk-destroy'), ['user_ids' => [$first->id, $second->id]])
+        ->assertRedirect()
+        ->assertSessionHas('inertia.flash_data.toast', [
+            'type' => 'success',
+            'message' => '2 user berhasil diarsipkan.',
+        ]);
+
+    expect($first->fresh()->trashed())->toBeTrue()
+        ->and($second->fresh()->trashed())->toBeTrue();
+
+    Event::assertDispatched(
+        UserManagementActivityOccurred::class,
+        fn (UserManagementActivityOccurred $event): bool => $event->action === 'user.deleted',
+    );
+    Event::assertDispatchedTimes(UserManagementActivityOccurred::class, 2);
+
+    $this->actingAs($actor)
+        ->delete(route('system.users.bulk-force-delete'), ['user_ids' => [$archived->id, $active->id]])
+        ->assertRedirect()
+        ->assertSessionHas('inertia.flash_data.toast', [
+            'type' => 'error',
+            'message' => 'Operasi dibatalkan. Semua user terpilih harus sudah diarsipkan dan bukan SuperSystem.',
+        ]);
+
+    expect(User::query()->withTrashed()->find($archived->id))->not->toBeNull()
+        ->and($active->fresh()->trashed())->toBeFalse();
+
+    $this->actingAs($actor)
+        ->delete(route('system.users.bulk-force-delete'), ['user_ids' => [$archived->id, $first->id]])
+        ->assertRedirect()
+        ->assertSessionHas('inertia.flash_data.toast', [
+            'type' => 'success',
+            'message' => '2 user berhasil dihapus permanen.',
+        ]);
+
+    expect(User::query()->withTrashed()->find($archived->id))->toBeNull()
+        ->and(User::query()->withTrashed()->find($first->id))->toBeNull();
+
+    $superSystemRole = Role::create(['name' => 'SuperSystem', 'guard_name' => 'web']);
+    $protected = User::factory()->create();
+    $protected->assignRole($superSystemRole);
+    $candidate = User::factory()->create();
+
+    $this->actingAs($actor)
+        ->delete(route('system.users.bulk-destroy'), ['user_ids' => [$protected->id, $candidate->id]])
+        ->assertRedirect()
+        ->assertSessionHas('inertia.flash_data.toast', [
+            'type' => 'error',
+            'message' => 'Operasi dibatalkan. Semua user terpilih harus masih aktif dan bukan SuperSystem.',
+        ]);
+
+    expect($candidate->fresh()->trashed())->toBeFalse();
+
+    $correlationIds = Event::dispatched(UserManagementActivityOccurred::class)
+        ->map(static fn (array $arguments): string => $arguments[0]->correlationId)
+        ->unique();
+
+    expect($correlationIds)->toHaveCount(2);
+});
+
+it('menolak payload bulk lifecycle yang kosong tanpa mutation', function (): void {
+    $delete = Permission::create(['name' => 'user.delete', 'guard_name' => 'web']);
+    $actor = User::factory()->create();
+    $actor->givePermissionTo($delete);
+    $target = User::factory()->create();
+
+    $this->actingAs($actor)
+        ->delete(route('system.users.bulk-destroy'), ['user_ids' => []])
+        ->assertInvalid('user_ids');
+
+    expect($target->fresh()->trashed())->toBeFalse();
 });
 
 it('menolak restore dan force delete untuk user aktif atau SuperSystem', function (): void {

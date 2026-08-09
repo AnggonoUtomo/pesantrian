@@ -16,6 +16,7 @@ import type { ComponentProps } from 'react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import {
     Select,
@@ -33,14 +34,17 @@ import route from '@/lib/route';
 import { cn } from '@/lib/utils';
 import type {
     UserManagementFilters,
+    UserManagementPagination,
     UserManagementRole,
     UserManagementUser,
 } from '../types';
+import { BulkUserLifecycleDialog } from './BulkUserLifecycleDialog';
 
 type Props = {
     users: UserManagementUser[];
     search: string;
     filters: UserManagementFilters;
+    pagination: UserManagementPagination;
     roles: UserManagementRole[];
     canCreate: boolean;
     canEdit: boolean;
@@ -107,6 +111,7 @@ export function UserTable({
     users,
     search,
     filters,
+    pagination,
     roles,
     canCreate,
     canEdit,
@@ -128,6 +133,10 @@ export function UserTable({
     onAssignRole,
 }: Props) {
     const [isSearching, setIsSearching] = useState(false);
+    const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
+    const [bulkOperation, setBulkOperation] = useState<
+        'archive' | 'force-delete' | null
+    >(null);
     const debounceTimer = useRef<number | null>(null);
     const [status, setStatus] = useState(filters.status ?? 'all');
     const [role, setRole] = useState(filters.role ?? 'all');
@@ -143,7 +152,12 @@ export function UserTable({
             debounceTimer.current = null;
         }
     };
-    const requestFilters = (nextSearch = search) => {
+    const requestFilters = (
+        nextSearch = search,
+        page = 1,
+        perPage = pagination.perPage,
+    ) => {
+        setSelectedUserIds([]);
         setIsSearching(true);
         router.get(
             route('system.users.index'),
@@ -152,6 +166,8 @@ export function UserTable({
                 status: status === 'all' ? undefined : status,
                 role: role === 'all' ? undefined : role,
                 archive: archive === 'all' ? undefined : archive,
+                page: page > 1 ? page : undefined,
+                per_page: perPage === 25 ? undefined : perPage,
             },
             {
                 preserveState: true,
@@ -164,7 +180,7 @@ export function UserTable({
     const submitFilters = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         clearLiveSearchTimer();
-        requestFilters();
+        requestFilters(search, 1);
     };
     const handleSearchChange = (value: string) => {
         onSearchChange(value);
@@ -177,7 +193,7 @@ export function UserTable({
         }
 
         debounceTimer.current = window.setTimeout(() => {
-            requestFilters(value);
+            requestFilters(value, 1);
             debounceTimer.current = null;
         }, 400);
     };
@@ -206,6 +222,48 @@ export function UserTable({
                 replace: true,
                 onFinish: () => setIsSearching(false),
             },
+        );
+    };
+
+    const changePage = (page: number) => {
+        if (
+            page < 1 ||
+            page > pagination.lastPage ||
+            page === pagination.currentPage
+        ) {
+            return;
+        }
+
+        requestFilters(search, page);
+    };
+
+    const changePerPage = (value: string) => {
+        requestFilters(
+            search,
+            1,
+            Number(value) as UserManagementPagination['perPage'],
+        );
+    };
+
+    const selectableUsers = users.filter((user) => !user.isProtected);
+    const selectedVisibleUserIds = selectedUserIds.filter((userId) =>
+        selectableUsers.some((user) => user.id === userId),
+    );
+    const allVisibleSelected =
+        selectableUsers.length > 0 &&
+        selectedVisibleUserIds.length === selectableUsers.length;
+    const canBulkArchive = canDelete && filters.archive !== 'archived';
+    const canBulkForceDelete = canForceDelete && filters.archive === 'archived';
+    const toggleUser = (userId: string, checked: boolean) => {
+        setSelectedUserIds((current) =>
+            checked
+                ? [...new Set([...current, userId])]
+                : current.filter((id) => id !== userId),
+        );
+    };
+    const toggleAllVisibleUsers = (checked: boolean) => {
+        setSelectedUserIds(
+            checked ? selectableUsers.map((user) => user.id) : [],
         );
     };
 
@@ -340,6 +398,42 @@ export function UserTable({
                         ) : null}
                     </div>
                 </form>
+                {selectedVisibleUserIds.length > 0 ? (
+                    <div className="flex flex-col gap-3 border-t pt-3 sm:flex-row sm:items-center sm:justify-between">
+                        <p className="text-sm font-medium">
+                            {selectedVisibleUserIds.length} user dipilih
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                            {canBulkArchive ? (
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() => setBulkOperation('archive')}
+                                >
+                                    Arsipkan terpilih
+                                </Button>
+                            ) : null}
+                            {canBulkForceDelete ? (
+                                <Button
+                                    type="button"
+                                    variant="destructive"
+                                    onClick={() =>
+                                        setBulkOperation('force-delete')
+                                    }
+                                >
+                                    Hapus permanen terpilih
+                                </Button>
+                            ) : null}
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                onClick={() => setSelectedUserIds([])}
+                            >
+                                Batal pilih
+                            </Button>
+                        </div>
+                    </div>
+                ) : null}
             </div>
             {users.length === 0 ? (
                 <div role="status" className="p-10 text-center">
@@ -370,6 +464,18 @@ export function UserTable({
                     <table className="w-full min-w-[680px] text-left text-sm">
                         <thead className="dashboard-table-header border-b text-xs tracking-wide text-foreground/80 uppercase">
                             <tr>
+                                <th className="w-12 px-5 py-3">
+                                    <Checkbox
+                                        aria-label="Pilih semua user pada halaman"
+                                        checked={allVisibleSelected}
+                                        disabled={selectableUsers.length === 0}
+                                        onCheckedChange={(checked) =>
+                                            toggleAllVisibleUsers(
+                                                checked === true,
+                                            )
+                                        }
+                                    />
+                                </th>
                                 <th className="px-5 py-3 font-medium">User</th>
                                 <th className="px-5 py-3 font-medium">
                                     Status
@@ -385,6 +491,9 @@ export function UserTable({
                                     key={user.id}
                                     user={user}
                                     index={index}
+                                    isSelected={selectedVisibleUserIds.includes(
+                                        user.id,
+                                    )}
                                     canEdit={canEdit}
                                     canImpersonate={canImpersonate}
                                     canChangeStatus={canChangeStatus}
@@ -400,12 +509,65 @@ export function UserTable({
                                     onRestore={onRestore}
                                     onForceDelete={onForceDelete}
                                     onAssignRole={onAssignRole}
+                                    onSelectedChange={toggleUser}
                                 />
                             ))}
                         </tbody>
                     </table>
                 </div>
             )}
+            <div className="flex flex-col gap-3 border-t p-4 text-sm sm:flex-row sm:items-center sm:justify-between">
+                <p className="text-muted-foreground">
+                    Menampilkan halaman {pagination.currentPage} dari{' '}
+                    {pagination.lastPage} · {pagination.total} user
+                </p>
+                <div className="flex flex-wrap items-center gap-2">
+                    <Select
+                        value={String(pagination.perPage)}
+                        onValueChange={changePerPage}
+                    >
+                        <SelectTrigger
+                            aria-label="Jumlah baris per halaman"
+                            className="w-28"
+                        >
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {[5, 10, 25, 50].map((value) => (
+                                <SelectItem key={value} value={String(value)}>
+                                    {value} baris
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                    <Button
+                        type="button"
+                        variant="outline"
+                        disabled={isSearching || pagination.currentPage === 1}
+                        onClick={() => changePage(pagination.currentPage - 1)}
+                    >
+                        Sebelumnya
+                    </Button>
+                    <Button
+                        type="button"
+                        variant="outline"
+                        disabled={
+                            isSearching ||
+                            pagination.currentPage === pagination.lastPage
+                        }
+                        onClick={() => changePage(pagination.currentPage + 1)}
+                    >
+                        Berikutnya
+                    </Button>
+                </div>
+            </div>
+            <BulkUserLifecycleDialog
+                open={bulkOperation !== null}
+                operation={bulkOperation}
+                userIds={selectedVisibleUserIds}
+                onOpenChange={(open) => !open && setBulkOperation(null)}
+                onCompleted={() => setSelectedUserIds([])}
+            />
         </section>
     );
 }
@@ -430,11 +592,14 @@ type UserTableRowProps = Pick<
 > & {
     user: UserManagementUser;
     index: number;
+    isSelected: boolean;
+    onSelectedChange: (userId: string, checked: boolean) => void;
 };
 
 function UserTableRow({
     user,
     index,
+    isSelected,
     canEdit,
     canImpersonate,
     canChangeStatus,
@@ -450,11 +615,22 @@ function UserTableRow({
     onRestore,
     onForceDelete,
     onAssignRole,
+    onSelectedChange,
 }: UserTableRowProps) {
     const isArchived = user.deletedAt !== null;
 
     return (
         <tr className="dashboard-table-row transition-colors">
+            <td className="px-5 py-4">
+                <Checkbox
+                    aria-label={`Pilih ${user.name}`}
+                    checked={isSelected}
+                    disabled={user.isProtected}
+                    onCheckedChange={(checked) =>
+                        onSelectedChange(user.id, checked === true)
+                    }
+                />
+            </td>
             <td className="px-5 py-4">
                 <button
                     id={`user-table-row-${index}`}

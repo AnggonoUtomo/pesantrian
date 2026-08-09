@@ -39,10 +39,11 @@ it('repository mendukung filter pencarian sederhana dengan DTO typed', function 
     User::factory()->create(['name' => 'Bob Example', 'email' => 'bob@example.test']);
     $repository = app(UserRepository::class);
 
-    $users = $repository->list(UserListFilter::from('alice'));
+    $users = $repository->paginate(UserListFilter::from('alice'));
 
-    expect($users)->toHaveCount(1)
-        ->and($users[0]->email)->toBe('alice@example.test');
+    expect($users->data)->toHaveCount(1)
+        ->and($users->data[0]->email)->toBe('alice@example.test')
+        ->and($users->total)->toBe(1);
 });
 
 it('migration additive mempertahankan data 2FA dan passkey saat upgrade', function (): void {

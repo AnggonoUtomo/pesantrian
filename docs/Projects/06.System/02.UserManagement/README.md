@@ -20,10 +20,10 @@ Migration tetap dimiliki module dan didaftarkan oleh `ServiceProvider` melalui
 php artisan migrate:fresh --seed
 ```
 
-UserManagement memiliki `UserManagementSeeder` untuk membuat 10 user dummy pada
+UserManagement memiliki `UserManagementSeeder` untuk membuat 50 user dummy pada
 development. Seeder tetap berada di module dan dipanggil oleh
 `database/seeders/DatabaseSeeder.php` setelah `AccessControlSeeder` sesuai
-dependency order. Dengan dua akun baseline, bootstrap global menghasilkan 12
+dependency order. Dengan dua akun baseline, bootstrap global menghasilkan 52
 user.
 
 Password user dummy memakai `ACCESS_CONTROL_DUMMY_PASSWORD`. Jika konfigurasi
@@ -64,9 +64,11 @@ mengambil alih private implementation AccessControl.
 8. [01. Filter daftar user](01.user-list-filters/README.md) — selesai
 
 9. [02. Archive, force delete, dan perlindungan](02.archive-force-delete-and-protection/README.md) — selesai
+10. [03. Pagination, role efektif, dan toolbar](03.pagination-role-visibility-and-toolbar/README.md) — direncanakan
 
 ## Dokumen Terkait
 
+- [04. Bulk lifecycle user](04.bulk-user-lifecycle/README.md) - browser test terbuka
 - [AccessControl](../01.AccessControl/README.md)
 - [AccessControl code-flow](../01-1.AccessControl-code-flow/README.md)
 - [Folder structure](../../../03-IMPLEMENTATION/03.04-FOLDER-STRUCTURE.md)
@@ -232,3 +234,4 @@ khusus tersebut.
 | 2.0 | 2026-08-06 | Menambahkan increment ADR-0003 dan memprioritaskan guard SuperSystem. |
 | 2.1 | 2026-08-06 | Menyelesaikan restore dan force delete serta menghapus kolom Perlindungan tabel. |
 | 2.2 | 2026-08-06 | Menyelaraskan Ziggy, toast Sonner, LoadingButton, dan aturan operasi frontend. |
+| 2.3 | 2026-08-06 | Menambahkan dokumentasi increment pagination, role efektif, dan toolbar. |

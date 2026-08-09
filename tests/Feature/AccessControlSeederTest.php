@@ -61,7 +61,7 @@ final class AccessControlSeederTest extends TestCase
 
         $this->assertSame($this->expectedPermissionCount(), Permission::count());
         $this->assertSame(2, Role::count());
-        $this->assertSame(12, User::count());
+        $this->assertSame(52, User::count());
     }
 
     public function test_seeder_tidak_membuat_dummy_data_di_production(): void

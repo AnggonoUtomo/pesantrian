@@ -688,7 +688,7 @@ flow sudah tersedia.
 **Open risk Task 09:** dependency AuditLog sudah ditutup pada increment
 System/AuditLog melalui consumer synchronous dan persistence append-only.
 
-## Task 10 — Seeder 10 user dummy
+## Task 10 — Seeder 50 user dummy berbasis factory
 
 **Tujuan:** menyediakan data user development agar tabel, search, status, role,
 dan permission dapat diuji tanpa membuat user manual satu per satu.
@@ -710,21 +710,22 @@ dan permission dapat diuji tanpa membuat user manual satu per satu.
 
 **Acceptance criteria:**
 
-- [x] Sepuluh user dummy dibuat dengan status bervariasi.
+- [x] Lima puluh user dummy berbasis factory dibuat dengan status bervariasi.
   - Kondisi awal: fresh database hanya memiliki `SuperSystem` dan
     `SecurityAdmin`.
-  - Perubahan: `UserManagementSeeder` menambahkan 10 email `example.test`
-    dengan status active, inactive, dan suspended.
+  - Perubahan: `UserManagementSeeder` memakai `User::factory()` untuk membuat
+    50 user dengan email deterministik `user-management-dummy-XX@example.test`
+    dan status active, inactive, serta suspended.
   - Alasan: data bervariasi diperlukan untuk meninjau tabel dan filter UI.
-  - Evidence: focused test memverifikasi total 12 user global, 8 active, 2
-    inactive, dan 2 suspended.
+  - Evidence: focused test memverifikasi total 52 user global; 50 dummy
+    memiliki distribusi 17 active, 17 inactive, dan 16 suspended.
 - [x] Role dan password mengikuti aturan keamanan development.
   - Kondisi awal: role dummy belum tersedia dari UserManagement.
   - Perubahan: semua dummy user diberi role `SecurityAdmin`; password memakai
     `config('access_control.dummy_password')` atau random runtime.
   - Alasan: user dapat dipakai untuk menguji authorization tanpa menyimpan
     credential di source.
-  - Evidence: focused test memverifikasi 11 user ber-role `SecurityAdmin`,
+  - Evidence: focused test memverifikasi 51 user ber-role `SecurityAdmin`,
     termasuk akun baseline SecurityAdmin.
 - [x] Seeder global dan idempotency tersedia.
   - Kondisi awal: `php artisan migrate:fresh --seed` hanya membuat dua user.
@@ -732,8 +733,8 @@ dan permission dapat diuji tanpa membuat user manual satu per satu.
     `firstOrCreate` dan `syncRoles` menjaga seed dapat diulang.
   - Alasan: bootstrap global harus menjadi satu entry point dan tidak boleh
     menggandakan user.
-  - Evidence: test global dua kali tetap menghasilkan 12 user; semua 8 focused
-    test seeder lulus dengan 27 assertion.
+  - Evidence: test global dua kali tetap menghasilkan 52 user; 3 focused test
+    seeder lulus dengan 8 assertion setelah seeder diubah berbasis factory.
 - [x] Production guard tetap aktif.
   - Kondisi awal: dummy seeder tidak boleh mengisi database production.
   - Perubahan: seeder berhenti ketika `config('app.env') === 'production'`.
@@ -748,10 +749,15 @@ php artisan migrate:fresh --seed --force
 ```
 
 **Hasil implementasi:** selesai pada 2026-08-06. Bootstrap development sekarang
-menghasilkan 10 user dummy tambahan dan dua akun baseline.
+menghasilkan 50 user dummy tambahan dan dua akun baseline.
 
 **Open risk Task 10:** tidak ada untuk scope dummy seeder. Akun demo hanya untuk
 development dan tidak boleh digunakan sebagai data production.
+
+**Catatan penyesuaian 2026-08-07:** jumlah dummy dinaikkan dari 10 menjadi 50
+untuk meninjau pagination. Nama dan atribut user dibuat oleh factory; hanya
+email dibuat deterministik untuk menjaga idempotency. Test terbaru memverifikasi
+52 user pada fresh database, yaitu 50 dummy dan dua akun baseline.
 
 ## Final Quality Checkpoint
 
@@ -1118,7 +1124,7 @@ development dan tidak boleh digunakan sebagai data production.
 | 1.7     | 2026-08-06 | Menyelesaikan frontend vertical slice dan browser verification Task 08 |
 | 1.8     | 2026-08-06 | Menyelesaikan impersonation session, audit event, dan browser flow Task 09 |
 | 1.9     | 2026-08-06 | Menutup final quality checkpoint dan memperbaiki contrast tabel |
-| 2.0     | 2026-08-06 | Menambahkan seeder 10 user dummy dan test idempotency |
+| 2.0     | 2026-08-06 | Menambahkan seeder dummy UserManagement dan test idempotency |
 | 2.1     | 2026-08-06 | Menyamakan baseline warna module dengan AccessControl |
 | 2.2     | 2026-08-06 | Menutup warning Pest pada unit test application |
 | 2.3     | 2026-08-06 | Menutup Task 10 quality checkpoint dan menyelaraskan evidence dokumentasi |

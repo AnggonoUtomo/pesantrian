@@ -16,6 +16,8 @@ Route::middleware(['web', 'auth', 'verified'])
         Route::put('/{user}', [UserController::class, 'update'])->name('update');
         Route::patch('/{user}/status', [UserController::class, 'changeStatus'])->name('status');
         Route::patch('/{user}/roles', [UserController::class, 'assignRole'])->name('roles');
+        Route::delete('/bulk', [UserController::class, 'bulkDestroy'])->name('bulk-destroy');
+        Route::delete('/bulk/force', [UserController::class, 'bulkForceDelete'])->name('bulk-force-delete');
         Route::delete('/{user}', [UserController::class, 'destroy'])->name('destroy');
         Route::post('/{user}/restore', [UserController::class, 'restore'])->withTrashed()->name('restore');
         Route::delete('/{user}/force', [UserController::class, 'forceDelete'])->withTrashed()->name('force-delete');

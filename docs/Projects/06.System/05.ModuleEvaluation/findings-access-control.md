@@ -47,4 +47,6 @@
 
 ## Status Rekomendasi
 
-Belum ada code yang diubah. Required 01 memerlukan keputusan vocabulary permission melalui ADR sebelum implementasi. Required 02 dapat direncanakan sebagai hardening internal pada increment yang sama atau terpisah.
+Required 01 ditutup pada increment `01.security-hardening` melalui ADR-0001:
+`role.manage` mengelola role dan `permission.assign` menyinkronkan permission.
+Required 02 tetap menjadi hardening Application berikutnya.

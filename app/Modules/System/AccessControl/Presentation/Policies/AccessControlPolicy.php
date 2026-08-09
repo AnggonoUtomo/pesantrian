@@ -14,7 +14,7 @@ final class AccessControlPolicy
 
     public function viewAny(?Authenticatable $actor): bool
     {
-        return $this->authorization->canManage($actor);
+        return $this->authorization->canViewAccessControl($actor);
     }
 
     public function create(?Authenticatable $actor): bool
@@ -24,7 +24,7 @@ final class AccessControlPolicy
 
     public function update(?Authenticatable $actor, Role $role): bool
     {
-        return $this->authorization->canMutateRole($actor, $role);
+        return $this->authorization->canAssignPermissions($actor, $role);
     }
 
     public function delete(?Authenticatable $actor, Role $role): bool

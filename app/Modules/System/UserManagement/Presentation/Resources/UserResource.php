@@ -24,6 +24,10 @@ final class UserResource extends JsonResource
             'status' => $user->status->value,
             'isProtected' => $user->isProtected,
             'deletedAt' => $user->deletedAt,
+            'roles' => $user->roles,
+            'avatarUrl' => $user->avatarUrl,
+            'emailVerified' => $user->emailVerified,
+            'lastLoginAt' => $user->lastLoginAt,
         ];
     }
 }

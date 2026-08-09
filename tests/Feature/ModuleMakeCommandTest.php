@@ -1,7 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
-use Symfony\Component\Process\Process;
 
 beforeEach(function () {
     cleanupGeneratorProbes();
@@ -49,7 +49,9 @@ it('menolak mutasi tanpa konfirmasi force', function () {
 });
 
 it('mengembalikan failure saat target conflict', function () {
-    expect(runModuleMake('GeneratorConflictProbe', ['--domain=System', '--force', '--yes'])->getExitCode())->toBe(0);
+    $initial = runModuleMake('GeneratorConflictProbe', ['--domain=System', '--force', '--yes']);
+
+    expect($initial->getExitCode())->toBe(0, $initial->getOutput());
 
     $result = runModuleMake('GeneratorConflictProbe', ['--domain=System', '--force', '--yes', '--json']);
 
@@ -91,18 +93,36 @@ it('mengizinkan overwrite file plan dengan guard lengkap', function () {
 });
 
 /** @param list<string> $options */
-function runModuleMake(string $module, array $options): Process
+function runModuleMake(string $module, array $options): ModuleMakeCommandResult
 {
-    $process = new Process([
-        PHP_BINARY,
-        base_path('artisan'),
-        'module:make',
-        $module,
-        ...$options,
-    ], base_path());
-    $process->run();
+    $arguments = ['module' => $module];
 
-    return $process;
+    foreach ($options as $option) {
+        [$name, $value] = array_pad(explode('=', $option, 2), 2, true);
+        $arguments[$name] = $value;
+    }
+
+    $exitCode = Artisan::call('module:make', $arguments);
+
+    return new ModuleMakeCommandResult($exitCode, Artisan::output());
+}
+
+final readonly class ModuleMakeCommandResult
+{
+    public function __construct(
+        private int $exitCode,
+        private string $output,
+    ) {}
+
+    public function getExitCode(): int
+    {
+        return $this->exitCode;
+    }
+
+    public function getOutput(): string
+    {
+        return $this->output;
+    }
 }
 
 function cleanupGeneratorProbes(): void

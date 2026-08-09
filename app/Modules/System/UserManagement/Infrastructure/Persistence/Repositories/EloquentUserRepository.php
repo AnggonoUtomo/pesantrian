@@ -18,7 +18,7 @@ final class EloquentUserRepository implements UserRepository
 {
     public function paginate(UserListFilter $filter): PaginatedUserData
     {
-        $query = User::query();
+        $query = User::query()->with('roles:id,name');
 
         match ($filter->archive) {
             'active' => $query->withoutTrashed(),
@@ -56,7 +56,7 @@ final class EloquentUserRepository implements UserRepository
 
     public function find(string $userId): ?UserData
     {
-        $user = User::query()->withTrashed()->find($userId);
+        $user = User::query()->with('roles:id,name')->withTrashed()->find($userId);
 
         return $user === null ? null : $this->toData($user);
     }
@@ -121,6 +121,24 @@ final class EloquentUserRepository implements UserRepository
             status: $user->status,
             isProtected: $user->isSuperSystem(),
             deletedAt: $user->deleted_at?->toISOString(),
+            roles: $this->roleNames($user),
+            avatarUrl: null,
+            emailVerified: $user->email_verified_at !== null,
+            // Kolom baru akan ditambahkan pada INC-004. Kontrak UI sudah aman
+            // memakai null agar fallback aktivitas dapat dirender sejak INC-001.
+            lastLoginAt: null,
         );
+    }
+
+    /** @return list<string> */
+    private function roleNames(User $user): array
+    {
+        $roles = [];
+
+        foreach ($user->getRoleNames() as $role) {
+            $roles[] = (string) $role;
+        }
+
+        return $roles;
     }
 }

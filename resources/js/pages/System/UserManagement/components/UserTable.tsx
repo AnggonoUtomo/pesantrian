@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import type { ComponentProps } from 'react';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -477,8 +477,17 @@ export function UserTable({
                                     />
                                 </th>
                                 <th className="px-5 py-3 font-medium">User</th>
+                                <th className="hidden px-5 py-3 font-medium xl:table-cell">
+                                    Role
+                                </th>
                                 <th className="px-5 py-3 font-medium">
                                     Status
+                                </th>
+                                <th className="hidden px-5 py-3 font-medium xl:table-cell">
+                                    Verifikasi
+                                </th>
+                                <th className="hidden px-5 py-3 font-medium xl:table-cell">
+                                    Terakhir login
                                 </th>
                                 <th className="px-5 py-3 text-right font-medium">
                                     Aksi
@@ -621,7 +630,7 @@ function UserTableRow({
 
     return (
         <tr className="dashboard-table-row transition-colors">
-            <td className="px-5 py-4">
+            <td className="hidden px-5 py-4 xl:table-cell">
                 <Checkbox
                     aria-label={`Pilih ${user.name}`}
                     checked={isSelected}
@@ -631,7 +640,7 @@ function UserTableRow({
                     }
                 />
             </td>
-            <td className="px-5 py-4">
+            <td className="hidden px-5 py-4 xl:table-cell">
                 <button
                     id={`user-table-row-${index}`}
                     type="button"
@@ -639,6 +648,9 @@ function UserTableRow({
                     className="flex items-center gap-3 rounded-md text-left outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                     <Avatar className="size-9 rounded-lg">
+                        {user.avatarUrl ? (
+                            <AvatarImage src={user.avatarUrl} alt="" />
+                        ) : null}
                         <AvatarFallback className="rounded-lg bg-primary/10 text-primary">
                             {user.name
                                 .split(' ')
@@ -657,6 +669,25 @@ function UserTableRow({
                         </span>
                     </span>
                 </button>
+            </td>
+            <td className="px-5 py-4">
+                {user.roles.length > 0 ? (
+                    <div className="flex flex-wrap gap-1">
+                        {user.roles.map((role) => (
+                            <Badge
+                                key={role}
+                                variant="outline"
+                                className="dashboard-badge"
+                            >
+                                {role}
+                            </Badge>
+                        ))}
+                    </div>
+                ) : (
+                    <span className="text-xs text-muted-foreground">
+                        Belum ada role
+                    </span>
+                )}
             </td>
             <td className="px-5 py-4">
                 {isArchived ? (
@@ -682,6 +713,27 @@ function UserTableRow({
                         {statusLabels[user.status]}
                     </Badge>
                 )}
+            </td>
+            <td className="px-5 py-4">
+                <Badge
+                    variant="outline"
+                    className={cn(
+                        'font-medium',
+                        user.emailVerified
+                            ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300'
+                            : 'border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300',
+                    )}
+                >
+                    {user.emailVerified ? 'Terverifikasi' : 'Belum verifikasi'}
+                </Badge>
+            </td>
+            <td className="hidden px-5 py-4 text-xs text-muted-foreground xl:table-cell">
+                {user.lastLoginAt
+                    ? new Intl.DateTimeFormat('id-ID', {
+                          dateStyle: 'medium',
+                          timeStyle: 'short',
+                      }).format(new Date(user.lastLoginAt))
+                    : 'Belum pernah login'}
             </td>
             <td className="px-5 py-4">
                 <div className="flex justify-end gap-1">

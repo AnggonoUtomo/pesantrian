@@ -24,7 +24,7 @@ final readonly class StartImpersonation
         $this->authorization->ensure($actor, 'user.impersonate');
         $target = $this->repository->find($request->targetUserId);
 
-        if ($target === null || $target->isProtected) {
+        if ($target === null || $target->isProtected || $target->deletedAt !== null || $target->status->value !== 'active') {
             throw new AuthorizationException('Target impersonation tidak diizinkan.');
         }
 

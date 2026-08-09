@@ -63,7 +63,7 @@ final class ModulePromotionService
                 throw new RuntimeException('Parent target tidak dapat dibuat.');
             }
 
-            if (! rename($outputPath, $targetPath)) {
+            if (! $this->promoteDirectory($outputPath, $targetPath)) {
                 throw new RuntimeException('Promotion module gagal.');
             }
 
@@ -208,5 +208,18 @@ final class ModulePromotionService
         }
 
         rmdir($path);
+    }
+
+    private function promoteDirectory(string $outputPath, string $targetPath): bool
+    {
+        for ($attempt = 0; $attempt < 3; $attempt++) {
+            if (rename($outputPath, $targetPath)) {
+                return true;
+            }
+
+            usleep(10_000 * ($attempt + 1));
+        }
+
+        return false;
     }
 }

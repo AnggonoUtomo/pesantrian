@@ -41,6 +41,17 @@ final class AccessControlPageTest extends TestCase
         );
     }
 
+    public function test_actor_with_permission_assign_can_open_access_control_for_sync_workflow(): void
+    {
+        $user = User::factory()->create();
+        $permission = Permission::create(['name' => 'access_control.permission.assign', 'guard_name' => 'web']);
+        $user->givePermissionTo($permission);
+
+        $this->actingAs($user)
+            ->get(route('access-control.index'))
+            ->assertOk();
+    }
+
     public function test_actor_without_manage_permission_receives_server_side_forbidden(): void
     {
         $response = $this->actingAs(User::factory()->create())->get(route('access-control.index'));
@@ -85,9 +96,9 @@ final class AccessControlPageTest extends TestCase
     public function test_authorized_actor_can_sync_permissions_for_editable_role(): void
     {
         $user = User::factory()->create();
-        $manage = Permission::create(['name' => 'access_control.role.manage', 'guard_name' => 'web']);
+        $permissionAssign = Permission::create(['name' => 'access_control.permission.assign', 'guard_name' => 'web']);
         $assign = Permission::create(['name' => 'access_control.role.assign', 'guard_name' => 'web']);
-        $user->givePermissionTo($manage);
+        $user->givePermissionTo($permissionAssign);
         $role = Role::create(['name' => 'Editor', 'guard_name' => 'web']);
 
         $response = $this->actingAs($user)->put(route('access-control.roles.permissions.update', $role), [
@@ -101,6 +112,23 @@ final class AccessControlPageTest extends TestCase
                 'message' => 'Permission role berhasil diperbarui.',
             ]);
         self::assertTrue($role->fresh()->hasPermissionTo($assign));
+    }
+
+    public function test_actor_with_role_manage_but_without_permission_assign_cannot_sync_permissions(): void
+    {
+        $user = User::factory()->create();
+        $manage = Permission::create(['name' => 'access_control.role.manage', 'guard_name' => 'web']);
+        $assign = Permission::create(['name' => 'access_control.role.assign', 'guard_name' => 'web']);
+        $user->givePermissionTo($manage);
+        $role = Role::create(['name' => 'Editor', 'guard_name' => 'web']);
+
+        $this->actingAs($user)
+            ->put(route('access-control.roles.permissions.update', $role), [
+                'permissions' => [$assign->name],
+            ])
+            ->assertForbidden();
+
+        self::assertFalse($role->fresh()->hasPermissionTo($assign));
     }
 
     public function test_super_system_role_cannot_sync_permissions(): void

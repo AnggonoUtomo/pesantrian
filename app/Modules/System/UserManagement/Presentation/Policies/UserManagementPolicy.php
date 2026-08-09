@@ -60,7 +60,8 @@ final readonly class UserManagementPolicy
 
     public function impersonate(?Authenticatable $actor, User $user): bool
     {
-        return ! $user->isSuperSystem()
+        return $user->canAuthenticate()
+            && ! $user->isSuperSystem()
             && $this->authorization->can($actor, 'user.impersonate')->allowed;
     }
 }

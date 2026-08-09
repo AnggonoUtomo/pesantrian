@@ -19,7 +19,7 @@ final readonly class SyncRolePermissions
     /** @param array<int, string> $permissions */
     public function execute(?Authenticatable $actor, Role $role, array $permissions): void
     {
-        $this->authorization->ensureRoleCanBeMutated($actor, $role);
+        $this->authorization->ensurePermissionsCanBeAssigned($actor, $role);
         $this->activities->publish(
             actorId: $actor ? (string) $actor->getAuthIdentifier() : null,
             action: 'access_control.role.permissions_synced',

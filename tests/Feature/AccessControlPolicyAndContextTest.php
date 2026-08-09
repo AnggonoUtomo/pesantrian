@@ -24,8 +24,9 @@ final class AccessControlPolicyAndContextTest extends TestCase
     public function test_policy_allows_permission_holder_but_protects_super_system_role(): void
     {
         $user = User::factory()->create();
-        $permission = Permission::create(['name' => 'access_control.role.manage', 'guard_name' => 'web']);
-        $user->givePermissionTo($permission);
+        $roleManage = Permission::create(['name' => 'access_control.role.manage', 'guard_name' => 'web']);
+        $permissionAssign = Permission::create(['name' => 'access_control.permission.assign', 'guard_name' => 'web']);
+        $user->givePermissionTo([$roleManage, $permissionAssign]);
         $role = Role::create(['name' => 'Editor', 'guard_name' => 'web']);
         $superSystem = Role::create(['name' => 'SuperSystem', 'guard_name' => 'web']);
         $policy = $this->app->make(AccessControlPolicy::class);

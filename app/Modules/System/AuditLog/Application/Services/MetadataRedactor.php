@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\System\AuditLog\Application\Services;
 
+use App\Modules\System\AuditLog\Domain\Exceptions\SensitiveAuditReason;
+
 final readonly class MetadataRedactor
 {
     /** @var list<string> */
@@ -77,7 +79,19 @@ final readonly class MetadataRedactor
             return null;
         }
 
+        if ($this->containsSensitiveReason($sanitized)) {
+            throw new SensitiveAuditReason;
+        }
+
         return mb_substr($sanitized, 0, $this->maxReasonLength);
+    }
+
+    private function containsSensitiveReason(string $reason): bool
+    {
+        return preg_match(
+            '/\\b(?:password|token|secret|credential|api[_-]?key|authorization|cookie|session)\\s*(?:=|:)|\\bbearer\\s+[a-z0-9._~+\\/-]+/i',
+            $reason,
+        ) === 1;
     }
 
     private function sanitizeValue(mixed $value, string $key, int $depth): mixed

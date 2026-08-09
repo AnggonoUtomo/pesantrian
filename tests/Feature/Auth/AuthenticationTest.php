@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use App\Modules\System\UserManagement\Domain\ValueObjects\UserStatus;
 use Illuminate\Support\Facades\RateLimiter;
 use Laravel\Fortify\Features;
 
@@ -49,6 +50,29 @@ test('users can not authenticate with invalid password', function () {
         'email' => $user->email,
         'password' => 'wrong-password',
     ]);
+
+    $this->assertGuest();
+});
+
+test('user inactive atau suspended tidak dapat login walau password benar', function () {
+    foreach ([UserStatus::INACTIVE, UserStatus::SUSPENDED] as $status) {
+        $user = User::factory()->create(['status' => $status->value]);
+
+        $this->post(route('login.store'), [
+            'email' => $user->email,
+            'password' => 'password',
+        ]);
+
+        $this->assertGuest();
+    }
+});
+
+test('sesi user nonaktif dihentikan pada request web berikutnya', function () {
+    $user = User::factory()->create(['status' => UserStatus::SUSPENDED->value]);
+
+    $this->actingAs($user)
+        ->get(route('dashboard'))
+        ->assertRedirect(route('login'));
 
     $this->assertGuest();
 });

@@ -32,8 +32,12 @@ export default function Index() {
         () => roles.find((role) => role.id === activeRoleId) ?? null,
         [activeRoleId, roles],
     );
-    const canManage = Boolean(
+    const canManageRole = Boolean(
         auth.superSystem || auth.permissions?.['access_control.role.manage'],
+    );
+    const canAssignPermissions = Boolean(
+        auth.superSystem ||
+        auth.permissions?.['access_control.permission.assign'],
     );
     const selectedPermissions = useMemo(
         () => (activeRole ? (rolePermissions[activeRole.id] ?? []) : []),
@@ -49,7 +53,7 @@ export default function Index() {
     );
 
     const handlePermissionChange = (permission: string, checked: boolean) => {
-        if (!activeRole || activeRole.is_protected || !canManage) {
+        if (!activeRole || activeRole.is_protected || !canAssignPermissions) {
             return;
         }
 
@@ -72,7 +76,12 @@ export default function Index() {
         : false;
 
     const handleSave = useCallback(() => {
-        if (!activeRole || activeRole.is_protected || !canManage || !isDirty) {
+        if (
+            !activeRole ||
+            activeRole.is_protected ||
+            !canAssignPermissions ||
+            !isDirty
+        ) {
             return;
         }
 
@@ -88,7 +97,7 @@ export default function Index() {
                 onFinish: () => setIsSaving(false),
             },
         );
-    }, [activeRole, canManage, isDirty, selectedPermissions]);
+    }, [activeRole, canAssignPermissions, isDirty, selectedPermissions]);
 
     useEffect(() => {
         const handleShortcut = (event: KeyboardEvent) => {
@@ -212,13 +221,13 @@ export default function Index() {
                         actions={
                             <>
                                 <AddRoleDialog
-                                    canManage={canManage}
+                                    canManage={canManageRole}
                                     isProcessing={roleAction === 'create'}
                                     onSubmit={handleCreateRole}
                                 />
                                 <DeleteRoleDialog
                                     role={activeRole}
-                                    canManage={canManage}
+                                    canManage={canManageRole}
                                     isProcessing={roleAction === 'delete'}
                                     onSubmit={handleDeleteRole}
                                 />
@@ -228,7 +237,7 @@ export default function Index() {
                     <PermissionModulePanel
                         activeRole={activeRole}
                         groups={permissionGroups}
-                        canManage={canManage}
+                        canManage={canAssignPermissions}
                         selectedPermissions={selectedPermissions}
                         onPermissionChange={handlePermissionChange}
                         isDirty={isDirty}

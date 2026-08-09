@@ -25,15 +25,34 @@ final class AuthorizeRoleMutation
         return $this->authorization->can($actor, 'access_control.role.manage')->allowed;
     }
 
+    public function canViewAccessControl(?Authenticatable $actor): bool
+    {
+        return $this->canManage($actor)
+            || $this->authorization->can($actor, 'access_control.permission.assign')->allowed;
+    }
+
     public function canMutateRole(?Authenticatable $actor, Role $role): bool
     {
         return $this->canManage($actor) && $role->name !== 'SuperSystem';
+    }
+
+    public function canAssignPermissions(?Authenticatable $actor, Role $role): bool
+    {
+        return $this->authorization->can($actor, 'access_control.permission.assign')->allowed
+            && $role->name !== 'SuperSystem';
     }
 
     public function ensureRoleCanBeMutated(?Authenticatable $actor, Role $role): void
     {
         if (! $this->canMutateRole($actor, $role)) {
             throw new AuthorizationException('Role mutation tidak diizinkan.');
+        }
+    }
+
+    public function ensurePermissionsCanBeAssigned(?Authenticatable $actor, Role $role): void
+    {
+        if (! $this->canAssignPermissions($actor, $role)) {
+            throw new AuthorizationException('Sinkronisasi permission tidak diizinkan.');
         }
     }
 }

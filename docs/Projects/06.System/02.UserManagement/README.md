@@ -68,6 +68,8 @@ mengambil alih private implementation AccessControl.
 
 ## Dokumen Terkait
 
+- [05. Identity, akses CRUD, dan avatar](05.identity-access-crud-and-avatar/README.md) - berjalan, INC-001 selesai
+- [ADR-0005 identity, akses awal, avatar, dan aktivitas login](decisions/ADR-0005-IDENTITY-ACCESS-AVATAR-AND-LOGIN-ACTIVITY.md) - proposed; keputusan disk avatar terbuka
 - [04. Bulk lifecycle user](04.bulk-user-lifecycle/README.md) - browser test terbuka
 - [AccessControl](../01.AccessControl/README.md)
 - [AccessControl code-flow](../01-1.AccessControl-code-flow/README.md)
@@ -235,3 +237,5 @@ khusus tersebut.
 | 2.1 | 2026-08-06 | Menyelesaikan restore dan force delete serta menghapus kolom Perlindungan tabel. |
 | 2.2 | 2026-08-06 | Menyelaraskan Ziggy, toast Sonner, LoadingButton, dan aturan operasi frontend. |
 | 2.3 | 2026-08-06 | Menambahkan dokumentasi increment pagination, role efektif, dan toolbar. |
+| 2.4 | 2026-08-10 | Menambahkan rencana identity, akses awal, avatar Media Library, verifikasi email, dan aktivitas login. |
+| 2.5 | 2026-08-10 | Menyelesaikan INC-001 read contract dan visual identitas UserManagement. |

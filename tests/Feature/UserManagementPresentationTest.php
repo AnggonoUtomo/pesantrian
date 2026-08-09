@@ -74,6 +74,31 @@ it('mengirim role option typed dan mengizinkan assignment melalui capability pub
     expect($target->refresh()->hasRole('SecurityAdmin'))->toBeTrue();
 });
 
+it('mengirim identity dan access read model dengan fallback aktivitas aman', function (): void {
+    $view = Permission::create(['name' => 'user.view', 'guard_name' => 'web']);
+    $actor = User::factory()->create();
+    $actor->givePermissionTo($view);
+    $role = Role::create(['name' => 'SecurityAdmin', 'guard_name' => 'web']);
+    $target = User::factory()->create([
+        'name' => 'Identity User',
+        'email' => 'identity@example.test',
+        'email_verified_at' => null,
+    ]);
+    $target->assignRole($role);
+
+    $this->actingAs($actor)
+        ->get(route('system.users.index', ['search' => 'identity']))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->has('users', 1)
+            ->where('users.0.name', 'Identity User')
+            ->where('users.0.roles', ['SecurityAdmin'])
+            ->where('users.0.avatarUrl', null)
+            ->where('users.0.emailVerified', false)
+            ->where('users.0.lastLoginAt', null)
+        );
+});
+
 it('memfilter daftar user berdasarkan pencarian, status, role, dan arsip', function (): void {
     $view = Permission::create(['name' => 'user.view', 'guard_name' => 'web']);
     $actor = User::factory()->create();

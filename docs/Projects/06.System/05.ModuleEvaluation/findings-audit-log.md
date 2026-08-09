@@ -48,4 +48,7 @@
 
 ## Status Rekomendasi
 
-Belum ada code yang diubah. Required 01 perlu menjadi prioritas ketika reason bebas digunakan pada feature baru. Required 02 membutuhkan ADR operasi karena batas enforcement berbeda antara development dan production.
+Required 01 ditutup pada increment `01.security-hardening`: reason yang tampak
+seperti credential ditolak sebelum persistence. Required 02 ditingkatkan pada
+code boundary dengan allowlist fillable dan architecture test; hardening hak
+database production tetap membutuhkan ADR/runbook operasi.

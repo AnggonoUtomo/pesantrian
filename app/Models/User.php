@@ -59,6 +59,11 @@ class User extends Authenticatable implements PasskeyUser
         return $this->hasRole('SuperSystem');
     }
 
+    public function canAuthenticate(): bool
+    {
+        return ! $this->trashed() && $this->status === UserStatus::ACTIVE;
+    }
+
     /**
      * Get the attributes that should be cast.
      *

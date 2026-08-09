@@ -7,6 +7,10 @@ export type UserManagementUser = {
     status: 'active' | 'inactive' | 'suspended';
     isProtected: boolean;
     deletedAt: string | null;
+    roles: string[];
+    avatarUrl: string | null;
+    emailVerified: boolean;
+    lastLoginAt: string | null;
 };
 
 export type UserManagementRole = {

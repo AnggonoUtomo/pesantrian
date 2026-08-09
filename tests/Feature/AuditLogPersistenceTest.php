@@ -63,6 +63,23 @@ it('menolak perubahan dan penghapusan audit record', function (): void {
         ->toThrow(ImmutableAuditRecord::class);
 });
 
+it('membatasi mass assignment audit pada field record yang diizinkan', function (): void {
+    expect((new AuditRecord)->getFillable())->toBe([
+        'event_id',
+        'actor_id',
+        'action',
+        'subject_type',
+        'subject_id',
+        'module',
+        'project_id',
+        'tenant_id',
+        'correlation_id',
+        'reason',
+        'metadata',
+        'created_at',
+    ]);
+});
+
 it('mempertahankan audit saat actor dihapus permanen', function (): void {
     $actor = User::factory()->create();
     $record = app(AuditRecorder::class)->record(auditEntry($actor->id));

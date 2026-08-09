@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Modules\System\AuditLog\Application\DTO\AuditEntryData;
 use App\Modules\System\AuditLog\Application\Services\MetadataRedactor;
+use App\Modules\System\AuditLog\Domain\Exceptions\SensitiveAuditReason;
 use Illuminate\Support\Str;
 
 it('mendefinisikan permission baca audit yang valid', function (): void {
@@ -81,4 +82,11 @@ it('membatasi reason dan nilai metadata yang terlalu panjang', function (): void
         ->toBe(str_repeat('a', 30))
         ->and($redactor->filter(['role_name' => str_repeat('b', 40)]))
         ->toBe(['role_name' => str_repeat('b', 20)]);
+});
+
+it('menolak reason audit yang tampak seperti credential', function (): void {
+    $redactor = new MetadataRedactor;
+
+    expect(fn (): ?string => $redactor->sanitizeReason('Bearer rahasia-token-untuk-uji'))
+        ->toThrow(SensitiveAuditReason::class, 'Reason tidak boleh memuat password, token, atau credential.');
 });

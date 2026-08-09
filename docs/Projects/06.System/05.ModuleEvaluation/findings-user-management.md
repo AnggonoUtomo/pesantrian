@@ -61,4 +61,8 @@
 
 ## Status Rekomendasi
 
-Belum ada code yang diubah. Required 01 sampai Required 04 perlu diselesaikan sebagai hardening UserManagement sebelum feature restore, invitation, multi-role, atau feature lintas module baru dimulai.
+Required 01 ditutup pada increment `01.security-hardening`: login,
+impersonation, dan request web hanya menerima user active non-arsip. Required
+02 serta sebagian besar Required 03 telah memiliki guard Application dari
+increment lifecycle sebelumnya; policy resource untuk update/role assignment
+tetap perlu ditinjau sebagai hardening berikutnya bersama Required 04.

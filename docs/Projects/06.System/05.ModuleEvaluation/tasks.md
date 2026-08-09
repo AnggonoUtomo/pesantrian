@@ -28,8 +28,17 @@
 
 ## Task 04 — Review AuditLog
 
-- [ ] Review contract audit, ingestion event, redaction, scope, retention, dan UI.
-  - Acceptance: consumer lintas module tidak memasukkan payload sensitif atau business rule ke AuditLog.
+- [x] Review contract audit, ingestion event, redaction, scope, retention, dan UI.
+  - Kondisi awal: AuditLog telah dinyatakan selesai, tetapi belum ditinjau ulang
+    bersama module System lain.
+  - Perubahan: evidence dan temuan dicatat pada `findings-audit-log.md`.
+  - Alasan: audit adalah consumer lintas module dan harus diperiksa untuk
+    redaction, immutability, serta lifecycle retention.
+  - Evidence: `module:inspect System/AuditLog --json` valid; focused suite
+    AuditLog lulus 23 test/180 assertion; browser desktop sebelumnya memuat
+    filter, pagination, dan detail tanpa console error/warning.
+  - Acceptance: consumer lintas module tidak memasukkan payload sensitif atau
+    business rule ke AuditLog. Temuan required tetap menjadi backlog hardening.
 
 ## Task 05 — Review SystemSetting
 

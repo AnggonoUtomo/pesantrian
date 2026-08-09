@@ -29,14 +29,24 @@
 
 ## Task 02 — Role efektif
 
-- [ ] Role efektif selesai.
+- [x] Role efektif selesai.
   - Kondisi awal: tabel dan detail belum membawa daftar role user.
-  - Perubahan: belum dilakukan.
-  - Evidence: menunggu Task 01.
+  - Perubahan: `UserData`, read model repository, resource Inertia, tabel, dan
+    dialog detail membawa role efektif tanpa mengimpor model private
+    AccessControl.
+  - Alasan: operator perlu memahami akses user sebelum melakukan mutation.
+  - Evidence: role efektif tampil sebagai badge pada tabel dan dialog detail;
+    eager loading relasi role mencegah N+1 pada katalog user.
 
 ## Task 03 — Toolbar dan shortcut
 
-- [ ] Toolbar dan shortcut selesai.
+- [x] Toolbar dan shortcut selesai.
   - Kondisi awal: toolbar belum mengenal pagination.
-  - Perubahan: belum dilakukan.
-  - Evidence: menunggu Task 02.
+  - Perubahan: toolbar mempertahankan filter saat page/per-page berubah,
+    menyediakan kontrol pagination, dan shortcut fokus pencarian tanpa memakai
+    `Ctrl/Cmd+K` yang dimiliki command palette global.
+  - Alasan: navigasi katalog harus tetap konsisten dengan filter dan shortcut
+    global aplikasi.
+  - Evidence: feature test pagination/filter, ESLint, TypeScript, dan full CI
+    pada increment terkait telah lulus; browser checkpoint tetap tercatat pada
+    increment bulk lifecycle.

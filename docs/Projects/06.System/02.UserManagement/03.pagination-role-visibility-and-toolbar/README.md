@@ -2,11 +2,12 @@
 
 ## Status
 
-`Berjalan — Task 01 pagination selesai; Task 02 role efektif berikutnya.`
+`Selesai secara implementasi; quality checkpoint browser tetap dicatat pada increment yang relevan.`
 
-Increment ini menjalankan poin 1 sampai 3 ADR-0004 secara berurutan. Poin 1
-pagination harus selesai dan diverifikasi sebelum poin 2 role efektif, lalu
-poin 3 toolbar dan shortcut dimulai.
+Increment ini menjalankan poin 1 sampai 3 ADR-0004 secara berurutan. Pagination,
+role efektif, serta toolbar dan shortcut sudah tersedia. Evidence browser yang
+belum dapat dijalankan pada sesi agent tetap dilacak sebagai quality checkpoint,
+bukan alasan untuk mengubah status implementasi yang telah teruji otomatis.
 
 ## Scope
 

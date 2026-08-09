@@ -8,6 +8,7 @@ use App\Modules\System\AccessControl\Infrastructure\Persistence\Models\Role;
 use App\Modules\System\UserManagement\Application\Events\UserManagementActivityOccurred;
 use App\Modules\System\UserManagement\Domain\Events\UserImpersonationEnded;
 use App\Modules\System\UserManagement\Domain\Events\UserImpersonationStarted;
+use App\Modules\System\UserManagement\Domain\ValueObjects\UserStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
@@ -107,6 +108,30 @@ it('selalu menolak target SuperSystem', function (): void {
     $this->assertAuthenticatedAs($actor);
 });
 
+it('menolak target impersonation yang tidak aktif atau telah diarsipkan', function (): void {
+    $actor = User::factory()->create();
+    $actor->givePermissionTo(impersonationPermission());
+
+    $inactive = User::factory()->create(['status' => UserStatus::INACTIVE->value]);
+    $suspended = User::factory()->create(['status' => UserStatus::SUSPENDED->value]);
+    $archived = User::factory()->create();
+    $archived->delete();
+
+    foreach ([$inactive, $suspended] as $target) {
+        $this->actingAs($actor)
+            ->post(route('system.users.impersonate', $target), ['reason' => 'Pemeriksaan akses'])
+            ->assertForbidden();
+
+        $this->assertAuthenticatedAs($actor);
+    }
+
+    $this->actingAs($actor)
+        ->post(route('system.users.impersonate', $archived), ['reason' => 'Pemeriksaan akses'])
+        ->assertNotFound();
+
+    $this->assertAuthenticatedAs($actor);
+});
+
 it('event impersonation tidak membawa password atau token', function (): void {
     $event = new UserImpersonationStarted(
         actorId: '01JACTOR000000000000000001',
@@ -122,4 +147,19 @@ it('event impersonation tidak membawa password atau token', function (): void {
         'credential',
         'sessionCookie',
     ]);
+});
+
+it('menolak reason impersonation yang memuat credential sebelum audit disimpan', function (): void {
+    $actor = User::factory()->create();
+    $target = User::factory()->create();
+    $actor->givePermissionTo(impersonationPermission());
+
+    $this->actingAs($actor)
+        ->post(route('system.users.impersonate', $target), [
+            'reason' => 'Bearer rahasia-token-untuk-uji',
+        ])
+        ->assertSessionHasErrors('reason');
+
+    $this->assertAuthenticatedAs($actor);
+    $this->assertDatabaseCount('audit_logs', 0);
 });

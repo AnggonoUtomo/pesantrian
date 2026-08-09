@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Middleware\EnsureActiveUser;
 use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
+use App\Modules\System\AuditLog\Domain\Exceptions\SensitiveAuditReason;
 use App\Modules\System\SystemSetting\Domain\Exceptions\SettingStorageUnavailable;
 use App\Modules\System\SystemSetting\Presentation\Middleware\EnforceConfiguredSessionLifetime;
 use App\Modules\System\SystemSetting\Presentation\Middleware\EnforceSystemSettingIdempotency;
@@ -27,6 +29,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->web(append: [
+            EnsureActiveUser::class,
             EnforceConfiguredSessionLifetime::class,
             HandleAppearance::class,
             HandleInertiaRequests::class,
@@ -42,6 +45,16 @@ return Application::configure(basePath: dirname(__DIR__))
             }
 
             return null;
+        });
+
+        $exceptions->render(function (SensitiveAuditReason $exception, Request $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                return response()->json([
+                    'errors' => ['reason' => [$exception->getMessage()]],
+                ], 422);
+            }
+
+            return back()->withErrors(['reason' => $exception->getMessage()]);
         });
 
         $exceptions->render(function (AuthorizationException $exception, Request $request) {

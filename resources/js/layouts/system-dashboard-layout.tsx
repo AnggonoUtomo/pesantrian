@@ -26,7 +26,7 @@ export default function SystemDashboardLayout({
     };
 
     return (
-        <div className="theme-dashboard-shell mx-auto flex size-full max-w-7xl flex-1 flex-col px-4 py-6 sm:px-6">
+        <div className="theme-dashboard-shell mx-auto flex size-full max-w-7xl min-w-0 flex-1 flex-col px-4 py-6 sm:px-6">
             {auth.impersonation ? (
                 <div className="mb-5 flex flex-col gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex items-start gap-3">
@@ -71,7 +71,7 @@ export default function SystemDashboardLayout({
                 ) : null}
             </header>
 
-            <main className="flex-1">{children}</main>
+            <main className="min-w-0 flex-1">{children}</main>
 
             <footer className="mt-8 border-t border-border/70 pt-4 text-xs text-foreground/60">
                 <p>Created by Ino@2026</p>

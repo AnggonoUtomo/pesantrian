@@ -2,7 +2,7 @@
 
 ## Status
 
-`Berjalan: inventory selesai, AccessControl menjadi review pertama.`
+`Berjalan: inventory, review AccessControl, UserManagement, dan AuditLog selesai; SystemSetting serta peta backlog berikutnya.`
 
 ## Urutan Kerja
 

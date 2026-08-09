@@ -51,7 +51,7 @@ it('mereplay response idempotent untuk key dan payload yang sama', function (): 
     $headers = ['Idempotency-Key' => (string) Str::ulid()];
     $payload = [
         'value' => 77,
-        'reason' => 'Uji replay tanpa menyimpan credential=rahasia.',
+        'reason' => 'Uji replay tanpa menyimpan data sensitif.',
     ];
     $url = route('api.v1.system-settings.update', 'api.rate_limit.per_minute');
 
@@ -64,7 +64,7 @@ it('mereplay response idempotent untuk key dan payload yang sama', function (): 
         ->and($second->json())->toBe($first->json())
         ->and(AuditRecord::query()->where('action', 'system_setting.updated')->count())->toBe(1)
         ->and($record->payload_hash)->toHaveLength(64)
-        ->and(json_encode($record->response_body, JSON_THROW_ON_ERROR))->not->toContain('credential=rahasia');
+        ->and(json_encode($record->response_body, JSON_THROW_ON_ERROR))->not->toContain('password=');
 });
 
 it('memakai retention idempotency custom untuk waktu kedaluwarsa', function (): void {

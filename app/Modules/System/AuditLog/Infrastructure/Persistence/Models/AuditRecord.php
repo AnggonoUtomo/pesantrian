@@ -35,7 +35,21 @@ final class AuditRecord extends Model
 
     protected $table = 'audit_logs';
 
-    protected $guarded = [];
+    /** @var list<string> */
+    protected $fillable = [
+        'event_id',
+        'actor_id',
+        'action',
+        'subject_type',
+        'subject_id',
+        'module',
+        'project_id',
+        'tenant_id',
+        'correlation_id',
+        'reason',
+        'metadata',
+        'created_at',
+    ];
 
     /** @return BelongsTo<User, $this> */
     public function actor(): BelongsTo

@@ -8,6 +8,7 @@ use App\Modules\System\UserManagement\Domain\ValueObjects\UserStatus;
 
 final readonly class UserData
 {
+    /** @param list<string> $roles */
     public function __construct(
         public string $id,
         public string $name,
@@ -15,5 +16,9 @@ final readonly class UserData
         public UserStatus $status,
         public bool $isProtected,
         public ?string $deletedAt,
+        public array $roles = [],
+        public ?string $avatarUrl = null,
+        public bool $emailVerified = false,
+        public ?string $lastLoginAt = null,
     ) {}
 }

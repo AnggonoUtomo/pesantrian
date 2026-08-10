@@ -11,6 +11,7 @@ use App\Modules\System\SystemSetting\Domain\Exceptions\SettingStorageUnavailable
 use App\Modules\System\SystemSetting\Infrastructure\Persistence\Models\SystemSettingRecord;
 use Illuminate\Database\QueryException;
 use JsonException;
+use Illuminate\Support\Facades\Crypt;
 
 final class EloquentSystemSettingRepository implements SystemSettingRepository
 {
@@ -66,10 +67,10 @@ final class EloquentSystemSettingRepository implements SystemSettingRepository
             $record = SystemSettingRecord::query()->updateOrCreate(
                 ['key' => $definition->key],
                 [
-                    'value' => json_encode($value, JSON_THROW_ON_ERROR),
+                    'value' => $definition->sensitive ? Crypt::encryptString(json_encode($value, JSON_THROW_ON_ERROR)) : json_encode($value, JSON_THROW_ON_ERROR),
                     'type' => $definition->type->value,
                     'description' => $definition->description,
-                    'is_sensitive' => false,
+                    'is_sensitive' => $definition->sensitive,
                     'updated_by' => $actorId,
                 ],
             );
@@ -83,7 +84,7 @@ final class EloquentSystemSettingRepository implements SystemSettingRepository
     private function toData(SystemSettingRecord $record): StoredSettingData
     {
         try {
-            $value = json_decode($record->value, true, flags: JSON_THROW_ON_ERROR);
+            $value = json_decode($record->is_sensitive ? Crypt::decryptString($record->value) : $record->value, true, flags: JSON_THROW_ON_ERROR);
         } catch (JsonException $exception) {
             throw new SettingStorageUnavailable('Nilai SystemSetting tidak dapat dibaca.', previous: $exception);
         }

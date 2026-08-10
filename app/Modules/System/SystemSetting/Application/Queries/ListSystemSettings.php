@@ -24,7 +24,7 @@ final readonly class ListSystemSettings
             return new SystemSettingItemData(
                 key: $definition->key,
                 type: $definition->type->value,
-                value: $value->value,
+                value: $definition->sensitive && $value->source === 'database' ? '••••••••' : $value->value,
                 defaultValue: $definition->defaultValue,
                 description: $definition->description,
                 source: $value->source,

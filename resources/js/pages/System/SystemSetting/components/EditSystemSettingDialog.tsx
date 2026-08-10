@@ -142,7 +142,9 @@ export function EditSystemSettingDialog({ setting, onClose }: Props) {
                                     type={
                                         setting.type === 'integer'
                                             ? 'number'
-                                            : 'text'
+                                            : setting.type === 'secret'
+                                              ? 'password'
+                                              : 'text'
                                     }
                                     value={String(form.data.value ?? '')}
                                     min={setting.min ?? undefined}

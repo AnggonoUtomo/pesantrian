@@ -23,6 +23,7 @@ final readonly class SettingDefinitionData
         public ?int $max = null,
         public array $options = [],
         public bool $nullable = false,
+        public bool $sensitive = false,
     ) {
         if (preg_match('/^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$/', $key) !== 1) {
             throw new InvalidArgumentException("Key setting [{$key}] tidak valid.");
@@ -53,6 +54,7 @@ final readonly class SettingDefinitionData
             SettingType::Enum => $this->normalizeEnum($value),
             SettingType::Path => $this->normalizePath($value),
             SettingType::IntegerList => $this->normalizeIntegerList($value),
+            SettingType::Secret => $this->normalizeString($value),
         };
     }
 

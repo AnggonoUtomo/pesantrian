@@ -12,4 +12,5 @@ enum SettingType: string
     case Enum = 'enum';
     case Path = 'path';
     case IntegerList = 'integer_list';
+    case Secret = 'secret';
 }

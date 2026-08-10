@@ -70,8 +70,8 @@ final readonly class UpdateSystemSetting
                 reason: $data->reason,
                 metadata: [
                     'setting_key' => $definition->key,
-                    'before_value' => $before->value,
-                    'after_value' => $normalizedValue,
+                    'before_value' => $definition->sensitive ? '[REDACTED]' : $before->value,
+                    'after_value' => $definition->sensitive ? '[REDACTED]' : $normalizedValue,
                     'result' => 'updated',
                 ],
                 occurredAt: new DateTimeImmutable,

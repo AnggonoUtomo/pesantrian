@@ -63,6 +63,13 @@ final class SettingDefinitionRegistry implements SettingDefinitionRegistrar
             new SettingDefinitionData('monitoring.external_enabled', SettingType::Boolean, false, 'Flag integrasi monitoring eksternal.', 'SystemSetting'),
             new SettingDefinitionData('operations.rto_hours', SettingType::Integer, 4, 'Target recovery time dalam jam.', 'SystemSetting', 1, 24),
             new SettingDefinitionData('operations.rpo_hours', SettingType::Integer, 24, 'Target recovery point dalam jam.', 'SystemSetting', 1, 168),
+            new SettingDefinitionData('mail.mailer', SettingType::Enum, 'smtp', 'Mailer untuk email sistem.', 'SystemSetting', options: ['smtp', 'log']),
+            new SettingDefinitionData('mail.host', SettingType::String, '127.0.0.1', 'Host SMTP.', 'SystemSetting', 1, 255),
+            new SettingDefinitionData('mail.port', SettingType::Integer, 1025, 'Port SMTP.', 'SystemSetting', 1, 65535),
+            new SettingDefinitionData('mail.username', SettingType::String, null, 'Username SMTP bila diperlukan.', 'SystemSetting', 1, 255, nullable: true, sensitive: true),
+            new SettingDefinitionData('mail.password', SettingType::Secret, null, 'Password SMTP terenkripsi.', 'SystemSetting', 1, 1024, nullable: true, sensitive: true),
+            new SettingDefinitionData('mail.from_address', SettingType::String, 'noreply@example.test', 'Alamat pengirim email.', 'SystemSetting', 3, 255),
+            new SettingDefinitionData('mail.from_name', SettingType::String, trim($appName) !== '' ? trim($appName) : 'Laravel', 'Nama pengirim email.', 'SystemSetting', 1, 255),
         ];
     }
 }

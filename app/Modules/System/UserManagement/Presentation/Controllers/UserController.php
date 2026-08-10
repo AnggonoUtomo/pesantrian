@@ -29,8 +29,8 @@ use App\Modules\System\UserManagement\Domain\ValueObjects\UserStatus;
 use App\Modules\System\UserManagement\Presentation\Requests\AssignUserRoleRequest;
 use App\Modules\System\UserManagement\Presentation\Requests\BulkUserLifecycleRequest;
 use App\Modules\System\UserManagement\Presentation\Requests\ChangeUserStatusRequest;
-use App\Modules\System\UserManagement\Presentation\Requests\ListUsersRequest;
 use App\Modules\System\UserManagement\Presentation\Requests\InviteUserRequest;
+use App\Modules\System\UserManagement\Presentation\Requests\ListUsersRequest;
 use App\Modules\System\UserManagement\Presentation\Requests\StartImpersonationRequest;
 use App\Modules\System\UserManagement\Presentation\Requests\StoreUserRequest;
 use App\Modules\System\UserManagement\Presentation\Requests\UpdateUserAvatarRequest;
@@ -162,8 +162,9 @@ final class UserController implements HasMiddleware
     public function invite(InviteUserRequest $request): RedirectResponse
     {
         $data = $request->validated();
-        $this->inviteUser->execute($request->user(), $data['name'], $data['email'], $data['role'] ?? null);
+        $this->inviteUser->execute($request->user(), $data['name'], $data['email'], UserStatus::from($data['status'] ?? 'active'), $data['role'] ?? null);
         Inertia::flash('toast', ['type' => 'success', 'message' => 'Undangan user berhasil dikirim.']);
+
         return back();
     }
 

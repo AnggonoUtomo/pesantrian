@@ -39,7 +39,7 @@ it('menampilkan typed setting page kepada SuperSystem', function (): void {
         ->assertOk()
         ->assertInertia(fn (Assert $page): Assert => $page
             ->component('System/SystemSetting/pages/Index')
-            ->has('settings', 15)
+            ->has('settings', 26)
             ->where('settings.0.key', 'api.idempotency.retention_hours')
             ->where('settings.0.source', 'database'));
 });
@@ -100,7 +100,7 @@ it('menyediakan API typed untuk list dan mutation', function (): void {
         ->getJson(route('api.v1.system-settings.index'))
         ->assertOk()
         ->assertJsonPath('success', true)
-        ->assertJsonCount(15, 'data')
+        ->assertJsonCount(26, 'data')
         ->assertJsonStructure(['success', 'data' => [['key', 'type', 'value', 'source']]]);
 
     $this->actingAs($actor)

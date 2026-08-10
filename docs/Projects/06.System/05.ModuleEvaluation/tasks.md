@@ -42,20 +42,23 @@
 
 ## Task 05 — Review SystemSetting
 
-- [ ] Review registry, runtime activation, command, UI, dan consumer runtime.
-  - Acceptance: kandidat setting baru dibedakan dari preference user atau konfigurasi module-specific.
+- [x] Review registry, runtime activation, command, UI, dan consumer runtime.
+  - Kondisi awal: registry belum mencatat konfigurasi mail dan secret masih perlu dibedakan dari setting biasa.
+  - Perubahan: registry menambah konfigurasi SMTP/MailHog; tipe `secret` disimpan terenkripsi, dimasking pada UI, dan teredaksi pada audit.
+  - Evidence: persistence SystemSetting lulus; browser invitation memakai runtime SMTP dan MailHog menerima pesan.
 
 ## Task 06 — Peta Dependency dan Backlog
 
-- [ ] Menutup evaluasi dengan rekomendasi urutan implementasi.
-  - Acceptance: setiap fitur memiliki owner, contract, authorization, audit, UI, test, dokumentasi, dan rollback trace.
+- [x] Menutup evaluasi dengan rekomendasi urutan implementasi.
+  - Perubahan: backlog dipisahkan menjadi capability UserManagement, hardening internal, dan release gate migration shared/production.
+  - Evidence: invitation dan multi-role memiliki contract, policy, UI, test, audit redaction, serta trace rollback; migration target tetap berada pada runbook operator.
 
 ## Definition of Done Evaluasi
 
-- [ ] Keempat module telah direview dengan evidence nyata.
-- [ ] Temuan required telah dipisahkan dari improvement optional.
-- [ ] Kandidat lintas module memiliki owner dan arah dependency.
-- [ ] Open Decision, ADR, dan backlog implementasi telah dicatat.
+- [x] Keempat module telah direview dengan evidence nyata.
+- [x] Temuan required telah dipisahkan dari improvement optional.
+- [x] Kandidat lintas module memiliki owner dan arah dependency.
+- [x] Open Decision, ADR, dan backlog implementasi telah dicatat.
 
 ## Revision History
 

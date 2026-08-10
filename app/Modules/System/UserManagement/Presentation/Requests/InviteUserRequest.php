@@ -8,10 +8,14 @@ use Illuminate\Foundation\Http\FormRequest;
 
 final class InviteUserRequest extends FormRequest
 {
-    public function authorize(): bool { return true; }
+    public function authorize(): bool
+    {
+        return true;
+    }
 
+    /** @return array<string, array<int, mixed>> */
     public function rules(): array
     {
-        return ['name' => ['required', 'string', 'max:255'], 'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'], 'role' => ['nullable', 'string', 'max:100']];
+        return ['name' => ['required', 'string', 'min:2', 'max:255'], 'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'], 'status' => ['nullable', 'string', 'in:active,inactive,suspended'], 'role' => ['nullable', 'string', 'max:100']];
     }
 }

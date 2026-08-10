@@ -15,14 +15,14 @@
   - Acceptance: avatar kosong memakai fallback, `last_login_at = null` terbaca, dan aksi archive tidak regresi.
   - Evidence: test `mengirim identity dan access read model dengan fallback aktivitas aman` lulus; `composer ci:check` lulus dengan 260 test dan 1225 assertion. Browser runtime belum dapat dijalankan karena Chrome DevTools MCP tidak tersedia sebagai tool sesi.
 
-- [ ] 03. Implementasikan role awal dan status awal secara atomik.
+- [x] 03. Implementasikan role awal dan status awal secara atomik.
   - Kondisi awal: create form hanya mengirim name/email/password.
   - Perubahan: ubah DTO, FormRequest, Action/Command, policy/capability, dan modal tambah tanpa akses concrete lintas module.
   - Alasan: role/status awal harus aman dan tidak memberi privilege escalation.
   - Acceptance: permission backend menolak payload manual tanpa hak, role `SuperSystem` tidak dapat dipilih, dan rollback terjadi saat assignment gagal.
   - Evidence: positive/negative authorization test dan transaction test.
 
-- [ ] 04. Tambahkan Spatie Media Library untuk avatar.
+- [x] 04. Tambahkan Spatie Media Library untuk avatar.
   - Kondisi awal: `composer.json` tidak memiliki Media Library dan User belum mengimplementasikan `HasMedia`.
   - Perubahan: tambah dependency kompatibel, config/migration package, collection `avatar`, conversion, validation, Action, request, dan UI upload.
   - Alasan: media perlu lifecycle file terpisah dari kolom identity user.
@@ -41,7 +41,7 @@
     timestamp ISO-8601 ke tabel serta modal detail; browser `/system/users`
     memuat halaman tanpa console error, warning, atau issue.
 
-- [ ] 06. Quality checkpoint dan dokumentasi akhir.
+- [x] 06. Quality checkpoint dan dokumentasi akhir.
   - Kondisi awal: seluruh increment implementasi telah diverifikasi terpisah.
   - Perubahan: perbarui specification, implementation plan, task, ADR, README, execution log, serta dokumen downstream relevan.
   - Alasan: perubahan contract dan media harus dapat diaudit.
@@ -49,8 +49,8 @@
 
 ## Definition of Done
 
-- [ ] Tabel serta modal menampilkan identitas, akses, verifikasi, dan aktivitas sesuai policy.
-- [ ] Role/status awal aman, atomik, dan memiliki test positif/negatif.
-- [ ] Avatar memakai Media Library dengan validasi, fallback, dan test file.
+- [x] Tabel serta modal menampilkan identitas, akses, verifikasi, dan aktivitas sesuai policy.
+- [x] Role/status awal aman, atomik, dan memiliki test positif/negatif.
+- [x] Avatar memakai Media Library dengan validasi, fallback, dan test file.
 - [ ] `last_login_at` dicatat dari login sukses; verifikasi email tetap native.
-- [ ] Dokumentasi dan evidence final diperbarui tanpa checklist palsu.
+- [x] Dokumentasi dan evidence final diperbarui tanpa checklist palsu.

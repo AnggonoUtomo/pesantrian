@@ -63,3 +63,16 @@ rollback jika aplikasi sudah menulis data lifecycle baru tanpa rencana restore.
 Workspace ini hanya memverifikasi fresh migration, upgrade simulation, dan
 rollback pada environment testing. Eksekusi database shared/production tetap
 memerlukan akses operator, backup nyata, dan persetujuan deployment.
+
+## Evidence Rehearsal Lokal
+
+- Kondisi: 10 Agustus 2026, database lokal dipakai sebagai rehearsal terisolasi.
+- Command: `php artisan migrate:fresh --seed` menyelesaikan seluruh migration
+  module dan `AccessControlSeeder`, `UserManagementSeeder`, `AuditLogSeeder`,
+  serta `SystemSettingSeeder`.
+- Rollback: `php artisan migrate:rollback --step=1` mengembalikan migration
+  `2026_08_10_004225_create_media_table` ke `Pending` tanpa kegagalan.
+- Pemulihan: `php artisan migrate` menjalankan kembali migration media dan
+  `php artisan migrate:status` mengonfirmasi seluruh migration kembali `Ran`.
+- Batasan: rehearsal ini tidak menggantikan backup/restore, lock, downtime,
+  dan persetujuan operator pada shared/production.

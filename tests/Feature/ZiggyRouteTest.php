@@ -13,6 +13,7 @@ it('membagikan route yang dibutuhkan frontend', function () {
         'access-control.roles.store',
         'access-control.roles.destroy',
         'system.users.restore',
+        'system.users.invitations.store',
         'system.users.force-delete',
         'system.audit-logs.index',
         'system.audit-logs.show',

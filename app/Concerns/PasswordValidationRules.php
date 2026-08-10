@@ -2,6 +2,7 @@
 
 namespace App\Concerns;
 
+use App\Modules\System\SystemSetting\Application\Contracts\SystemSettingReader;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Validation\Rules\Password;
 
@@ -14,7 +15,19 @@ trait PasswordValidationRules
      */
     protected function passwordRules(): array
     {
-        return ['required', 'string', Password::default(), 'confirmed'];
+        $settings = app(SystemSettingReader::class);
+        $password = Password::min($settings->integer('security.password.min_length'));
+        if ($settings->boolean('security.password.require_mixed_case')) {
+            $password->mixedCase();
+        }
+        if ($settings->boolean('security.password.require_numbers')) {
+            $password->numbers();
+        }
+        if ($settings->boolean('security.password.require_symbols')) {
+            $password->symbols();
+        }
+
+        return ['required', 'string', $password, 'confirmed'];
     }
 
     /**

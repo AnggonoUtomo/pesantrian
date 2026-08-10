@@ -12,7 +12,7 @@ it('memiliki permission identity UserManagement yang unik dan sensitif terdefini
     $permissions = require app_path('Modules/System/UserManagement/permissions.php');
     $keys = array_column($permissions, 'key');
 
-    expect($permissions)->toHaveCount(8)
+    expect($permissions)->toHaveCount(9)
         ->and($keys)->toHaveCount(count(array_unique($keys)))
         ->and($keys)->toContain(
             'user.view',
@@ -46,7 +46,7 @@ it('role assignment memakai contract publik tanpa dependency private Spatie', fu
     $methods = array_map(static fn ($method): string => $method->getName(), $reflection->getMethods());
 
     expect($reflection->isInterface())->toBeTrue()
-        ->and($methods)->toEqualCanonicalizing(['assignRole', 'revokeRole']);
+        ->and($methods)->toEqualCanonicalizing(['assignRole', 'revokeRole', 'syncRoles']);
 
     foreach ($reflection->getMethods() as $method) {
         foreach ($method->getParameters() as $parameter) {

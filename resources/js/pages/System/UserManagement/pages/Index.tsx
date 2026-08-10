@@ -7,6 +7,7 @@ import { ChangeUserStatusDialog } from '../components/ChangeUserStatusDialog';
 import { DeleteUserDialog } from '../components/DeleteUserDialog';
 import { ForceDeleteUserDialog } from '../components/ForceDeleteUserDialog';
 import { ImpersonateUserDialog } from '../components/ImpersonateUserDialog';
+import { InviteUserDialog } from '../components/InviteUserDialog';
 import { RestoreUserDialog } from '../components/RestoreUserDialog';
 import { RoleAssignmentDialog } from '../components/RoleAssignmentDialog';
 import { UserFormDialog } from '../components/UserFormDialog';
@@ -41,10 +42,12 @@ export default function Index() {
         useState<UserManagementUser | null>(null);
     const [forceDeletingUser, setForceDeletingUser] =
         useState<UserManagementUser | null>(null);
+    const [inviting, setInviting] = useState(false);
     const can = (permission: string) =>
         auth.superSystem === true || auth.permissions?.[permission] === true;
     const canView = can('user.view');
     const canCreate = can('user.create');
+    const canInvite = can('user.invite');
     const canEdit = can('user.update');
     const canImpersonate = can('user.impersonate');
     const canChangeStatus = can('user.status.manage');
@@ -181,8 +184,22 @@ export default function Index() {
                 title="User Management"
                 description="Tinjau identity, status, dan akses user pada area System."
                 actions={
-                    canCreate ? (
-                        <Button onClick={openCreate}>Tambah user</Button>
+                    canCreate || canInvite ? (
+                        <div className="flex gap-2">
+                            {canInvite ? (
+                                <Button
+                                    variant="outline"
+                                    onClick={() => setInviting(true)}
+                                >
+                                    Kirim undangan
+                                </Button>
+                            ) : null}
+                            {canCreate ? (
+                                <Button onClick={openCreate}>
+                                    Tambah user
+                                </Button>
+                            ) : null}
+                        </div>
                     ) : null
                 }
             >
@@ -299,6 +316,7 @@ export default function Index() {
                 user={forceDeletingUser}
                 onOpenChange={(open) => !open && setForceDeletingUser(null)}
             />
+            <InviteUserDialog open={inviting} onOpenChange={setInviting} />
         </>
     );
 }

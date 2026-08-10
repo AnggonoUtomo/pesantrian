@@ -1087,9 +1087,11 @@ email dibuat deterministik untuk menjaga idempotency. Test terbaru memverifikasi
   - Syarat selesai: action, policy, permission, audit event, aturan
     `SuperSystem`, positive/negative test, dan browser flow tersedia.
 
-- [ ] Invitation email belum dibuat.
-  - Syarat selesai: token sekali pakai dengan expiry, mail-fake test, redaction,
-    failure handling, dan UI invitation tersedia.
+- [x] Invitation email selesai.
+  - Kondisi awal: belum ada UI atau delivery email untuk membuat user tanpa password manual.
+  - Perubahan: `InviteUser`, route Ziggy, permission `user.invite`, dialog invitation, dan setting SMTP terenkripsi ditambahkan. Password SMTP dimasking pada UI serta teredaksi pada audit.
+  - Alasan: user menetapkan password sendiri melalui token password-reset Laravel yang sekali pakai dan berakhir dalam 60 menit.
+  - Evidence: test notification positif/permission negatif lulus; browser SuperSystem mengirim invitation dan MailHog menerima email tujuan uji.
 
 - [ ] Role revoke atau multi-role management belum dibuat.
   - Syarat selesai: public contract, operasi atomik, protected-role guard,

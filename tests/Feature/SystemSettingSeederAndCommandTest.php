@@ -17,14 +17,14 @@ it('menjalankan seeder module secara idempotent tanpa menimpa override', functio
 
     $this->seed(SystemSettingSeeder::class);
 
-    expect(SystemSettingRecord::query()->count())->toBe(15)
+    expect(SystemSettingRecord::query()->count())->toBe(26)
         ->and(json_decode($record->fresh()?->value ?? '', true, flags: JSON_THROW_ON_ERROR))->toBe(125);
 });
 
 it('memanggil SystemSettingSeeder dari entry point global', function (): void {
     $this->seed(DatabaseSeeder::class);
 
-    expect(SystemSettingRecord::query()->count())->toBe(15)
+    expect(SystemSettingRecord::query()->count())->toBe(26)
         ->and(SystemSettingRecord::query()->where('key', 'branding.palette_default')->exists())->toBeTrue();
 });
 
@@ -39,7 +39,7 @@ it('menyediakan command list dan get tanpa mengubah data', function (): void {
         ->assertSuccessful()
         ->expectsOutputToContain('60');
 
-    expect(SystemSettingRecord::query()->count())->toBe(15);
+    expect(SystemSettingRecord::query()->count())->toBe(26);
 });
 
 it('mengubah setting melalui command dengan SuperSystem dan reason', function (): void {

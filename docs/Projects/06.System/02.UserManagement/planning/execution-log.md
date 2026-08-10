@@ -93,3 +93,11 @@ riwayat percakapan.
   impersonation correlation, unsupported version, dan failure rollback.
 - Risiko tersisa: mode queue, retry worker, dan dead-letter tidak dibutuhkan
   untuk ingestion synchronous. Perubahan ke asynchronous memerlukan ADR baru.
+
+## Task 15 - Invitation email dan MailHog
+
+- Kondisi awal: invitation belum memiliki UI, konfigurasi SMTP runtime, atau evidence delivery browser.
+- Perubahan: UserManagement menambah `InviteUser` dan dialog `InviteUserDialog`; SystemSetting menambah konfigurasi mail dan tipe secret terenkripsi. Route invitation ditambahkan ke allowlist Ziggy.
+- Security: secret disimpan melalui `Crypt`, dimasking pada listing, dan nilai before/after audit menjadi `[REDACTED]`. Token tidak dicatat pada audit atau dokumentasi.
+- Evidence: focused test invitation sukses serta penolakan permission lulus. Browser login SuperSystem membuka dialog, submit menghasilkan toast sukses; MailHog API menerima pesan tujuan uji dengan link password-reset dan expiry 60 menit.
+- Risiko: execution MailHog lokal sempat macet; service dipulihkan dan delivery ulang berhasil. Shared/production tetap wajib memakai konfigurasi SMTP serta release procedure target.

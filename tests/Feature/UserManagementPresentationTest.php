@@ -10,10 +10,14 @@ use App\Modules\System\SystemSetting\Database\Seeders\SystemSettingSeeder;
 use App\Modules\System\SystemSetting\Infrastructure\Persistence\Models\SystemSettingRecord;
 use App\Modules\System\UserManagement\Domain\ValueObjects\UserStatus;
 use App\Modules\System\UserManagement\Presentation\Policies\UserManagementPolicy;
+use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Database\Eloquent\Factories\Sequence;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Password;
+use RuntimeException;
 
 uses(RefreshDatabase::class);
 
@@ -54,6 +58,42 @@ it('mengirim flash toast setelah mutation user berhasil', function (): void {
             'type' => 'success',
             'message' => 'User berhasil dibuat.',
         ]);
+});
+
+it('mengirim invitation melalui reset token tanpa mengekspos token', function (): void {
+    Notification::fake();
+    $invite = Permission::create(['name' => 'user.invite', 'guard_name' => 'web']);
+    $create = Permission::create(['name' => 'user.create', 'guard_name' => 'web']);
+    $actor = User::factory()->create();
+    $actor->givePermissionTo([$invite, $create]);
+
+    $this->actingAs($actor)->post(route('system.users.invitations.store'), [
+        'name' => 'Invitation User', 'email' => 'invitation@example.test',
+    ])->assertRedirect()->assertSessionHas('inertia.flash_data.toast.type', 'success');
+
+    $user = User::query()->where('email', 'invitation@example.test')->firstOrFail();
+    Notification::assertSentTo($user, ResetPassword::class);
+});
+
+it('menolak invitation tanpa permission', function (): void {
+    $actor = User::factory()->create();
+    $this->actingAs($actor)->post(route('system.users.invitations.store'), ['name' => 'No Access', 'email' => 'no-access@example.test'])->assertForbidden();
+    expect(User::query()->where('email', 'no-access@example.test')->exists())->toBeFalse();
+});
+
+it('menghapus user baru saat delivery invitation gagal', function (): void {
+    $invite = Permission::create(['name' => 'user.invite', 'guard_name' => 'web']);
+    $create = Permission::create(['name' => 'user.create', 'guard_name' => 'web']);
+    $actor = User::factory()->create();
+    $actor->givePermissionTo([$invite, $create]);
+    Password::shouldReceive('sendResetLink')->once()->andReturn(Password::INVALID_USER);
+
+    $this->withoutExceptionHandling();
+    expect(fn () => $this->actingAs($actor)->post(route('system.users.invitations.store'), [
+        'name' => 'Delivery Failure', 'email' => 'delivery-failure@example.test',
+    ]))->toThrow(RuntimeException::class);
+
+    expect(User::query()->where('email', 'delivery-failure@example.test')->exists())->toBeFalse();
 });
 
 it('mengirim role option typed dan mengizinkan assignment melalui capability publik', function (): void {

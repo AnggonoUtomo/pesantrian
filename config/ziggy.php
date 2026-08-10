@@ -11,6 +11,7 @@ return [
         'access-control.roles.permissions.update',
         'system.users.index',
         'system.users.store',
+        'system.users.invitations.store',
         'system.users.show',
         'system.users.update',
         'system.users.avatar',

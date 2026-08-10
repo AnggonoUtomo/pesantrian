@@ -28,7 +28,7 @@ type Props = {
     canChangeStatus: boolean;
     onOpenChange: (open: boolean) => void;
 };
-type FormData = { name: string; email: string; password: string };
+type FormData = { name: string; email: string };
 
 export function UserFormDialog({
     open,
@@ -40,7 +40,6 @@ export function UserFormDialog({
     const form = useForm<FormData & { status: string; role: string }>({
         name: user?.name ?? '',
         email: user?.email ?? '',
-        password: '',
         status: 'active',
         role: '',
     });
@@ -58,7 +57,7 @@ export function UserFormDialog({
             return;
         }
 
-        form.post(route('system.users.store'), {
+        form.post(route('system.users.invitations.store'), {
             preserveScroll: true,
             onSuccess: () => onOpenChange(false),
         });
@@ -146,35 +145,6 @@ export function UserFormDialog({
                     </div>
                     {!isEdit ? (
                         <>
-                            <div className="space-y-2">
-                                <label
-                                    htmlFor="user-form-password"
-                                    className="text-sm font-medium"
-                                >
-                                    Password awal
-                                </label>
-                                <Input
-                                    id="user-form-password"
-                                    type="password"
-                                    value={form.data.password}
-                                    onChange={(event) =>
-                                        form.setData(
-                                            'password',
-                                            event.target.value,
-                                        )
-                                    }
-                                    required
-                                    minLength={8}
-                                />
-                                {form.errors.password ? (
-                                    <p
-                                        className="text-xs text-destructive"
-                                        role="alert"
-                                    >
-                                        {form.errors.password}
-                                    </p>
-                                ) : null}
-                            </div>
                             <div className="grid gap-4 sm:grid-cols-2">
                                 <div className="space-y-2">
                                     <label
@@ -259,7 +229,7 @@ export function UserFormDialog({
                                 ? 'Menyimpan...'
                                 : isEdit
                                   ? 'Simpan perubahan'
-                                  : 'Buat user'}
+                                  : 'Kirim invitation'}
                         </LoadingButton>
                     </DialogFooter>
                 </form>

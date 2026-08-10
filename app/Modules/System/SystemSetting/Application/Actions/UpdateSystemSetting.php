@@ -10,6 +10,7 @@ use App\Modules\System\AuditLog\Application\DTO\AuditEntryData;
 use App\Modules\System\SystemSetting\Application\Contracts\SystemSettingReader;
 use App\Modules\System\SystemSetting\Application\Contracts\SystemSettingRepository;
 use App\Modules\System\SystemSetting\Application\DTO\SettingValueData;
+use App\Modules\System\SystemSetting\Application\DTO\UpdateSystemSettingCategoryData;
 use App\Modules\System\SystemSetting\Application\DTO\UpdateSystemSettingData;
 use App\Modules\System\SystemSetting\Application\Services\RequestSettingMemoizer;
 use App\Modules\System\SystemSetting\Application\Services\SettingDefinitionRegistry;
@@ -35,6 +36,97 @@ final readonly class UpdateSystemSetting
 
     public function execute(Authenticatable $actor, UpdateSystemSettingData $data): SettingValueData
     {
+        $result = $this->persistUpdates(
+            actorId: $this->actorId($actor),
+            updates: [$data->key => $data->value],
+            reason: $data->reason,
+            correlationId: $data->correlationId,
+        );
+
+        return $result[0];
+    }
+
+    /** @return list<SettingValueData> */
+    public function executeCategory(Authenticatable $actor, UpdateSystemSettingCategoryData $data): array
+    {
+        foreach (array_keys($data->updates) as $key) {
+            if (! $data->category->owns($key)) {
+                throw new InvalidArgumentException('Key SystemSetting bukan milik kategori yang dipilih.');
+            }
+        }
+
+        return $this->persistUpdates(
+            actorId: $this->actorId($actor),
+            updates: $data->updates,
+            reason: $data->reason,
+            correlationId: $data->correlationId,
+        );
+    }
+
+    /**
+     * @param  array<string, mixed>  $updates
+     * @return list<SettingValueData>
+     */
+    private function persistUpdates(string $actorId, array $updates, string $reason, string $correlationId): array
+    {
+        $definitions = [];
+        $normalizedUpdates = [];
+        $before = [];
+
+        foreach ($updates as $key => $value) {
+            $definition = $this->definitions->definition($key);
+            $definitions[$key] = $definition;
+            $normalizedUpdates[$key] = $definition->normalize($value);
+            $before[$key] = $this->reader->get($key);
+        }
+
+        $this->consistency->forUpdates($normalizedUpdates);
+
+        $results = DB::transaction(function () use ($actorId, $before, $correlationId, $definitions, $normalizedUpdates, $reason): array {
+            $results = [];
+
+            foreach ($normalizedUpdates as $key => $normalizedValue) {
+                $definition = $definitions[$key];
+                $stored = $this->repository->upsert($definition, $normalizedValue, $actorId);
+
+                $this->auditRecorder->record(new AuditEntryData(
+                    eventId: (string) Str::ulid(),
+                    actorId: $actorId,
+                    action: 'system_setting.updated',
+                    subjectType: 'system_setting',
+                    subjectId: $stored->id,
+                    module: 'SystemSetting',
+                    correlationId: $correlationId,
+                    reason: $reason,
+                    metadata: [
+                        'setting_key' => $definition->key,
+                        'before_value' => $definition->sensitive ? '[REDACTED]' : $before[$key]->value,
+                        'after_value' => $definition->sensitive ? '[REDACTED]' : $normalizedValue,
+                        'result' => 'updated',
+                    ],
+                    occurredAt: new DateTimeImmutable,
+                ));
+
+                $results[] = new SettingValueData(
+                    key: $definition->key,
+                    value: $normalizedValue,
+                    source: 'database',
+                    updatedAt: $stored->updatedAt,
+                );
+            }
+
+            return $results;
+        });
+
+        foreach ($results as $result) {
+            $this->memoizer->put($result);
+        }
+
+        return $results;
+    }
+
+    private function actorId(Authenticatable $actor): string
+    {
         if (! $this->authorization->isSuperSystem($actor)) {
             throw new AuthorizationException('Hanya SuperSystem yang dapat mengubah SystemSetting.');
         }
@@ -45,48 +137,6 @@ final readonly class UpdateSystemSetting
             throw new InvalidArgumentException('Actor ID wajib berupa ULID.');
         }
 
-        $definition = $this->definitions->definition($data->key);
-        $normalizedValue = $definition->normalize($data->value);
-        $this->consistency->forUpdate($data->key, $normalizedValue);
-        $before = $this->reader->get($data->key);
-
-        $result = DB::transaction(function () use (
-            $actorId,
-            $before,
-            $data,
-            $definition,
-            $normalizedValue,
-        ): SettingValueData {
-            $stored = $this->repository->upsert($definition, $normalizedValue, $actorId);
-
-            $this->auditRecorder->record(new AuditEntryData(
-                eventId: (string) Str::ulid(),
-                actorId: $actorId,
-                action: 'system_setting.updated',
-                subjectType: 'system_setting',
-                subjectId: $stored->id,
-                module: 'SystemSetting',
-                correlationId: $data->correlationId,
-                reason: $data->reason,
-                metadata: [
-                    'setting_key' => $definition->key,
-                    'before_value' => $definition->sensitive ? '[REDACTED]' : $before->value,
-                    'after_value' => $definition->sensitive ? '[REDACTED]' : $normalizedValue,
-                    'result' => 'updated',
-                ],
-                occurredAt: new DateTimeImmutable,
-            ));
-
-            return new SettingValueData(
-                key: $definition->key,
-                value: $normalizedValue,
-                source: 'database',
-                updatedAt: $stored->updatedAt,
-            );
-        });
-
-        $this->memoizer->put($result);
-
-        return $result;
+        return $actorId;
     }
 }

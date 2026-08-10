@@ -62,6 +62,47 @@ it('mengubah setting dari web dan mengirim flash toast', function (): void {
     expect(json_decode($record->value, true, flags: JSON_THROW_ON_ERROR))->toBe(80);
 });
 
+it('mengubah kategori dari web dengan satu alasan global', function (): void {
+    $actor = User::query()->where('email', 'super-system@example.test')->firstOrFail();
+
+    $this->actingAs($actor)
+        ->patch(route('system.system-settings.category.update', ['category' => 'password']), [
+            'updates' => [
+                ['key' => 'security.password.require_numbers', 'value' => true],
+                ['key' => 'security.password.require_symbols', 'value' => true],
+            ],
+            'reason' => 'Menyelaraskan kebijakan password organisasi.',
+        ])
+        ->assertRedirect()
+        ->assertSessionHas('inertia.flash_data.toast', [
+            'type' => 'success',
+            'message' => '2 SystemSetting berhasil diperbarui.',
+        ]);
+
+    expect(SystemSettingRecord::query()->whereIn('key', [
+        'security.password.require_numbers',
+        'security.password.require_symbols',
+    ])->count())->toBe(2);
+});
+
+it('menolak perubahan kategori yang berisi key dari kategori lain', function (): void {
+    $actor = User::query()->where('email', 'super-system@example.test')->firstOrFail();
+
+    $this->actingAs($actor)
+        ->patchJson(route('system.system-settings.category.update', ['category' => 'password']), [
+            'updates' => [
+                ['key' => 'mail.host', 'value' => 'mail.example.test'],
+            ],
+            'reason' => 'Payload lintas kategori harus ditolak.',
+        ])
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors('updates');
+
+    $record = SystemSettingRecord::query()->where('key', 'mail.host')->firstOrFail();
+
+    expect(json_decode($record->value, true, flags: JSON_THROW_ON_ERROR))->toBe('127.0.0.1');
+});
+
 it('mengembalikan 422 untuk value atau reason invalid dan 404 untuk unknown key', function (): void {
     $actor = User::query()->where('email', 'super-system@example.test')->firstOrFail();
 
@@ -119,5 +160,6 @@ it('mendaftarkan route web pada daftar Ziggy', function (): void {
     $routes = config('ziggy.only', []);
 
     expect($routes)->toContain('system.system-settings.index')
-        ->and($routes)->toContain('system.system-settings.update');
+        ->and($routes)->toContain('system.system-settings.update')
+        ->and($routes)->toContain('system.system-settings.category.update');
 });

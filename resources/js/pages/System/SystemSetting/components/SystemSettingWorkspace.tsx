@@ -1,13 +1,13 @@
 import { Database, Pencil, SearchX, ShieldCheck } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { settingCategories } from '../categories';
+import { guidanceForSetting, settingCategories } from '../categories';
 import type { SettingCategory, SystemSettingItem } from '../types';
 
 type Props = {
     category: SettingCategory;
     settings: SystemSettingItem[];
-    onEdit: (setting: SystemSettingItem) => void;
+    onEditCategory: () => void;
 };
 
 function displayValue(value: SystemSettingItem['value']): string {
@@ -22,7 +22,11 @@ function displayValue(value: SystemSettingItem['value']): string {
     return String(value);
 }
 
-export function SystemSettingWorkspace({ category, settings, onEdit }: Props) {
+export function SystemSettingWorkspace({
+    category,
+    settings,
+    onEditCategory,
+}: Props) {
     const definition =
         settingCategories.find((item) => item.key === category) ??
         settingCategories[0];
@@ -46,14 +50,29 @@ export function SystemSettingWorkspace({ category, settings, onEdit }: Props) {
                         <p className="mt-1 text-sm text-foreground/65">
                             {definition.description}
                         </p>
+                        <p className="mt-2 text-sm text-foreground/75">
+                            <span className="font-medium">Untuk apa:</span>{' '}
+                            {definition.operatorGuide}
+                        </p>
                     </div>
                 </div>
-                <Badge
-                    variant="outline"
-                    className="dashboard-badge dashboard-badge--blue"
-                >
-                    {settings.length} setting
-                </Badge>
+                <div className="flex items-center gap-2">
+                    <Badge
+                        variant="outline"
+                        className="dashboard-badge dashboard-badge--blue"
+                    >
+                        {settings.length} setting
+                    </Badge>
+                    <Button
+                        type="button"
+                        variant="outline"
+                        onClick={onEditCategory}
+                        disabled={settings.length === 0}
+                    >
+                        <Pencil aria-hidden="true" />
+                        Ubah kategori
+                    </Button>
+                </div>
             </div>
 
             {settings.length === 0 ? (
@@ -68,16 +87,18 @@ export function SystemSettingWorkspace({ category, settings, onEdit }: Props) {
                 </div>
             ) : (
                 <div className="grid gap-3 p-4 sm:p-5">
-                    {settings.map((setting) => (
-                        <article
-                            key={setting.key}
-                            className="dashboard-subcard rounded-xl border p-4"
-                        >
-                            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    {settings.map((setting) => {
+                        const guidance = guidanceForSetting(setting.key);
+
+                        return (
+                            <article
+                                key={setting.key}
+                                className="dashboard-subcard rounded-xl border p-4"
+                            >
                                 <div className="min-w-0">
                                     <div className="flex flex-wrap items-center gap-2">
-                                        <h3 className="text-sm font-semibold break-all">
-                                            {setting.key}
+                                        <h3 className="text-sm font-semibold">
+                                            {guidance.title}
                                         </h3>
                                         <Badge
                                             variant="outline"
@@ -97,25 +118,36 @@ export function SystemSettingWorkspace({ category, settings, onEdit }: Props) {
                                                 : 'Default aman'}
                                         </Badge>
                                     </div>
-                                    <p className="mt-1 text-sm text-foreground/65">
-                                        {setting.description}
+                                    <p className="mt-1 font-mono text-xs break-all text-foreground/55">
+                                        {setting.key}
                                     </p>
-                                    <p className="mt-2 font-mono text-sm font-medium break-all text-primary">
+                                    <p className="mt-2 text-sm text-foreground/75">
+                                        {guidance.purpose}
+                                    </p>
+                                    <p className="mt-2 text-sm text-foreground/65">
+                                        <span className="font-medium">
+                                            Cara mengisi:
+                                        </span>{' '}
+                                        {guidance.inputHint}
+                                    </p>
+                                    {guidance.caution ? (
+                                        <p className="mt-2 text-sm text-amber-700 dark:text-amber-300">
+                                            <span className="font-medium">
+                                                Perhatikan:
+                                            </span>{' '}
+                                            {guidance.caution}
+                                        </p>
+                                    ) : null}
+                                    <p className="mt-3 text-sm font-medium break-all text-primary">
+                                        <span className="text-foreground/65">
+                                            Nilai saat ini:
+                                        </span>{' '}
                                         {displayValue(setting.value)}
                                     </p>
                                 </div>
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    className="shrink-0"
-                                    onClick={() => onEdit(setting)}
-                                >
-                                    <Pencil aria-hidden="true" />
-                                    Ubah
-                                </Button>
-                            </div>
-                        </article>
-                    ))}
+                            </article>
+                        );
+                    })}
                 </div>
             )}
         </section>

@@ -8,6 +8,7 @@ use App\Modules\System\AccessControl\Infrastructure\Persistence\Models\Role;
 use App\Modules\System\AuditLog\Application\Contracts\AuditRecorder;
 use App\Modules\System\AuditLog\Infrastructure\Persistence\Models\AuditRecord;
 use App\Modules\System\SystemSetting\Application\Actions\UpdateSystemSetting;
+use App\Modules\System\SystemSetting\Application\DTO\UpdateSystemSettingCategoryData;
 use App\Modules\System\SystemSetting\Application\DTO\UpdateSystemSettingData;
 use App\Modules\System\SystemSetting\Infrastructure\Persistence\Models\SystemSettingRecord;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -118,4 +119,83 @@ it('menolak idle session yang tidak lebih kecil dari absolute lifetime', functio
     expect(fn () => app(UpdateSystemSetting::class)->execute($actor, $data))
         ->toThrow(InvalidArgumentException::class, 'Idle session harus lebih kecil')
         ->and(SystemSettingRecord::query()->where('key', $data->key)->exists())->toBeFalse();
+});
+
+it('mengubah satu kategori secara atomik dengan satu alasan dan correlation audit', function (): void {
+    $actor = systemSettingSuperSystem();
+    $correlationId = (string) Str::ulid();
+    $data = new UpdateSystemSettingCategoryData(
+        category: 'password',
+        updates: [
+            'security.password.require_numbers' => true,
+            'security.password.require_symbols' => true,
+        ],
+        reason: 'Menyelaraskan kebijakan password organisasi.',
+        correlationId: $correlationId,
+    );
+
+    $result = app(UpdateSystemSetting::class)->executeCategory($actor, $data);
+
+    expect($result)->toHaveCount(2)
+        ->and(SystemSettingRecord::query()->whereIn('key', array_keys($data->updates))->count())->toBe(2)
+        ->and(AuditRecord::query()->where('action', 'system_setting.updated')->count())->toBe(2)
+        ->and(AuditRecord::query()->where('correlation_id', $correlationId)->pluck('reason')->unique()->all())
+        ->toBe(['Menyelaraskan kebijakan password organisasi.']);
+});
+
+it('menolak key lintas kategori tanpa menyimpan perubahan parsial', function (): void {
+    $actor = systemSettingSuperSystem();
+    $data = new UpdateSystemSettingCategoryData(
+        category: 'password',
+        updates: [
+            'security.password.require_numbers' => true,
+            'mail.host' => 'mail.example.test',
+        ],
+        reason: 'Data lintas kategori harus ditolak.',
+        correlationId: (string) Str::ulid(),
+    );
+
+    expect(fn () => app(UpdateSystemSetting::class)->executeCategory($actor, $data))
+        ->toThrow(InvalidArgumentException::class, 'bukan milik kategori')
+        ->and(SystemSettingRecord::query()->count())->toBe(0)
+        ->and(AuditRecord::query()->count())->toBe(0);
+});
+
+it('memvalidasi konsistensi seluruh kategori sebelum melakukan mutation', function (): void {
+    $actor = systemSettingSuperSystem();
+    $data = new UpdateSystemSettingCategoryData(
+        category: 'session',
+        updates: [
+            'security.session.idle_minutes' => 720,
+            'security.session.absolute_hours' => 12,
+        ],
+        reason: 'Nilai session tidak boleh disimpan sebagian.',
+        correlationId: (string) Str::ulid(),
+    );
+
+    expect(fn () => app(UpdateSystemSetting::class)->executeCategory($actor, $data))
+        ->toThrow(InvalidArgumentException::class, 'Idle session harus lebih kecil')
+        ->and(SystemSettingRecord::query()->count())->toBe(0)
+        ->and(AuditRecord::query()->count())->toBe(0);
+});
+
+it('melakukan rollback seluruh kategori ketika audit gagal', function (): void {
+    $actor = systemSettingSuperSystem();
+    $recorder = Mockery::mock(AuditRecorder::class);
+    $recorder->shouldReceive('record')->once()->andThrow(new RuntimeException('Audit storage gagal.'));
+    app()->instance(AuditRecorder::class, $recorder);
+    $data = new UpdateSystemSettingCategoryData(
+        category: 'password',
+        updates: [
+            'security.password.require_numbers' => true,
+            'security.password.require_symbols' => true,
+        ],
+        reason: 'Kegagalan audit harus membatalkan seluruh kategori.',
+        correlationId: (string) Str::ulid(),
+    );
+
+    expect(fn () => app(UpdateSystemSetting::class)->executeCategory($actor, $data))
+        ->toThrow(RuntimeException::class)
+        ->and(SystemSettingRecord::query()->count())->toBe(0)
+        ->and(AuditRecord::query()->count())->toBe(0);
 });

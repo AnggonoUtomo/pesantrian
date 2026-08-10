@@ -54,7 +54,8 @@ membuka halaman atau mutation SystemSetting.
 - Persistence MySQL dengan ULID, unique key, type, description, exposure flag,
   actor pembaru, dan timestamp.
 - Public reader dengan safe default dan diagnostic aman.
-- Mutation satu setting per request dengan reason wajib.
+- Mutation kompatibel satu setting per request serta mutation kategori atomik
+  untuk beberapa key dengan satu reason global wajib.
 - Authorization `SuperSystem` pada middleware, policy, dan Application Action.
 - Audit before/after melalui public `AuditRecorder` secara synchronous.
 - Baseline key untuk rate limit, idempotency, session, branding, monitoring,
@@ -70,8 +71,9 @@ membuka halaman atau mutation SystemSetting.
 
 ## Non-scope
 
-- Menyimpan password, token, API key, credential, encryption key, atau secret
-  lain di SystemSetting.
+- Menyimpan secret arbitrer di luar definition registry. `mail.username` dan
+  `mail.password` yang terdaftar merupakan pengecualian terbatas: nilainya
+  dienkripsi saat disimpan, dimasking pada read model, dan diredaaksi di audit.
 - Mengganti halaman appearance pribadi starter kit.
 - Approval workflow dua tahap untuk perubahan setting.
 - Command Bus, queue, event sourcing, projection, atau read database terpisah.
@@ -195,6 +197,7 @@ Query/typed reader untuk read.
 
 ```text
 GET   /system/system-settings
+PATCH /system/system-settings/categories/{category}
 PATCH /system/system-settings/{key}
 
 GET   /api/v1/system-settings
@@ -204,7 +207,16 @@ PATCH /api/v1/system-settings/{key}
 Nama route Ziggy:
 
 - `system.system-settings.index`;
+- `system.system-settings.category.update`;
 - `system.system-settings.update`.
+
+Route kategori hanya menerima `api`, `password`, `session`, `mail`,
+`pagination`, `branding`, `monitoring`, atau `operations`. Payload `updates`
+berbentuk daftar `{ key, value }`, minimal satu item, tanpa key duplikat. Server
+memastikan setiap key benar milik kategori route, menormalisasi semua value,
+memeriksa konsistensi gabungan, lalu menyimpan seluruh item dan auditnya di satu
+transaction. Satu `reason` dan `correlation_id` dipakai untuk semua audit dalam
+batch. Endpoint satu key/API tetap dipertahankan untuk kompatibilitas.
 
 Command console:
 
@@ -234,8 +246,8 @@ Authentication
 
 Audit menyimpan actor, key, before, after, reason, result, timestamp, event ID,
 dan correlation ID. AuditLog metadata allowlist harus ditambah secara eksplisit
-untuk `setting_key`, `before_value`, dan `after_value`. Nilai tetap disanitasi;
-secret tidak boleh menjadi setting sehingga tidak boleh masuk audit.
+untuk `setting_key`, `before_value`, dan `after_value`. Nilai sensitif selalu
+diredaaksi sebelum audit, termasuk pada mutation batch kategori.
 
 ## Runtime Activation dan Cache
 
@@ -254,11 +266,13 @@ secret tidak boleh menjadi setting sehingga tidak boleh masuk audit.
 
 - Page owner: `resources/js/pages/System/SystemSetting`.
 - Layout: `system-dashboard-layout`.
-- Daftar setting dikelompokkan menjadi API, Security, Branding, Monitoring, dan
-  Operations.
+- Daftar setting dikelompokkan menjadi API, Password, Session, Email,
+  Pagination, Branding, Monitoring, dan Operations.
 - Search serta shortcut `/` tersedia.
-- Edit memakai modal, bukan sheet.
-- Reason wajib diisi pada setiap mutation.
+- Edit memakai satu modal per kategori, bukan sheet atau editor per baris.
+- Satu reason wajib diisi untuk seluruh perubahan yang dipilih dalam kategori.
+- Nilai sensitif tidak diprefill; field kosong berarti mempertahankan nilai
+  tersimpan.
 - Loading, empty, validation error, storage error, success toast, dan
   unauthorized state tersedia.
 - Nilai default dan source value terlihat tanpa membuka data sensitif.
@@ -274,6 +288,8 @@ secret tidak boleh menjadi setting sehingga tidak boleh masuk audit.
 - Setting invalid, key tidak terdaftar, type salah, dan range salah ditolak.
 - Non-SuperSystem ditolak pada web, API, command, policy, dan Action boundary.
 - Mutation tanpa reason ditolak.
+- Batch kategori menolak key lintas kategori, duplikasi, value tidak valid, dan
+  ketidakkonsistenan gabungan tanpa menyimpan perubahan parsial.
 - Audit gagal menyebabkan mutation gagal dan data setting tidak berubah.
 - Storage unavailable atau record invalid menghasilkan safe default dan
   diagnostic tanpa secret.

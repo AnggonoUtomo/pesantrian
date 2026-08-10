@@ -268,6 +268,25 @@ menyebut “selesai” tanpa source, file, alasan, command, hasil, dan risiko.
 - Risiko: tidak ada OPEN RISK. Policy tetap diotorisasi SystemSetting dan
   diterapkan backend melalui `PasswordValidationRules`, bukan oleh frontend.
 
+## 10 Agustus 2026 — Pemisahan Kategori Workspace SystemSetting
+
+- Kondisi awal: key `mail.*` jatuh ke Operations karena kategori Email belum
+  didefinisikan. Key `security.password.*` dan `security.session.*` juga tampil
+  bersama dalam Security, sehingga satu workspace mencampurkan policy password
+  dengan lifecycle session.
+- Perubahan: kategori UI menjadi API, Password, Session, Email, Pagination,
+  Branding, Monitoring, dan Operations. `categoryFromKey()` memetakan dua prefix
+  security secara eksplisit; counter menu memakai fungsi mapping yang sama.
+- Alasan: operator dapat menemukan konfigurasi berdasarkan domain operasional
+  tanpa memindahkan atau mengubah contract key runtime yang telah dikonsumsi
+  module lain.
+- Evidence: type check, ESLint, Prettier, Vite production build, dan diff check
+  lulus. Browser SuperSystem memverifikasi Email 7 key, Password 4 key, dan
+  Session 2 key; password SMTP tetap dimasking. Console bersih.
+- Risiko: tidak ada perubahan persistence, route, authorization, atau nilai
+  setting. Penambahan kategori backend hanya diperlukan jika API lintas client
+  kelak membutuhkan metadata kategori eksplisit.
+
 ## Template Increment Berikutnya
 
 ## 10 Agustus 2026 â€” Pagination Global dan Urutan User
@@ -291,9 +310,69 @@ menyebut “selesai” tanpa source, file, alasan, command, hasil, dan risiko.
 - Browser check: `{route, viewport, theme, console, accessibility}`.
 - Risiko/open decision: `{status, owner, dan batasan}`.
 
+## 10 Agustus 2026 — Editor Kategori dan Alasan Global
+
+- Skill yang digunakan: `planning-and-task-breakdown`,
+  `api-and-interface-design`, `security-and-hardening`,
+  `incremental-implementation`, `test-driven-development`,
+  `frontend-ui-engineering`, `browser-testing-with-devtools`, dan
+  `documentation-and-adrs`.
+- Source yang ditinjau: `UpdateSystemSetting`, registry definition,
+  `ValidateSettingConsistency`, request/controller/route, workspace React, dan
+  focused mutation/presentation test.
+- Kondisi awal: setiap card setting membuka modal sendiri dan mewajibkan reason
+  terpisah. Satu operasi kategori menjadi banyak request serta banyak audit
+  reason yang sama.
+- Perubahan: endpoint web additive
+  `PATCH /system/system-settings/categories/{category}` menerima daftar
+  `{key,value}` dan satu reason. `SettingCategory` memastikan key route-owner;
+  Action menormalisasi seluruh value dan menjalankan consistency check gabungan
+  sebelum satu transaction menyimpan serta mencatat audit tiap item dengan
+  correlation yang sama. Endpoint satu key/API tidak diubah.
+- UI: tombol per card dihilangkan. Tombol `Ubah kategori` membuka satu dialog
+  semua field kategori, menampilkan tombol simpan berdasarkan jumlah perubahan,
+  dan hanya mengirim field yang berubah. Input sensitif kosong secara default
+  sehingga username/password SMTP tidak pernah diprefill atau terkirim ulang.
+- Evidence focused: `php artisan test tests/Feature/SystemSettingMutationTest.php
+  tests/Feature/SystemSettingPresentationTest.php` lulus 18 test/99 assertion;
+  `vendor/bin/pint --test`, TypeScript, ESLint, dan Prettier lulus.
+- Browser check: SuperSystem membuka Password dan Email pada
+  `/system/system-settings`; perubahan Password berhasil, toast muncul, console
+  error kosong, lalu nilai uji dikembalikan ke keadaan awal. Dialog Email
+  menampilkan field sensitif kosong dengan notice mempertahankan nilai tersimpan.
+- Quality gate akhir: `composer ci:check` lulus dengan 291 test/1282 assertion,
+  Pint, PHPStan 0 error, ESLint, Prettier, dan TypeScript seluruhnya lulus.
+- Risiko/open decision: tidak ada. Audit tetap per key untuk traceability, tetapi
+  memakai satu reason dan correlation untuk satu keputusan operator.
+
+## 10 Agustus 2026 — Panduan Operator SystemSetting
+
+- Skill yang digunakan: `incremental-implementation`,
+  `frontend-ui-engineering`, `browser-testing-with-devtools`, dan
+  `documentation-and-adrs`.
+- Kondisi awal: kategori serta key seperti
+  `api.idempotency.retention_hours` hanya memakai istilah teknis registry.
+  Operator awam tidak mendapat konteks bahwa retensi idempotency mencegah
+  operasi API dijalankan ulang, bukan menyimpan backup.
+- Perubahan: `categories.ts` menambah panduan untuk seluruh 26 key aktif,
+  meliputi judul berbahasa awam, tujuan, cara mengisi dengan contoh, serta
+  peringatan dampak bila diperlukan. Workspace dan dialog kategori memakai satu
+  sumber panduan ini; key teknis tetap terlihat sebagai referensi.
+- Alasan: pengguna dapat memahami keputusan yang sedang dibuat sebelum mengubah
+  nilai global yang berdampak ke keamanan, email, API, atau operasional.
+- Evidence: TypeScript, ESLint, Prettier, dan Vite production build lulus.
+  Browser SuperSystem pada `/system/system-settings` dan dialog API menampilkan
+  tujuan, contoh 24 jam, dan batasan `api.idempotency.retention_hours`; console
+  browser bersih.
+- Risiko/open decision: tidak ada perubahan persistence, route, authorization,
+  atau runtime contract. Key baru yang didaftarkan pada masa depan mendapat
+  fallback aman sampai panduan operator spesifiknya ditambahkan.
+
 ## Revision History
 
 | Versi | Tanggal | Perubahan |
 | --- | --- | --- |
 | 1.0 | 2026-08-06 | Mencatat discovery, preflight, dan penyusunan dokumen awal |
 | 1.1 | 2026-08-06 | Menambahkan seluruh increment dan final quality checkpoint |
+| 1.2 | 2026-08-10 | Mencatat editor kategori atomik dan alasan global |
+| 1.3 | 2026-08-10 | Mencatat panduan operator kategori dan nilai SystemSetting |

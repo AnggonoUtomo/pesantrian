@@ -21,16 +21,18 @@ export type SystemSettingItem = {
     max: number | null;
     options: string[];
     nullable: boolean;
+    sensitive: boolean;
 };
 
 export type SettingCategory =
     | 'api'
-    | 'security'
+    | 'password'
+    | 'session'
+    | 'mail'
     | 'pagination'
     | 'branding'
     | 'monitoring'
-    | 'operations'
-    | 'mail';
+    | 'operations';
 
 export type SystemSettingPageProps = {
     auth: Auth;

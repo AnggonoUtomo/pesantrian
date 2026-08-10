@@ -23,6 +23,7 @@ final readonly class SystemSettingItemData
         public ?int $max,
         public array $options,
         public bool $nullable,
+        public bool $sensitive,
     ) {}
 
     /** @return array<string, mixed> */
@@ -40,6 +41,7 @@ final readonly class SystemSettingItemData
             'max' => $this->max,
             'options' => $this->options,
             'nullable' => $this->nullable,
+            'sensitive' => $this->sensitive,
         ];
     }
 }

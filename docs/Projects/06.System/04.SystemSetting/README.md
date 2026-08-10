@@ -14,11 +14,26 @@ consumer, API, frontend vertical slice, dan test SystemSetting sudah tersedia.
 Generator aktual menghasilkan `MODULE_CREATED`; registry module dan MySQL lokal
 telah diverifikasi.
 
-Kebijakan password runtime juga tersedia pada kategori Security:
+Kebijakan password runtime tersedia pada kategori Password:
 `security.password.min_length`, `require_mixed_case`, `require_numbers`, dan
 `require_symbols`. Nilai dibaca backend melalui `PasswordValidationRules` untuk
 registration, reset password, dan penggantian password; frontend hanya menjadi
 UI administrasi untuk SuperSystem.
+
+Kategori Session mengelola lifetime session, sedangkan kategori Email mengelola
+SMTP dan identitas pengirim. Pengelompokan UI diturunkan dari prefix key registry
+tanpa mengubah key, contract, maupun nilai backend yang sudah berjalan.
+
+Operator mengubah kategori melalui satu dialog dan satu alasan global. Hanya
+nilai yang benar-benar berubah dikirim; seluruh batch divalidasi, diperiksa
+konsistensinya, disimpan, dan diaudit secara atomik. Endpoint satu key tetap
+tersedia bagi console/API yang sudah ada. Nilai SMTP sensitif tidak ditampilkan
+atau diprefill pada form, dan hanya berubah jika operator mengisinya kembali.
+
+Setiap kategori dan nilai aktif juga memiliki panduan operator berbahasa awam:
+tujuan pengaturan, cara mengisi beserta contoh, dan peringatan dampak bila
+relevan. Key teknis tetap terlihat sebagai referensi, tetapi bukan lagi satu-
+satunya penjelasan bagi operator.
 
 ## Boundary Module
 
@@ -119,3 +134,5 @@ Kedua ADR berstatus `Accepted` pada 6 Agustus 2026.
 | --- | --- | --- |
 | 1.0 | 2026-08-06 | Menambahkan paket dokumentasi pekerjaan SystemSetting |
 | 1.1 | 2026-08-06 | Menutup implementasi dan mencatat quality gate SystemSetting |
+| 1.2 | 2026-08-10 | Menambah editor kategori atomik dengan satu alasan global |
+| 1.3 | 2026-08-10 | Menambah panduan operator untuk seluruh kategori dan nilai aktif |

@@ -28,6 +28,7 @@ return [
         'system.audit-logs.index',
         'system.audit-logs.show',
         'system.system-settings.index',
+        'system.system-settings.category.update',
         'system.system-settings.update',
         'login',
         'system.login',

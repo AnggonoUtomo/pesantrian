@@ -33,6 +33,7 @@ final readonly class ListSystemSettings
                 max: $definition->max,
                 options: $definition->options,
                 nullable: $definition->nullable,
+                sensitive: $definition->sensitive,
             );
         }, $this->definitions->all());
     }

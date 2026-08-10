@@ -5,23 +5,19 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import SystemDashboardLayout from '@/layouts/system-dashboard-layout';
 import { categoryFromKey } from '../categories';
-import { EditSystemSettingDialog } from '../components/EditSystemSettingDialog';
+import { EditSystemSettingCategoryDialog } from '../components/EditSystemSettingCategoryDialog';
 import { SystemSettingMenu } from '../components/SystemSettingMenu';
 import { SystemSettingSummary } from '../components/SystemSettingSummary';
 import { SystemSettingWorkspace } from '../components/SystemSettingWorkspace';
-import type {
-    SettingCategory,
-    SystemSettingItem,
-    SystemSettingPageProps,
-} from '../types';
+import type { SettingCategory, SystemSettingPageProps } from '../types';
 
 export default function Index() {
     const { auth, settings } = usePage<SystemSettingPageProps>().props;
     const [activeCategory, setActiveCategory] =
         useState<SettingCategory>('api');
     const [query, setQuery] = useState('');
-    const [editingSetting, setEditingSetting] =
-        useState<SystemSettingItem | null>(null);
+    const [editingCategory, setEditingCategory] =
+        useState<SettingCategory | null>(null);
     const searchRef = useRef<HTMLInputElement>(null);
 
     const filteredSettings = useMemo(() => {
@@ -36,6 +32,14 @@ export default function Index() {
                         .includes(normalized)),
         );
     }, [activeCategory, query, settings]);
+
+    const categorySettings = useMemo(
+        () =>
+            settings.filter(
+                (setting) => categoryFromKey(setting.key) === activeCategory,
+            ),
+        [activeCategory, settings],
+    );
 
     useEffect(() => {
         const handleShortcut = (event: KeyboardEvent) => {
@@ -128,25 +132,32 @@ export default function Index() {
                         </div>
                     </div>
 
-                    <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_300px]">
-                        <SystemSettingWorkspace
-                            category={activeCategory}
-                            settings={filteredSettings}
-                            onEdit={setEditingSetting}
-                        />
-                        <SystemSettingMenu
-                            activeCategory={activeCategory}
-                            settings={settings}
-                            onCategoryChange={setActiveCategory}
-                        />
+                    <div className="grid items-start gap-5 xl:grid-cols-[300px_minmax(0,1fr)]">
+                        <div className="xl:order-2">
+                            <SystemSettingWorkspace
+                                category={activeCategory}
+                                settings={filteredSettings}
+                                onEditCategory={() =>
+                                    setEditingCategory(activeCategory)
+                                }
+                            />
+                        </div>
+                        <div className="xl:order-1">
+                            <SystemSettingMenu
+                                activeCategory={activeCategory}
+                                settings={settings}
+                                onCategoryChange={setActiveCategory}
+                            />
+                        </div>
                     </div>
                 </div>
 
-                {editingSetting ? (
-                    <EditSystemSettingDialog
-                        key={editingSetting.key}
-                        setting={editingSetting}
-                        onClose={() => setEditingSetting(null)}
+                {editingCategory ? (
+                    <EditSystemSettingCategoryDialog
+                        key={editingCategory}
+                        category={editingCategory}
+                        settings={categorySettings}
+                        onClose={() => setEditingCategory(null)}
                     />
                 ) : null}
             </SystemDashboardLayout>

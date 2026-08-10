@@ -276,7 +276,8 @@ assertion serta `module:validate System/SystemSetting` menghasilkan valid.
 
 ## Task 07 — Mutation, Authorization, Transaction, dan Audit
 
-**Tujuan:** Mengubah satu setting secara aman, terotorisasi, dan traceable.
+**Tujuan:** Mengubah satu setting atau satu kategori secara aman, terotorisasi,
+atomik, dan traceable.
 
 **Files rencana:**
 
@@ -310,13 +311,26 @@ assertion serta `module:validate System/SystemSetting` menghasilkan valid.
 - [x] Audit failure menggagalkan mutation dan mempertahankan nilai lama.
   - Evidence: recorder exception mempertahankan nilai 70 dan jumlah audit satu.
 - [x] Metadata secret/pola sensitif tetap ter-redact.
-  - Perubahan: redactor AuditLog tetap menjadi satu-satunya jalur sanitasi;
-    SystemSetting tidak mendukung key secret.
+  - Perubahan: `mail.username` dan `mail.password` disimpan terenkripsi;
+    read model dan metadata audit memakai masking/redaction.
+- [x] Batch kategori memakai satu reason global tanpa mutation parsial.
+  - Kondisi awal: operator harus membuka modal dan mengisi reason untuk setiap
+    key, sehingga perubahan satu kategori memakan banyak langkah.
+  - Perubahan: `UpdateSystemSettingCategoryData`, `SettingCategory`, dan
+    `UpdateSystemSetting::executeCategory()` memvalidasi owner key, value, serta
+    consistency seluruh payload sebelum `DB::transaction()` menyimpan setting
+    dan audit per item dengan correlation yang sama.
+  - Alasan: alasan audit tetap jelas bagi operator, sementara satu perubahan
+    operasional tidak dipaksa menjadi banyak request terpisah.
+  - Evidence: `SystemSettingMutationTest` membuktikan dua key Password tersimpan
+    atomik; key lintas kategori, pasangan Session tidak konsisten, dan kegagalan
+    AuditRecorder ditolak tanpa record atau audit parsial.
 
-**Positive test:** SuperSystem mengubah setting valid dan audit tercatat sekali.
+**Positive test:** SuperSystem mengubah setting valid atau beberapa key satu
+kategori; setiap audit memiliki reason dan correlation yang sama.
 
-**Negative test:** non-SuperSystem, missing reason, invalid value, dan failing
-AuditRecorder tidak mengubah data.
+**Negative test:** non-SuperSystem, missing reason, invalid value, key lintas
+kategori, consistency batch gagal, dan failing AuditRecorder tidak mengubah data.
 
 **Hasil implementasi 6 Agustus 2026:** DTO mutation dan Action fail-closed
 selesai. Focused mutation, persistence, serta audit suite lulus 15 test/54
@@ -393,8 +407,9 @@ lulus 18 test/67 assertion.
   - Evidence: guest diarahkan login, direct permission non-SuperSystem mendapat
     403, dan Action negative test tetap menolak bypass presentation.
 - [x] Route name tersedia pada Ziggy.
-  - Evidence: index/update terdaftar di route dan `config/ziggy.php`; UI memakai
-    helper Ziggy dengan parameter key positional.
+  - Evidence: index, update, dan `category.update` terdaftar di route dan
+    `config/ziggy.php`; UI memakai helper Ziggy dengan parameter kategori
+    positional.
 - [x] 401/403/404/422 dan safe 500 behavior diuji.
   - Evidence: auth JSON memberi jalur 401, policy 403, unknown key 404, serta
     invalid reason/value 422. Reader storage failure memakai default aman.
@@ -403,7 +418,8 @@ lulus 18 test/67 assertion.
 - [x] Unknown key tidak membocorkan registry internal.
   - Perubahan: exception typed dipetakan menjadi 404 tanpa daftar key.
 
-**Positive test:** SuperSystem membuka list dan mengubah setting valid.
+**Positive test:** SuperSystem membuka list, mengubah satu setting, atau
+mengubah beberapa key kategori dengan reason global.
 
 **Negative test:** guest/non-SuperSystem/direct request ditolak backend.
 
@@ -430,12 +446,34 @@ test/42 assertion.
 - [x] Page memakai `system-dashboard-layout` dan baseline visual module.
   - Perubahan: seluruh card memakai `dashboard-card`, `dashboard-subcard`,
     `dashboard-icon`, dan `dashboard-badge`.
-- [x] Category API, Security, Branding, Monitoring, dan Operations jelas.
-  - Perubahan: menu kanan dua kolom mengadaptasi teknik visual referensi tanpa
-    mengambil fitur di luar specification.
-- [x] Edit memakai modal; reason wajib dan error dekat input.
-  - Evidence: modal dinamis integer/boolean/enum/path/string menampilkan error
-    FormRequest di bawah field terkait.
+- [x] Category API, Password, Session, Email, Pagination, Branding, Monitoring,
+  dan Operations jelas.
+  - Perubahan: menu berada di kiri pada desktop dan tetap mengikuti urutan
+    workspace pada mobile agar prioritas konten tetap jelas.
+- [x] Istilah teknis memiliki panduan operator berbahasa awam.
+  - Kondisi awal: card hanya menampilkan key dan description registry seperti
+    `api.idempotency.retention_hours`, sehingga operator non-teknis tidak selalu
+    mengetahui tujuan nilai maupun dampaknya.
+  - Perubahan: `categories.ts` menyediakan judul, tujuan, cara mengisi, contoh,
+    dan peringatan untuk seluruh 26 key aktif. Workspace serta dialog kategori
+    menampilkan panduan yang sama sambil mempertahankan key teknis sebagai
+    referensi.
+  - Alasan: operator dapat mengambil keputusan berdasarkan tujuan konfigurasi,
+    bukan sekadar mengubah angka atau opsi yang tidak dipahami.
+  - Evidence: browser SuperSystem menampilkan `api.idempotency.retention_hours`
+    sebagai “Masa simpan hasil request API yang sama”, menjelaskan perlindungan
+    request ulang selama 24 jam, serta menegaskan bahwa setting bukan backup.
+- [x] Edit kategori memakai satu modal dengan satu reason global dan error dekat input.
+  - Kondisi awal: tiap card memiliki tombol Ubah serta textarea reason sendiri.
+  - Perubahan: card hanya menampilkan nilai; tombol `Ubah kategori` membuka
+    `EditSystemSettingCategoryDialog` untuk semua key pada kategori aktif.
+    Tombol simpan menghitung perubahan aktual dan disabled bila belum ada value
+    yang diubah.
+  - Alasan: operator awam cukup menjelaskan satu tujuan perubahan kategori,
+    tanpa mengulang alasan yang sama pada tiap input.
+  - Evidence: browser SuperSystem membuka dialog Password dan Email; submit satu
+    key menampilkan toast, nilai Email sensitif tetap kosong pada form, dan
+    console browser tidak memiliki error.
 - [x] Shortcut `/` fokus search dan `Esc` menutup modal.
   - Evidence: browser snapshot menunjukkan search focused setelah `/`; Radix
     Dialog menangani `Esc` dan focus trap.
@@ -454,7 +492,7 @@ test/42 assertion.
 - [x] Typecheck, lint, format, dan build lulus.
   - Evidence: ESLint, TypeScript, Prettier pada file target, serta Vite build lulus.
 
-**Positive test:** perubahan setting berhasil dari modal dan nilai terbaru tampil.
+**Positive test:** perubahan kategori berhasil dari modal dan nilai terbaru tampil.
 
 **Negative test:** invalid value/missing reason menampilkan error tanpa menutup
 modal atau mengubah value.

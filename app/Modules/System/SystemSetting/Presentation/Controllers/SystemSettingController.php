@@ -8,10 +8,12 @@ use App\Modules\System\SystemSetting\Application\Actions\UpdateSystemSetting;
 use App\Modules\System\SystemSetting\Application\Queries\ListSystemSettings;
 use App\Modules\System\SystemSetting\Domain\Exceptions\UnknownSettingDefinition;
 use App\Modules\System\SystemSetting\Infrastructure\Persistence\Models\SystemSettingRecord;
+use App\Modules\System\SystemSetting\Presentation\Requests\UpdateSystemSettingCategoryRequest;
 use App\Modules\System\SystemSetting\Presentation\Requests\UpdateSystemSettingRequest;
 use App\Modules\System\SystemSetting\Presentation\Resources\SystemSettingResource;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Validation\ValidationException;
@@ -30,7 +32,7 @@ final readonly class SystemSettingController implements HasMiddleware
     {
         return [
             new Middleware('can:viewAny,'.SystemSettingRecord::class, only: ['index']),
-            new Middleware('can:update,'.SystemSettingRecord::class, only: ['update']),
+            new Middleware('can:update,'.SystemSettingRecord::class, only: ['update', 'updateCategory']),
         ];
     }
 
@@ -62,7 +64,25 @@ final readonly class SystemSettingController implements HasMiddleware
         return back();
     }
 
-    private function actor(UpdateSystemSettingRequest $request): Authenticatable
+    public function updateCategory(UpdateSystemSettingCategoryRequest $request, string $category): RedirectResponse
+    {
+        try {
+            $updated = $this->updateSystemSetting->executeCategory($this->actor($request), $request->toData($category));
+        } catch (UnknownSettingDefinition) {
+            abort(404);
+        } catch (InvalidArgumentException $exception) {
+            throw ValidationException::withMessages(['updates' => $exception->getMessage()]);
+        }
+
+        Inertia::flash('toast', [
+            'type' => 'success',
+            'message' => count($updated).' SystemSetting berhasil diperbarui.',
+        ]);
+
+        return back();
+    }
+
+    private function actor(Request $request): Authenticatable
     {
         $actor = $request->user();
         abort_if(! $actor instanceof Authenticatable, 401);

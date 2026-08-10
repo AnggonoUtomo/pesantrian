@@ -1,4 +1,4 @@
-import { settingCategories } from '../categories';
+import { categoryFromKey, settingCategories } from '../categories';
 import type { SettingCategory, SystemSettingItem } from '../types';
 
 type Props = {
@@ -24,8 +24,9 @@ export function SystemSettingMenu({
                 {settingCategories.map((category) => {
                     const Icon = category.icon;
                     const active = activeCategory === category.key;
-                    const count = settings.filter((setting) =>
-                        setting.key.startsWith(`${category.key}.`),
+                    const count = settings.filter(
+                        (setting) =>
+                            categoryFromKey(setting.key) === category.key,
                     ).length;
 
                     return (

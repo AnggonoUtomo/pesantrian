@@ -24,15 +24,15 @@ dapat dibaca berdasarkan scope server, dan disimpan minimum satu tahun.
 
 ## Preflight Traceability
 
-| Item | Hasil |
-| --- | --- |
-| Authoritative source | `01.01`, `01.05`, `02.01` sampai `02.05`, `03.01` sampai `03.12`, ADR-0001, ADR-0003, `07.05-AUDIT.md` |
-| Downstream docs | Database design, security design, UserManagement event status, changelog, README module, tasks, dan execution log |
-| Existing code | AccessControl dan UserManagement valid; event impersonation sudah ada tetapi belum menjadi integration event versioned |
-| Golden structure | `app/Modules/System/{Module}` sesuai `03.04-FOLDER-STRUCTURE.md` dan profile `default-v1` |
-| Dependency | AccessControl untuk authorization; public event AccessControl dan UserManagement untuk ingestion |
-| Acceptance | Append-only, redaction, idempotency, correlation, scope, retensi, frontend, dan test lulus |
-| Rollback trace | Folder module, provider registration, route/menu, migration `audit_logs`, event producer, dan dokumen ini dapat ditelusuri per task |
+| Item                 | Hasil                                                                                                                               |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| Authoritative source | `01.01`, `01.05`, `02.01` sampai `02.05`, `03.01` sampai `03.12`, ADR-0001, ADR-0003, `07.05-AUDIT.md`                              |
+| Downstream docs      | Database design, security design, UserManagement event status, changelog, README module, tasks, dan execution log                   |
+| Existing code        | AccessControl dan UserManagement valid; event impersonation sudah ada tetapi belum menjadi integration event versioned              |
+| Golden structure     | `app/Modules/System/{Module}` sesuai `03.04-FOLDER-STRUCTURE.md` dan profile `default-v1`                                           |
+| Dependency           | AccessControl untuk authorization; public event AccessControl dan UserManagement untuk ingestion                                    |
+| Acceptance           | Append-only, redaction, idempotency, correlation, scope, retensi, frontend, dan test lulus                                          |
+| Rollback trace       | Folder module, provider registration, route/menu, migration `audit_logs`, event producer, dan dokumen ini dapat ditelusuri per task |
 
 Hasil preflight command:
 
@@ -56,6 +56,8 @@ Hasil preflight command:
   dan batas panjang nilai;
 - synchronous integration event consumer untuk mutasi AccessControl dan
   UserManagement;
+- listener autentikasi Laravel untuk login sukses, logout, reset password
+  sukses, dan verifikasi email;
 - query list/detail dengan filter dan page pagination;
 - server-side authorization dan scope actor;
 - Inertia page, Ziggy, sidebar, command palette, detail dialog, responsive,
@@ -78,21 +80,21 @@ Hasil preflight command:
 
 Tabel `audit_logs`:
 
-| Field | Contract |
-| --- | --- |
-| `id` | ULID primary key |
-| `event_id` | ULID unique; idempotency key integration event |
-| `actor_id` | nullable ULID, FK `users.id`, `nullOnDelete` |
-| `action` | string dan index |
-| `subject_type` | string |
-| `subject_id` | nullable ULID dan index |
-| `module` | string dan index |
-| `project_id` | nullable ULID dan index untuk scope masa depan |
-| `tenant_id` | nullable ULID dan index untuk scope masa depan |
-| `correlation_id` | ULID dan index |
-| `reason` | nullable text yang sudah disanitasi |
-| `metadata` | JSON hasil filter/redaksi |
-| `created_at` | timestamp event; tidak ada `updated_at` dan `deleted_at` |
+| Field            | Contract                                                 |
+| ---------------- | -------------------------------------------------------- |
+| `id`             | ULID primary key                                         |
+| `event_id`       | ULID unique; idempotency key integration event           |
+| `actor_id`       | nullable ULID, FK `users.id`, `nullOnDelete`             |
+| `action`         | string dan index                                         |
+| `subject_type`   | string                                                   |
+| `subject_id`     | nullable ULID dan index                                  |
+| `module`         | string dan index                                         |
+| `project_id`     | nullable ULID dan index untuk scope masa depan           |
+| `tenant_id`      | nullable ULID dan index untuk scope masa depan           |
+| `correlation_id` | ULID dan index                                           |
+| `reason`         | nullable text yang sudah disanitasi                      |
+| `metadata`       | JSON hasil filter/redaksi                                |
+| `created_at`     | timestamp event; tidak ada `updated_at` dan `deleted_at` |
 
 `actor_id` dapat menjadi `null` untuk system process atau setelah hard delete
 actor. Histori tidak boleh cascade delete.
@@ -108,11 +110,18 @@ Allowlist awal:
 - `from_status`;
 - `to_status`;
 - `result`.
+- `browser` dan `ip_address` hanya untuk action autentikasi atau keamanan yang
+  di-allowlist server.
 
 Key yang mengandung `password`, `token`, `secret`, `credential`,
 `authorization`, `cookie`, `session`, atau `api_key` selalu menjadi
 `[REDACTED]`, walaupun salah satu key tersebut nanti masuk allowlist. Key lain
 di luar allowlist dibuang.
+
+Browser disimpan sebagai ringkasan tanpa versi, misalnya `Chrome di Windows`.
+IP harus berasal dari `Request::ip()` yang tervalidasi server. User-agent mentah
+tidak disimpan. Context perangkat dibuang dari action bisnis biasa meskipun
+publisher mencoba mengirim key yang diizinkan.
 
 ## Public Contract
 
@@ -189,8 +198,10 @@ system.audit-logs.index
 system.audit-logs.show
 ```
 
-Filter awal: `search`, `module`, `action`, `date_from`, `date_to`, `page`, dan
-`per_page`. `per_page` dibatasi 10, 25, 50, atau 100 dengan default 25.
+Filter awal: `search`, `module`, `action`, `date_from`, `date_to`, `page`,
+`per_page`, dan `sort_direction`. `per_page` dibatasi oleh konfigurasi global.
+`sort_direction` hanya menerima `asc` atau `desc`, dengan default `desc` agar
+aktivitas terbaru berada paling atas.
 
 ## Frontend Contract
 
@@ -203,21 +214,30 @@ Filter awal: `search`, `module`, `action`, `date_from`, `date_to`, `page`, dan
 - detail dibuka melalui `Dialog`;
 - shortcut `/` fokus ke pencarian dan `Esc` menutup dialog;
 - tabel memiliki state loading, empty, error, pagination, dan mobile fallback;
+- header Waktu mengubah urutan aktivitas terbaru/terlama;
+- halaman Inertia tidak menerima ULID, correlation ID, atau metadata mentah;
+  API internal tetap memakai resource lengkap untuk consumer teknis;
+- action, subject, dan module pada UI memakai label operator; context keamanan
+  hanya dikirim sebagai browser ringkas dan IP tersamarkan;
+- perubahan SystemSetting mengirim payload khusus `settingChange` berisi
+  kategori, nama pengaturan, nilai sebelum, dan nilai setelah yang sudah aman;
+  `metadata` serta key teknis tidak dikirim ke UI, dan nilai sensitif selalu
+  menjadi `Disamarkan`;
 - menu sidebar serta command palette hanya muncul jika actor berhak.
 
 ## Fondasi Enterprise AuditLog
 
-| Fondasi | Status | Owner dan alasan | Acceptance/verification |
-| --- | --- | --- | --- |
-| Contract/Interface | `implemented` pada task contract | AuditLog memiliki `AuditRecorder` dan repository/read contract typed | Contract test dan PHPStan |
-| Domain Event | `not applicable` untuk scope awal | AuditLog menyimpan fakta dari producer; tidak ada state domain lain yang perlu dipancarkan | Review event inventory |
-| Application Event | `not applicable` | Satu handler synchronous cukup; tidak ada koordinasi multi-handler internal | Architecture review |
-| Integration Event | `implemented` | Producer AccessControl/UserManagement memiliki event versioned; AuditLog consumer nyata | Consumer, redaction, duplicate-event test |
-| Command | `implemented` sebagai Application Action | `RecordAuditEntry` adalah mutation synchronous CQRS-lite; Command Bus belum diperlukan | Unit/integration test |
-| Query/Read Contract | `implemented` | `ListAuditLogs` dan `GetAuditLog` mengembalikan DTO/paginator typed tanpa side effect | Query, scope, pagination test |
-| Shared Kernel | `not applicable` | Belum ada value object bisnis stabil dengan dua owner; package framework bukan Shared Kernel | Dependency scan |
-| Facade/Module API | `implemented` melalui contract | `AuditRecorder` adalah public Module API; Facade Laravel tidak dibuat | Container binding dan contract test |
-| Queue/Job | `not applicable` pada scope awal | Audit keamanan perlu fail-closed synchronous; queue memerlukan retry/dead-letter policy terpisah | Pastikan listener tidak queued |
+| Fondasi             | Status                                   | Owner dan alasan                                                                                 | Acceptance/verification                   |
+| ------------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------------ | ----------------------------------------- |
+| Contract/Interface  | `implemented` pada task contract         | AuditLog memiliki `AuditRecorder` dan repository/read contract typed                             | Contract test dan PHPStan                 |
+| Domain Event        | `not applicable` untuk scope awal        | AuditLog menyimpan fakta dari producer; tidak ada state domain lain yang perlu dipancarkan       | Review event inventory                    |
+| Application Event   | `not applicable`                         | Satu handler synchronous cukup; tidak ada koordinasi multi-handler internal                      | Architecture review                       |
+| Integration Event   | `implemented`                            | Producer AccessControl/UserManagement memiliki event versioned; AuditLog consumer nyata          | Consumer, redaction, duplicate-event test |
+| Command             | `implemented` sebagai Application Action | `RecordAuditEntry` adalah mutation synchronous CQRS-lite; Command Bus belum diperlukan           | Unit/integration test                     |
+| Query/Read Contract | `implemented`                            | `ListAuditLogs` dan `GetAuditLog` mengembalikan DTO/paginator typed tanpa side effect            | Query, scope, pagination test             |
+| Shared Kernel       | `not applicable`                         | Belum ada value object bisnis stabil dengan dua owner; package framework bukan Shared Kernel     | Dependency scan                           |
+| Facade/Module API   | `implemented` melalui contract           | `AuditRecorder` adalah public Module API; Facade Laravel tidak dibuat                            | Container binding dan contract test       |
+| Queue/Job           | `not applicable` pada scope awal         | Audit keamanan perlu fail-closed synchronous; queue memerlukan retry/dead-letter policy terpisah | Pastikan listener tidak queued            |
 
 Runtime tetap CQRS-lite. Perubahan ke queue, Command Bus, projection, atau CQRS
 penuh memerlukan increment dan ADR baru.
@@ -233,10 +253,16 @@ penuh memerlukan increment dan ADR baru.
 - duplicate `event_id` tidak membuat duplicate row;
 - correlation ID valid dan tetap sama dari event ke record;
 - mutasi AccessControl dan UserManagement menghasilkan audit;
+- login sukses, logout, reset password sukses, dan verifikasi email menghasilkan
+  audit autentikasi tanpa password, token, session, atau user-agent mentah;
 - auditor biasa hanya melihat audit miliknya;
 - `SuperSystem` dapat melihat seluruh audit;
 - detail di luar scope merespons `404`;
 - frontend dapat dibuka, difilter, dipaginasi, dan detail dialog accessible;
+- UI tidak menampilkan atau menerima identifier teknis dan metadata mentah;
+- perubahan SystemSetting dapat ditelusuri menurut kategori serta nilai sebelum
+  dan sesudah tanpa membuka nilai sensitif, termasuk record baseline lama;
+- sorting waktu default terbaru serta pilihan terlama tervalidasi server-side;
 - global migration/seeder, focused test, browser test, dan quality gate lulus.
 
 ## Generator Contract
@@ -262,7 +288,10 @@ penuh memerlukan increment dan ADR baru.
 
 ## Revision History
 
-| Versi | Tanggal | Perubahan |
-| --- | --- | --- |
-| 1.0 | 2026-08-06 | Menetapkan contract data, keamanan, integration event, UI, dan fondasi enterprise |
-| 1.1 | 2026-08-06 | Menandai specification terimplementasi setelah browser test dan full CI lulus |
+| Versi | Tanggal    | Perubahan                                                                         |
+| ----- | ---------- | --------------------------------------------------------------------------------- |
+| 1.0   | 2026-08-06 | Menetapkan contract data, keamanan, integration event, UI, dan fondasi enterprise |
+| 1.1   | 2026-08-06 | Menandai specification terimplementasi setelah browser test dan full CI lulus     |
+| 1.2   | 2026-08-10 | Memisahkan payload UI/API dan menambah sorting waktu                              |
+| 1.3   | 2026-08-10 | Menambah label operator dan context browser/IP terbatas untuk audit keamanan      |
+| 1.4   | 2026-08-10 | Menambah ringkasan aman perubahan SystemSetting untuk UI operator                  |

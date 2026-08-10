@@ -43,6 +43,7 @@ export function AppSidebar() {
             title: 'System Dashboard',
             href: dashboardUrl,
             icon: LayoutGrid,
+            iconClassName: 'text-cyan-600 dark:text-cyan-300',
         },
     ];
 
@@ -51,6 +52,7 @@ export function AppSidebar() {
             title: 'Access Control',
             href: route('access-control.index'),
             icon: ShieldCheck,
+            iconClassName: 'text-violet-600 dark:text-violet-300',
         });
     }
 
@@ -59,6 +61,7 @@ export function AppSidebar() {
             title: 'User Management',
             href: route('system.users.index'),
             icon: UsersRound,
+            iconClassName: 'text-emerald-600 dark:text-emerald-300',
         });
     }
 
@@ -67,6 +70,7 @@ export function AppSidebar() {
             title: 'Audit Log',
             href: route('system.audit-logs.index'),
             icon: ScrollText,
+            iconClassName: 'text-amber-600 dark:text-amber-300',
         });
     }
 
@@ -75,6 +79,7 @@ export function AppSidebar() {
             title: 'SystemSetting',
             href: route('system.system-settings.index'),
             icon: Settings2,
+            iconClassName: 'text-sky-600 dark:text-sky-300',
         });
     }
 

@@ -27,20 +27,16 @@ export function AuditLogDetailDialog({ record, onOpenChange }: Props) {
                     <div className="space-y-4 text-sm">
                         <div className="flex flex-wrap gap-2">
                             <Badge className="dashboard-badge dashboard-badge--blue">
-                                {record.module}
+                                {record.moduleLabel}
                             </Badge>
                             <Badge className="dashboard-badge dashboard-badge--emerald">
-                                {record.action}
+                                {record.actionLabel}
                             </Badge>
                         </div>
                         <dl className="dashboard-subcard grid gap-3 rounded-xl border p-4 sm:grid-cols-2">
                             {[
                                 ['Actor', record.actorName ?? 'System'],
-                                ['Actor ID', record.actorId ?? '-'],
-                                ['Subject', record.subjectType],
-                                ['Subject ID', record.subjectId ?? '-'],
-                                ['Event ID', record.eventId],
-                                ['Correlation ID', record.correlationId],
+                                ['Subject', record.subjectLabel],
                                 [
                                     'Waktu',
                                     new Intl.DateTimeFormat('id-ID', {
@@ -49,6 +45,22 @@ export function AuditLogDetailDialog({ record, onOpenChange }: Props) {
                                     }).format(new Date(record.createdAt)),
                                 ],
                                 ['Alasan', record.reason ?? '-'],
+                                ...(record.securityContext?.browser
+                                    ? [
+                                          [
+                                              'Browser',
+                                              record.securityContext.browser,
+                                          ],
+                                      ]
+                                    : []),
+                                ...(record.securityContext?.ipAddress
+                                    ? [
+                                          [
+                                              'Alamat IP',
+                                              record.securityContext.ipAddress,
+                                          ],
+                                      ]
+                                    : []),
                             ].map(([label, value]) => (
                                 <div key={label} className="min-w-0">
                                     <dt className="text-xs text-foreground/60">
@@ -60,12 +72,42 @@ export function AuditLogDetailDialog({ record, onOpenChange }: Props) {
                                 </div>
                             ))}
                         </dl>
-                        <div>
-                            <h3 className="font-medium">Metadata terfilter</h3>
-                            <pre className="dashboard-subcard mt-2 overflow-x-auto rounded-xl border p-4 text-xs whitespace-pre-wrap">
-                                {JSON.stringify(record.metadata, null, 2)}
-                            </pre>
-                        </div>
+                        {record.settingChange ? (
+                            <section className="dashboard-subcard space-y-3 rounded-xl border p-4">
+                                <h3 className="font-semibold">
+                                    Perubahan pengaturan
+                                </h3>
+                                <dl className="grid gap-3 sm:grid-cols-2">
+                                    {[
+                                        [
+                                            'Kategori',
+                                            record.settingChange.category,
+                                        ],
+                                        [
+                                            'Pengaturan',
+                                            record.settingChange.setting,
+                                        ],
+                                        [
+                                            'Nilai sebelumnya',
+                                            record.settingChange.beforeValue,
+                                        ],
+                                        [
+                                            'Nilai setelahnya',
+                                            record.settingChange.afterValue,
+                                        ],
+                                    ].map(([label, value]) => (
+                                        <div key={label} className="min-w-0">
+                                            <dt className="text-xs text-foreground/60">
+                                                {label}
+                                            </dt>
+                                            <dd className="mt-1 font-medium break-words">
+                                                {value}
+                                            </dd>
+                                        </div>
+                                    ))}
+                                </dl>
+                            </section>
+                        ) : null}
                     </div>
                 ) : null}
             </DialogContent>

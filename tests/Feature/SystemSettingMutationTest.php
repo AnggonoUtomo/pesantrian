@@ -55,6 +55,8 @@ it('mengizinkan SuperSystem mengubah setting dan mencatat audit', function (): v
         ->and($audit->reason)->toBe('Menyesuaikan kapasitas API.')
         ->and($audit->metadata)->toMatchArray([
             'setting_key' => 'api.rate_limit.per_minute',
+            'setting_category' => 'API',
+            'setting_label' => 'Batas request per actor dan endpoint setiap menit.',
             'before_value' => 60,
             'after_value' => 90,
             'result' => 'updated',

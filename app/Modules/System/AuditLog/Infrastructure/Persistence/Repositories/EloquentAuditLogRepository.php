@@ -55,7 +55,8 @@ final class EloquentAuditLogRepository implements AuditLogRepository
             ->when($filter->dateFrom, fn (Builder $query, DateTimeImmutable $date): Builder => $query->where('created_at', '>=', $date))
             ->when($filter->dateTo, fn (Builder $query, DateTimeImmutable $date): Builder => $query->where('created_at', '<=', $date));
 
-        $paginator = $query->latest('created_at')->paginate(
+        $direction = $filter->sortDirection === 'asc' ? 'asc' : 'desc';
+        $paginator = $query->orderBy('created_at', $direction)->orderBy('id', $direction)->paginate(
             perPage: $filter->perPage,
             page: $filter->page,
         );

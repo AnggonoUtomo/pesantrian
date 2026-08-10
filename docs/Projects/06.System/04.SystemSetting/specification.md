@@ -244,9 +244,12 @@ Authentication
     -> response sukses
 ```
 
-Audit menyimpan actor, key, before, after, reason, result, timestamp, event ID,
-dan correlation ID. AuditLog metadata allowlist harus ditambah secara eksplisit
-untuk `setting_key`, `before_value`, dan `after_value`. Nilai sensitif selalu
+Audit menyimpan actor, key, kategori, label operator, before, after, reason,
+result, timestamp, event ID, dan correlation ID. AuditLog metadata allowlist
+harus ditambah secara eksplisit untuk `setting_key`, `setting_category`,
+`setting_label`, `before_value`, dan `after_value`. Halaman operator hanya
+menerima kategori, label, dan nilai before/after yang sudah diformat; key dan
+metadata mentah tetap berada di contract internal. Nilai sensitif selalu
 diredaaksi sebelum audit, termasuk pada mutation batch kategori.
 
 ## Runtime Activation dan Cache
@@ -354,3 +357,4 @@ composer ci:check
 | --- | --- | --- |
 | 1.0 | 2026-08-06 | Menetapkan specification awal SystemSetting berdasarkan preflight workspace |
 | 1.1 | 2026-08-06 | Menyelaraskan kondisi aktual module, runtime consumer, dan keputusan |
+| 1.2 | 2026-08-10 | Menambah kategori, label operator, serta nilai before/after audit yang aman |

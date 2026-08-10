@@ -161,5 +161,7 @@ it('menolak reason impersonation yang memuat credential sebelum audit disimpan',
         ->assertSessionHasErrors('reason');
 
     $this->assertAuthenticatedAs($actor);
-    $this->assertDatabaseCount('audit_logs', 0);
+    $this->assertDatabaseMissing('audit_logs', [
+        'action' => 'user.impersonation_started',
+    ]);
 });

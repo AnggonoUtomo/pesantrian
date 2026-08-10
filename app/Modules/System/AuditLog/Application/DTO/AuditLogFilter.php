@@ -16,5 +16,6 @@ final readonly class AuditLogFilter
         public ?DateTimeImmutable $dateTo = null,
         public int $page = 1,
         public int $perPage = 25,
+        public string $sortDirection = 'desc',
     ) {}
 }

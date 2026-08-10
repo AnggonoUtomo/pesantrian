@@ -13,8 +13,12 @@ return [
             'from_status',
             'to_status',
             'setting_key',
+            'setting_category',
+            'setting_label',
             'before_value',
             'after_value',
+            'browser',
+            'ip_address',
             'result',
         ],
         'sensitive_patterns' => [

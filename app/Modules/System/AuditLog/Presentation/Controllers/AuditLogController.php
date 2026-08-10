@@ -8,6 +8,7 @@ use App\Modules\System\AuditLog\Application\Queries\GetAuditLog;
 use App\Modules\System\AuditLog\Application\Queries\ListAuditLogs;
 use App\Modules\System\AuditLog\Infrastructure\Persistence\Models\AuditRecord;
 use App\Modules\System\AuditLog\Presentation\Requests\AuditLogFilterRequest;
+use App\Modules\System\AuditLog\Presentation\Resources\AuditLogPageResource;
 use App\Modules\System\AuditLog\Presentation\Resources\AuditLogResource;
 use App\Modules\System\SystemSetting\Application\Contracts\SystemRuntimeSettings;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -35,7 +36,7 @@ final readonly class AuditLogController implements HasMiddleware
         $page = $this->listAuditLogs->execute($this->actor($request), $request->toFilter());
 
         return Inertia::render('System/AuditLog/pages/Index', [
-            'auditLogs' => $page->toArray(),
+            'auditLogs' => (new AuditLogPageResource($page))->toArray(),
             'filters' => $request->safe()->only([
                 'search',
                 'module',
@@ -43,6 +44,7 @@ final readonly class AuditLogController implements HasMiddleware
                 'date_from',
                 'date_to',
                 'per_page',
+                'sort_direction',
             ]),
             'pagination' => $this->systemRuntimeSettings->current()->pagination(),
         ]);

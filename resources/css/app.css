@@ -641,28 +641,6 @@ html[data-typography='mono'] body {
         margin-block: 0.125rem;
     }
 
-    .dashboard-sidebar
-        [data-sidebar='content']
-        [data-sidebar='menu-item']:nth-child(1)
-        svg {
-        color: var(--dashboard-chart-cyan);
-    }
-
-    .dashboard-sidebar
-        [data-sidebar='content']
-        [data-sidebar='menu-item']:nth-child(2)
-        svg {
-        color: oklch(0.62 0.2 305);
-    }
-
-    .dark
-        .dashboard-sidebar
-        [data-sidebar='content']
-        [data-sidebar='menu-item']:nth-child(2)
-        svg {
-        color: oklch(0.75 0.2 305);
-    }
-
     .dashboard-sidebar [data-sidebar='footer'] {
         border-top: 1px solid
             color-mix(in oklch, var(--sidebar-border) 72%, transparent);

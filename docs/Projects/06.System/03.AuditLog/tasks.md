@@ -5,23 +5,23 @@ Status pekerjaan: `Task 01 sampai Task 11 selesai dan terverifikasi`.
 ## Aturan Sebelum Mulai
 
 - [x] Parent boundary, path, namespace, owner, dependency, dan non-scope ditulis.
-  - Kondisi awal: AuditLog baru disebut pada baseline global dan belum memiliki
-    project pack bernomor.
-  - Perubahan: folder `docs/Projects/06.System/03.AuditLog` menetapkan target
-    `app/Modules/System/AuditLog` dan namespace terkait.
-  - Alasan: module harus dapat ditelusuri sebelum generator dijalankan.
-  - Evidence: README, specification, plan, tasks, dan dua ADR tersedia.
+    - Kondisi awal: AuditLog baru disebut pada baseline global dan belum memiliki
+      project pack bernomor.
+    - Perubahan: folder `docs/Projects/06.System/03.AuditLog` menetapkan target
+      `app/Modules/System/AuditLog` dan namespace terkait.
+    - Alasan: module harus dapat ditelusuri sebelum generator dijalankan.
+    - Evidence: README, specification, plan, tasks, dan dua ADR tersedia.
 - [x] Project intake dan inventory module existing dicatat.
-  - Kondisi awal: AccessControl dan UserManagement sudah ada; status AuditLog
-    belum diverifikasi.
-  - Perubahan: preflight menjalankan discover, validate, list, dan inspect.
-  - Alasan: mencegah duplicate path, namespace, provider, dan permission.
-  - Evidence: dua module valid; AuditLog menghasilkan `MODULE_NOT_FOUND`.
+    - Kondisi awal: AccessControl dan UserManagement sudah ada; status AuditLog
+      belum diverifikasi.
+    - Perubahan: preflight menjalankan discover, validate, list, dan inspect.
+    - Alasan: mencegah duplicate path, namespace, provider, dan permission.
+    - Evidence: dua module valid; AuditLog menghasilkan `MODULE_NOT_FOUND`.
 - [x] Prompt generator, dry-run, expected output, dan acceptance ditinjau.
-  - Evidence: specification dan implementation plan memuat command serta kode
-    hasil yang diharapkan.
+    - Evidence: specification dan implementation plan memuat command serta kode
+      hasil yang diharapkan.
 - [x] Dependency task dan checkpoint jelas.
-  - Evidence: Task 01 sampai Task 11 berurutan dan setiap task memiliki test.
+    - Evidence: Task 01 sampai Task 11 berurutan dan setiap task memiliki test.
 
 ## Task 01 - Discovery, Dokumentasi, dan Preflight
 
@@ -34,9 +34,9 @@ dokumen UserManagement, source module existing, serta folder dokumentasi ini.
 **Acceptance criteria:**
 
 - [x] Seluruh 150 file Markdown diinventarisasi dan 96 file yang menyebut
-  audit/correlation/retention/redaction dipetakan.
+      audit/correlation/retention/redaction dipetakan.
 - [x] Dokumen authoritative AuditLog dibaca dan tidak ada conflict struktur
-  canonical.
+      canonical.
 - [x] AccessControl serta UserManagement valid.
 - [x] AuditLog belum ada.
 - [x] ADR retensi/scope dan ingestion synchronous diterima.
@@ -98,10 +98,10 @@ provider generator dan memakai target sementara agar module nyata tidak terhapus
 - [x] `audit_log.view` valid, unik, dan dimiliki AuditLog.
 - [x] `AuditRecorder` menerima/mereturn DTO typed, bukan Eloquent model.
 - [x] Event ID, correlation ID, actor, subject, reason, metadata, dan timestamp
-  memiliki contract jelas.
+      memiliki contract jelas.
 - [x] Input ULID invalid ditolak.
 - [x] Sembilan fondasi enterprise memiliki status, owner, alasan, acceptance,
-  dan verification.
+      dan verification.
 - [x] Dependency manifest hanya memakai public boundary.
 
 **Test:** permission identity, DTO validation, contract, dan architecture test.
@@ -221,6 +221,53 @@ dan token/component shared bila benar-benar diperlukan.
 - [x] Light/dark dan seluruh palette mengikuti baseline System.
 - [x] Keyboard, focus, label, contrast, dan reduced motion ditinjau.
 - [x] Console browser bersih.
+- [x] Komposisi workspace selaras dengan UserManagement.
+    - Kondisi awal: shortcut dan pesan error berada di dalam header card
+      `Workspace audit`, sehingga hierarchy visual AuditLog berbeda dengan module
+      System lain.
+    - Perubahan: `AuditLogShortcutBar` menjadi bar mandiri setelah ringkasan;
+      pesan error berada pada level halaman; card utama memakai judul
+      `Riwayat aktivitas` dan tetap menampung filter serta tabel audit.
+    - Alasan: urutan ringkasan → shortcut → workspace membuat orientasi operator
+      konsisten saat berpindah dari UserManagement ke AuditLog.
+    - Evidence: browser SuperSystem desktop dan mobile menampilkan komposisi baru;
+      filter, pagination, detail, dan mobile card fallback tetap tersedia.
+- [x] Pemilih jumlah baris berada di footer tabel seperti UserManagement.
+    - Kondisi awal: pemilih `per_page` berada pada card filter sehingga tercampur
+      dengan kriteria pencarian.
+    - Perubahan: `AuditLogFilterBar` hanya memuat kriteria; `AuditLogTable`
+      menampilkan pemilih jumlah baris bersama informasi halaman dan navigasi.
+    - Alasan: jumlah baris mengatur tampilan tabel, bukan hasil pencarian.
+    - Evidence: browser memilih `10 baris`, mengubah URL menjadi `?per_page=10`,
+      menampilkan 10 record, dan kembali ke halaman pertama.
+- [x] UI menyembunyikan identifier teknis dan mendukung sorting waktu.
+    - Kondisi awal: tabel, kartu mobile, dan detail menampilkan ULID actor,
+      subject, event, correlation, serta metadata mentah; urutan waktu hanya
+      default terbaru tanpa kontrol pengguna.
+    - Perubahan: `AuditLogPageResource` mengirim field ramah operator ke Inertia;
+      API internal tetap memakai resource lengkap. Tabel dan detail hanya
+      menampilkan informasi operasional. Header Waktu mengubah `sort_direction`
+      antara terbaru dan terlama.
+    - Alasan: identifier teknis membingungkan operator dan metadata mentah dapat
+      memuat detail yang tidak diperlukan pada pekerjaan harian.
+    - Evidence: focused test memeriksa identifier tidak ada pada props Inertia,
+      default terbaru, ascending, dan nilai sorting invalid. Browser desktop serta
+      mobile tidak menampilkan ULID; klik Waktu mengubah URL ke
+      `?sort_direction=asc` dan urutan menjadi terlama.
+- [x] UI memakai istilah operator dan hanya menampilkan context keamanan yang diminimalkan.
+    - Kondisi awal: action, subject, dan module dikirim sebagai identifier teknis;
+      event autentikasi belum menghasilkan audit browser/IP.
+    - Perubahan: `AuditLogOperatorLabels` menerjemahkan action, subject, dan
+      module pada payload Inertia. Listener autentikasi mencatat login sukses,
+      logout, reset password sukses, serta verifikasi email. Context hanya aktif
+      untuk action autentikasi/keamanan yang di-allowlist; browser tidak menyimpan
+      versi dan IP dimasking sebelum masuk UI.
+    - Alasan: operator dapat memahami riwayat tanpa jargon, sementara investigasi
+      keamanan tetap mendapat context minimum tanpa menyimpan user-agent mentah,
+      password, token, cookie, atau session.
+    - Evidence: `AuditLogPresentationTest` membuktikan label dan masking IP;
+      `AuditLogAuthenticationTest` membuktikan login direkam dan audit bisnis
+      biasa tidak menerima context perangkat.
 
 **Test:** TypeScript, ESLint, build, browser flow, dan accessibility review.
 
@@ -285,15 +332,17 @@ berlaku untuk mode synchronous, bukan ditulis sebagai implementasi yang hilang.
 - [x] Fresh migration/seeder test lulus.
 - [x] Browser/accessibility test relevan lulus.
 - [x] Review correctness, readability, architecture, security, performance,
-  dan dependency selesai.
+      dan dependency selesai.
 - [x] README, task, plan, ADR, execution log, revision history, dan open risk
-  diperbarui sesuai hasil nyata.
+      diperbarui sesuai hasil nyata.
 - [x] Checklist sebelum dan sesudah seluruh pekerjaan ditinjau.
 
-**Evidence:** `composer ci:check` lulus 194 test/838 assertion. Module console
-menemukan tiga module valid dan inspect AuditLog lulus. Tidak ada OPEN RISK yang
-memblokir scope saat ini; purge/archive dan delegated scope tetap non-scope yang
-memerlukan ADR baru.
+**Evidence:** `composer ci:check` terakhir lulus 296 test/1346 assertion dengan
+PHPStan 0 error dan `npm run build` lulus. Module console menemukan tiga module
+valid dan inspect AuditLog lulus. Verifikasi browser desktop dan mobile terakhir
+menutup shortcut, detail hanya-baca, responsive fallback, dan console kosong.
+Tidak ada OPEN RISK yang memblokir scope saat ini; purge/archive dan delegated
+scope tetap non-scope yang memerlukan ADR baru.
 
 ## Execution Log
 
@@ -314,7 +363,11 @@ memerlukan ADR baru.
 
 ## Revision History
 
-| Versi | Tanggal | Perubahan |
-| --- | --- | --- |
-| 1.0 | 2026-08-06 | Membuat task incremental lengkap beserta evidence awal |
-| 1.1 | 2026-08-06 | Menutup Task 02 sampai Task 11 dengan evidence implementasi dan quality gate |
+| Versi | Tanggal    | Perubahan                                                                          |
+| ----- | ---------- | ---------------------------------------------------------------------------------- |
+| 1.0   | 2026-08-06 | Membuat task incremental lengkap beserta evidence awal                             |
+| 1.1   | 2026-08-06 | Menutup Task 02 sampai Task 11 dengan evidence implementasi dan quality gate       |
+| 1.2   | 2026-08-10 | Menambah evidence penyelarasan workspace dan verifikasi akhir browser/quality gate |
+| 1.3   | 2026-08-10 | Menutup penempatan pemilih jumlah baris pada footer tabel                          |
+| 1.4   | 2026-08-10 | Menutup penyembunyian identifier teknis dan sorting waktu                          |
+| 1.5   | 2026-08-10 | Menutup label operator dan konteks keamanan autentikasi yang diminimalkan          |

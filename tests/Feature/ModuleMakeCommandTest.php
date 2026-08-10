@@ -2,13 +2,22 @@
 
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 
 beforeEach(function () {
+    $this->originalModuleMakeAppPath = app_path();
+    $this->moduleMakeAppPath = storage_path(
+        'framework/testing/module-make-'.Str::ulid()->toBase32(),
+    );
+    $this->app->useAppPath($this->moduleMakeAppPath);
+
     cleanupGeneratorProbes();
 });
 
 afterEach(function () {
     cleanupGeneratorProbes();
+    File::deleteDirectory($this->moduleMakeAppPath);
+    $this->app->useAppPath($this->originalModuleMakeAppPath);
 });
 
 it('menyediakan dry-run JSON tanpa membuat file', function () {
@@ -35,7 +44,7 @@ it('menolak input invalid sebelum membuat file', function () {
     expect($result->getExitCode())->toBe(1)
         ->and($result->getOutput())->toContain('MODULE_GENERATION_INVALID');
 
-    expect(File::exists(app_path('Modules/System/AccessControl')))->toBeTrue();
+    expect(File::exists(app_path('Modules/System/invalid-module')))->toBeFalse();
 });
 
 it('menolak mutasi tanpa konfirmasi force', function () {
@@ -45,7 +54,7 @@ it('menolak mutasi tanpa konfirmasi force', function () {
         ->and($result->getOutput())->toContain('MODULE_GENERATION_INVALID')
         ->and($result->getOutput())->toContain('--force');
 
-    expect(File::exists(app_path('Modules/System/AccessControl')))->toBeTrue();
+    expect(File::exists(app_path('Modules/System/AuditLog')))->toBeFalse();
 });
 
 it('mengembalikan failure saat target conflict', function () {

@@ -1,12 +1,26 @@
 import { router } from '@inertiajs/react';
-import { Eye, ScrollText } from 'lucide-react';
+import { ArrowDown, ArrowUp, Eye, ScrollText } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import route from '@/lib/route';
-import type { AuditLogPage, AuditLogRecord } from '../types';
+import type {
+    AuditLogFilters,
+    AuditLogPage,
+    AuditLogPageProps,
+    AuditLogRecord,
+} from '../types';
 
 type Props = {
     auditLogs: AuditLogPage;
+    filters: AuditLogFilters;
+    pagination: AuditLogPageProps['pagination'];
     loading: boolean;
     onLoadingChange: (loading: boolean) => void;
     onView: (record: AuditLogRecord) => void;
@@ -14,6 +28,8 @@ type Props = {
 
 export function AuditLogTable({
     auditLogs,
+    filters,
+    pagination,
     loading,
     onLoadingChange,
     onView,
@@ -42,6 +58,47 @@ export function AuditLogTable({
         );
     };
 
+    const changePerPage = (value: string) => {
+        onLoadingChange(true);
+        router.get(
+            route('system.audit-logs.index'),
+            {
+                ...Object.fromEntries(
+                    new URLSearchParams(window.location.search),
+                ),
+                per_page: value,
+                page: undefined,
+            },
+            {
+                preserveState: true,
+                preserveScroll: true,
+                onFinish: () => onLoadingChange(false),
+            },
+        );
+    };
+
+    const toggleCreatedAtSort = () => {
+        const sortDirection = filters.sort_direction === 'asc' ? 'desc' : 'asc';
+
+        onLoadingChange(true);
+        router.get(
+            route('system.audit-logs.index'),
+            {
+                ...Object.fromEntries(
+                    new URLSearchParams(window.location.search),
+                ),
+                sort_direction:
+                    sortDirection === 'desc' ? undefined : sortDirection,
+                page: undefined,
+            },
+            {
+                preserveState: true,
+                preserveScroll: true,
+                onFinish: () => onLoadingChange(false),
+            },
+        );
+    };
+
     if (auditLogs.data.length === 0) {
         return (
             <div className="dashboard-subcard rounded-xl border px-6 py-12 text-center">
@@ -58,19 +115,20 @@ export function AuditLogTable({
     return (
         <div className="space-y-4">
             <div className="space-y-3 md:hidden" aria-label="Daftar audit log">
-                {auditLogs.data.map((record) => (
+                {auditLogs.data.map((record, index) => (
                     <article
-                        key={record.id}
+                        key={`${record.createdAt}-${record.actionLabel}-${index}`}
                         className="dashboard-subcard space-y-3 rounded-xl border p-4"
                     >
                         <div className="flex items-start justify-between gap-3">
                             <div className="min-w-0">
                                 <Badge className="dashboard-badge dashboard-badge--emerald max-w-full truncate">
-                                    {record.action}
+                                    {record.actionLabel}
                                 </Badge>
                                 <p className="mt-1 text-xs text-foreground/60">
-                                    {record.module} ·{' '}
-                                    {formatDate(record.createdAt)}
+                                    {record.settingChange?.category ??
+                                        record.moduleLabel}{' '}
+                                    · {formatDate(record.createdAt)}
                                 </p>
                             </div>
                             <Button
@@ -78,7 +136,7 @@ export function AuditLogTable({
                                 size="icon"
                                 variant="outline"
                                 onClick={() => onView(record)}
-                                aria-label={`Lihat detail ${record.action}`}
+                                aria-label={`Lihat detail ${record.actionLabel}`}
                             >
                                 <Eye className="size-4" />
                             </Button>
@@ -97,15 +155,7 @@ export function AuditLogTable({
                                     Subject
                                 </dt>
                                 <dd className="truncate">
-                                    {record.subjectType}
-                                </dd>
-                            </div>
-                            <div className="col-span-2">
-                                <dt className="text-xs text-foreground/60">
-                                    Correlation ID
-                                </dt>
-                                <dd className="truncate font-mono text-xs">
-                                    {record.correlationId}
+                                    {record.subjectLabel}
                                 </dd>
                             </div>
                         </dl>
@@ -116,22 +166,37 @@ export function AuditLogTable({
                 <table className="w-full min-w-[860px] text-left text-sm">
                     <thead className="dashboard-table-header">
                         <tr>
-                            <th className="px-4 py-3 font-medium">Waktu</th>
+                            <th className="px-4 py-3 font-medium">
+                                <button
+                                    type="button"
+                                    onClick={toggleCreatedAtSort}
+                                    className="inline-flex items-center gap-1"
+                                    aria-label={`Urutkan waktu dari ${
+                                        filters.sort_direction === 'asc'
+                                            ? 'terbaru'
+                                            : 'terlama'
+                                    }`}
+                                >
+                                    Waktu
+                                    {filters.sort_direction === 'asc' ? (
+                                        <ArrowUp className="size-3" />
+                                    ) : (
+                                        <ArrowDown className="size-3" />
+                                    )}
+                                </button>
+                            </th>
                             <th className="px-4 py-3 font-medium">Actor</th>
                             <th className="px-4 py-3 font-medium">Aktivitas</th>
                             <th className="px-4 py-3 font-medium">Subject</th>
-                            <th className="px-4 py-3 font-medium">
-                                Correlation
-                            </th>
                             <th className="px-4 py-3 text-right font-medium">
                                 Detail
                             </th>
                         </tr>
                     </thead>
                     <tbody>
-                        {auditLogs.data.map((record) => (
+                        {auditLogs.data.map((record, index) => (
                             <tr
-                                key={record.id}
+                                key={`${record.createdAt}-${record.actionLabel}-${index}`}
                                 className="dashboard-table-row border-t"
                             >
                                 <td className="px-4 py-3 whitespace-nowrap">
@@ -141,26 +206,18 @@ export function AuditLogTable({
                                     <p className="font-medium">
                                         {record.actorName ?? 'System'}
                                     </p>
-                                    <p className="max-w-36 truncate text-xs text-foreground/60">
-                                        {record.actorId ?? 'system-process'}
-                                    </p>
                                 </td>
                                 <td className="px-4 py-3">
                                     <Badge className="dashboard-badge dashboard-badge--emerald">
-                                        {record.action}
+                                        {record.actionLabel}
                                     </Badge>
                                     <p className="mt-1 text-xs text-foreground/60">
-                                        {record.module}
+                                        {record.settingChange?.category ??
+                                            record.moduleLabel}
                                     </p>
                                 </td>
                                 <td className="px-4 py-3">
-                                    <p>{record.subjectType}</p>
-                                    <p className="max-w-36 truncate text-xs text-foreground/60">
-                                        {record.subjectId ?? '-'}
-                                    </p>
-                                </td>
-                                <td className="max-w-48 truncate px-4 py-3 font-mono text-xs">
-                                    {record.correlationId}
+                                    <p>{record.subjectLabel}</p>
                                 </td>
                                 <td className="px-4 py-3 text-right">
                                     <Button
@@ -168,7 +225,7 @@ export function AuditLogTable({
                                         size="sm"
                                         variant="outline"
                                         onClick={() => onView(record)}
-                                        aria-label={`Lihat detail ${record.action}`}
+                                        aria-label={`Lihat detail ${record.actionLabel}`}
                                     >
                                         <Eye className="size-4" />
                                         Lihat
@@ -184,7 +241,26 @@ export function AuditLogTable({
                     Halaman {auditLogs.meta.currentPage} dari{' '}
                     {auditLogs.meta.lastPage} - {auditLogs.meta.total} record
                 </p>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap items-center gap-2">
+                    <Select
+                        name="per_page"
+                        value={String(auditLogs.meta.perPage)}
+                        onValueChange={changePerPage}
+                    >
+                        <SelectTrigger
+                            aria-label="Jumlah baris per halaman"
+                            className="w-28"
+                        >
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {pagination.perPageOptions.map((option) => (
+                                <SelectItem key={option} value={String(option)}>
+                                    {option} baris
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                     <Button
                         type="button"
                         variant="outline"

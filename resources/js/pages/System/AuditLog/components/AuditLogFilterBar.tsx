@@ -8,14 +8,12 @@ import type { AuditLogFilters } from '../types';
 
 type Props = {
     filters: AuditLogFilters;
-    pagination: { perPageOptions: number[]; defaultPerPage: number };
     loading: boolean;
     onLoadingChange: (loading: boolean) => void;
 };
 
 export function AuditLogFilterBar({
     filters,
-    pagination,
     loading,
     onLoadingChange,
 }: Props) {
@@ -36,7 +34,8 @@ export function AuditLogFilterBar({
                 action: action || undefined,
                 date_from: dateFrom || undefined,
                 date_to: dateTo || undefined,
-                per_page: filters.per_page ?? pagination.defaultPerPage,
+                per_page: filters.per_page,
+                sort_direction: filters.sort_direction,
             },
             {
                 preserveState: true,
@@ -114,40 +113,6 @@ export function AuditLogFilterBar({
                     aria-label="Tanggal selesai"
                 />
             </div>
-            <label className="mt-3 block max-w-48">
-                <span className="sr-only">Jumlah audit log per halaman</span>
-                <select
-                    id="audit-log-per-page"
-                    value={String(
-                        filters.per_page ?? pagination.defaultPerPage,
-                    )}
-                    onChange={(event) => {
-                        onLoadingChange(true);
-                        router.get(
-                            route('system.audit-logs.index'),
-                            {
-                                ...Object.fromEntries(
-                                    new URLSearchParams(window.location.search),
-                                ),
-                                per_page: event.target.value,
-                                page: undefined,
-                            },
-                            {
-                                preserveState: true,
-                                preserveScroll: true,
-                                onFinish: () => onLoadingChange(false),
-                            },
-                        );
-                    }}
-                    className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
-                >
-                    {pagination.perPageOptions.map((option) => (
-                        <option key={option} value={option}>
-                            {option} / halaman
-                        </option>
-                    ))}
-                </select>
-            </label>
             <div className="mt-3 flex flex-wrap justify-end gap-2">
                 <Button type="button" variant="outline" onClick={reset}>
                     <RotateCcw className="size-4" />

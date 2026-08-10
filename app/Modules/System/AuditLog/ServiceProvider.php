@@ -8,11 +8,16 @@ use App\Modules\System\AccessControl\Application\Events\SystemActivityOccurred;
 use App\Modules\System\AuditLog\Application\Actions\RecordAuditEntry;
 use App\Modules\System\AuditLog\Application\Contracts\AuditLogRepository;
 use App\Modules\System\AuditLog\Application\Contracts\AuditRecorder;
+use App\Modules\System\AuditLog\Application\Listeners\RecordAuthenticationActivity;
 use App\Modules\System\AuditLog\Application\Listeners\RecordSystemActivity;
 use App\Modules\System\AuditLog\Application\Services\MetadataRedactor;
 use App\Modules\System\AuditLog\Infrastructure\Persistence\Models\AuditRecord;
 use App\Modules\System\AuditLog\Infrastructure\Persistence\Repositories\EloquentAuditLogRepository;
 use App\Modules\System\AuditLog\Presentation\Policies\AuditLogPolicy;
+use Illuminate\Auth\Events\Login;
+use Illuminate\Auth\Events\Logout;
+use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Auth\Events\Verified;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Facades\Event;
@@ -50,6 +55,10 @@ final class ServiceProvider extends FrameworkServiceProvider
         $this->loadRoutesFrom(__DIR__.'/Routes/web.php');
         $this->loadRoutesFrom(__DIR__.'/Routes/api.php');
         Gate::policy(AuditRecord::class, AuditLogPolicy::class);
+        Event::listen(Login::class, [RecordAuthenticationActivity::class, 'handleLogin']);
+        Event::listen(Logout::class, [RecordAuthenticationActivity::class, 'handleLogout']);
+        Event::listen(PasswordReset::class, [RecordAuthenticationActivity::class, 'handlePasswordReset']);
+        Event::listen(Verified::class, [RecordAuthenticationActivity::class, 'handleVerified']);
         Event::listen(SystemActivityOccurred::class, RecordSystemActivity::class);
     }
 

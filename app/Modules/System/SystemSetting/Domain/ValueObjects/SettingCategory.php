@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\System\SystemSetting\Domain\ValueObjects;
 
+use InvalidArgumentException;
+
 enum SettingCategory: string
 {
     case Api = 'api';
@@ -14,6 +16,31 @@ enum SettingCategory: string
     case Branding = 'branding';
     case Monitoring = 'monitoring';
     case Operations = 'operations';
+
+    public static function fromSettingKey(string $key): self
+    {
+        foreach (self::cases() as $category) {
+            if ($category->owns($key)) {
+                return $category;
+            }
+        }
+
+        throw new InvalidArgumentException("Key setting [{$key}] tidak memiliki kategori.");
+    }
+
+    public function label(): string
+    {
+        return match ($this) {
+            self::Api => 'API',
+            self::Password => 'Password',
+            self::Session => 'Sesi',
+            self::Mail => 'Email',
+            self::Pagination => 'Pagination',
+            self::Branding => 'Identitas aplikasi',
+            self::Monitoring => 'Monitoring',
+            self::Operations => 'Operasional',
+        };
+    }
 
     public function owns(string $key): bool
     {

@@ -1,17 +1,21 @@
 import type { Auth } from '@/types/auth';
 
 export type AuditLogRecord = {
-    id: string;
-    eventId: string;
-    actorId: string | null;
     actorName: string | null;
-    action: string;
-    subjectType: string;
-    subjectId: string | null;
-    module: string;
-    correlationId: string;
+    actionLabel: string;
+    subjectLabel: string;
+    moduleLabel: string;
     reason: string | null;
-    metadata: Record<string, unknown>;
+    securityContext: {
+        browser: string | null;
+        ipAddress: string | null;
+    } | null;
+    settingChange: {
+        category: string;
+        setting: string;
+        beforeValue: string;
+        afterValue: string;
+    } | null;
     createdAt: string;
 };
 
@@ -32,6 +36,7 @@ export type AuditLogFilters = {
     date_from?: string;
     date_to?: string;
     per_page?: number;
+    sort_direction?: 'asc' | 'desc';
 };
 
 export type AuditLogPageProps = {

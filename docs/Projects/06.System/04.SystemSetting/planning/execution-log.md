@@ -368,6 +368,33 @@ menyebut “selesai” tanpa source, file, alasan, command, hasil, dan risiko.
   atau runtime contract. Key baru yang didaftarkan pada masa depan mendapat
   fallback aman sampai panduan operator spesifiknya ditambahkan.
 
+## 10 Agustus 2026 - Konteks Audit Perubahan Kategori
+
+- Skill yang digunakan: `test-driven-development`, `security-and-hardening`,
+  `incremental-implementation`, dan `documentation-and-adrs`.
+- Kondisi awal: audit menyimpan `setting_key`, `before_value`, dan `after_value`.
+  Nilai sesudah sudah tercatat, tetapi audit belum menerima nama kategori dan
+  deskripsi operator dari pemilik setting sehingga UI tidak dapat menampilkannya
+  tanpa membuka key teknis.
+- Perubahan: `SettingCategory::fromSettingKey()` dan `label()` menentukan
+  kategori owner dari key registry. `UpdateSystemSetting` menambahkan
+  `setting_category` serta `setting_label` ke metadata audit, di samping nilai
+  sebelum dan sesudah yang telah ada. Definition sensitif tetap menulis
+  `[REDACTED]` untuk kedua nilai sebelum data masuk ke AuditLog.
+- Alasan: operator dapat menelusuri perubahan kategori seperti Pagination atau
+  Email dari Audit Log tanpa melihat key internal, sementara boundary dan
+  ownership setting tetap berada di SystemSetting.
+- Evidence: `SystemSettingMutationTest` mengunci metadata kategori, label,
+  nilai sebelum, dan nilai sesudah. `AuditLogPresentationTest` mengunci payload
+  UI aman dan penyamaran secret. Focused command gabungan lulus 22 test/218
+  assertion.
+- Quality gate akhir: `composer ci:check` lulus 299 test/1398 assertion dengan
+  PHPStan 0 error; TypeScript, ESLint, Prettier, Pint, dan Vite production build
+  juga lulus.
+- Risiko/open decision: tidak ada perubahan persistence, route, authorization,
+  atau kontrak runtime setting. Nilai rahasia tetap tidak dapat dipulihkan dari
+  audit.
+
 ## Revision History
 
 | Versi | Tanggal | Perubahan |
@@ -376,3 +403,4 @@ menyebut “selesai” tanpa source, file, alasan, command, hasil, dan risiko.
 | 1.1 | 2026-08-06 | Menambahkan seluruh increment dan final quality checkpoint |
 | 1.2 | 2026-08-10 | Mencatat editor kategori atomik dan alasan global |
 | 1.3 | 2026-08-10 | Mencatat panduan operator kategori dan nilai SystemSetting |
+| 1.4 | 2026-08-10 | Mencatat konteks kategori dan nilai perubahan pada Audit Log |

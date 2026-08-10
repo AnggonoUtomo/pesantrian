@@ -28,6 +28,7 @@ final class AuditLogFilterRequest extends FormRequest
             'date_to' => ['nullable', 'date_format:Y-m-d', 'after_or_equal:date_from'],
             'page' => ['nullable', 'integer', 'min:1'],
             'per_page' => ['nullable', 'integer', Rule::in(app(SystemRuntimeSettings::class)->current()->paginationPerPageOptions)],
+            'sort_direction' => ['nullable', 'string', Rule::in(['asc', 'desc'])],
         ];
     }
 
@@ -49,6 +50,7 @@ final class AuditLogFilterRequest extends FormRequest
             dateTo: $dateTo,
             page: (int) ($validated['page'] ?? 1),
             perPage: (int) ($validated['per_page'] ?? app(SystemRuntimeSettings::class)->current()->paginationDefaultPerPage),
+            sortDirection: $validated['sort_direction'] ?? 'desc',
         );
     }
 

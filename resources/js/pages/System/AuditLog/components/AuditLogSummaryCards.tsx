@@ -1,6 +1,6 @@
 import {
     CalendarClock,
-    Fingerprint,
+    MessageSquareText,
     ScrollText,
     ShieldCheck,
 } from 'lucide-react';
@@ -12,13 +12,13 @@ type Props = {
 };
 
 export function AuditLogSummaryCards({ records, total }: Props) {
-    const modules = new Set(records.map((record) => record.module)).size;
+    const modules = new Set(records.map((record) => record.moduleLabel)).size;
     const today = new Date().toDateString();
     const todayCount = records.filter(
         (record) => new Date(record.createdAt).toDateString() === today,
     ).length;
-    const correlated = records.filter(
-        (record) => record.correlationId.length > 0,
+    const withReason = records.filter(
+        (record) => record.reason !== null,
     ).length;
     const cards = [
         {
@@ -43,10 +43,10 @@ export function AuditLogSummaryCards({ records, total }: Props) {
             tone: 'dashboard-card--emerald',
         },
         {
-            label: 'Correlation siap',
-            value: correlated,
-            helper: 'Dapat ditelusuri',
-            icon: Fingerprint,
+            label: 'Dengan alasan',
+            value: withReason,
+            helper: 'Pada halaman aktif',
+            icon: MessageSquareText,
             tone: 'dashboard-card--amber',
         },
     ];

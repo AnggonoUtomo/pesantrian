@@ -110,6 +110,9 @@ dilengkapi secara incremental tanpa mengubah ownership module lain.
 - Arah dependency `SystemSetting -> AccessControl + AuditLog`.
 - Mutation SystemSetting mencatat audit melalui public `AuditRecorder` secara
   synchronous dan fail-closed.
+- Setiap audit perubahan membawa kategori dan deskripsi pengaturan yang aman,
+  selain nilai sebelum serta sesudah. Nilai sensitif tetap diredaaksi sebelum
+  meninggalkan boundary SystemSetting.
 - Database menjadi sumber kebenaran. Increment awal memakai memoization per
   request, bukan cache nilai lintas request yang berisiko stale.
 - Appearance pribadi tetap menjadi override; SystemSetting hanya menyediakan
@@ -136,3 +139,4 @@ Kedua ADR berstatus `Accepted` pada 6 Agustus 2026.
 | 1.1 | 2026-08-06 | Menutup implementasi dan mencatat quality gate SystemSetting |
 | 1.2 | 2026-08-10 | Menambah editor kategori atomik dengan satu alasan global |
 | 1.3 | 2026-08-10 | Menambah panduan operator untuk seluruh kategori dan nilai aktif |
+| 1.4 | 2026-08-10 | Menambah konteks kategori dan nilai perubahan pada Audit Log |

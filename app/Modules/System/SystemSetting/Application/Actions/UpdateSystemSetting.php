@@ -15,6 +15,7 @@ use App\Modules\System\SystemSetting\Application\DTO\UpdateSystemSettingData;
 use App\Modules\System\SystemSetting\Application\Services\RequestSettingMemoizer;
 use App\Modules\System\SystemSetting\Application\Services\SettingDefinitionRegistry;
 use App\Modules\System\SystemSetting\Application\Services\ValidateSettingConsistency;
+use App\Modules\System\SystemSetting\Domain\ValueObjects\SettingCategory;
 use DateTimeImmutable;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -100,6 +101,8 @@ final readonly class UpdateSystemSetting
                     reason: $reason,
                     metadata: [
                         'setting_key' => $definition->key,
+                        'setting_category' => SettingCategory::fromSettingKey($definition->key)->label(),
+                        'setting_label' => $definition->description,
                         'before_value' => $definition->sensitive ? '[REDACTED]' : $before[$key]->value,
                         'after_value' => $definition->sensitive ? '[REDACTED]' : $normalizedValue,
                         'result' => 'updated',

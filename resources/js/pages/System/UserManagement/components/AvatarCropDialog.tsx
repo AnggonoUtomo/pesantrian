@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import Cropper from 'react-easy-crop';
-import type {Area} from 'react-easy-crop';
+import type { Area } from 'react-easy-crop';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -53,7 +53,7 @@ throw new Error('Canvas crop tidak tersedia.');
 throw new Error('Crop avatar gagal dibuat.');
 }
 
-    return new File([blob], name.replace(/\.[^.]+$/, '') + '.webp', {
+    return new File([blob], `${name.replace(/\.[^.]+$/, '')}.webp`, {
         type: 'image/webp',
     });
 }
@@ -126,7 +126,7 @@ return;
                             onConfirm(await cropFile(source, area, file.name));
                         }}
                     >
-                        {processing ? 'Menyiapkan...' : 'Gunakan potongan'}
+                        {processing ? 'Memproses...' : 'Gunakan potongan'}
                     </Button>
                 </DialogFooter>
             </DialogContent>

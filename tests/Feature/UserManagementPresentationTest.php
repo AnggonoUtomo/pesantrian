@@ -381,3 +381,9 @@ it('memberi identifier aksesibel pada semua filter daftar user', function (): vo
         ->and($source)->toContain('name="archive"')
         ->and($source)->toContain('name="per_page"');
 });
+
+it('menyembunyikan kontrol avatar untuk user yang diarsipkan', function (): void {
+    $source = file_get_contents(resource_path('js/pages/System/UserManagement/components/UserViewDialog.tsx'));
+
+    expect($source)->toContain('user.deletedAt === null');
+});

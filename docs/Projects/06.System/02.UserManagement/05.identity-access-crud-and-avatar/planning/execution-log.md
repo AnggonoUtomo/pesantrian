@@ -100,3 +100,18 @@
   INC-002 (role/status awal atomik) serta INC-004 (avatar Media Library)
   masih merupakan pekerjaan implementation scope tersendiri dan belum
   dinyatakan selesai.
+
+## 2026-08-10 - Role/status awal dan avatar privat
+
+- Perubahan: pembuatan user menerima status dan role awal; action menjalankan
+  assignment role dalam transaction yang sama. Avatar memakai collection
+  `avatar` single-file pada disk `local` private, migration ULID milik module,
+  request JPEG/PNG/WebP maksimal 2 MB, route upload/hapus berpolicy `update`,
+  serta endpoint baca berpolicy `view` tanpa membocorkan path storage.
+- Evidence: `UserManagementAvatarTest` membuktikan upload, replace,
+  penolakan tipe/ukuran, dan penghapusan; focused suite lulus 34 test/209
+  assertion. Pint, ESLint, TypeScript, dan Vite build lulus.
+- Batas browser: browser tersedia tetapi sesi System telah berakhir dan tidak
+  ada kredensial pengujian yang dapat digunakan ulang. Halaman login memuat
+  tanpa console error/warning; interaksi upload avatar belum diklaim lulus
+  pada browser nyata.

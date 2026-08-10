@@ -69,6 +69,7 @@ final class UserController implements HasMiddleware
             new Middleware('can:user.create', only: ['store']),
             new Middleware('can:update,user', only: ['update']),
             new Middleware('can:update,user', only: ['updateAvatar']),
+            new Middleware('can:update,user', only: ['deleteAvatar']),
             new Middleware('can:update,user', only: ['assignRole']),
             new Middleware('can:user.status.manage', only: ['changeStatus']),
             new Middleware('can:user.delete', only: ['destroy']),
@@ -174,6 +175,15 @@ final class UserController implements HasMiddleware
         abort_unless($user->getFirstMedia('avatar') !== null, 404);
 
         return response()->file($user->getFirstMedia('avatar')->getPath());
+    }
+
+    public function deleteAvatar(Request $request, User $user): RedirectResponse
+    {
+        $this->updateUserAvatar->delete($request->user(), $user);
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Avatar user berhasil dihapus.']);
+
+        return back();
     }
 
     public function changeStatus(ChangeUserStatusRequest $request, string $user): RedirectResponse

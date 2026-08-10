@@ -11,7 +11,13 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { LoadingButton } from '@/components/ui/loading-button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import route from '@/lib/route';
 import type { UserManagementRole, UserManagementUser } from '../types';
 
@@ -24,7 +30,13 @@ type Props = {
 };
 type FormData = { name: string; email: string; password: string };
 
-export function UserFormDialog({ open, user, roles, canChangeStatus, onOpenChange }: Props) {
+export function UserFormDialog({
+    open,
+    user,
+    roles,
+    canChangeStatus,
+    onOpenChange,
+}: Props) {
     const form = useForm<FormData & { status: string; role: string }>({
         name: user?.name ?? '',
         email: user?.email ?? '',
@@ -134,48 +146,103 @@ export function UserFormDialog({ open, user, roles, canChangeStatus, onOpenChang
                     </div>
                     {!isEdit ? (
                         <>
-                        <div className="space-y-2">
-                            <label
-                                htmlFor="user-form-password"
-                                className="text-sm font-medium"
-                            >
-                                Password awal
-                            </label>
-                            <Input
-                                id="user-form-password"
-                                type="password"
-                                value={form.data.password}
-                                onChange={(event) =>
-                                    form.setData('password', event.target.value)
-                                }
-                                required
-                                minLength={8}
-                            />
-                            {form.errors.password ? (
-                                <p
-                                    className="text-xs text-destructive"
-                                    role="alert"
+                            <div className="space-y-2">
+                                <label
+                                    htmlFor="user-form-password"
+                                    className="text-sm font-medium"
                                 >
-                                    {form.errors.password}
-                                </p>
-                            ) : null}
-                        </div>
-                        <div className="grid gap-4 sm:grid-cols-2">
-                            <div className="space-y-2">
-                                <label htmlFor="user-form-status" className="text-sm font-medium">Status awal</label>
-                                <Select name="status" value={form.data.status} onValueChange={(value) => form.setData('status', value)} disabled={!canChangeStatus}>
-                                    <SelectTrigger id="user-form-status"><SelectValue /></SelectTrigger>
-                                    <SelectContent><SelectItem value="active">Aktif</SelectItem><SelectItem value="inactive">Tidak aktif</SelectItem><SelectItem value="suspended">Ditangguhkan</SelectItem></SelectContent>
-                                </Select>
+                                    Password awal
+                                </label>
+                                <Input
+                                    id="user-form-password"
+                                    type="password"
+                                    value={form.data.password}
+                                    onChange={(event) =>
+                                        form.setData(
+                                            'password',
+                                            event.target.value,
+                                        )
+                                    }
+                                    required
+                                    minLength={8}
+                                />
+                                {form.errors.password ? (
+                                    <p
+                                        className="text-xs text-destructive"
+                                        role="alert"
+                                    >
+                                        {form.errors.password}
+                                    </p>
+                                ) : null}
                             </div>
-                            <div className="space-y-2">
-                                <label htmlFor="user-form-role" className="text-sm font-medium">Role awal</label>
-                                <Select name="role" value={form.data.role || 'none'} onValueChange={(value) => form.setData('role', value === 'none' ? '' : value)}>
-                                    <SelectTrigger id="user-form-role"><SelectValue placeholder="Tanpa role" /></SelectTrigger>
-                                    <SelectContent><SelectItem value="none">Tanpa role</SelectItem>{roles.map((role) => <SelectItem key={role.id} value={role.name}>{role.name}</SelectItem>)}</SelectContent>
-                                </Select>
+                            <div className="grid gap-4 sm:grid-cols-2">
+                                <div className="space-y-2">
+                                    <label
+                                        htmlFor="user-form-status"
+                                        className="text-sm font-medium"
+                                    >
+                                        Status awal
+                                    </label>
+                                    <Select
+                                        name="status"
+                                        value={form.data.status}
+                                        onValueChange={(value) =>
+                                            form.setData('status', value)
+                                        }
+                                        disabled={!canChangeStatus}
+                                    >
+                                        <SelectTrigger id="user-form-status">
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="active">
+                                                Aktif
+                                            </SelectItem>
+                                            <SelectItem value="inactive">
+                                                Tidak aktif
+                                            </SelectItem>
+                                            <SelectItem value="suspended">
+                                                Ditangguhkan
+                                            </SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="space-y-2">
+                                    <label
+                                        htmlFor="user-form-role"
+                                        className="text-sm font-medium"
+                                    >
+                                        Role awal
+                                    </label>
+                                    <Select
+                                        name="role"
+                                        value={form.data.role || 'none'}
+                                        onValueChange={(value) =>
+                                            form.setData(
+                                                'role',
+                                                value === 'none' ? '' : value,
+                                            )
+                                        }
+                                    >
+                                        <SelectTrigger id="user-form-role">
+                                            <SelectValue placeholder="Tanpa role" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="none">
+                                                Tanpa role
+                                            </SelectItem>
+                                            {roles.map((role) => (
+                                                <SelectItem
+                                                    key={role.id}
+                                                    value={role.name}
+                                                >
+                                                    {role.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
                             </div>
-                        </div>
                         </>
                     ) : null}
                     <DialogFooter>

@@ -1,3 +1,4 @@
+import { router } from '@inertiajs/react';
 import {
     Clock3,
     Eye,
@@ -6,6 +7,7 @@ import {
     Pencil,
     ShieldCheck,
 } from 'lucide-react';
+import { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -17,6 +19,8 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import route from '@/lib/route';
 import type { UserManagementUser } from '../types';
 
 type Props = {
@@ -42,6 +46,8 @@ export function UserViewDialog({
     onImpersonate,
     onAssignRole,
 }: Props) {
+    const [uploading, setUploading] = useState(false);
+
     if (!user) {
         return null;
     }
@@ -57,6 +63,22 @@ export function UserViewDialog({
         .slice(0, 2)
         .join('')
         .toUpperCase();
+    const uploadAvatar = (file: File | null) => {
+        if (!file) {
+            return;
+        }
+
+        setUploading(true);
+        router.post(
+            route('system.users.avatar.update', user.id),
+            { avatar: file },
+            {
+                forceFormData: true,
+                preserveScroll: true,
+                onFinish: () => setUploading(false),
+            },
+        );
+    };
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -98,6 +120,49 @@ export function UserViewDialog({
                             </div>
                             <Badge className="ml-auto">{statusLabel}</Badge>
                         </div>
+                        {canEdit && !user.isProtected ? (
+                            <div className="flex flex-wrap items-center gap-2">
+                                <label
+                                    htmlFor="user-avatar-upload"
+                                    className="sr-only"
+                                >
+                                    Upload avatar
+                                </label>
+                                <Input
+                                    id="user-avatar-upload"
+                                    type="file"
+                                    accept="image/jpeg,image/png,image/webp"
+                                    disabled={uploading}
+                                    onChange={(event) =>
+                                        uploadAvatar(
+                                            event.target.files?.[0] ?? null,
+                                        )
+                                    }
+                                    className="max-w-xs"
+                                />
+                                {user.avatarUrl ? (
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        disabled={uploading}
+                                        onClick={() =>
+                                            router.delete(
+                                                route(
+                                                    'system.users.avatar.delete',
+                                                    user.id,
+                                                ),
+                                                { preserveScroll: true },
+                                            )
+                                        }
+                                    >
+                                        Hapus avatar
+                                    </Button>
+                                ) : null}
+                                <p className="text-xs text-muted-foreground">
+                                    JPEG, PNG, atau WebP, maksimal 2 MB.
+                                </p>
+                            </div>
+                        ) : null}
                     </section>
                     <section className="dashboard-subcard space-y-3 rounded-xl border p-4">
                         <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">

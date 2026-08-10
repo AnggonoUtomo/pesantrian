@@ -18,7 +18,7 @@ final readonly class SyncRolePermissions
         private AccessControlActivityPublisher $activities,
     ) {}
 
-    /** @param array<int, string> $permissions */
+    /** @param array<int, mixed> $permissions */
     public function execute(?Authenticatable $actor, Role $role, array $permissions): void
     {
         $this->authorization->ensurePermissionsCanBeAssigned($actor, $role);
@@ -26,7 +26,7 @@ final readonly class SyncRolePermissions
             throw new InvalidArgumentException('Permission harus berupa string.');
         }
 
-        $permissions = array_values(array_unique($permissions));
+        $permissions = array_unique($permissions);
         $valid = Permission::query()->where('guard_name', 'web')->whereIn('name', $permissions)->pluck('name')->all();
         if (count($valid) !== count($permissions)) {
             throw new InvalidArgumentException('Permission tidak valid.');
@@ -43,7 +43,7 @@ final readonly class SyncRolePermissions
             subjectId: static fn (Role $updatedRole): string => (string) $updatedRole->getKey(),
             metadata: static fn (Role $updatedRole): array => [
                 'role_name' => $updatedRole->name,
-                'permission_keys' => array_values($permissions),
+                'permission_keys' => $permissions,
                 'permission_count' => count($permissions),
             ],
         );

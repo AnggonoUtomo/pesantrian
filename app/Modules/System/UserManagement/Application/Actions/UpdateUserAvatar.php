@@ -19,9 +19,20 @@ final readonly class UpdateUserAvatar
         $this->authorization->ensure($actor, 'user.update');
 
         if ($user->isSuperSystem() || $user->trashed()) {
-            throw new ProtectedUserMutation('Avatar user terlindungi atau terarsip tidak dapat diubah.');
+            throw new ProtectedUserMutation;
         }
 
         $user->addMedia($avatar)->usingName('avatar')->toMediaCollection('avatar');
+    }
+
+    public function delete(?Authenticatable $actor, User $user): void
+    {
+        $this->authorization->ensure($actor, 'user.update');
+
+        if ($user->isSuperSystem() || $user->trashed()) {
+            throw new ProtectedUserMutation;
+        }
+
+        $user->clearMediaCollection('avatar');
     }
 }

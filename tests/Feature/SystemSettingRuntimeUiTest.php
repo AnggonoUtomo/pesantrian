@@ -75,6 +75,7 @@ it('memperbarui aktivitas session yang masih valid', function (): void {
     $actor = User::query()->where('email', 'super-system@example.test')->firstOrFail();
     setRuntimeSetting('security.session.idle_minutes', 5);
     setRuntimeSetting('security.session.absolute_hours', 2);
+    $beforeRequest = now()->timestamp;
 
     $this->actingAs($actor)
         ->withSession([
@@ -85,7 +86,7 @@ it('memperbarui aktivitas session yang masih valid', function (): void {
         ->assertOk();
 
     expect((int) session('system_setting.last_activity_at'))
-        ->toBeGreaterThanOrEqual(now()->subSecond()->timestamp);
+        ->toBeGreaterThanOrEqual($beforeRequest);
     $this->assertAuthenticatedAs($actor);
 });
 

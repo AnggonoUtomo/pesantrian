@@ -2,9 +2,9 @@
 
 ## Status
 
-`Task 12 Open Risk UI selesai untuk scope UserManagement saat ini; UI create,
-edit, detail, impersonation, status, soft delete, dan role assignment sudah
-diverifikasi.`
+`UserManagement selesai untuk scope repository: UI invitation/create, edit,
+detail, avatar, lifecycle bulk, restore, multi-role, impersonation, dan audit
+lintas module telah diverifikasi.`
 
 UserManagement adalah module business pertama setelah AccessControl. Module ini
 mengelola lifecycle user di atas tabel `users` starter kit. Authentication,
@@ -70,7 +70,7 @@ mengambil alih private implementation AccessControl.
 
 - [05. Identity, akses CRUD, dan avatar](05.identity-access-crud-and-avatar/README.md) - berjalan, INC-001 selesai
 - [ADR-0005 identity, akses awal, avatar, dan aktivitas login](decisions/ADR-0005-IDENTITY-ACCESS-AVATAR-AND-LOGIN-ACTIVITY.md) - proposed; keputusan disk avatar terbuka
-- [04. Bulk lifecycle user](04.bulk-user-lifecycle/README.md) - browser test terbuka
+- [04. Bulk lifecycle user](04.bulk-user-lifecycle/README.md) - selesai dan browser terverifikasi
 - [AccessControl](../01.AccessControl/README.md)
 - [AccessControl code-flow](../01-1.AccessControl-code-flow/README.md)
 - [Folder structure](../../../03-IMPLEMENTATION/03.04-FOLDER-STRUCTURE.md)
@@ -89,7 +89,18 @@ mengambil alih private implementation AccessControl.
 - flow impersonation dengan permission, alasan, dan perlindungan
   `SuperSystem`.
 
-## Scope Lanjutan yang Belum Dibuat
+## Riwayat Scope Lanjutan (telah ditutup)
+
+Status saat ini: restore, invitation email, multi-role, archive/force-delete,
+dan consumer AuditLog telah selesai dengan contract, guard, audit, focused test,
+serta verifikasi browser. Daftar di bawah adalah catatan scope sebelum
+implementasi, bukan backlog aktif atau OPEN RISK.
+
+Deployment migration shared/production adalah handoff operasional. Operator
+environment target wajib menjalankan backup/restore, pemeriksaan lock/downtime,
+approval rilis, dan rollback mengikuti
+[`migration-runbook.md`](migration-runbook.md). Rehearsal lokal sudah dicatat;
+dokumen ini tidak mengklaim deployment target telah berlangsung.
 
 Empat scope berikut masih menjadi pekerjaan lanjutan. AuditLog consumer sudah
 ditutup melalui increment `System/AuditLog`. Item berikut belum dianggap selesai

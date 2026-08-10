@@ -42,11 +42,21 @@ positif/negatif, dan browser test. Tidak boleh dilakukan pada target aktif atau
 
 ## Definition of Done Increment
 
-- [ ] Checklist task diperbarui dengan kondisi awal, file berubah, alasan, dan evidence.
-- [ ] Positive dan negative test lulus.
-- [ ] Backend security authority dan public boundary tetap terjaga.
-- [ ] Dokumentasi downstream dan risiko diperbarui.
-- [ ] Tidak ada task berikutnya dimulai sebelum task aktif terverifikasi.
+- [x] Checklist task diperbarui dengan kondisi awal, file berubah, alasan, dan evidence.
+  - Evidence: task, execution log, ADR-0003, dan README mencatat archive,
+    restore, force delete, serta guard SuperSystem.
+- [x] Positive dan negative test lulus.
+  - Evidence: focused lifecycle test meliputi target aktif, user terarsip,
+    target protected, dan audit; bulk test menambah jaminan atomik batch.
+- [x] Backend security authority dan public boundary tetap terjaga.
+  - Evidence: Action dan policy memeriksa permission/state sebelum repository;
+    UserManagement tetap memakai contract publik AccessControl dan AuditLog.
+- [x] Dokumentasi downstream dan risiko diperbarui.
+  - Evidence: browser bulk lifecycle, traceability, dan runbook migration
+    diperbarui pada 10 Agustus 2026.
+- [x] Tidak ada task berikutnya dimulai sebelum task aktif terverifikasi.
+  - Evidence: restore/force delete telah memiliki test dan browser evidence
+    sebelum dipakai sebagai fondasi lifecycle bulk.
 
 ## Revision History
 

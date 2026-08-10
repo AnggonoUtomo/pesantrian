@@ -32,4 +32,8 @@ Payload: `{ "user_ids": ["ULID"] }`. `user_ids` unik, minimal satu, maksimal 50,
 - [x] Bulk archive hanya mengarsipkan target aktif.
 - [x] Bulk force delete hanya menghapus target terarsip.
 - [x] Audit per target memakai correlation ID yang sama.
-- [ ] Browser console bersih dan kontrol dapat diakses keyboard.
+- [x] Browser console bersih dan kontrol dapat diakses keyboard.
+  - Evidence: Chrome DevTools 10 Agustus 2026 memverifikasi header selection,
+    dialog archive/force delete, filter `Arsip saja`, toolbar kontekstual, dan
+    checkbox header disabled saat hasil hanya berisi SuperSystem. Console tidak
+    memiliki error atau warning.

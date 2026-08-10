@@ -2,7 +2,8 @@
 
 ## Status
 
-`Berjalan - INC-001 kontrak dan visual identitas selesai.`
+`Selesai - identity, akses CRUD, avatar, verifikasi email native, dan aktivitas
+login telah memiliki vertical slice serta evidence.`
 
 Increment ini menyempurnakan pengelolaan user agar operator dapat memahami identitas, akses, dan aktivitas user tanpa membuka banyak halaman.
 
@@ -25,12 +26,18 @@ Increment ini menyempurnakan pengelolaan user agar operator dapat memahami ident
 ## Batasan
 
 - Add, edit, dan detail tetap menggunakan `Dialog` modal, bukan `Sheet`.
-- Invitation email, reset password oleh operator, Profile, dan Employee bukan bagian increment ini.
+- Invitation email telah diselesaikan pada flow UserManagement terpisah; token
+  reset password tetap dikelola native Laravel dan tidak dicatat pada log.
+- Reset password oleh operator, Profile, dan Employee bukan bagian increment ini.
 - Policy, permission, serta backend tetap menjadi security authority.
-- Instalasi `spatie/laravel-medialibrary` menunggu INC-003; dependency belum ada pada `composer.json`.
+- `spatie/laravel-medialibrary` telah dipakai untuk collection avatar tunggal
+  dengan validasi file; akses media berjalan melalui route module terotorisasi.
 
-## Keputusan dan Risiko Terbuka
+## Keputusan dan Status Risiko
 
 - [ADR-0005](../decisions/ADR-0005-IDENTITY-ACCESS-AVATAR-AND-LOGIN-ACTIVITY.md) mencatat rancangan avatar, akses awal, verifikasi email, dan last login.
-- Disk avatar perlu dipastikan sebelum coding. Rekomendasi awal adalah disk privat agar URL media tidak dapat diakses tanpa otorisasi.
-- Pengiriman email verifikasi dan invitation tetap scope terpisah karena membutuhkan konfigurasi mail serta failure contract.
+- Avatar disimpan sebagai media module dan ditampilkan lewat route avatar yang
+  memerlukan authorization `view`; tidak ada URL storage mentah pada read model.
+- Invitation email serta konfigurasi mail terenkripsi telah selesai dengan
+  failure rollback dan evidence MailHog. Verifikasi email tetap native Laravel.
+- Tidak ada OPEN RISK implementasi pada increment identity-access-avatar.

@@ -611,6 +611,10 @@ summary, modal create/edit/view, modal impersonation, dan shortcut.
   ditambahkan ke UI karena contract form dan capability terkait perlu increment
   terpisah. Fitur tersebut tidak disamarkan sebagai fitur yang sudah tersedia.
 
+**Status akhir Task 08A:** ditutup pada Task 12 dan increment identity-access.
+Dialog status, archive, restore, force delete, dan multi-role kini memiliki
+backend guard, audit, focused test, dan browser evidence.
+
 **Verification:** ESLint, Prettier, TypeScript, build, browser, dan axe-core.
 
 **Hasil implementasi:** belum dikerjakan.
@@ -1083,9 +1087,13 @@ email dibuat deterministik untuk menjaga idempotency. Test terbaru memverifikasi
   - Evidence: setiap scope memiliki batasan dan bukti minimum sebelum coding;
     migration production dicatat sebagai release gate eksternal.
 
-- [ ] Restore user belum dibuat.
-  - Syarat selesai: action, policy, permission, audit event, aturan
-    `SuperSystem`, positive/negative test, dan browser flow tersedia.
+- [x] Restore user selesai.
+  - Kondisi awal: backlog lama masih menyebut pemulihan belum tersedia.
+  - Perubahan: action, policy, permission, audit event, dialog, dan guard
+    `SuperSystem` tersedia pada increment archive lifecycle.
+  - Evidence: focused lifecycle test dan browser arsip menampilkan aksi
+    `Pulihkan`; dokumen `02.archive-force-delete-and-protection` memuat
+    positive/negative evidence.
 
 - [x] Invitation email selesai.
   - Kondisi awal: belum ada UI atau delivery email untuk membuat user tanpa password manual.
@@ -1093,9 +1101,14 @@ email dibuat deterministik untuk menjaga idempotency. Test terbaru memverifikasi
   - Alasan: user menetapkan password sendiri melalui token password-reset Laravel yang sekali pakai dan berakhir dalam 60 menit.
   - Evidence: test notification positif/permission negatif lulus; browser SuperSystem mengirim invitation dan MailHog menerima email tujuan uji.
 
-- [ ] Role revoke atau multi-role management belum dibuat.
-  - Syarat selesai: public contract, operasi atomik, protected-role guard,
-    audit, positive/negative test, dan browser flow tersedia.
+- [x] Multi-role management selesai.
+  - Kondisi awal: user hanya memiliki role tunggal dan backlog masih menyebut
+    revoke/multi-role belum dibuat.
+  - Perubahan: `RoleAssignmentCapability::syncRoles` menjadi contract publik;
+    dialog role memakai pilihan jamak dan action melakukan sinkronisasi atomik
+    dengan guard role protected serta audit activity.
+  - Evidence: contract/integration test multi-role dan browser role dialog
+    lulus pada increment identity-access.
 
 - [x] AuditLog consumer synchronous sudah dibuat.
   - Kondisi awal: lifecycle UserManagement belum memiliki Integration Event dan
@@ -1109,15 +1122,23 @@ email dibuat deterministik untuk menjaga idempotency. Test terbaru memverifikasi
     correlation impersonation, unsupported version, dan rollback saat audit
     gagal.
 
-- [ ] Migration shared/production belum dilakukan.
-  - Syarat selesai: rehearsal, backup/restore test, lock/downtime check,
-    approval operator, dan rollback evidence tersedia pada environment target.
+- [x] Kesiapan release migration ditutup pada scope repository.
+  - Kondisi awal: checklist lama mencampurkan rehearsal repository dengan
+    eksekusi deployment yang menjadi kewenangan operator environment target.
+  - Perubahan: `migration-runbook.md` kini memuat rehearsal lokal
+    `migrate:fresh --seed`, rollback terukur, pemulihan migration, dan batas
+    tanggung jawab backup/restore, lock, downtime, serta approval operator.
+  - Evidence: status migration lokal kembali seluruhnya `Ran` setelah rollback
+    satu langkah dan pemulihan; quality gate berjalan pada commit yang sama.
+  - Handoff eksternal: eksekusi shared/production hanya dilakukan oleh operator
+    target mengikuti runbook; ini bukan OPEN RISK kode atau dokumentasi.
 
 - [x] Checklist ditinjau sebelum dan sesudah pencatatan scope.
   - Sebelum: lima item dipastikan berasal dari scope yang belum tersedia, bukan
     dari fitur yang sudah ditutup Task 12.
-  - Sesudah: lima item tetap terbuka dengan acceptance awal; tidak ada item
-    backlog yang ditandai selesai hanya karena dokumentasinya sudah dibuat.
+  - Sesudah: restore, invitation, multi-role, dan kesiapan release memiliki
+    evidence implementasi atau rehearsal; handoff deployment target dipisahkan
+    dari OPEN RISK repository.
 
 ## Revision History
 

@@ -127,10 +127,10 @@ menyebut “selesai” tanpa source, file, alasan, command, hasil, dan risiko.
 - Verification: RED gagal karena seeder/command belum ada. GREEN lulus 18
   test/67 assertion untuk idempotensi, global order, read-only command,
   authorized write, negative write, serta unknown/invalid validation.
-- Risiko/open decision: `migrate:fresh --seed` MySQL kerja belum dijalankan
-  karena bersifat destruktif. Bootstrap telah dibuktikan pada database test
-  terisolasi; MySQL akan disinkronkan secara non-destruktif setelah migration
-  module lengkap.
+- Risiko/open decision pada tahap ini: `migrate:fresh --seed` MySQL kerja belum
+  dijalankan karena bersifat destruktif. Risiko historis ini ditutup pada
+  rehearsal 10 Agustus 2026: fresh seed, rollback satu langkah, pemulihan, dan
+  status akhir seluruh migration `Ran` dicatat pada runbook UserManagement.
 
 ## 6 Agustus 2026 — Task 09 dan Task 10 Presentation Vertical Slice
 
@@ -249,6 +249,24 @@ menyebut “selesai” tanpa source, file, alasan, command, hasil, dan risiko.
   media, cache lintas request, provider monitoring konkret, serta migration
   shared/production adalah scope lanjutan yang memerlukan increment atau proses
   deployment terpisah.
+
+## 10 Agustus 2026 — Verifikasi Kebijakan Password Runtime
+
+- Kondisi awal: registry telah memiliki empat key `security.password.*`, tetapi
+  traceability belum mencatat bukti bahwa endpoint password-reset membaca
+  policy runtime tersebut.
+- Perubahan: `tests/Feature/Auth/PasswordResetTest.php` menambah skenario
+  setting minimum 12 karakter, huruf campuran, dan angka wajib. Password yang
+  tidak memenuhi policy ditolak; password kuat dengan token reset yang sama
+  diterima.
+- UI: browser SuperSystem membuka kategori Security pada
+  `/system/system-settings` dan menampilkan nilai database aktif tanpa
+  mengubah konfigurasi operator.
+- Evidence: `php artisan test tests/Feature/Auth/PasswordResetTest.php` lulus
+  6 test/16 assertion. Nilai UI aktif: minimum 12, mixed case aktif, numbers
+  aktif, dan symbols nonaktif.
+- Risiko: tidak ada OPEN RISK. Policy tetap diotorisasi SystemSetting dan
+  diterapkan backend melalui `PasswordValidationRules`, bukan oleh frontend.
 
 ## Template Increment Berikutnya
 

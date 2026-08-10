@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use App\Modules\System\SystemSetting\Infrastructure\Persistence\Models\SystemSettingRecord;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\Facades\Notification;
 use Laravel\Fortify\Features;
@@ -75,4 +76,49 @@ test('password cannot be reset with invalid token', function () {
     ]);
 
     $response->assertSessionHasErrors('email');
+});
+
+test('password reset mengikuti kebijakan password dari SystemSetting', function () {
+    foreach ([
+        ['key' => 'security.password.min_length', 'value' => 12, 'type' => 'integer'],
+        ['key' => 'security.password.require_mixed_case', 'value' => true, 'type' => 'boolean'],
+        ['key' => 'security.password.require_numbers', 'value' => true, 'type' => 'boolean'],
+        ['key' => 'security.password.require_symbols', 'value' => false, 'type' => 'boolean'],
+    ] as $setting) {
+        SystemSettingRecord::query()->create([
+            ...$setting,
+            'value' => json_encode($setting['value'], JSON_THROW_ON_ERROR),
+            'description' => 'Kebijakan password untuk pengujian.',
+            'is_sensitive' => false,
+        ]);
+    }
+
+    Notification::fake();
+    $user = User::factory()->create();
+
+    $this->post(route('password.email'), ['email' => $user->email]);
+
+    Notification::assertSentTo($user, ResetPassword::class, function ($notification) use ($user) {
+        $weakPassword = $this->post(route('password.update'), [
+            'token' => $notification->token,
+            'email' => $user->email,
+            'password' => 'lowercase1234',
+            'password_confirmation' => 'lowercase1234',
+        ]);
+
+        $weakPassword->assertSessionHasErrors('password');
+
+        $strongPassword = $this->post(route('password.update'), [
+            'token' => $notification->token,
+            'email' => $user->email,
+            'password' => 'StrongPassword12',
+            'password_confirmation' => 'StrongPassword12',
+        ]);
+
+        $strongPassword
+            ->assertSessionHasNoErrors()
+            ->assertRedirect(route('login'));
+
+        return true;
+    });
 });

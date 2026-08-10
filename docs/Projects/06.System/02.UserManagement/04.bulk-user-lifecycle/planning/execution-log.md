@@ -29,10 +29,28 @@
   Hasil akhir: `composer ci:check` lulus dengan 259 test dan 1206 assertion,
   PHPStan 0 error, ESLint, Prettier, TypeScript, dan Pint lulus. Dua route bulk
   terdaftar, module valid, serta diff check bersih.
-- Risiko terbuka: browser controller tidak memiliki browser tersedia pada sesi ini. Uji visual, keyboard, dialog, dan console browser harus dilakukan saat browser pengujian tersedia.
+- Risiko awal: browser controller tidak tersedia pada sesi ini. Risiko ini
+  ditutup pada verifikasi browser 10 Agustus 2026 di bawah.
 
 ## 2026-08-10 - Penyelarasan tombol berdasarkan filter arsip
 
 - Perubahan: toolbar bulk pada `UserTable` memakai `filters.archive` sebagai guard visibility. Daftar awal dan `User aktif` hanya menawarkan `Arsipkan terpilih`; `Arsip saja` hanya menawarkan `Hapus permanen terpilih`.
 - Alasan: operator tidak perlu melihat aksi force delete di daftar awal atau aksi archive pada daftar arsip.
 - Evidence: TypeScript dan ESLint dijalankan setelah perubahan ini.
+
+## 2026-08-10 - Verifikasi browser bulk lifecycle
+
+- Kondisi awal: checkpoint browser belum tersedia sehingga evidence dialog dan
+  guard SuperSystem belum dapat ditutup.
+- Perubahan data uji lokal: 25 user non-SuperSystem dipilih melalui checkbox
+  header, diarsipkan lewat dialog konfirmasi, lalu ditampilkan melalui filter
+  `Arsip saja` dan dihapus permanen melalui dialog kedua.
+- Evidence browser: toolbar awal hanya menampilkan `Arsipkan terpilih`; sesudah
+  filter arsip, toolbar hanya menampilkan `Hapus permanen terpilih`. Halaman
+  kemudian menampilkan state kosong untuk arsip. Pencarian SuperSystem
+  menonaktifkan checkbox header dan menyembunyikan seluruh mutation action.
+- Security: operasi dilakukan hanya pada database rehearsal lokal yang telah
+  disiapkan dari `migrate:fresh --seed`; tidak ada environment shared atau
+  production disentuh.
+- Console: tidak ada error atau warning Chrome.
+- Risiko: tidak ada OPEN RISK browser untuk increment ini.

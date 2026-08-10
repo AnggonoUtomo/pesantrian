@@ -41,7 +41,7 @@ dan force delete dikerjakan sebagai task terpisah dan diverifikasi satu per satu
 | Risiko | Status | Tindakan |
 | --- | --- | --- |
 | Permission force delete | Ditutup | Memakai `user.force.delete` agar memenuhi dot notation manifest. |
-| Mutation baru dapat lupa memakai guard | Terbuka | Tambahkan test matrix protected target pada setiap mutation baru. |
+| Mutation baru dapat lupa memakai guard | Ditutup | Guard Application/Policy dan matrix protected target telah dipakai oleh mutation lifecycle; setiap increment baru wajib memperluas test matrix yang sama. |
 
 ## Revision History
 

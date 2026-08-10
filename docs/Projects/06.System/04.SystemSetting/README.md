@@ -14,6 +14,12 @@ consumer, API, frontend vertical slice, dan test SystemSetting sudah tersedia.
 Generator aktual menghasilkan `MODULE_CREATED`; registry module dan MySQL lokal
 telah diverifikasi.
 
+Kebijakan password runtime juga tersedia pada kategori Security:
+`security.password.min_length`, `require_mixed_case`, `require_numbers`, dan
+`require_symbols`. Nilai dibaca backend melalui `PasswordValidationRules` untuk
+registration, reset password, dan penggantian password; frontend hanya menjadi
+UI administrasi untuk SuperSystem.
+
 ## Boundary Module
 
 - Parent boundary: `System`.

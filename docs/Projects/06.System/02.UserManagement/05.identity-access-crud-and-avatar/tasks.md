@@ -52,5 +52,8 @@
 - [x] Tabel serta modal menampilkan identitas, akses, verifikasi, dan aktivitas sesuai policy.
 - [x] Role/status awal aman, atomik, dan memiliki test positif/negatif.
 - [x] Avatar memakai Media Library dengan validasi, fallback, dan test file.
-- [ ] `last_login_at` dicatat dari login sukses; verifikasi email tetap native.
+- [x] `last_login_at` dicatat dari login sukses; verifikasi email tetap native.
+  - Evidence: `AuthenticationTest` membuktikan login sukses mengisi timestamp
+    dan login gagal tidak mengubahnya; browser memuat data activity tanpa
+    console error atau warning.
 - [x] Dokumentasi dan evidence final diperbarui tanpa checklist palsu.

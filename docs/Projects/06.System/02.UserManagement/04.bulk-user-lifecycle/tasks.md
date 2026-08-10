@@ -30,13 +30,20 @@
   - Kondisi awal: tabel tidak memiliki selection atau bulk action.
   - Perubahan: `UserTable` menambah checkbox per user dan halaman, toolbar jumlah pilihan, serta `BulkUserLifecycleDialog` dengan confirmation dan loading state. Checkbox `SuperSystem` disabled; pilihan dibersihkan ketika filter, page, atau jumlah baris berubah. Daftar awal/aktif hanya menampilkan bulk archive, sedangkan `Arsip saja` hanya menampilkan bulk force delete.
   - Alasan: selection dibatasi pada halaman aktif dan operasi destructive wajib dikonfirmasi.
-  - Evidence: ESLint dan TypeScript lulus. Browser test belum dapat dijalankan karena browser tidak tersedia pada sesi ini.
+  - Evidence: Chrome DevTools pada 10 Agustus 2026 memilih 25 user biasa,
+    membuka dialog archive, dan mengarsipkan batch. Setelah filter `Arsip saja`
+    diterapkan, toolbar hanya menampilkan `Hapus permanen terpilih`; dialog
+    force delete menghapus seluruh batch. Pencarian SuperSystem menghasilkan
+    checkbox header disabled dan hanya aksi lihat detail.
 
 ## Task 04 — Quality checkpoint
 
-- [ ] Quality checkpoint menunggu browser test.
+- [x] Quality checkpoint dan browser verification selesai.
   - Kondisi awal: seluruh verification otomatis belum dijalankan.
-  - Perubahan: PHPStan, test UserManagement, ESLint, TypeScript, diff check, dan validasi module telah dijalankan.
-  - Evidence: `composer ci:check` menghasilkan 259 test/1206 assertion lulus,
-    PHPStan 0 error, serta validasi module lulus.
-  - Risiko: browser controller sesi ini melaporkan tidak ada browser tersedia, sehingga keyboard, dialog, dan console runtime belum dapat diverifikasi.
+  - Perubahan: PHPStan, test UserManagement, ESLint, TypeScript, diff check,
+    validasi module, dan verifikasi browser telah dijalankan.
+  - Evidence: Chrome DevTools memverifikasi dialog, loading state, filter arsip,
+    bulk archive, bulk force delete, serta guard SuperSystem. Console
+    `/system/users` tidak memiliki error atau warning.
+  - Risiko: tidak ada OPEN RISK pada increment bulk lifecycle. Force delete
+    tetap irreversible dan hanya tersedia pada filter `Arsip saja`.

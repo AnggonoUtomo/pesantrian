@@ -40,9 +40,19 @@ jumlah baris berubah.
 
 ## Acceptance
 
-- [ ] Filter lama tetap berlaku pada semua halaman.
-- [ ] Pagination tidak memuat seluruh daftar ke frontend.
-- [ ] `per_page` dan `page` invalid ditolak.
-- [ ] Role efektif tidak menghasilkan dependency private lintas module.
-- [ ] Toolbar responsif, accessible, memakai Ziggy, toast/loading baseline, dan
+- [x] Filter lama tetap berlaku pada semua halaman.
+  - Evidence: focused UserManagement presentation test memverifikasi query
+    search/status/role/archive dipertahankan saat page dan per_page berubah.
+- [x] Pagination tidak memuat seluruh daftar ke frontend.
+  - Evidence: `UserListFilter` dan repository memakai pagination server-side;
+    props Inertia hanya memuat data halaman aktif serta meta pagination.
+- [x] `per_page` dan `page` invalid ditolak.
+  - Evidence: request test menolak `page=0` dan nilai per_page di luar opsi
+    runtime SystemSetting.
+- [x] Role efektif tidak menghasilkan dependency private lintas module.
+  - Evidence: UserManagement memakai public AccessControl capability; module
+    validation dan architecture test lulus tanpa import private.
+- [x] Toolbar responsif, accessible, memakai Ziggy, toast/loading baseline, dan
   lolos browser test.
+  - Evidence: browser `/system/users` memverifikasi toolbar pagination, sort
+    waktu input, loading filter, dan console tanpa error/warning.

@@ -42,3 +42,10 @@
 | 1.1 | 2026-08-06 | Mencatat evidence dan temuan review UserManagement |
 | 1.2 | 2026-08-06 | Mencatat evidence dan temuan review AuditLog |
 | 1.3 | 2026-08-10 | Menyelaraskan checklist review AuditLog dan status increment UserManagement dengan evidence implementasi yang telah ada |
+## 10 Agustus 2026 â€” Penyatuan Envelope Activity Lintas Module
+
+- Kondisi awal: AccessControl dan UserManagement menerbitkan dua event activity dengan payload identik; AuditLog memakai dua listener yang mengulang validasi dan pemetaan audit.
+- Perubahan: ADR-003 AccessControl menetapkan `SystemActivityOccurred` sebagai public shared value object. Kedua publisher bermigrasi ke envelope ini dan AuditLog memakai `RecordSystemActivity` dengan allowlist module/event version.
+- Alasan: contract lintas module memiliki tiga consumer nyata dan tidak memerlukan dua class atau dua listener terpisah.
+- Evidence: focused contract migration lulus 29 test/228 assertion; `composer ci:check` lulus 278 test/1227 assertion; PHPStan 0 error; lint, format, TypeScript, dan Pint lulus.
+- Risiko: event/listener lama dipertahankan sebagai source compatibility dan tidak lagi didispatch, sehingga tidak ada audit ganda. Tidak ada OPEN RISK quality gate.

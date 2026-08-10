@@ -4,17 +4,15 @@ declare(strict_types=1);
 
 namespace App\Modules\System\AuditLog;
 
-use App\Modules\System\AccessControl\Application\Events\AccessControlActivityOccurred;
+use App\Modules\System\AccessControl\Application\Events\SystemActivityOccurred;
 use App\Modules\System\AuditLog\Application\Actions\RecordAuditEntry;
 use App\Modules\System\AuditLog\Application\Contracts\AuditLogRepository;
 use App\Modules\System\AuditLog\Application\Contracts\AuditRecorder;
-use App\Modules\System\AuditLog\Application\Listeners\RecordAccessControlActivity;
-use App\Modules\System\AuditLog\Application\Listeners\RecordUserManagementActivity;
+use App\Modules\System\AuditLog\Application\Listeners\RecordSystemActivity;
 use App\Modules\System\AuditLog\Application\Services\MetadataRedactor;
 use App\Modules\System\AuditLog\Infrastructure\Persistence\Models\AuditRecord;
 use App\Modules\System\AuditLog\Infrastructure\Persistence\Repositories\EloquentAuditLogRepository;
 use App\Modules\System\AuditLog\Presentation\Policies\AuditLogPolicy;
-use App\Modules\System\UserManagement\Application\Events\UserManagementActivityOccurred;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Facades\Event;
@@ -52,8 +50,7 @@ final class ServiceProvider extends FrameworkServiceProvider
         $this->loadRoutesFrom(__DIR__.'/Routes/web.php');
         $this->loadRoutesFrom(__DIR__.'/Routes/api.php');
         Gate::policy(AuditRecord::class, AuditLogPolicy::class);
-        Event::listen(AccessControlActivityOccurred::class, RecordAccessControlActivity::class);
-        Event::listen(UserManagementActivityOccurred::class, RecordUserManagementActivity::class);
+        Event::listen(SystemActivityOccurred::class, RecordSystemActivity::class);
     }
 
     /** @return list<string> */

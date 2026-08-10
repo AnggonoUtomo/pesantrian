@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\System\UserManagement\Infrastructure\Events;
 
+use App\Modules\System\AccessControl\Application\Events\SystemActivityOccurred;
 use App\Modules\System\UserManagement\Application\Contracts\UserManagementActivityPublisher;
-use App\Modules\System\UserManagement\Application\Events\UserManagementActivityOccurred;
 use Closure;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\DatabaseManager;
@@ -40,7 +40,8 @@ final readonly class LaravelUserManagementActivityPublisher implements UserManag
         ): mixed {
             $result = $mutation();
 
-            $this->events->dispatch(new UserManagementActivityOccurred(
+            $this->events->dispatch(new SystemActivityOccurred(
+                module: 'UserManagement',
                 eventName: 'user-management.activity.occurred',
                 version: 1,
                 eventId: (string) Str::ulid(),

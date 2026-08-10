@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\System\AccessControl\Infrastructure\Events;
 
 use App\Modules\System\AccessControl\Application\Contracts\AccessControlActivityPublisher;
-use App\Modules\System\AccessControl\Application\Events\AccessControlActivityOccurred;
+use App\Modules\System\AccessControl\Application\Events\SystemActivityOccurred;
 use Closure;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\DatabaseManager;
@@ -40,7 +40,8 @@ final readonly class LaravelAccessControlActivityPublisher implements AccessCont
         ): mixed {
             $result = $mutation();
 
-            $this->events->dispatch(new AccessControlActivityOccurred(
+            $this->events->dispatch(new SystemActivityOccurred(
+                module: 'AccessControl',
                 eventName: 'access-control.activity.occurred',
                 version: 1,
                 eventId: (string) Str::ulid(),

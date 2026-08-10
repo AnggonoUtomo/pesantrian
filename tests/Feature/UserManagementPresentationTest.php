@@ -3,11 +3,11 @@
 declare(strict_types=1);
 
 use App\Models\User;
+use App\Modules\System\AccessControl\Application\Events\SystemActivityOccurred;
 use App\Modules\System\AccessControl\Infrastructure\Persistence\Models\Permission;
 use App\Modules\System\AccessControl\Infrastructure\Persistence\Models\Role;
 use App\Modules\System\SystemSetting\Database\Seeders\SystemSettingSeeder;
 use App\Modules\System\SystemSetting\Infrastructure\Persistence\Models\SystemSettingRecord;
-use App\Modules\System\UserManagement\Application\Events\UserManagementActivityOccurred;
 use App\Modules\System\UserManagement\Domain\ValueObjects\UserStatus;
 use App\Modules\System\UserManagement\Presentation\Policies\UserManagementPolicy;
 use Illuminate\Database\Eloquent\Factories\Sequence;
@@ -236,7 +236,7 @@ it('menolak assignment role jika actor tidak memiliki permission assignment', fu
 });
 
 it('memulihkan dan menghapus permanen user arsip dengan permission terpisah serta audit', function (): void {
-    Event::fake([UserManagementActivityOccurred::class]);
+    Event::fake([SystemActivityOccurred::class]);
     $restore = Permission::create(['name' => 'user.restore', 'guard_name' => 'web']);
     $forceDelete = Permission::create(['name' => 'user.force.delete', 'guard_name' => 'web']);
     $actor = User::factory()->create();
@@ -252,8 +252,8 @@ it('memulihkan dan menghapus permanen user arsip dengan permission terpisah sert
 
     expect($restorable->fresh()->trashed())->toBeFalse();
     Event::assertDispatched(
-        UserManagementActivityOccurred::class,
-        fn (UserManagementActivityOccurred $event): bool => $event->action === 'user.restored'
+        SystemActivityOccurred::class,
+        fn (SystemActivityOccurred $event): bool => $event->action === 'user.restored'
             && $event->subjectId === $restorable->id,
     );
 
@@ -263,14 +263,14 @@ it('memulihkan dan menghapus permanen user arsip dengan permission terpisah sert
 
     expect(User::query()->withTrashed()->find($forceDeletable->id))->toBeNull();
     Event::assertDispatched(
-        UserManagementActivityOccurred::class,
-        fn (UserManagementActivityOccurred $event): bool => $event->action === 'user.force_deleted'
+        SystemActivityOccurred::class,
+        fn (SystemActivityOccurred $event): bool => $event->action === 'user.force_deleted'
             && $event->subjectId === $forceDeletable->id,
     );
 });
 
 it('menjalankan bulk lifecycle secara atomik dan memberi toast bila target tidak valid', function (): void {
-    Event::fake([UserManagementActivityOccurred::class]);
+    Event::fake([SystemActivityOccurred::class]);
     $delete = Permission::create(['name' => 'user.delete', 'guard_name' => 'web']);
     $forceDelete = Permission::create(['name' => 'user.force.delete', 'guard_name' => 'web']);
     $actor = User::factory()->create();
@@ -293,10 +293,10 @@ it('menjalankan bulk lifecycle secara atomik dan memberi toast bila target tidak
         ->and($second->fresh()->trashed())->toBeTrue();
 
     Event::assertDispatched(
-        UserManagementActivityOccurred::class,
-        fn (UserManagementActivityOccurred $event): bool => $event->action === 'user.deleted',
+        SystemActivityOccurred::class,
+        fn (SystemActivityOccurred $event): bool => $event->action === 'user.deleted',
     );
-    Event::assertDispatchedTimes(UserManagementActivityOccurred::class, 2);
+    Event::assertDispatchedTimes(SystemActivityOccurred::class, 2);
 
     $this->actingAs($actor)
         ->delete(route('system.users.bulk-force-delete'), ['user_ids' => [$archived->id, $active->id]])
@@ -335,7 +335,7 @@ it('menjalankan bulk lifecycle secara atomik dan memberi toast bila target tidak
 
     expect($candidate->fresh()->trashed())->toBeFalse();
 
-    $correlationIds = Event::dispatched(UserManagementActivityOccurred::class)
+    $correlationIds = Event::dispatched(SystemActivityOccurred::class)
         ->map(static fn (array $arguments): string => $arguments[0]->correlationId)
         ->unique();
 

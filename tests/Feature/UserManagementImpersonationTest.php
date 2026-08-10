@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 use App\Models\User;
+use App\Modules\System\AccessControl\Application\Events\SystemActivityOccurred;
 use App\Modules\System\AccessControl\Infrastructure\Persistence\Models\Permission;
 use App\Modules\System\AccessControl\Infrastructure\Persistence\Models\Role;
-use App\Modules\System\UserManagement\Application\Events\UserManagementActivityOccurred;
 use App\Modules\System\UserManagement\Domain\Events\UserImpersonationEnded;
 use App\Modules\System\UserManagement\Domain\Events\UserImpersonationStarted;
 use App\Modules\System\UserManagement\Domain\ValueObjects\UserStatus;
@@ -55,8 +55,8 @@ it('memulai dan mengakhiri impersonation dengan actor restore serta event audit'
             && $event->reason === 'Permintaan support terverifikasi';
     });
     Event::assertDispatched(
-        UserManagementActivityOccurred::class,
-        fn (UserManagementActivityOccurred $event): bool => $event->action === 'user.impersonation_started',
+        SystemActivityOccurred::class,
+        fn (SystemActivityOccurred $event): bool => $event->action === 'user.impersonation_started',
     );
 
     $this->post(route('system.users.impersonation.leave'))
@@ -72,8 +72,8 @@ it('memulai dan mengakhiri impersonation dengan actor restore serta event audit'
             && $event->reason === 'Permintaan support terverifikasi';
     });
     Event::assertDispatched(
-        UserManagementActivityOccurred::class,
-        fn (UserManagementActivityOccurred $event): bool => $event->action === 'user.impersonation_ended',
+        SystemActivityOccurred::class,
+        fn (SystemActivityOccurred $event): bool => $event->action === 'user.impersonation_ended',
     );
 });
 

@@ -3,11 +3,10 @@
 declare(strict_types=1);
 
 use App\Models\User;
-use App\Modules\System\AccessControl\Application\Events\AccessControlActivityOccurred;
+use App\Modules\System\AccessControl\Application\Events\SystemActivityOccurred;
 use App\Modules\System\AccessControl\Database\Seeders\AccessControlSeeder;
 use App\Modules\System\AccessControl\Infrastructure\Persistence\Models\Role;
 use App\Modules\System\AuditLog\Infrastructure\Persistence\Models\AuditRecord;
-use App\Modules\System\UserManagement\Application\Events\UserManagementActivityOccurred;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
 
@@ -21,7 +20,8 @@ it('mencatat integration event UserManagement dengan envelope yang sama', functi
     $correlationId = (string) Str::ulid();
     $subjectId = (string) Str::ulid();
 
-    event(new UserManagementActivityOccurred(
+    event(new SystemActivityOccurred(
+        module: 'UserManagement',
         eventName: 'user-management.activity.occurred',
         version: 1,
         eventId: $eventId,
@@ -44,7 +44,8 @@ it('mencatat integration event UserManagement dengan envelope yang sama', functi
 });
 
 it('menolak versi integration event yang tidak didukung', function (): void {
-    $event = new UserManagementActivityOccurred(
+    $event = new SystemActivityOccurred(
+        module: 'UserManagement',
         eventName: 'user-management.activity.occurred',
         version: 2,
         eventId: (string) Str::ulid(),
@@ -59,7 +60,7 @@ it('menolak versi integration event yang tidak didukung', function (): void {
     );
 
     expect(fn () => event($event))
-        ->toThrow(UnexpectedValueException::class, 'Integration event UserManagement tidak didukung.');
+        ->toThrow(UnexpectedValueException::class, 'Integration event System tidak didukung.');
 
     expect(AuditRecord::query()->count())->toBe(0);
 });
@@ -86,7 +87,7 @@ it('mencatat mutasi role dan user melalui producer event', function (): void {
 
 it('merollback mutasi role ketika consumer audit gagal', function (): void {
     $actor = User::query()->where('email', 'super-system@example.test')->firstOrFail();
-    Event::listen(AccessControlActivityOccurred::class, static function (): never {
+    Event::listen(SystemActivityOccurred::class, static function (): never {
         throw new RuntimeException('Audit storage gagal.');
     });
 

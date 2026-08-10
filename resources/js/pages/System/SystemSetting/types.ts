@@ -1,10 +1,10 @@
 import type { Auth } from '@/types';
 
-export type SettingValue = number | boolean | string | null;
+export type SettingValue = number | number[] | boolean | string | null;
 
 export type SystemSettingItem = {
     key: string;
-    type: 'integer' | 'boolean' | 'string' | 'enum' | 'path';
+    type: 'integer' | 'integer_list' | 'boolean' | 'string' | 'enum' | 'path';
     value: SettingValue;
     default_value: SettingValue;
     description: string;
@@ -17,7 +17,12 @@ export type SystemSettingItem = {
 };
 
 export type SettingCategory =
-    'api' | 'security' | 'branding' | 'monitoring' | 'operations';
+    | 'api'
+    | 'security'
+    | 'pagination'
+    | 'branding'
+    | 'monitoring'
+    | 'operations';
 
 export type SystemSettingPageProps = {
     auth: Auth;

@@ -20,9 +20,12 @@ final readonly class RuntimeSettingData
         public int $rpoHours,
         public int $sessionIdleMinutes,
         public int $sessionAbsoluteHours,
+        /** @var list<int> */
+        public array $paginationPerPageOptions,
+        public int $paginationDefaultPerPage,
     ) {}
 
-    /** @return array<string, int|bool|string|null> */
+    /** @return array<string, int|bool|string|list<int>|null> */
     public function branding(): array
     {
         return [
@@ -35,7 +38,7 @@ final readonly class RuntimeSettingData
         ];
     }
 
-    /** @return array<string, int|bool|string|null> */
+    /** @return array<string, int|bool|string|list<int>|null> */
     public function runtime(): array
     {
         return [
@@ -49,7 +52,7 @@ final readonly class RuntimeSettingData
         ];
     }
 
-    /** @return array<string, int|bool|string|null> */
+    /** @return array<string, int|bool|string|list<int>|null> */
     public function diagnostic(): array
     {
         return [
@@ -60,6 +63,17 @@ final readonly class RuntimeSettingData
             'rpo_hours' => $this->rpoHours,
             'session_idle_minutes' => $this->sessionIdleMinutes,
             'session_absolute_hours' => $this->sessionAbsoluteHours,
+            'pagination_per_page_options' => $this->paginationPerPageOptions,
+            'pagination_default_per_page' => $this->paginationDefaultPerPage,
+        ];
+    }
+
+    /** @return array{perPageOptions: list<int>, defaultPerPage: int} */
+    public function pagination(): array
+    {
+        return [
+            'perPageOptions' => $this->paginationPerPageOptions,
+            'defaultPerPage' => $this->paginationDefaultPerPage,
         ];
     }
 }

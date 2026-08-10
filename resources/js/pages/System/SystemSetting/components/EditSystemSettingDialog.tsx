@@ -115,6 +115,27 @@ export function EditSystemSettingDialog({ setting, onClose }: Props) {
                                         </option>
                                     ))}
                                 </select>
+                            ) : setting.type === 'integer_list' ? (
+                                <Input
+                                    id="system-setting-value"
+                                    value={
+                                        Array.isArray(form.data.value)
+                                            ? form.data.value.join(', ')
+                                            : ''
+                                    }
+                                    onChange={(event) =>
+                                        form.setData(
+                                            'value',
+                                            event.target.value
+                                                .split(',')
+                                                .map((item) =>
+                                                    Number(item.trim()),
+                                                ),
+                                        )
+                                    }
+                                    aria-invalid={Boolean(form.errors.value)}
+                                    aria-describedby="system-setting-value-help"
+                                />
                             ) : (
                                 <Input
                                     id="system-setting-value"
@@ -141,6 +162,15 @@ export function EditSystemSettingDialog({ setting, onClose }: Props) {
                             <p className="text-xs text-foreground/60">
                                 {setting.description}
                             </p>
+                            {setting.type === 'integer_list' ? (
+                                <p
+                                    id="system-setting-value-help"
+                                    className="text-xs text-foreground/60"
+                                >
+                                    Pisahkan setiap jumlah dengan koma, misalnya
+                                    10, 25, 50, 100.
+                                </p>
+                            ) : null}
                         </div>
 
                         <div className="space-y-2">

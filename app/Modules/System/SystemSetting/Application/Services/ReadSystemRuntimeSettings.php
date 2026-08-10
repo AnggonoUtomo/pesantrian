@@ -36,18 +36,20 @@ final class ReadSystemRuntimeSettings implements SystemRuntimeSettings
             'operations.rpo_hours',
             'security.session.idle_minutes',
             'security.session.absolute_hours',
+            'pagination.per_page_options',
+            'pagination.default_per_page',
         ]);
 
         $monitoringRequested = (bool) $values['monitoring.external_enabled']->value;
         $monitoringAvailable = $this->monitoring->available();
 
         return $this->current = new RuntimeSettingData(
-            appName: (string) $values['branding.app_name']->value,
-            logoPath: $values['branding.logo_path']->value === null ? null : (string) $values['branding.logo_path']->value,
-            faviconPath: (string) $values['branding.favicon_path']->value,
-            paletteDefault: (string) $values['branding.palette_default']->value,
-            typographyDefault: (string) $values['branding.typography_default']->value,
-            appearanceDefault: (string) $values['branding.appearance_default']->value,
+            appName: $this->stringValue($values['branding.app_name']->value),
+            logoPath: $this->nullableStringValue($values['branding.logo_path']->value),
+            faviconPath: $this->stringValue($values['branding.favicon_path']->value),
+            paletteDefault: $this->stringValue($values['branding.palette_default']->value),
+            typographyDefault: $this->stringValue($values['branding.typography_default']->value),
+            appearanceDefault: $this->stringValue($values['branding.appearance_default']->value),
             monitoringExternalRequested: $monitoringRequested,
             monitoringExternalAvailable: $monitoringAvailable,
             monitoringExternalEnabled: $monitoringRequested && $monitoringAvailable,
@@ -55,6 +57,37 @@ final class ReadSystemRuntimeSettings implements SystemRuntimeSettings
             rpoHours: (int) $values['operations.rpo_hours']->value,
             sessionIdleMinutes: (int) $values['security.session.idle_minutes']->value,
             sessionAbsoluteHours: (int) $values['security.session.absolute_hours']->value,
+            paginationPerPageOptions: $this->integerListValue($values['pagination.per_page_options']->value),
+            paginationDefaultPerPage: (int) $values['pagination.default_per_page']->value,
         );
+    }
+
+    private function stringValue(mixed $value): string
+    {
+        if (! is_string($value)) {
+            throw new \LogicException('Runtime setting string tidak valid.');
+        }
+
+        return $value;
+    }
+
+    private function nullableStringValue(mixed $value): ?string
+    {
+        return $value === null ? null : $this->stringValue($value);
+    }
+
+    /** @return list<int> */
+    private function integerListValue(mixed $value): array
+    {
+        if (! is_array($value)) {
+            throw new \LogicException('Runtime setting daftar integer tidak valid.');
+        }
+
+        return array_values(array_map(
+            static fn (mixed $item): int => is_int($item)
+                ? $item
+                : throw new \LogicException('Runtime setting daftar integer tidak valid.'),
+            $value,
+        ));
     }
 }

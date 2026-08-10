@@ -9,7 +9,7 @@ use App\Modules\System\SystemSetting\Domain\ValueObjects\SettingType;
 it('mendaftarkan catalog setting baseline dengan default yang valid', function (): void {
     $registry = new SettingDefinitionRegistry('Starter 13');
 
-    expect($registry->all())->toHaveCount(13)
+    expect($registry->all())->toHaveCount(15)
         ->and($registry->definition('api.rate_limit.per_minute')->defaultValue)->toBe(60)
         ->and($registry->definition('branding.app_name')->defaultValue)->toBe('Starter 13')
         ->and($registry->definition('operations.rto_hours')->defaultValue)->toBe(4);

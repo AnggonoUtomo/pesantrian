@@ -6,12 +6,16 @@ namespace App\Modules\System\SystemSetting\Application\DTO;
 
 final readonly class SystemSettingItemData
 {
-    /** @param list<string> $options */
+    /**
+     * @param  int|bool|string|list<int>|null  $value
+     * @param  int|bool|string|list<int>|null  $defaultValue
+     * @param  list<string>  $options
+     */
     public function __construct(
         public string $key,
         public string $type,
-        public int|bool|string|null $value,
-        public int|bool|string|null $defaultValue,
+        public int|bool|string|array|null $value,
+        public int|bool|string|array|null $defaultValue,
         public string $description,
         public string $source,
         public ?string $updatedAt,

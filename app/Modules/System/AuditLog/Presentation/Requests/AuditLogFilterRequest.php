@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\System\AuditLog\Presentation\Requests;
 
 use App\Modules\System\AuditLog\Application\DTO\AuditLogFilter;
+use App\Modules\System\SystemSetting\Application\Contracts\SystemRuntimeSettings;
 use DateTimeImmutable;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -26,7 +27,7 @@ final class AuditLogFilterRequest extends FormRequest
             'date_from' => ['nullable', 'date_format:Y-m-d'],
             'date_to' => ['nullable', 'date_format:Y-m-d', 'after_or_equal:date_from'],
             'page' => ['nullable', 'integer', 'min:1'],
-            'per_page' => ['nullable', 'integer', Rule::in([10, 25, 50, 100])],
+            'per_page' => ['nullable', 'integer', Rule::in(app(SystemRuntimeSettings::class)->current()->paginationPerPageOptions)],
         ];
     }
 
@@ -47,7 +48,7 @@ final class AuditLogFilterRequest extends FormRequest
             dateFrom: $dateFrom,
             dateTo: $dateTo,
             page: (int) ($validated['page'] ?? 1),
-            perPage: (int) ($validated['per_page'] ?? 25),
+            perPage: (int) ($validated['per_page'] ?? app(SystemRuntimeSettings::class)->current()->paginationDefaultPerPage),
         );
     }
 

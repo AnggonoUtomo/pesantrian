@@ -15,7 +15,7 @@ beforeEach(function (): void {
     $this->seed(SystemSettingSeeder::class);
 });
 
-function setRuntimeSetting(string $key, int|bool|string|null $value): void
+function setRuntimeSetting(string $key, int|bool|string|array|null $value): void
 {
     SystemSettingRecord::query()->where('key', $key)->update([
         'value' => json_encode($value, JSON_THROW_ON_ERROR),
@@ -141,4 +141,16 @@ it('menyediakan diagnostic runtime tanpa klaim backup production', function (): 
     $this->artisan('system-setting:runtime', ['--json' => true])
         ->assertSuccessful()
         ->expectsOutputToContain('monitoring_external_enabled');
+});
+
+it('menyediakan pilihan dan default pagination global yang typed', function (): void {
+    setRuntimeSetting('pagination.per_page_options', [10, 20, 40]);
+    setRuntimeSetting('pagination.default_per_page', 20);
+
+    $pagination = app(SystemRuntimeSettings::class)->current()->pagination();
+
+    expect($pagination)->toBe([
+        'perPageOptions' => [10, 20, 40],
+        'defaultPerPage' => 20,
+    ]);
 });

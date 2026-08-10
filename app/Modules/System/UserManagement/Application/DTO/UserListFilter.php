@@ -16,8 +16,10 @@ final readonly class UserListFilter
         public string $archive,
         public int $page,
         public int $perPage,
+        public string $sortDirection,
     ) {}
 
+    /** @param list<int> $perPageOptions */
     public static function from(
         ?string $search,
         ?string $status = null,
@@ -25,11 +27,15 @@ final readonly class UserListFilter
         ?string $archive = null,
         ?int $page = null,
         ?int $perPage = null,
+        int $defaultPerPage = 25,
+        array $perPageOptions = [10, 25, 50, 100],
+        ?string $sortDirection = null,
     ): self {
         $search = trim((string) $search);
         $statusValue = trim((string) $status);
         $role = trim((string) $role);
         $archive = trim((string) $archive);
+        $sortDirection = strtolower(trim((string) $sortDirection));
 
         if (mb_strlen($search) > 100 || mb_strlen($role) > 100) {
             throw new InvalidArgumentException('Pencarian user terlalu panjang.');
@@ -37,14 +43,14 @@ final readonly class UserListFilter
 
         $status = $statusValue === '' ? null : UserStatus::tryFrom($statusValue);
 
-        if (($statusValue !== '' && $status === null) || ! in_array($archive, ['', 'all', 'active', 'archived'], true)) {
+        if (($statusValue !== '' && $status === null) || ! in_array($archive, ['', 'all', 'active', 'archived'], true) || ! in_array($sortDirection, ['', 'asc', 'desc'], true)) {
             throw new InvalidArgumentException('Filter daftar user tidak valid.');
         }
 
         $page ??= 1;
-        $perPage ??= 25;
+        $perPage ??= $defaultPerPage;
 
-        if ($page < 1 || ! in_array($perPage, [5, 10, 25, 50], true)) {
+        if ($page < 1 || ! in_array($perPage, $perPageOptions, true)) {
             throw new InvalidArgumentException('Pagination daftar user tidak valid.');
         }
 
@@ -55,6 +61,7 @@ final readonly class UserListFilter
             $archive === '' ? 'all' : $archive,
             $page,
             $perPage,
+            $sortDirection === '' ? 'desc' : $sortDirection,
         );
     }
 }

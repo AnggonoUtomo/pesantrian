@@ -31,8 +31,8 @@ async function cropFile(
     const context = canvas.getContext('2d');
 
     if (!context) {
-throw new Error('Canvas crop tidak tersedia.');
-}
+        throw new Error('Canvas crop tidak tersedia.');
+    }
 
     context.drawImage(
         image,
@@ -50,8 +50,8 @@ throw new Error('Canvas crop tidak tersedia.');
     );
 
     if (!blob) {
-throw new Error('Crop avatar gagal dibuat.');
-}
+        throw new Error('Crop avatar gagal dibuat.');
+    }
 
     return new File([blob], `${name.replace(/\.[^.]+$/, '')}.webp`, {
         type: 'image/webp',
@@ -66,8 +66,8 @@ export function AvatarCropDialog({ file, onCancel, onConfirm }: Props) {
     const source = file ? URL.createObjectURL(file) : null;
 
     if (!file || !source) {
-return null;
-}
+        return null;
+    }
 
     return (
         <Dialog open onOpenChange={(open) => !open && onCancel()}>
@@ -119,8 +119,8 @@ return null;
                         disabled={!area || processing}
                         onClick={async () => {
                             if (!area) {
-return;
-}
+                                return;
+                            }
 
                             setProcessing(true);
                             onConfirm(await cropFile(source, area, file.name));

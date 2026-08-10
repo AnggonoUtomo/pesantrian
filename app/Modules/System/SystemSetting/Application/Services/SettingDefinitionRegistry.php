@@ -52,6 +52,8 @@ final class SettingDefinitionRegistry implements SettingDefinitionRegistrar
             new SettingDefinitionData('api.idempotency.retention_hours', SettingType::Integer, 24, 'Masa simpan response idempotent dalam jam.', 'SystemSetting', 1, 168),
             new SettingDefinitionData('security.session.idle_minutes', SettingType::Integer, 30, 'Batas session tanpa aktivitas dalam menit.', 'SystemSetting', 5, 1440),
             new SettingDefinitionData('security.session.absolute_hours', SettingType::Integer, 12, 'Batas maksimal umur session dalam jam.', 'SystemSetting', 1, 168),
+            new SettingDefinitionData('pagination.per_page_options', SettingType::IntegerList, [5, 10, 25, 50, 100], 'Pilihan jumlah data per halaman yang tersedia pada daftar.', 'SystemSetting', 1, 100),
+            new SettingDefinitionData('pagination.default_per_page', SettingType::Integer, 25, 'Jumlah data per halaman saat pengguna belum memilih ukuran.', 'SystemSetting', 1, 100),
             new SettingDefinitionData('branding.app_name', SettingType::String, trim($appName) !== '' ? trim($appName) : 'Laravel', 'Nama aplikasi global.', 'SystemSetting', 1, 80),
             new SettingDefinitionData('branding.logo_path', SettingType::Path, null, 'Path logo lokal default.', 'SystemSetting', nullable: true),
             new SettingDefinitionData('branding.favicon_path', SettingType::Path, '/favicon.ico', 'Path favicon lokal default.', 'SystemSetting'),

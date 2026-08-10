@@ -5,6 +5,8 @@ declare(strict_types=1);
 use App\Models\User;
 use App\Modules\System\AccessControl\Infrastructure\Persistence\Models\Permission;
 use App\Modules\System\AccessControl\Infrastructure\Persistence\Models\Role;
+use App\Modules\System\SystemSetting\Database\Seeders\SystemSettingSeeder;
+use App\Modules\System\SystemSetting\Infrastructure\Persistence\Models\SystemSettingRecord;
 use App\Modules\System\UserManagement\Application\Events\UserManagementActivityOccurred;
 use App\Modules\System\UserManagement\Domain\ValueObjects\UserStatus;
 use App\Modules\System\UserManagement\Presentation\Policies\UserManagementPolicy;
@@ -14,6 +16,10 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 
 uses(RefreshDatabase::class);
+
+beforeEach(function (): void {
+    $this->seed(SystemSettingSeeder::class);
+});
 
 it('mendaftarkan route list user pada boundary module', function (): void {
     expect(route('system.users.index'))->toContain('/system/users');
@@ -192,6 +198,27 @@ it('menolak query filter daftar user yang tidak valid', function (): void {
             'per_page' => 15,
         ]))
         ->assertInvalid(['status', 'role', 'archive', 'page', 'per_page']);
+});
+
+it('memakai konfigurasi pagination global dan menolak ukuran di luar pilihan', function (): void {
+    $view = Permission::create(['name' => 'user.view', 'guard_name' => 'web']);
+    $actor = User::factory()->create();
+    $actor->givePermissionTo($view);
+    User::factory()->count(12)->create();
+    SystemSettingRecord::query()->where('key', 'pagination.per_page_options')->update(['value' => json_encode([10, 20], JSON_THROW_ON_ERROR)]);
+    SystemSettingRecord::query()->where('key', 'pagination.default_per_page')->update(['value' => json_encode(10, JSON_THROW_ON_ERROR)]);
+
+    $this->actingAs($actor)
+        ->get(route('system.users.index'))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->has('users', 10)
+            ->where('pagination.defaultPerPage', 10)
+            ->where('pagination.perPageOptions', [10, 20]));
+
+    $this->actingAs($actor)
+        ->get(route('system.users.index', ['per_page' => 25]))
+        ->assertInvalid('per_page');
 });
 
 it('menolak assignment role jika actor tidak memiliki permission assignment', function (): void {

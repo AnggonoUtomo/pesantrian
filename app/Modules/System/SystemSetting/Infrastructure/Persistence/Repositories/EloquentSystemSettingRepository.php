@@ -56,9 +56,10 @@ final class EloquentSystemSettingRepository implements SystemSettingRepository
         }
     }
 
+    /** @param int|bool|string|list<int>|null $value */
     public function upsert(
         SettingDefinitionData $definition,
-        int|bool|string|null $value,
+        int|bool|string|array|null $value,
         ?string $actorId,
     ): StoredSettingData {
         try {

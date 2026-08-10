@@ -9,7 +9,7 @@ import { AuditLogTable } from '../components/AuditLogTable';
 import type { AuditLogPageProps, AuditLogRecord } from '../types';
 
 export default function Index() {
-    const { auth, auditLogs, filters, errors } =
+    const { auth, auditLogs, filters, pagination, errors } =
         usePage<AuditLogPageProps>().props;
     const [selectedRecord, setSelectedRecord] = useState<AuditLogRecord | null>(
         null,
@@ -111,6 +111,7 @@ export default function Index() {
                         </div>
                         <AuditLogFilterBar
                             filters={filters}
+                            pagination={pagination}
                             loading={loading}
                             onLoadingChange={setLoading}
                         />

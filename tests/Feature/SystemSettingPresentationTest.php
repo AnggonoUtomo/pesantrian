@@ -39,7 +39,7 @@ it('menampilkan typed setting page kepada SuperSystem', function (): void {
         ->assertOk()
         ->assertInertia(fn (Assert $page): Assert => $page
             ->component('System/SystemSetting/pages/Index')
-            ->has('settings', 13)
+            ->has('settings', 15)
             ->where('settings.0.key', 'api.idempotency.retention_hours')
             ->where('settings.0.source', 'database'));
 });
@@ -81,6 +81,18 @@ it('mengembalikan 422 untuk value atau reason invalid dan 404 untuk unknown key'
         ->assertNotFound();
 });
 
+it('menolak default pagination yang tidak ada pada pilihan global', function (): void {
+    $actor = User::query()->where('email', 'super-system@example.test')->firstOrFail();
+
+    $this->actingAs($actor)
+        ->patchJson(route('api.v1.system-settings.update', ['key' => 'pagination.default_per_page']), [
+            'value' => 15,
+            'reason' => 'Nilai ini tidak tersedia pada pilihan.',
+        ], ['Idempotency-Key' => (string) Str::ulid()])
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors('value');
+});
+
 it('menyediakan API typed untuk list dan mutation', function (): void {
     $actor = User::query()->where('email', 'super-system@example.test')->firstOrFail();
 
@@ -88,7 +100,7 @@ it('menyediakan API typed untuk list dan mutation', function (): void {
         ->getJson(route('api.v1.system-settings.index'))
         ->assertOk()
         ->assertJsonPath('success', true)
-        ->assertJsonCount(13, 'data')
+        ->assertJsonCount(15, 'data')
         ->assertJsonStructure(['success', 'data' => [['key', 'type', 'value', 'source']]]);
 
     $this->actingAs($actor)

@@ -126,7 +126,9 @@ export function UserViewDialog({
                             </div>
                             <Badge className="ml-auto">{statusLabel}</Badge>
                         </div>
-                        {canEdit && !user.isProtected && user.deletedAt === null ? (
+                        {canEdit &&
+                        !user.isProtected &&
+                        user.deletedAt === null ? (
                             <div className="flex flex-wrap items-center gap-2">
                                 <label
                                     htmlFor="user-avatar-upload"

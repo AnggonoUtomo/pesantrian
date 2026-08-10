@@ -11,11 +11,12 @@ final readonly class SettingDefinitionData
 {
     /**
      * @param  list<string>  $options
+     * @param  list<int>  $defaultValue
      */
     public function __construct(
         public string $key,
         public SettingType $type,
-        public int|bool|string|null $defaultValue,
+        public int|bool|string|array|null $defaultValue,
         public string $description,
         public string $ownerModule,
         public ?int $min = null,
@@ -34,7 +35,8 @@ final readonly class SettingDefinitionData
         $this->normalize($defaultValue);
     }
 
-    public function normalize(mixed $value): int|bool|string|null
+    /** @return int|bool|string|list<int>|null */
+    public function normalize(mixed $value): int|bool|string|array|null
     {
         if ($value === null || ($this->type === SettingType::Path && trim((string) $value) === '')) {
             if ($this->nullable) {
@@ -50,6 +52,7 @@ final readonly class SettingDefinitionData
             SettingType::String => $this->normalizeString($value),
             SettingType::Enum => $this->normalizeEnum($value),
             SettingType::Path => $this->normalizePath($value),
+            SettingType::IntegerList => $this->normalizeIntegerList($value),
         };
     }
 
@@ -134,6 +137,24 @@ final readonly class SettingDefinitionData
         ) {
             throw new InvalidArgumentException("Nilai {$this->key} wajib berupa path lokal yang aman.");
         }
+
+        return $normalized;
+    }
+
+    /** @return list<int> */
+    private function normalizeIntegerList(mixed $value): array
+    {
+        if (! is_array($value) || $value === []) {
+            throw new InvalidArgumentException("Nilai {$this->key} wajib berupa daftar integer.");
+        }
+
+        $normalized = array_map(fn (mixed $item): int => $this->normalizeInteger($item), $value);
+
+        if (count($normalized) !== count(array_unique($normalized))) {
+            throw new InvalidArgumentException("Nilai {$this->key} tidak boleh memiliki angka duplikat.");
+        }
+
+        sort($normalized);
 
         return $normalized;
     }

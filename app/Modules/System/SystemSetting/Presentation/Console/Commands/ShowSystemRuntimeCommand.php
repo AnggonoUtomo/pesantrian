@@ -23,7 +23,7 @@ final class ShowSystemRuntimeCommand extends Command
             $this->table(
                 ['Target', 'Nilai'],
                 array_map(
-                    static fn (string $key, int|bool|string|null $value): array => [
+                    static fn (string $key, int|bool|string|array|null $value): array => [
                         $key,
                         json_encode($value, JSON_THROW_ON_ERROR),
                     ],

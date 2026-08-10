@@ -252,6 +252,16 @@ menyebut “selesai” tanpa source, file, alasan, command, hasil, dan risiko.
 
 ## Template Increment Berikutnya
 
+## 10 Agustus 2026 â€” Pagination Global dan Urutan User
+
+- Skill yang digunakan: `api-and-interface-design`, `test-driven-development`, `frontend-ui-engineering`, `code-simplification`, dan `documentation-and-adrs`.
+- Kondisi awal: UserManagement dan AuditLog memiliki daftar ukuran halaman serta default yang hardcode; daftar user diurutkan alfabetis.
+- Perubahan: registry SystemSetting menambah `pagination.per_page_options` bertipe `integer_list` dan `pagination.default_per_page`; runtime contract menyalurkan nilai typed ke UserManagement dan AuditLog. Nilai default hanya dapat disimpan jika tercantum pada daftar pilihan. UserManagement menampilkan kolom `Waktu input`, memakai `created_at DESC` sebagai default, dan header dapat menukar urutan ke `asc`.
+- Alasan teknis: satu sumber konfigurasi menghindari perbedaan batas pagination antar module, sementara urutan waktu input membuat user terbaru langsung terlihat.
+- Evidence: focused SystemSetting, UserManagement, dan AuditLog lulus 79 test/449 assertion; PHPStan lulus 0 error; TypeScript dan Vite production build lulus.
+- Browser check: sesi Chrome yang sebelumnya berada pada `/system/users` berhasil dibaca, tetapi reload hard membersihkan sesi dan mengarahkan ke `/login`. Tidak ada kredensial, cookie, token, atau storage sesi yang dibaca/digunakan. Verifikasi UI autentik dilanjutkan melalui test HTTP dan build; browser interaktif perlu sesi SuperSystem baru.
+- Risiko/open decision: tidak ada pada code. Batasan evidence browser adalah sesi autentik Chrome berakhir saat reload.
+
 ### {Tanggal} — {Task/Increment}
 
 - Skill yang digunakan: `{nama dan alasan}`.

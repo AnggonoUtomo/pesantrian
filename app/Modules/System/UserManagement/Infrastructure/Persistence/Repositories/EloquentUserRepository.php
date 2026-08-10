@@ -42,7 +42,7 @@ final class EloquentUserRepository implements UserRepository
                     $query->where('name', $filter->role);
                 });
             })
-            ->orderBy('name')
+            ->orderBy('created_at', $filter->sortDirection === 'asc' ? 'asc' : 'desc')
             ->paginate($filter->perPage, ['*'], 'page', $filter->page);
 
         return new PaginatedUserData(

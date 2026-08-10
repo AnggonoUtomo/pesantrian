@@ -1,6 +1,7 @@
 import { router } from '@inertiajs/react';
 import {
     Activity,
+    ArrowDownUp,
     Edit3,
     Eye,
     LogIn,
@@ -156,6 +157,7 @@ export function UserTable({
         nextSearch = search,
         page = 1,
         perPage = pagination.perPage,
+        sortDirection = filters.sortDirection,
     ) => {
         setSelectedUserIds([]);
         setIsSearching(true);
@@ -167,7 +169,10 @@ export function UserTable({
                 role: role === 'all' ? undefined : role,
                 archive: archive === 'all' ? undefined : archive,
                 page: page > 1 ? page : undefined,
-                per_page: perPage === 25 ? undefined : perPage,
+                per_page:
+                    perPage === pagination.defaultPerPage ? undefined : perPage,
+                sort_direction:
+                    sortDirection === 'desc' ? undefined : sortDirection,
             },
             {
                 preserveState: true,
@@ -238,11 +243,11 @@ export function UserTable({
     };
 
     const changePerPage = (value: string) => {
-        requestFilters(
-            search,
-            1,
-            Number(value) as UserManagementPagination['perPage'],
-        );
+        requestFilters(search, 1, Number(value));
+    };
+    const toggleCreatedAtSort = () => {
+        const sortDirection = filters.sortDirection === 'desc' ? 'asc' : 'desc';
+        requestFilters(search, 1, pagination.perPage, sortDirection);
     };
 
     const selectableUsers = users.filter((user) => !user.isProtected);
@@ -488,7 +493,16 @@ export function UserTable({
                                         }
                                     />
                                 </th>
-                                <th className="px-5 py-3 font-medium">User</th>
+                                <th className="px-5 py-3 font-medium">
+                                    <button
+                                        type="button"
+                                        onClick={toggleCreatedAtSort}
+                                        className="inline-flex items-center gap-1"
+                                        aria-label="Urutkan user berdasarkan waktu input"
+                                    >
+                                        User <ArrowDownUp className="size-3" />
+                                    </button>
+                                </th>
                                 <th className="hidden px-5 py-3 font-medium xl:table-cell">
                                     Role
                                 </th>
@@ -555,7 +569,7 @@ export function UserTable({
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                            {[5, 10, 25, 50].map((value) => (
+                            {pagination.perPageOptions.map((value) => (
                                 <SelectItem key={value} value={String(value)}>
                                     {value} baris
                                 </SelectItem>
@@ -683,7 +697,7 @@ function UserTableRow({
                     </span>
                 </button>
             </td>
-            <td className="px-5 py-4">
+            <td className="hidden px-5 py-4 xl:table-cell">
                 {user.roles.length > 0 ? (
                     <div className="flex flex-wrap gap-1">
                         {user.roles.map((role) => (

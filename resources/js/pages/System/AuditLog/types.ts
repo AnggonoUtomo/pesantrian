@@ -38,5 +38,9 @@ export type AuditLogPageProps = {
     auth: Auth;
     auditLogs: AuditLogPage;
     filters: AuditLogFilters;
+    pagination: {
+        perPageOptions: number[];
+        defaultPerPage: number;
+    };
     errors?: Record<string, string>;
 };

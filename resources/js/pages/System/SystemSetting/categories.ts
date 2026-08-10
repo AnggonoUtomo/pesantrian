@@ -1,4 +1,11 @@
-import { Activity, Braces, Palette, ShieldCheck, Wrench } from 'lucide-react';
+import {
+    Activity,
+    Braces,
+    List,
+    Palette,
+    ShieldCheck,
+    Wrench,
+} from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import type { SettingCategory } from './types';
 
@@ -27,6 +34,14 @@ export const settingCategories: SettingCategoryDefinition[] = [
         icon: ShieldCheck,
         accent: 'dashboard-accent--rose',
         cardTone: 'dashboard-card--rose',
+    },
+    {
+        key: 'pagination',
+        title: 'Pagination',
+        description: 'Pilihan dan nilai awal jumlah data per halaman.',
+        icon: List,
+        accent: 'dashboard-accent--cyan',
+        cardTone: 'dashboard-card--cyan',
     },
     {
         key: 'branding',

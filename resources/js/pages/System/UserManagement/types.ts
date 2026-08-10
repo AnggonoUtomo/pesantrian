@@ -24,14 +24,17 @@ export type UserManagementFilters = {
     role: string | null;
     archive: 'all' | 'active' | 'archived';
     page: number;
-    perPage: 5 | 10 | 25 | 50;
+    perPage: number;
+    sortDirection: 'asc' | 'desc';
 };
 
 export type UserManagementPagination = {
     total: number;
     currentPage: number;
     lastPage: number;
-    perPage: 5 | 10 | 25 | 50;
+    perPage: number;
+    perPageOptions: number[];
+    defaultPerPage: number;
 };
 
 export type UserManagementPageProps = {

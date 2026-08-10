@@ -6,6 +6,8 @@ use App\Models\User;
 use App\Modules\System\AccessControl\Database\Seeders\AccessControlSeeder;
 use App\Modules\System\AuditLog\Application\Contracts\AuditRecorder;
 use App\Modules\System\AuditLog\Application\DTO\AuditEntryData;
+use App\Modules\System\SystemSetting\Database\Seeders\SystemSettingSeeder;
+use App\Modules\System\SystemSetting\Infrastructure\Persistence\Models\SystemSettingRecord;
 use Illuminate\Support\Str;
 use Inertia\Testing\AssertableInertia as Assert;
 
@@ -27,6 +29,7 @@ function presentationAuditEntry(string $actorId, string $action = 'user.updated'
 
 beforeEach(function (): void {
     $this->seed(AccessControlSeeder::class);
+    $this->seed(SystemSettingSeeder::class);
 });
 
 it('menolak actor yang tidak memiliki permission audit', function (): void {
@@ -97,6 +100,25 @@ it('memfilter audit dan membatasi nilai per page', function (): void {
         ->assertInertia(fn (Assert $page): Assert => $page
             ->has('auditLogs.data', 1)
             ->where('auditLogs.data.0.action', 'user.deleted'));
+});
+
+it('memakai pagination global untuk audit log', function (): void {
+    $superSystem = User::query()->where('email', 'super-system@example.test')->firstOrFail();
+    SystemSettingRecord::query()->where('key', 'pagination.per_page_options')->update(['value' => json_encode([10, 20], JSON_THROW_ON_ERROR)]);
+    SystemSettingRecord::query()->where('key', 'pagination.default_per_page')->update(['value' => json_encode(10, JSON_THROW_ON_ERROR)]);
+    app(AuditRecorder::class)->record(presentationAuditEntry($superSystem->id));
+
+    $this->actingAs($superSystem)
+        ->get(route('system.audit-logs.index'))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page): Assert => $page
+            ->where('auditLogs.meta.perPage', 10)
+            ->where('pagination.perPageOptions', [10, 20])
+            ->where('pagination.defaultPerPage', 10));
+
+    $this->actingAs($superSystem)
+        ->get(route('system.audit-logs.index', ['per_page' => 25]))
+        ->assertSessionHasErrors('per_page');
 });
 
 it('menyediakan response envelope pada API internal', function (): void {

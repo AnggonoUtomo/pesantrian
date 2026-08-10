@@ -58,11 +58,16 @@
 
 - Dashboard UserManagement hanya menampilkan aksi lihat pada SuperSystem. Pada daftar normal, aksi edit, status, archive, impersonation, dan role tersedia sesuai permission.
 - State UI ini baik untuk UX, tetapi backend guard tetap menjadi security authority.
+- Filter status, role, dan arsip memakai `id` unik; Chrome DevTools pada
+  `/system/users` tidak lagi melaporkan issue identifier form.
 
 ## Status Rekomendasi
 
 Required 01 ditutup pada increment `01.security-hardening`: login,
 impersonation, dan request web hanya menerima user active non-arsip. Required
-02 serta sebagian besar Required 03 telah memiliki guard Application dari
-increment lifecycle sebelumnya; policy resource untuk update/role assignment
-tetap perlu ditinjau sebagai hardening berikutnya bersama Required 04.
+02 ditutup: policy resource dan Application Action menolak target SuperSystem
+untuk update serta role assignment. Required 03 ditutup: update, perubahan
+status, dan assignment role menolak user terarsip sebelum mutation atau
+capability dipanggil. Required 04 ditutup: route update dan assignment role
+memakai middleware `can:update,user`; focused feature dan unit test membuktikan
+policy serta guard Action tidak dapat dilewati.

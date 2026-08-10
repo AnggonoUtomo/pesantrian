@@ -12,6 +12,8 @@ use App\Modules\System\UserManagement\Infrastructure\Authentication\LaravelImper
 use App\Modules\System\UserManagement\Infrastructure\Events\LaravelUserManagementActivityPublisher;
 use App\Modules\System\UserManagement\Infrastructure\Persistence\Repositories\EloquentUserRepository;
 use App\Modules\System\UserManagement\Presentation\Policies\UserManagementPolicy;
+use Illuminate\Auth\Events\Login;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider as FrameworkServiceProvider;
 
@@ -30,5 +32,10 @@ final class ServiceProvider extends FrameworkServiceProvider
         $this->loadRoutesFrom(__DIR__.'/Routes/web.php');
         $this->loadRoutesFrom(__DIR__.'/Routes/api.php');
         Gate::policy(User::class, UserManagementPolicy::class);
+        Event::listen(Login::class, static function (Login $event): void {
+            if ($event->user instanceof User) {
+                $event->user->forceFill(['last_login_at' => now()])->save();
+            }
+        });
     }
 }

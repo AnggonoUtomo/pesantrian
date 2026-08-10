@@ -49,4 +49,7 @@
 
 Required 01 ditutup pada increment `01.security-hardening` melalui ADR-0001:
 `role.manage` mengelola role dan `permission.assign` menyinkronkan permission.
-Required 02 tetap menjadi hardening Application berikutnya.
+Required 02 ditutup: `CreateRole` kini memvalidasi nama, guard `web`, dan
+duplikasi; `SyncRolePermissions` menolak tipe, key, guard, serta daftar yang
+tidak valid sebelum mutation. Focused test Application membuktikan caller
+internal tidak dapat melewati aturan HTTP.

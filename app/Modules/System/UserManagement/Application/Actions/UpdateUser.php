@@ -25,7 +25,7 @@ final readonly class UpdateUser
         $this->authorization->ensure($actor, 'user.update');
         $user = $this->repository->find($userId);
 
-        if ($user === null || $user->isProtected) {
+        if ($user === null || $user->isProtected || $user->deletedAt !== null) {
             throw new ProtectedUserMutation;
         }
 

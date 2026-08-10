@@ -27,7 +27,7 @@ final readonly class AssignUserRole
         $targetId = (string) $target->getAuthIdentifier();
         $user = $this->repository->find($targetId);
 
-        if ($user === null || $user->isProtected) {
+        if ($user === null || $user->isProtected || $user->deletedAt !== null) {
             throw new ProtectedUserMutation;
         }
 

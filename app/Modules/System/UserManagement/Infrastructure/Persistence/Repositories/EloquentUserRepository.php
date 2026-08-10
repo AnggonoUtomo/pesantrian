@@ -124,9 +124,7 @@ final class EloquentUserRepository implements UserRepository
             roles: $this->roleNames($user),
             avatarUrl: null,
             emailVerified: $user->email_verified_at !== null,
-            // Kolom baru akan ditambahkan pada INC-004. Kontrak UI sudah aman
-            // memakai null agar fallback aktivitas dapat dirender sejak INC-001.
-            lastLoginAt: null,
+            lastLoginAt: $user->last_login_at?->toISOString(),
         );
     }
 

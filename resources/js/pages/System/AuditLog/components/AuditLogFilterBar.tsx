@@ -80,24 +80,32 @@ export function AuditLogFilterBar({
                     />
                 </label>
                 <Input
+                    id="audit-log-module"
+                    name="module"
                     value={module}
                     onChange={(event) => setModule(event.target.value)}
                     placeholder="Module"
                     aria-label="Filter module"
                 />
                 <Input
+                    id="audit-log-action"
+                    name="action"
                     value={action}
                     onChange={(event) => setAction(event.target.value)}
                     placeholder="Action"
                     aria-label="Filter action"
                 />
                 <Input
+                    id="audit-log-date-from"
+                    name="date_from"
                     type="date"
                     value={dateFrom}
                     onChange={(event) => setDateFrom(event.target.value)}
                     aria-label="Tanggal mulai"
                 />
                 <Input
+                    id="audit-log-date-to"
+                    name="date_to"
                     type="date"
                     value={dateTo}
                     onChange={(event) => setDateTo(event.target.value)}

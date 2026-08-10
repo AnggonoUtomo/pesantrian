@@ -61,8 +61,8 @@ final class UserController implements HasMiddleware
         return [
             new Middleware('can:user.view', only: ['index', 'show']),
             new Middleware('can:user.create', only: ['store']),
-            new Middleware('can:user.update', only: ['update']),
-            new Middleware('can:user.update', only: ['assignRole']),
+            new Middleware('can:update,user', only: ['update']),
+            new Middleware('can:update,user', only: ['assignRole']),
             new Middleware('can:user.status.manage', only: ['changeStatus']),
             new Middleware('can:user.delete', only: ['destroy']),
             new Middleware('can:user.delete', only: ['bulkDestroy']),
@@ -136,10 +136,10 @@ final class UserController implements HasMiddleware
         return back();
     }
 
-    public function update(UpdateUserRequest $request, string $user): RedirectResponse
+    public function update(UpdateUserRequest $request, User $user): RedirectResponse
     {
         $data = $request->validated();
-        $this->updateUser->execute($request->user(), $user, new UpdateUserData(
+        $this->updateUser->execute($request->user(), (string) $user->getKey(), new UpdateUserData(
             name: (string) $data['name'],
             email: (string) $data['email'],
         ));

@@ -23,6 +23,27 @@ test('users can authenticate using the login screen', function () {
     $response->assertRedirect(route('dashboard', absolute: false));
 });
 
+test('login sukses mencatat aktivitas terakhir tanpa mencatat login gagal', function () {
+    $failedUser = User::factory()->create();
+
+    $this->post(route('login.store'), [
+        'email' => $failedUser->email,
+        'password' => 'incorrect-password',
+    ]);
+
+    $this->assertGuest();
+    expect($failedUser->fresh()->last_login_at)->toBeNull();
+
+    $user = User::factory()->create();
+
+    $this->post(route('login.store'), [
+        'email' => $user->email,
+        'password' => 'password',
+    ])->assertRedirect(route('dashboard', absolute: false));
+
+    expect($user->fresh()->last_login_at)->not->toBeNull();
+});
+
 test('users with two factor enabled are redirected to two factor challenge', function () {
     $this->skipUnlessFortifyHas(Features::twoFactorAuthentication());
 

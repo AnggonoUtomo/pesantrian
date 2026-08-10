@@ -303,8 +303,13 @@ export function UserTable({
                                 </p>
                             ) : null}
                         </div>
-                        <Select value={status} onValueChange={setStatus}>
+                        <Select
+                            name="status"
+                            value={status}
+                            onValueChange={setStatus}
+                        >
                             <SelectTrigger
+                                id="user-filter-status"
                                 aria-label="Filter status user"
                                 className="w-full xl:w-40"
                             >
@@ -323,8 +328,13 @@ export function UserTable({
                                 </SelectItem>
                             </SelectContent>
                         </Select>
-                        <Select value={role} onValueChange={setRole}>
+                        <Select
+                            name="role"
+                            value={role}
+                            onValueChange={setRole}
+                        >
                             <SelectTrigger
+                                id="user-filter-role"
                                 aria-label="Filter role user"
                                 className="w-full xl:w-44"
                             >
@@ -343,6 +353,7 @@ export function UserTable({
                             </SelectContent>
                         </Select>
                         <Select
+                            name="archive"
                             value={archive}
                             onValueChange={(value) =>
                                 setArchive(
@@ -351,6 +362,7 @@ export function UserTable({
                             }
                         >
                             <SelectTrigger
+                                id="user-filter-archive"
                                 aria-label="Filter arsip user"
                                 className="w-full xl:w-40"
                             >
@@ -532,6 +544,7 @@ export function UserTable({
                 </p>
                 <div className="flex flex-wrap items-center gap-2">
                     <Select
+                        name="per_page"
                         value={String(pagination.perPage)}
                         onValueChange={changePerPage}
                     >

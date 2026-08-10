@@ -369,3 +369,15 @@ it('controller hanya menjadi orchestration layer', function (): void {
         ->and($source)->not->toContain('->where(')
         ->and($source)->not->toContain('->get(');
 });
+
+it('memberi identifier aksesibel pada semua filter daftar user', function (): void {
+    $source = file_get_contents(resource_path('js/pages/System/UserManagement/components/UserTable.tsx'));
+
+    expect($source)->toContain('id="user-filter-status"')
+        ->and($source)->toContain('id="user-filter-role"')
+        ->and($source)->toContain('id="user-filter-archive"')
+        ->and($source)->toContain('name="status"')
+        ->and($source)->toContain('name="role"')
+        ->and($source)->toContain('name="archive"')
+        ->and($source)->toContain('name="per_page"');
+});

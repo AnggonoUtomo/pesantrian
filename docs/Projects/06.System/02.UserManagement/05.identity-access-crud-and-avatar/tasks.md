@@ -29,12 +29,17 @@
   - Acceptance: JPEG/PNG/WebP maksimal 2 MB berhasil; file lain/oversize gagal; collection hanya menyimpan satu avatar.
   - Evidence: filesystem fake, media test, `migrate:fresh --seed`, browser upload/replace/remove.
 
-- [ ] 05. Tambahkan verifikasi email dan aktivitas login.
+- [x] 05. Tambahkan verifikasi email dan aktivitas login.
   - Kondisi awal: `email_verified_at` ada tetapi belum ditampilkan; tidak ada `last_login_at`.
   - Perubahan: tampilkan badge; tambah migration dan listener login sukses; perluas read model/detail.
   - Alasan: status security dan aktivitas terbaca tanpa mengubah flow native Laravel/Fortify.
   - Acceptance: user baru belum verified, login sukses mengubah timestamp, login gagal tidak mengubah timestamp.
-  - Evidence: auth event test, migration test, dan browser detail.
+  - Evidence: migration owner module
+    `2026_08_10_000000_add_last_login_at_to_users_table.php` berhasil dijalankan
+    pada database lokal; `AuthenticationTest` membuktikan login sukses mengisi
+    `last_login_at` dan login gagal tidak mengisinya. Read model memetakan
+    timestamp ISO-8601 ke tabel serta modal detail; browser `/system/users`
+    memuat halaman tanpa console error, warning, atau issue.
 
 - [ ] 06. Quality checkpoint dan dokumentasi akhir.
   - Kondisi awal: seluruh increment implementasi telah diverifikasi terpisah.

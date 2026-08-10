@@ -29,7 +29,9 @@ final readonly class UserManagementPolicy
 
     public function update(?Authenticatable $actor, User $user): bool
     {
-        return $this->authorization->can($actor, 'user.update')->allowed;
+        return ! $user->isSuperSystem()
+            && ! $user->trashed()
+            && $this->authorization->can($actor, 'user.update')->allowed;
     }
 
     public function changeStatus(?Authenticatable $actor, User $user): bool

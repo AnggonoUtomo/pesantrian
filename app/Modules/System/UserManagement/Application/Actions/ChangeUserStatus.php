@@ -25,7 +25,7 @@ final readonly class ChangeUserStatus
         $this->authorization->ensure($actor, 'user.status.manage');
         $user = $this->repository->find($userId);
 
-        if ($user === null || $user->isProtected) {
+        if ($user === null || $user->isProtected || $user->deletedAt !== null) {
             throw new ProtectedUserMutation;
         }
 

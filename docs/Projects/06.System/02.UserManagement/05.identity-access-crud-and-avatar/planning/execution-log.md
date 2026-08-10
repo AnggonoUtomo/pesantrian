@@ -76,3 +76,27 @@
 - Batas: Chrome DevTools MCP tidak diekspos sebagai callable tool pada sesi
   agent ini dan Chrome berjalan tanpa remote-debugging port. Visual browser
   nyata masih perlu dikonfirmasi setelah reload oleh user.
+
+## 2026-08-10 - Penutupan evidence browser dan aktivitas login
+
+- Kondisi awal: Chrome DevTools melaporkan tiga issue form identifier dari
+  elemen native tersembunyi milik Radix Select. Read model juga selalu
+  mengirim `lastLoginAt: null` karena belum ada persistence activity login.
+- Perubahan: `UserTable.tsx` menambahkan `id` pada trigger serta `name` pada
+  root Select status, role, arsip, dan pagination; `last_login_at` ditambah
+  melalui migration owner UserManagement. Listener `Illuminate\Auth\Events\Login`
+  hanya memperbarui timestamp untuk `App\Models\User`; repository memetakan
+  nilai ISO-8601 ke `UserData` dan resource Inertia.
+- Alasan: browser harus memiliki identifier pada control yang benar-benar
+  dirender, sedangkan aktivitas login perlu berasal dari event autentikasi
+  sukses tanpa menyimpan credential atau payload login.
+- Evidence: `php artisan migrate --force` menjalankan migration baru;
+  `AuthenticationTest` membuktikan login sukses mengisi timestamp dan login
+  gagal tidak mengubahnya. `php artisan test` fokus UserManagement/Auth lulus
+  46 test/271 assertion; ESLint, TypeScript, Pint, dan `npm run build` lulus.
+  Setelah hard reload, Chrome DevTools pada `/system/users` tidak menemukan
+  console error, warning, issue, atau control form tanpa `id`/`name`.
+- Hasil: batas browser INC-001 dan aktivitas login pada INC-005 tertutup.
+  INC-002 (role/status awal atomik) serta INC-004 (avatar Media Library)
+  masih merupakan pekerjaan implementation scope tersendiri dan belum
+  dinyatakan selesai.

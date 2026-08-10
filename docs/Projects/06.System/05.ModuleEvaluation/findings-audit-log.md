@@ -24,13 +24,16 @@
 - Rekomendasi: pilih kontrol sesuai environment melalui ADR operasi: akun database runtime minimum privilege, pemisahan credential writer bila tersedia, dan larangan mass mutation pada architecture test/static scan. Database trigger hanya dipakai bila kebutuhan compliance memang mengharuskan enforcement storage.
 - Acceptance implementasi nanti: documented privilege/rehearsal untuk production, architecture test untuk melarang mutation massal di code application, dan test normal model tetap immutable.
 
-## Optional 01 — Field filter belum memiliki id atau name
+## Optional 01 — Field filter memiliki id dan name
 
 - Kondisi awal: halaman AuditLog menyediakan input module, action, tanggal mulai, dan tanggal selesai.
-- Evidence: Chrome DevTools melaporkan issue untuk empat field tanpa atribut `id` atau `name`.
-- Dampak: autofill browser dan hubungan label/form menjadi kurang baik, walaupun filter tetap berfungsi.
-- Rekomendasi: tambahkan `id` dan `name` unik pada empat field di komponen filter, lalu cek kembali browser console dan aksesibilitas.
-- Owner: AuditLog frontend.
+- Kondisi perbaikan: empat field filter memakai `id` dan `name` unik.
+- Perubahan: `AuditLogFilterBar.tsx` memakai `id` unik dan `name` pada seluruh
+  field filter yang relevan.
+- Evidence penutupan: Chrome DevTools memuat `/system/audit-logs`,
+  accessibility tree mengenali seluruh field filter, dan console tidak
+  memiliki error atau warning.
+- Status: ditutup.
 
 ## Optional 02 — Retensi satu tahun belum memiliki lifecycle operation
 

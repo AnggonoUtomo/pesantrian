@@ -178,6 +178,34 @@ it('menolak assignment role target SuperSystem sebelum capability dipanggil', fu
         ->toThrow(ProtectedUserMutation::class);
 });
 
+it('menolak assignment role untuk user terarsip sebelum capability dipanggil', function (): void {
+    $actor = Mockery::mock(Authenticatable::class);
+    $target = Mockery::mock(Authenticatable::class);
+    $target->expects('getAuthIdentifier')->andReturn('01JUSERMANAGEMENT000000000021');
+    $authorization = Mockery::mock(AuthorizationCapability::class);
+    $authorization->expects('can')
+        ->with($actor, 'user.update')
+        ->andReturn(AuthorizationDecision::allow());
+    $repository = Mockery::mock(UserRepository::class);
+    $repository->expects('find')->with('01JUSERMANAGEMENT000000000021')->andReturn(new UserData(
+        id: '01JUSERMANAGEMENT000000000021',
+        name: 'Archived User',
+        email: 'archived@example.test',
+        status: UserStatus::ACTIVE,
+        isProtected: false,
+        deletedAt: '2026-08-10T00:00:00+00:00',
+    ));
+    $roles = Mockery::mock(RoleAssignmentCapability::class);
+    $roles->shouldNotReceive('assignRole');
+
+    expect(fn (): null => (new AssignUserRole(
+        new AuthorizeUserAction($authorization),
+        $repository,
+        $roles,
+        userManagementActivityPublisher(),
+    ))->execute($actor, $target, 'SecurityAdmin'))->toThrow(ProtectedUserMutation::class);
+});
+
 it('mengubah status user biasa melalui action terotorisasi', function (): void {
     $actor = Mockery::mock(Authenticatable::class);
     $actor->expects('getAuthIdentifier')->andReturn('01JUSERMANAGEMENT000000000098');
@@ -201,6 +229,31 @@ it('mengubah status user biasa melalui action terotorisasi', function (): void {
 
     (new ChangeUserStatus(new AuthorizeUserAction($authorization), $repository, userManagementActivityPublisher()))
         ->execute($actor, $user->id, UserStatus::SUSPENDED);
+});
+
+it('menolak perubahan status untuk user terarsip sebelum repository mutation dipanggil', function (): void {
+    $actor = Mockery::mock(Authenticatable::class);
+    $authorization = Mockery::mock(AuthorizationCapability::class);
+    $authorization->expects('can')
+        ->with($actor, 'user.status.manage')
+        ->andReturn(AuthorizationDecision::allow());
+    $user = new UserData(
+        id: '01JUSERMANAGEMENT000000000022',
+        name: 'Archived User',
+        email: 'archived-status@example.test',
+        status: UserStatus::ACTIVE,
+        isProtected: false,
+        deletedAt: '2026-08-10T00:00:00+00:00',
+    );
+    $repository = Mockery::mock(UserRepository::class);
+    $repository->expects('find')->with($user->id)->andReturn($user);
+    $repository->shouldNotReceive('changeStatus');
+
+    expect(fn (): null => (new ChangeUserStatus(
+        new AuthorizeUserAction($authorization),
+        $repository,
+        userManagementActivityPublisher(),
+    ))->execute($actor, $user->id, UserStatus::SUSPENDED))->toThrow(ProtectedUserMutation::class);
 });
 
 it('menolak soft delete pada user protected sebelum repository dipanggil', function (): void {

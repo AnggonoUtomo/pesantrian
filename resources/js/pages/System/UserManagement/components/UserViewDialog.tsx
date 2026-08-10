@@ -22,6 +22,7 @@ import {
 import { Input } from '@/components/ui/input';
 import route from '@/lib/route';
 import type { UserManagementUser } from '../types';
+import { AvatarCropDialog } from './AvatarCropDialog';
 
 type Props = {
     open: boolean;
@@ -33,6 +34,7 @@ type Props = {
     onEdit: () => void;
     onImpersonate: () => void;
     onAssignRole: () => void;
+    onAvatarUpdated: (previewUrl: string) => void;
 };
 
 export function UserViewDialog({
@@ -45,8 +47,11 @@ export function UserViewDialog({
     onEdit,
     onImpersonate,
     onAssignRole,
+    onAvatarUpdated,
 }: Props) {
     const [uploading, setUploading] = useState(false);
+    const [avatarFile, setAvatarFile] = useState<File | null>(null);
+    const [pendingCropFile, setPendingCropFile] = useState<File | null>(null);
 
     if (!user) {
         return null;
@@ -76,6 +81,7 @@ export function UserViewDialog({
                 forceFormData: true,
                 preserveScroll: true,
                 onFinish: () => setUploading(false),
+                onSuccess: () => onAvatarUpdated(URL.createObjectURL(file)),
             },
         );
     };
@@ -134,12 +140,21 @@ export function UserViewDialog({
                                     accept="image/jpeg,image/png,image/webp"
                                     disabled={uploading}
                                     onChange={(event) =>
-                                        uploadAvatar(
+                                        setPendingCropFile(
                                             event.target.files?.[0] ?? null,
                                         )
                                     }
                                     className="max-w-xs"
                                 />
+                                <Button
+                                    type="button"
+                                    disabled={avatarFile === null || uploading}
+                                    onClick={() => uploadAvatar(avatarFile)}
+                                >
+                                    {uploading
+                                        ? 'Menyimpan avatar...'
+                                        : 'Simpan avatar'}
+                                </Button>
                                 {user.avatarUrl ? (
                                     <Button
                                         type="button"
@@ -291,6 +306,14 @@ export function UserViewDialog({
                     ) : null}
                 </DialogFooter>
             </DialogContent>
+            <AvatarCropDialog
+                file={pendingCropFile}
+                onCancel={() => setPendingCropFile(null)}
+                onConfirm={(file) => {
+                    setAvatarFile(file);
+                    setPendingCropFile(null);
+                }}
+            />
         </Dialog>
     );
 }

@@ -250,6 +250,13 @@ export default function Index() {
                         setRoleUser(selectedUser);
                     }
                 }}
+                onAvatarUpdated={(previewUrl) =>
+                    setSelectedUser((current) =>
+                        current
+                            ? { ...current, avatarUrl: previewUrl }
+                            : current,
+                    )
+                }
             />
             <UserFormDialog
                 key={`${mode}-${selectedUser?.id ?? 'new'}`}

@@ -11,21 +11,26 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { LoadingButton } from '@/components/ui/loading-button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import route from '@/lib/route';
-import type { UserManagementUser } from '../types';
+import type { UserManagementRole, UserManagementUser } from '../types';
 
 type Props = {
     open: boolean;
     user: UserManagementUser | null;
+    roles: UserManagementRole[];
+    canChangeStatus: boolean;
     onOpenChange: (open: boolean) => void;
 };
 type FormData = { name: string; email: string; password: string };
 
-export function UserFormDialog({ open, user, onOpenChange }: Props) {
-    const form = useForm<FormData>({
+export function UserFormDialog({ open, user, roles, canChangeStatus, onOpenChange }: Props) {
+    const form = useForm<FormData & { status: string; role: string }>({
         name: user?.name ?? '',
         email: user?.email ?? '',
         password: '',
+        status: 'active',
+        role: '',
     });
     const isEdit = user !== null;
 
@@ -128,6 +133,7 @@ export function UserFormDialog({ open, user, onOpenChange }: Props) {
                         ) : null}
                     </div>
                     {!isEdit ? (
+                        <>
                         <div className="space-y-2">
                             <label
                                 htmlFor="user-form-password"
@@ -154,6 +160,23 @@ export function UserFormDialog({ open, user, onOpenChange }: Props) {
                                 </p>
                             ) : null}
                         </div>
+                        <div className="grid gap-4 sm:grid-cols-2">
+                            <div className="space-y-2">
+                                <label htmlFor="user-form-status" className="text-sm font-medium">Status awal</label>
+                                <Select name="status" value={form.data.status} onValueChange={(value) => form.setData('status', value)} disabled={!canChangeStatus}>
+                                    <SelectTrigger id="user-form-status"><SelectValue /></SelectTrigger>
+                                    <SelectContent><SelectItem value="active">Aktif</SelectItem><SelectItem value="inactive">Tidak aktif</SelectItem><SelectItem value="suspended">Ditangguhkan</SelectItem></SelectContent>
+                                </Select>
+                            </div>
+                            <div className="space-y-2">
+                                <label htmlFor="user-form-role" className="text-sm font-medium">Role awal</label>
+                                <Select name="role" value={form.data.role || 'none'} onValueChange={(value) => form.setData('role', value === 'none' ? '' : value)}>
+                                    <SelectTrigger id="user-form-role"><SelectValue placeholder="Tanpa role" /></SelectTrigger>
+                                    <SelectContent><SelectItem value="none">Tanpa role</SelectItem>{roles.map((role) => <SelectItem key={role.id} value={role.name}>{role.name}</SelectItem>)}</SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+                        </>
                     ) : null}
                     <DialogFooter>
                         <Button

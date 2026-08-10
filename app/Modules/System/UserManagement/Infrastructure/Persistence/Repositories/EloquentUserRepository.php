@@ -67,7 +67,7 @@ final class EloquentUserRepository implements UserRepository
             'name' => trim($data->name),
             'email' => trim($data->email),
             'password' => $data->password,
-            'status' => UserStatus::ACTIVE,
+            'status' => $data->status,
         ]);
 
         return $this->toData($user);
@@ -122,7 +122,7 @@ final class EloquentUserRepository implements UserRepository
             isProtected: $user->isSuperSystem(),
             deletedAt: $user->deleted_at?->toISOString(),
             roles: $this->roleNames($user),
-            avatarUrl: null,
+            avatarUrl: $user->getFirstMedia('avatar') === null ? null : route('system.users.avatar', $user),
             emailVerified: $user->email_verified_at !== null,
             lastLoginAt: $user->last_login_at?->toISOString(),
         );

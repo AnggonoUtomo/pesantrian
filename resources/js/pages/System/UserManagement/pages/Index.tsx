@@ -255,6 +255,8 @@ export default function Index() {
                 key={`${mode}-${selectedUser?.id ?? 'new'}`}
                 open={mode === 'create' || mode === 'edit'}
                 user={mode === 'edit' ? selectedUser : null}
+                roles={assignableRoles}
+                canChangeStatus={canChangeStatus}
                 onOpenChange={(open) => !open && closeModal()}
             />
             <ImpersonateUserDialog

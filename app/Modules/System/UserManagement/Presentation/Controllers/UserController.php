@@ -15,6 +15,7 @@ use App\Modules\System\UserManagement\Application\Actions\RestoreUser;
 use App\Modules\System\UserManagement\Application\Actions\SoftDeleteUser;
 use App\Modules\System\UserManagement\Application\Actions\StartImpersonation;
 use App\Modules\System\UserManagement\Application\Actions\UpdateUser;
+use App\Modules\System\UserManagement\Application\Actions\UpdateUserAvatar;
 use App\Modules\System\UserManagement\Application\Contracts\ImpersonationSession;
 use App\Modules\System\UserManagement\Application\DTO\CreateUserData;
 use App\Modules\System\UserManagement\Application\DTO\ImpersonationRequestData;
@@ -29,14 +30,17 @@ use App\Modules\System\UserManagement\Presentation\Requests\ChangeUserStatusRequ
 use App\Modules\System\UserManagement\Presentation\Requests\ListUsersRequest;
 use App\Modules\System\UserManagement\Presentation\Requests\StartImpersonationRequest;
 use App\Modules\System\UserManagement\Presentation\Requests\StoreUserRequest;
+use App\Modules\System\UserManagement\Presentation\Requests\UpdateUserAvatarRequest;
 use App\Modules\System\UserManagement\Presentation\Requests\UpdateUserRequest;
 use App\Modules\System\UserManagement\Presentation\Resources\UserResource;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 final class UserController implements HasMiddleware
 {
@@ -45,6 +49,7 @@ final class UserController implements HasMiddleware
         private readonly GetUser $getUser,
         private readonly CreateUser $createUser,
         private readonly UpdateUser $updateUser,
+        private readonly UpdateUserAvatar $updateUserAvatar,
         private readonly ChangeUserStatus $changeUserStatus,
         private readonly SoftDeleteUser $softDeleteUser,
         private readonly RestoreUser $restoreUser,
@@ -60,8 +65,10 @@ final class UserController implements HasMiddleware
     {
         return [
             new Middleware('can:user.view', only: ['index', 'show']),
+            new Middleware('can:view,user', only: ['avatar']),
             new Middleware('can:user.create', only: ['store']),
             new Middleware('can:update,user', only: ['update']),
+            new Middleware('can:update,user', only: ['updateAvatar']),
             new Middleware('can:update,user', only: ['assignRole']),
             new Middleware('can:user.status.manage', only: ['changeStatus']),
             new Middleware('can:user.delete', only: ['destroy']),
@@ -129,6 +136,8 @@ final class UserController implements HasMiddleware
             name: (string) $data['name'],
             email: (string) $data['email'],
             password: (string) $data['password'],
+            status: UserStatus::from((string) ($data['status'] ?? 'active')),
+            role: isset($data['role']) ? (string) $data['role'] : null,
         ));
 
         Inertia::flash('toast', ['type' => 'success', 'message' => 'User berhasil dibuat.']);
@@ -147,6 +156,24 @@ final class UserController implements HasMiddleware
         Inertia::flash('toast', ['type' => 'success', 'message' => 'User berhasil diperbarui.']);
 
         return back();
+    }
+
+    public function updateAvatar(UpdateUserAvatarRequest $request, User $user): RedirectResponse
+    {
+        /** @var UploadedFile $avatar */
+        $avatar = $request->file('avatar');
+        $this->updateUserAvatar->execute($request->user(), $user, $avatar);
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Avatar user berhasil diperbarui.']);
+
+        return back();
+    }
+
+    public function avatar(User $user): BinaryFileResponse
+    {
+        abort_unless($user->getFirstMedia('avatar') !== null, 404);
+
+        return response()->file($user->getFirstMedia('avatar')->getPath());
     }
 
     public function changeStatus(ChangeUserStatusRequest $request, string $user): RedirectResponse

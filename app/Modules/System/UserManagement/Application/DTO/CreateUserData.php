@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\System\UserManagement\Application\DTO;
 
+use App\Modules\System\UserManagement\Domain\ValueObjects\UserStatus;
 use InvalidArgumentException;
 
 final readonly class CreateUserData
@@ -12,10 +13,16 @@ final readonly class CreateUserData
         public string $name,
         public string $email,
         public string $password,
+        public UserStatus $status = UserStatus::ACTIVE,
+        public ?string $role = null,
     ) {
         self::assertName($name);
         self::assertEmail($email);
         self::assertPassword($password);
+
+        if ($role !== null && trim($role) === '') {
+            throw new InvalidArgumentException('Role user tidak valid.');
+        }
     }
 
     private static function assertName(string $name): void

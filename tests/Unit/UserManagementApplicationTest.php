@@ -67,7 +67,9 @@ it('menolak action create tanpa permission', function (): void {
 
     $repository = Mockery::mock(UserRepository::class);
 
-    expect(fn (): UserData => (new CreateUser($authorizer, $repository, userManagementActivityPublisher()))
+    $roles = Mockery::mock(RoleAssignmentCapability::class);
+
+    expect(fn (): UserData => (new CreateUser($authorizer, $repository, $roles, userManagementActivityPublisher()))
         ->execute($actor, new CreateUserData('User Satu', 'user@example.test', 'password')))
         ->toThrow(AuthorizationException::class);
     $repository->shouldNotReceive('create');

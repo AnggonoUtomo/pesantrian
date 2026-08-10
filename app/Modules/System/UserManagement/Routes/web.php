@@ -10,6 +10,8 @@ Route::middleware(['web', 'auth', 'verified'])
     ->name('system.users.')
     ->group(function (): void {
         Route::get('/', [UserController::class, 'index'])->name('index');
+        Route::get('/{user}/avatar', [UserController::class, 'avatar'])->name('avatar');
+        Route::post('/{user}/avatar', [UserController::class, 'updateAvatar'])->name('avatar.update');
         Route::post('/impersonation/leave', [UserController::class, 'leaveImpersonation'])->name('impersonation.leave');
         Route::get('/{user}', [UserController::class, 'show'])->name('show');
         Route::post('/', [UserController::class, 'store'])->name('store');

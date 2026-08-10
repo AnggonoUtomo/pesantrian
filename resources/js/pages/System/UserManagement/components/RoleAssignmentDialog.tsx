@@ -1,7 +1,7 @@
 import { useForm } from '@inertiajs/react';
 import { ShieldPlus } from 'lucide-react';
-import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
     Dialog,
     DialogContent,
@@ -10,15 +10,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
 import { LoadingButton } from '@/components/ui/loading-button';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
 import route from '@/lib/route';
 import type { UserManagementRole, UserManagementUser } from '../types';
 
@@ -35,16 +27,14 @@ export function RoleAssignmentDialog({
     roles,
     onOpenChange,
 }: Props) {
-    const [search, setSearch] = useState('');
-    const form = useForm<{ role: string }>({ role: roles[0]?.name ?? '' });
-    const visibleRoles = roles.filter((role) =>
-        role.name.toLowerCase().includes(search.toLowerCase()),
-    );
+    const form = useForm<{ roles: string[] }>({
+        roles: user?.roles ?? [],
+    });
 
     const submit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        if (!user || user.isProtected || form.data.role === '') {
+        if (!user || user.isProtected || form.data.roles.length === 0) {
             return;
         }
 
@@ -77,61 +67,48 @@ export function RoleAssignmentDialog({
                 </DialogHeader>
                 <form onSubmit={submit} className="space-y-4">
                     <div className="space-y-2">
-                        <label
-                            htmlFor="role-search"
-                            className="text-sm font-medium"
-                        >
-                            Cari role
-                        </label>
-                        <Input
-                            id="role-search"
-                            value={search}
-                            onChange={(event) => setSearch(event.target.value)}
-                            placeholder="Ketik nama role..."
-                        />
-                    </div>
-                    <div className="space-y-2">
-                        <label
-                            htmlFor="user-role"
-                            className="text-sm font-medium"
-                        >
-                            Role
-                        </label>
-                        {visibleRoles.length ? (
-                            <Select
-                                value={form.data.role}
-                                onValueChange={(value) =>
-                                    form.setData('role', value)
-                                }
-                            >
-                                <SelectTrigger id="user-role">
-                                    <SelectValue placeholder="Pilih role" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {visibleRoles.map((role) => (
-                                        <SelectItem
-                                            key={role.id}
-                                            value={role.name}
-                                        >
-                                            {role.name}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        ) : (
-                            <p
-                                role="status"
-                                className="text-sm text-muted-foreground"
-                            >
-                                Role tidak ditemukan.
-                            </p>
-                        )}
-                        {form.errors.role ? (
+                        <p className="text-sm font-medium">Role</p>
+                        <div className="space-y-3 rounded-md border p-3">
+                            {roles.map((role) => {
+                                const checked = form.data.roles.includes(
+                                    role.name,
+                                );
+
+                                return (
+                                    <label
+                                        key={role.id}
+                                        className="flex cursor-pointer items-center gap-3 text-sm"
+                                    >
+                                        <Checkbox
+                                            checked={checked}
+                                            onCheckedChange={(nextChecked) =>
+                                                form.setData(
+                                                    'roles',
+                                                    nextChecked
+                                                        ? [
+                                                              ...form.data
+                                                                  .roles,
+                                                              role.name,
+                                                          ]
+                                                        : form.data.roles.filter(
+                                                              (name) =>
+                                                                  name !==
+                                                                  role.name,
+                                                          ),
+                                                )
+                                            }
+                                        />
+                                        {role.name}
+                                    </label>
+                                );
+                            })}
+                        </div>
+                        {form.errors.roles ? (
                             <p
                                 className="text-xs text-destructive"
                                 role="alert"
                             >
-                                {form.errors.role}
+                                {form.errors.roles}
                             </p>
                         ) : null}
                     </div>
@@ -150,7 +127,7 @@ export function RoleAssignmentDialog({
                             disabled={
                                 !user ||
                                 user.isProtected ||
-                                form.data.role === ''
+                                form.data.roles.length === 0
                             }
                         >
                             {form.processing ? 'Menyimpan...' : 'Simpan role'}

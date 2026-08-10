@@ -74,10 +74,47 @@ it('mengirim role option typed dan mengizinkan assignment melalui capability pub
         );
 
     $this->actingAs($actor)
-        ->patch(route('system.users.roles', $target), ['role' => 'SecurityAdmin'])
+        ->patch(route('system.users.roles', $target), ['roles' => ['SecurityAdmin']])
         ->assertRedirect();
 
     expect($target->refresh()->hasRole('SecurityAdmin'))->toBeTrue();
+});
+
+it('mengganti beberapa role user secara atomik melalui contract publik', function (): void {
+    $update = Permission::create(['name' => 'user.update', 'guard_name' => 'web']);
+    $assign = Permission::create(['name' => 'access_control.role.assign', 'guard_name' => 'web']);
+    $actor = User::factory()->create();
+    $target = User::factory()->create();
+    $actor->givePermissionTo([$update, $assign]);
+    $securityAdmin = Role::create(['name' => 'SecurityAdmin', 'guard_name' => 'web']);
+    $support = Role::create(['name' => 'Support', 'guard_name' => 'web']);
+    $legacy = Role::create(['name' => 'Legacy', 'guard_name' => 'web']);
+    $target->assignRole($legacy);
+
+    $this->actingAs($actor)
+        ->patch(route('system.users.roles', $target), ['roles' => [$securityAdmin->name, $support->name]])
+        ->assertRedirect();
+
+    expect($target->refresh()->getRoleNames()->sort()->values()->all())
+        ->toBe(['SecurityAdmin', 'Support']);
+});
+
+it('menolak sinkronisasi role kosong tanpa mengubah assignment yang ada', function (): void {
+    $update = Permission::create(['name' => 'user.update', 'guard_name' => 'web']);
+    $assign = Permission::create(['name' => 'access_control.role.assign', 'guard_name' => 'web']);
+    $actor = User::factory()->create();
+    $target = User::factory()->create();
+    $actor->givePermissionTo([$update, $assign]);
+    $role = Role::create(['name' => 'SecurityAdmin', 'guard_name' => 'web']);
+    $target->assignRole($role);
+
+    $this->actingAs($actor)
+        ->from(route('system.users.index'))
+        ->patch(route('system.users.roles', $target), ['roles' => []])
+        ->assertRedirect(route('system.users.index'))
+        ->assertSessionHasErrors('roles');
+
+    expect($target->refresh()->hasRole($role))->toBeTrue();
 });
 
 it('mengirim identity dan access read model dengan fallback aktivitas aman', function (): void {
@@ -229,7 +266,7 @@ it('menolak assignment role jika actor tidak memiliki permission assignment', fu
     Role::create(['name' => 'SecurityAdmin', 'guard_name' => 'web']);
 
     $this->actingAs($actor)
-        ->patch(route('system.users.roles', $target), ['role' => 'SecurityAdmin'])
+        ->patch(route('system.users.roles', $target), ['roles' => ['SecurityAdmin']])
         ->assertForbidden();
 
     expect($target->refresh()->hasRole('SecurityAdmin'))->toBeFalse();

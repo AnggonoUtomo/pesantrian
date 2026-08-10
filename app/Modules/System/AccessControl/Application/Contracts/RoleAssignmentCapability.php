@@ -17,4 +17,7 @@ interface RoleAssignmentCapability
      * Revoke a role from a target actor after authorization and policy checks.
      */
     public function revokeRole(Authenticatable $actor, Authenticatable $target, string $role): void;
+
+    /** @param list<string> $roles */
+    public function syncRoles(Authenticatable $actor, Authenticatable $target, array $roles): void;
 }

@@ -12,6 +12,7 @@ use App\Modules\System\UserManagement\Application\Actions\BulkUserLifecycle;
 use App\Modules\System\UserManagement\Application\Actions\ChangeUserStatus;
 use App\Modules\System\UserManagement\Application\Actions\CreateUser;
 use App\Modules\System\UserManagement\Application\Actions\ForceDeleteUser;
+use App\Modules\System\UserManagement\Application\Actions\InviteUser;
 use App\Modules\System\UserManagement\Application\Actions\RestoreUser;
 use App\Modules\System\UserManagement\Application\Actions\SoftDeleteUser;
 use App\Modules\System\UserManagement\Application\Actions\StartImpersonation;
@@ -29,6 +30,7 @@ use App\Modules\System\UserManagement\Presentation\Requests\AssignUserRoleReques
 use App\Modules\System\UserManagement\Presentation\Requests\BulkUserLifecycleRequest;
 use App\Modules\System\UserManagement\Presentation\Requests\ChangeUserStatusRequest;
 use App\Modules\System\UserManagement\Presentation\Requests\ListUsersRequest;
+use App\Modules\System\UserManagement\Presentation\Requests\InviteUserRequest;
 use App\Modules\System\UserManagement\Presentation\Requests\StartImpersonationRequest;
 use App\Modules\System\UserManagement\Presentation\Requests\StoreUserRequest;
 use App\Modules\System\UserManagement\Presentation\Requests\UpdateUserAvatarRequest;
@@ -49,6 +51,7 @@ final class UserController implements HasMiddleware
         private readonly ListUsers $listUsers,
         private readonly GetUser $getUser,
         private readonly CreateUser $createUser,
+        private readonly InviteUser $inviteUser,
         private readonly UpdateUser $updateUser,
         private readonly UpdateUserAvatar $updateUserAvatar,
         private readonly ChangeUserStatus $changeUserStatus,
@@ -69,6 +72,7 @@ final class UserController implements HasMiddleware
             new Middleware('can:user.view', only: ['index', 'show']),
             new Middleware('can:view,user', only: ['avatar']),
             new Middleware('can:user.create', only: ['store']),
+            new Middleware('can:user.invite', only: ['invite']),
             new Middleware('can:update,user', only: ['update']),
             new Middleware('can:update,user', only: ['updateAvatar']),
             new Middleware('can:update,user', only: ['deleteAvatar']),
@@ -155,6 +159,14 @@ final class UserController implements HasMiddleware
         return back();
     }
 
+    public function invite(InviteUserRequest $request): RedirectResponse
+    {
+        $data = $request->validated();
+        $this->inviteUser->execute($request->user(), $data['name'], $data['email'], $data['role'] ?? null);
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Undangan user berhasil dikirim.']);
+        return back();
+    }
+
     public function update(UpdateUserRequest $request, User $user): RedirectResponse
     {
         $data = $request->validated();
@@ -213,7 +225,7 @@ final class UserController implements HasMiddleware
         $this->assignUserRole->execute(
             $request->user(),
             $user,
-            (string) $request->validated('role'),
+            $request->validated('roles'),
         );
 
         Inertia::flash('toast', ['type' => 'success', 'message' => 'Role user berhasil diperbarui.']);

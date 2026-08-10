@@ -35,6 +35,23 @@ final class AccessControlRoleAssignmentCapabilityTest extends TestCase
         self::assertFalse($target->hasRole($role->name));
     }
 
+    public function test_binding_can_replace_roles_atomically(): void
+    {
+        $actor = User::factory()->create();
+        $target = User::factory()->create();
+        $permission = Permission::create(['name' => 'access_control.role.assign', 'guard_name' => 'web']);
+        $legacy = Role::create(['name' => 'Legacy', 'guard_name' => 'web']);
+        $securityAdmin = Role::create(['name' => 'SecurityAdmin', 'guard_name' => 'web']);
+        $support = Role::create(['name' => 'Support', 'guard_name' => 'web']);
+        $actor->givePermissionTo($permission);
+        $target->assignRole($legacy);
+        $capability = $this->app->make(RoleAssignmentCapability::class);
+
+        $capability->syncRoles($actor, $target, [$securityAdmin->name, $support->name]);
+
+        self::assertSame(['SecurityAdmin', 'Support'], $target->refresh()->getRoleNames()->sort()->values()->all());
+    }
+
     public function test_actor_without_role_assignment_permission_is_denied(): void
     {
         $actor = User::factory()->create();

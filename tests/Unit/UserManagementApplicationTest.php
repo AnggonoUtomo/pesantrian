@@ -95,10 +95,10 @@ it('menggunakan public contract AccessControl untuk assignment role', function (
         deletedAt: null,
     ));
     $roles = Mockery::mock(RoleAssignmentCapability::class);
-    $roles->expects('assignRole')->with($actor, $target, 'SecurityAdmin');
+    $roles->expects('syncRoles')->with($actor, $target, ['SecurityAdmin']);
 
     (new AssignUserRole($authorizer, $repository, $roles, userManagementActivityPublisher()))
-        ->execute($actor, $target, 'SecurityAdmin');
+        ->execute($actor, $target, ['SecurityAdmin']);
 });
 
 it('mengotorisasi update user melalui action dan repository contract', function (): void {
@@ -169,14 +169,14 @@ it('menolak assignment role target SuperSystem sebelum capability dipanggil', fu
         deletedAt: null,
     ));
     $roles = Mockery::mock(RoleAssignmentCapability::class);
-    $roles->shouldNotReceive('assignRole');
+    $roles->shouldNotReceive('syncRoles');
 
     expect(fn (): null => (new AssignUserRole(
         new AuthorizeUserAction($authorization),
         $repository,
         $roles,
         userManagementActivityPublisher(),
-    ))->execute($actor, $target, 'SecurityAdmin'))
+    ))->execute($actor, $target, ['SecurityAdmin']))
         ->toThrow(ProtectedUserMutation::class);
 });
 
@@ -198,14 +198,14 @@ it('menolak assignment role untuk user terarsip sebelum capability dipanggil', f
         deletedAt: '2026-08-10T00:00:00+00:00',
     ));
     $roles = Mockery::mock(RoleAssignmentCapability::class);
-    $roles->shouldNotReceive('assignRole');
+    $roles->shouldNotReceive('syncRoles');
 
     expect(fn (): null => (new AssignUserRole(
         new AuthorizeUserAction($authorization),
         $repository,
         $roles,
         userManagementActivityPublisher(),
-    ))->execute($actor, $target, 'SecurityAdmin'))->toThrow(ProtectedUserMutation::class);
+    ))->execute($actor, $target, ['SecurityAdmin']))->toThrow(ProtectedUserMutation::class);
 });
 
 it('mengubah status user biasa melalui action terotorisasi', function (): void {

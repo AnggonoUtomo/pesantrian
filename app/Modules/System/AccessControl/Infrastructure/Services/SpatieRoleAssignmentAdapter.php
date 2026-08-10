@@ -37,6 +37,25 @@ final readonly class SpatieRoleAssignmentAdapter implements RoleAssignmentCapabi
         $target->removeRole($this->resolveRole($role));
     }
 
+    public function syncRoles(Authenticatable $actor, Authenticatable $target, array $roles): void
+    {
+        if (! method_exists($target, 'syncRoles')) {
+            throw new InvalidArgumentException('Target tidak mendukung pengaturan role.');
+        }
+
+        $roles = array_values(array_unique(array_map(static fn (string $role): string => trim($role), $roles)));
+
+        if ($roles === [] || in_array('', $roles, true)) {
+            throw new InvalidArgumentException('Minimal satu role wajib dipilih.');
+        }
+
+        foreach ($roles as $role) {
+            $this->ensureAllowed($actor, $role);
+        }
+
+        $target->syncRoles(array_map($this->resolveRole(...), $roles));
+    }
+
     private function ensureAllowed(Authenticatable $actor, string $role): void
     {
         $role = trim($role);

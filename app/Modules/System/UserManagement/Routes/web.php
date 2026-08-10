@@ -16,6 +16,7 @@ Route::middleware(['web', 'auth', 'verified'])
         Route::post('/impersonation/leave', [UserController::class, 'leaveImpersonation'])->name('impersonation.leave');
         Route::get('/{user}', [UserController::class, 'show'])->name('show');
         Route::post('/', [UserController::class, 'store'])->name('store');
+        Route::post('/invitations', [UserController::class, 'invite'])->name('invitations.store');
         Route::put('/{user}', [UserController::class, 'update'])->name('update');
         Route::patch('/{user}/status', [UserController::class, 'changeStatus'])->name('status');
         Route::patch('/{user}/roles', [UserController::class, 'assignRole'])->name('roles');

@@ -14,6 +14,12 @@ return [
         'sensitive' => true,
     ],
     [
+        'key' => 'user.invite',
+        'description' => 'Mengirim undangan email user.',
+        'module' => 'UserManagement',
+        'sensitive' => true,
+    ],
+    [
         'key' => 'user.update',
         'description' => 'Memperbarui data user.',
         'module' => 'UserManagement',

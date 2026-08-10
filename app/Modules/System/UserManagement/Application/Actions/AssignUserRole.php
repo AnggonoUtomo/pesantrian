@@ -21,7 +21,8 @@ final readonly class AssignUserRole
         private UserManagementActivityPublisher $activities,
     ) {}
 
-    public function execute(Authenticatable $actor, Authenticatable $target, string $role): void
+    /** @param list<string> $roles */
+    public function execute(Authenticatable $actor, Authenticatable $target, array $roles): void
     {
         $this->authorization->ensure($actor, 'user.update');
         $targetId = (string) $target->getAuthIdentifier();
@@ -31,23 +32,23 @@ final readonly class AssignUserRole
             throw new ProtectedUserMutation;
         }
 
-        $role = trim($role);
+        $roles = array_values(array_unique(array_map(static fn (string $role): string => trim($role), $roles)));
 
-        if ($role === '') {
-            throw new InvalidArgumentException('Role wajib diisi.');
+        if ($roles === [] || in_array('', $roles, true)) {
+            throw new InvalidArgumentException('Minimal satu role wajib dipilih.');
         }
 
         $this->activities->publish(
             actorId: (string) $actor->getAuthIdentifier(),
             action: 'user.role_assigned',
             subjectType: 'user',
-            mutation: function () use ($actor, $target, $role, $targetId): string {
-                $this->roles->assignRole($actor, $target, $role);
+            mutation: function () use ($actor, $target, $roles, $targetId): string {
+                $this->roles->syncRoles($actor, $target, $roles);
 
                 return $targetId;
             },
             subjectId: static fn (string $targetId): string => $targetId,
-            metadata: static fn (string $targetId): array => ['role_name' => $role],
+            metadata: static fn (string $targetId): array => ['role_names' => $roles],
         );
     }
 }

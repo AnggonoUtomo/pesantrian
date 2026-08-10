@@ -17,7 +17,8 @@ final class AssignUserRoleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'role' => ['required', 'string', 'max:100'],
+            'roles' => ['required', 'array', 'min:1', 'max:20'],
+            'roles.*' => ['required', 'string', 'distinct', 'max:100'],
         ];
     }
 }

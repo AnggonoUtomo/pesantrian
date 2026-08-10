@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Models\User;
+use App\Modules\System\AccessControl\Application\Actions\CreateRole;
 use App\Modules\System\AccessControl\Application\Contracts\AuthorizationCapability;
 use App\Modules\System\AccessControl\Infrastructure\Persistence\Models\Permission;
 use App\Modules\System\AccessControl\Infrastructure\Persistence\Models\Role;
@@ -39,5 +40,17 @@ final class AccessControlAuthorizationCapabilityTest extends TestCase
         self::assertTrue($capability->can($user, 'not-yet-defined')->allowed);
         self::assertTrue($capability->hasRole($user, 'SuperSystem')->allowed);
         self::assertFalse($capability->hasRole($user, 'MissingRole')->allowed);
+    }
+
+    public function test_create_role_returns_module_role_model(): void
+    {
+        $actor = User::factory()->create();
+        $permission = Permission::create(['name' => 'access_control.role.manage', 'guard_name' => 'web']);
+        $actor->givePermissionTo($permission);
+
+        $role = $this->app->make(CreateRole::class)->execute($actor, 'Auditor');
+
+        self::assertInstanceOf(Role::class, $role);
+        self::assertSame('Auditor', $role->name);
     }
 }

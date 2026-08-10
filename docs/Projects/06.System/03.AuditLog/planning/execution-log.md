@@ -123,10 +123,11 @@
   `per_page=10`, memuat 10 record, dan memulai kembali dari halaman pertama.
 - Temuan quality gate: `ModuleMakeCommandTest` semula memakai `app/Modules`
   yang sedang digunakan aplikasi lokal Windows. Promotion direktori menjadi
-  tidak stabil saat suite penuh. Fixture test dipindahkan ke app path sementara
-  pada `storage/framework/testing`, sehingga generator tetap diuji melalui
-  command yang sama tanpa menyentuh source module aktif. Focused test dan suite
-  penuh kembali lulus.
+  tidak stabil saat suite penuh. Fixture test dipindahkan ke temporary directory
+  OS yang terisolasi. App path dan storage path test dipindahkan bersama-sama,
+  sehingga generator tetap diuji melalui command yang sama tanpa menyentuh
+  source module aktif, staging workspace, atau permission workspace. Focused
+  test dan suite penuh kembali lulus.
 
 ## 10 Agustus 2026 - UI Operator dan Sorting Waktu
 

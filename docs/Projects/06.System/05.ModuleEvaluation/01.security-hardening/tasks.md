@@ -38,8 +38,10 @@
 - [x] 05. Quality checkpoint dan traceability.
   - Kondisi awal: generator dapat gagal tidak konsisten ketika full suite
     menjalankan promotion directory pada Windows.
-  - Perubahan: promotion atomic mendapat retry pendek, generator test memakai
-    Artisan in-process, dan assertion conflict menyimpan output diagnostic aman.
+  - Perubahan: promotion atomic mendapat maksimal 20 retry dengan backoff
+    terbatas untuk Windows; generator test memakai Artisan in-process dengan
+    app/storage path temporary OS; assertion conflict menyimpan output
+    diagnostic aman.
   - Evidence: `composer ci:check` lulus dengan 266 test/1159 assertion;
     discovery dan validate empat module lulus; `git diff --check` lulus.
   - Evidence tambahan: Chrome DevTools berhasil membuka `/system/users` setelah

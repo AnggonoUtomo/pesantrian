@@ -212,12 +212,15 @@ final class ModulePromotionService
 
     private function promoteDirectory(string $outputPath, string $targetPath): bool
     {
-        for ($attempt = 0; $attempt < 3; $attempt++) {
+        for ($attempt = 0; $attempt < 20; $attempt++) {
+            clearstatcache(true, $outputPath);
+            clearstatcache(true, $targetPath);
+
             if (rename($outputPath, $targetPath)) {
                 return true;
             }
 
-            usleep(10_000 * ($attempt + 1));
+            usleep(50_000 * ($attempt + 1));
         }
 
         return false;

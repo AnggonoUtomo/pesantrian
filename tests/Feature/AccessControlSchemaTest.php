@@ -16,10 +16,10 @@ final class AccessControlSchemaTest extends TestCase
 
     public function test_schema_uses_ulid_columns_and_user_can_receive_role(): void
     {
-        self::assertContains(Schema::getColumnType('users', 'id'), ['string', 'varchar']);
-        self::assertContains(Schema::getColumnType('roles', 'id'), ['string', 'varchar']);
-        self::assertContains(Schema::getColumnType('permissions', 'id'), ['string', 'varchar']);
-        self::assertContains(Schema::getColumnType('model_has_roles', 'model_id'), ['string', 'varchar']);
+        $this->assertUlidColumn('users', 'id');
+        $this->assertUlidColumn('roles', 'id');
+        $this->assertUlidColumn('permissions', 'id');
+        $this->assertUlidColumn('model_has_roles', 'model_id');
 
         $user = User::factory()->create();
         Role::create(['name' => 'SuperSystem', 'guard_name' => 'web']);
@@ -52,11 +52,16 @@ final class AccessControlSchemaTest extends TestCase
             ['role_has_permissions', 'role_id'],
             ['role_has_permissions', 'permission_id'],
         ] as [$table, $column]) {
-            self::assertContains(
-                Schema::getColumnType($table, $column),
-                ['string', 'varchar'],
-                "$table.$column harus memakai tipe string ULID.",
-            );
+            $this->assertUlidColumn($table, $column);
         }
+    }
+
+    private function assertUlidColumn(string $table, string $column): void
+    {
+        self::assertContains(
+            Schema::getColumnType($table, $column),
+            ['string', 'varchar', 'bpchar'],
+            "$table.$column harus memakai tipe string ULID.",
+        );
     }
 }

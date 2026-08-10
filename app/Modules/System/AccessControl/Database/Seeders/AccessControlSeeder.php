@@ -42,7 +42,7 @@ final class AccessControlSeeder extends Seeder
         ]);
         $securityAdmin->syncPermissions($allPermissions);
 
-        $configuredPassword = config('access_control.dummy_password');
+        $configuredPassword = config('access-control.dummy_password');
         $password = $configuredPassword ?: Str::password(32);
 
         $superSystemUser = User::firstOrCreate(

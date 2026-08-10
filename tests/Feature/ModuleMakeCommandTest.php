@@ -6,18 +6,20 @@ use Illuminate\Support\Str;
 
 beforeEach(function () {
     $this->originalModuleMakeAppPath = app_path();
-    $this->moduleMakeAppPath = storage_path(
-        'framework/testing/module-make-'.Str::ulid()->toBase32(),
-    );
+    $this->originalModuleMakeStoragePath = storage_path();
+    $this->moduleMakeRoot = sys_get_temp_dir().DIRECTORY_SEPARATOR.'starterkit-module-make-'.Str::ulid()->toBase32();
+    $this->moduleMakeAppPath = $this->moduleMakeRoot.DIRECTORY_SEPARATOR.'app';
     $this->app->useAppPath($this->moduleMakeAppPath);
+    $this->app->useStoragePath($this->moduleMakeRoot.DIRECTORY_SEPARATOR.'storage');
 
     cleanupGeneratorProbes();
 });
 
 afterEach(function () {
     cleanupGeneratorProbes();
-    File::deleteDirectory($this->moduleMakeAppPath);
+    File::deleteDirectory($this->moduleMakeRoot);
     $this->app->useAppPath($this->originalModuleMakeAppPath);
+    $this->app->useStoragePath($this->originalModuleMakeStoragePath);
 });
 
 it('menyediakan dry-run JSON tanpa membuat file', function () {

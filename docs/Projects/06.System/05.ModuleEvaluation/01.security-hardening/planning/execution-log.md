@@ -56,9 +56,15 @@
 - Diagnosis: evidence menunjukkan failure tidak konsisten pada promotion
   directory. Hipotesis kerja yang paling kuat adalah `rename()` satu kali dapat
   gagal sementara pada Windows ketika filesystem masih melepas akses folder.
-- Perubahan: `ModulePromotionService` mencoba promotion atomic hingga tiga kali
-  dengan jeda singkat; test command memakai Artisan in-process agar tidak
-  membawa state process eksternal ke full suite.
+- Perubahan awal: `ModulePromotionService` mencoba promotion atomic dengan
+  retry; test command memakai Artisan in-process agar tidak membawa state
+  process eksternal ke full suite. Saat integrasi `main` kembali menemukan
+  `Access is denied (code: 5)` pada Windows, retry diperkuat menjadi maksimal
+  20 kali dengan backoff hingga sekitar 10 detik. Promotion tetap memakai
+  `rename()` atomic; tidak ada fallback copy yang dapat meninggalkan output
+  setengah jadi. Fixture generator mengarahkan app path dan storage path ke
+  temporary directory OS yang sama agar staging test tidak memakai permission
+  workspace Windows.
 - Evidence: focused generator lulus 8 test/28 assertion dan final
   `composer ci:check` lulus 266 test/1159 assertion.
 

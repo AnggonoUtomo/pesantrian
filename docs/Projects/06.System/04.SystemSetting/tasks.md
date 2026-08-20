@@ -370,7 +370,16 @@ module satu per satu.
   - Evidence: typed report mendeteksi `operations.rto_hours` invalid dan
     `unknown.key` tidak terdaftar.
 - [x] Output JSON/human tidak membocorkan secret atau detail internal.
-  - Perubahan: command error memakai pesan generik dan tidak mencetak exception.
+  - Perubahan: command error memakai pesan generik dan tidak mencetak exception;
+    output sensitive hanya membawa metadata `has_value`.
+- [x] Input CLI sensitif tidak memakai argumen posisi.
+  - Kondisi awal: signature lama mewajibkan `{value}` untuk semua key sehingga
+    secret dapat tertinggal pada shell history dan process list.
+  - Perubahan: `{value}` menjadi opsional pada parser tetapi tetap wajib untuk
+    setting non-sensitive. Setting sensitive menolak argumen posisi dan memakai
+    prompt tersembunyi atau `--value-stdin`.
+  - Evidence: regression test membuktikan positional secret ditolak tanpa
+    tersimpan/tercetak; prompt tersembunyi dan STDIN berhasil menyimpan nilai.
 
 **Positive test:** global seeder dan command valid berjalan sukses.
 
@@ -507,8 +516,10 @@ console kosong, dan Lighthouse 100 tanpa audit gagal.
 
 **Files rencana:**
 
-- rate limiter provider/service existing;
-- idempotency middleware/service dan repository contract;
+- adapter policy retention/rate milik SystemSetting;
+- repository/model/migration idempotency milik SystemSetting;
+- middleware, service lifecycle, dan repository contract generik
+  `packages/StarterKit` sesuai ADR-0003;
 - middleware registration;
 - idempotency migration/model dari Task 06;
 - integration/security tests.
@@ -545,10 +556,13 @@ console kosong, dan Lighthouse 100 tanpa audit gagal.
 **Negative test:** bypass rate limit, hash mismatch, storage failure, dan
 sensitive replay payload ditangani aman.
 
-**Hasil implementasi 6 Agustus 2026:** Limiter runtime, atomic idempotency,
-payload hash, replay/conflict/expiry, sanitizer response, safe 503, middleware
-alias, dan integration tests selesai. Reader/memoizer diperbaiki dari singleton
-menjadi request-scoped. Suite terkait lulus 24 test/119 assertion tanpa warning.
+**Hasil implementasi 6 Agustus 2026, direvisi 14 Agustus 2026:** Limiter runtime,
+atomic idempotency, payload hash, replay/conflict/expiry, sanitizer response,
+safe 503, middleware alias, dan integration tests selesai. Contract, middleware,
+serta lifecycle generik dipindahkan ke `packages/StarterKit`; migration, model,
+repository adapter, prune, dan policy retention/rate tetap dimiliki
+SystemSetting. Reader/memoizer tetap request-scoped. Focused gate boundary baru
+lulus 35 test/251 assertion.
 
 ## Task 12 — Session, Branding, Appearance, dan Operational Target
 

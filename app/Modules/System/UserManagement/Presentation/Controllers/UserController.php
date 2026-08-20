@@ -6,7 +6,6 @@ namespace App\Modules\System\UserManagement\Presentation\Controllers;
 
 use App\Models\User;
 use App\Modules\System\AccessControl\Application\Contracts\RoleCatalogCapability;
-use App\Modules\System\SystemSetting\Application\Contracts\SystemRuntimeSettings;
 use App\Modules\System\UserManagement\Application\Actions\AssignUserRole;
 use App\Modules\System\UserManagement\Application\Actions\BulkUserLifecycle;
 use App\Modules\System\UserManagement\Application\Actions\ChangeUserStatus;
@@ -19,6 +18,7 @@ use App\Modules\System\UserManagement\Application\Actions\StartImpersonation;
 use App\Modules\System\UserManagement\Application\Actions\UpdateUser;
 use App\Modules\System\UserManagement\Application\Actions\UpdateUserAvatar;
 use App\Modules\System\UserManagement\Application\Contracts\ImpersonationSession;
+use App\Modules\System\UserManagement\Application\Contracts\UserRuntimeSettings;
 use App\Modules\System\UserManagement\Application\DTO\CreateUserData;
 use App\Modules\System\UserManagement\Application\DTO\ImpersonationRequestData;
 use App\Modules\System\UserManagement\Application\DTO\UpdateUserData;
@@ -63,7 +63,7 @@ final class UserController implements HasMiddleware
         private readonly AssignUserRole $assignUserRole,
         private readonly BulkUserLifecycle $bulkUserLifecycle,
         private readonly RoleCatalogCapability $roleCatalog,
-        private readonly SystemRuntimeSettings $systemRuntimeSettings,
+        private readonly UserRuntimeSettings $runtimeSettings,
     ) {}
 
     public static function middleware(): array
@@ -90,7 +90,7 @@ final class UserController implements HasMiddleware
     public function index(ListUsersRequest $request): Response
     {
         $filters = $request->validated();
-        $pagination = $this->systemRuntimeSettings->current()->pagination();
+        $pagination = $this->runtimeSettings->pagination();
         $filter = UserListFilter::from(
             $filters['search'] ?? null,
             $filters['status'] ?? null,
@@ -98,8 +98,8 @@ final class UserController implements HasMiddleware
             $filters['archive'] ?? null,
             isset($filters['page']) ? (int) $filters['page'] : null,
             isset($filters['per_page']) ? (int) $filters['per_page'] : null,
-            $pagination['defaultPerPage'],
-            $pagination['perPageOptions'],
+            $pagination->defaultPerPage,
+            $pagination->perPageOptions,
             $filters['sort_direction'] ?? null,
         );
         $result = $this->listUsers->execute($filter);
@@ -124,8 +124,8 @@ final class UserController implements HasMiddleware
                 'currentPage' => $result->currentPage,
                 'lastPage' => $result->lastPage,
                 'perPage' => $result->perPage,
-                'perPageOptions' => $pagination['perPageOptions'],
-                'defaultPerPage' => $pagination['defaultPerPage'],
+                'perPageOptions' => $pagination->perPageOptions,
+                'defaultPerPage' => $pagination->defaultPerPage,
             ],
             'roles' => array_map(
                 static fn ($role): array => $role->toArray(),

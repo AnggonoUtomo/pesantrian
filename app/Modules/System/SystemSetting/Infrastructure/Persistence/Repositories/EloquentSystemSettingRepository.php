@@ -9,6 +9,7 @@ use App\Modules\System\SystemSetting\Application\DTO\SettingDefinitionData;
 use App\Modules\System\SystemSetting\Application\DTO\StoredSettingData;
 use App\Modules\System\SystemSetting\Domain\Exceptions\SettingStorageUnavailable;
 use App\Modules\System\SystemSetting\Infrastructure\Persistence\Models\SystemSettingRecord;
+use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Crypt;
 use JsonException;
@@ -87,8 +88,17 @@ final class EloquentSystemSettingRepository implements SystemSettingRepository
     {
         try {
             $storedValue = json_decode($record->value, true, flags: JSON_THROW_ON_ERROR);
-            $value = json_decode($record->is_sensitive ? Crypt::decryptString($storedValue) : $record->value, true, flags: JSON_THROW_ON_ERROR);
-        } catch (JsonException $exception) {
+
+            if ($record->is_sensitive) {
+                if (! is_string($storedValue)) {
+                    throw new SettingStorageUnavailable('Nilai SystemSetting tidak dapat dibaca.');
+                }
+
+                $value = json_decode(Crypt::decryptString($storedValue), true, flags: JSON_THROW_ON_ERROR);
+            } else {
+                $value = $storedValue;
+            }
+        } catch (DecryptException|JsonException $exception) {
             throw new SettingStorageUnavailable('Nilai SystemSetting tidak dapat dibaca.', previous: $exception);
         }
 

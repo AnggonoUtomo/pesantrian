@@ -8,6 +8,7 @@ use Illuminate\Console\Command;
 use StarterKit\Modules\Contracts\ModuleManifest;
 use StarterKit\Modules\Contracts\PermissionIdentity;
 use StarterKit\Modules\ModuleRegistry;
+use StarterKit\Modules\ModuleRuntimeState;
 use Throwable;
 
 final class ModuleInspectCommand extends Command
@@ -18,7 +19,7 @@ final class ModuleInspectCommand extends Command
 
     protected $description = 'Membaca detail module tanpa mengubah file.';
 
-    public function handle(ModuleRegistry $registry): int
+    public function handle(ModuleRegistry $registry, ModuleRuntimeState $runtimeState): int
     {
         $target = trim((string) $this->argument('module'), '/');
 
@@ -32,8 +33,17 @@ final class ModuleInspectCommand extends Command
             ]);
         }
 
-        $result = $registry->discover(app_path('Modules'));
+        $result = $registry->bootPlan(app_path('Modules'));
+        $result['diagnostics'] = [...$result['diagnostics'], ...$runtimeState->runtimeDiagnostics()];
         [$domain, $name] = explode('/', $target, 2);
+        $targetDiagnostics = array_values(array_filter(
+            $result['diagnostics'],
+            static fn (array $diagnostic): bool => $diagnostic['module'] === $name
+                || str_starts_with($diagnostic['path'], $target.'/'),
+        ));
+        $bootable = collect($result['boot_plan'])->contains(
+            static fn (ModuleManifest $manifest): bool => $manifest->domain === $domain && $manifest->name === $name,
+        );
 
         foreach ($result['modules'] as $manifest) {
             if ($manifest->domain !== $domain || $manifest->name !== $name) {
@@ -42,11 +52,13 @@ final class ModuleInspectCommand extends Command
 
             try {
                 return $this->respond([
-                    'success' => true,
-                    'code' => 'MODULE_INSPECTED',
-                    'message' => 'Detail module berhasil dibaca.',
-                    'data' => ['module' => $this->moduleData($manifest)],
-                    'diagnostics' => $result['diagnostics'],
+                    'success' => $targetDiagnostics === [],
+                    'code' => $targetDiagnostics === [] ? 'MODULE_INSPECTED' : 'MODULE_INSPECTION_FAILED',
+                    'message' => $targetDiagnostics === []
+                        ? 'Detail module berhasil dibaca.'
+                        : 'Module ditemukan tetapi tidak tersedia untuk runtime.',
+                    'data' => ['module' => [...$this->moduleData($manifest), 'bootable' => $bootable]],
+                    'diagnostics' => $targetDiagnostics,
                 ]);
             } catch (Throwable) {
                 return $this->respond([
@@ -55,6 +67,9 @@ final class ModuleInspectCommand extends Command
                     'message' => 'Detail module tidak dapat dibaca.',
                     'data' => [],
                     'diagnostics' => [[
+                        'code' => 'permission_source_invalid',
+                        'module' => $manifest->name,
+                        'phase' => 'validation',
                         'path' => $manifest->path,
                         'message' => 'Permission source module tidak dapat dibaca.',
                     ]],
@@ -64,10 +79,12 @@ final class ModuleInspectCommand extends Command
 
         return $this->respond([
             'success' => false,
-            'code' => 'MODULE_NOT_FOUND',
-            'message' => "Module [$target] tidak ditemukan.",
+            'code' => $targetDiagnostics === [] ? 'MODULE_NOT_FOUND' : 'MODULE_INSPECTION_FAILED',
+            'message' => $targetDiagnostics === []
+                ? "Module [$target] tidak ditemukan."
+                : 'Module ditemukan tetapi manifest atau graph tidak valid.',
             'data' => ['target' => $target],
-            'diagnostics' => $result['diagnostics'],
+            'diagnostics' => $targetDiagnostics,
         ]);
     }
 

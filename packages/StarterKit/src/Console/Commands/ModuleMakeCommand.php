@@ -116,7 +116,7 @@ final class ModuleMakeCommand extends Command
     private function respond(array $payload): int
     {
         if ($this->option('json')) {
-            $this->line(json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+            $this->line(json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR));
         } elseif ($payload['success']) {
             $this->info((string) $payload['message']);
             if (isset($payload['data']['target'])) {

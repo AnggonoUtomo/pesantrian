@@ -22,6 +22,7 @@ export type SystemSettingItem = {
     options: string[];
     nullable: boolean;
     sensitive: boolean;
+    has_value: boolean;
 };
 
 export type SettingCategory =

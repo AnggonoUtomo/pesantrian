@@ -8,11 +8,16 @@ use App\Models\User;
 use App\Modules\System\UserManagement\Application\Contracts\ImpersonationSession;
 use App\Modules\System\UserManagement\Application\Contracts\UserManagementActivityPublisher;
 use App\Modules\System\UserManagement\Application\Contracts\UserRepository;
+use App\Modules\System\UserManagement\Application\Contracts\UserRuntimeSettings;
+use App\Modules\System\UserManagement\Application\DTO\InvitationMailSettings;
+use App\Modules\System\UserManagement\Application\DTO\UserPaginationSettings;
 use App\Modules\System\UserManagement\Infrastructure\Authentication\LaravelImpersonationSession;
 use App\Modules\System\UserManagement\Infrastructure\Events\LaravelUserManagementActivityPublisher;
 use App\Modules\System\UserManagement\Infrastructure\Persistence\Repositories\EloquentUserRepository;
+use App\Modules\System\UserManagement\Infrastructure\Runtime\DefaultUserRuntimeSettings;
 use App\Modules\System\UserManagement\Presentation\Policies\UserManagementPolicy;
 use Illuminate\Auth\Events\Login;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider as FrameworkServiceProvider;
@@ -21,9 +26,20 @@ final class ServiceProvider extends FrameworkServiceProvider
 {
     public function register(): void
     {
+        $this->mergeConfigFrom(__DIR__.'/module.php', 'user-management');
+
         $this->app->bind(UserRepository::class, EloquentUserRepository::class);
         $this->app->bind(ImpersonationSession::class, LaravelImpersonationSession::class);
         $this->app->bind(UserManagementActivityPublisher::class, LaravelUserManagementActivityPublisher::class);
+        $this->app->scoped(UserRuntimeSettings::class, DefaultUserRuntimeSettings::class);
+        $this->app->scoped(
+            UserPaginationSettings::class,
+            static fn (Application $app): UserPaginationSettings => $app->make(DefaultUserRuntimeSettings::class)->pagination(),
+        );
+        $this->app->scoped(
+            InvitationMailSettings::class,
+            static fn (Application $app): InvitationMailSettings => $app->make(DefaultUserRuntimeSettings::class)->invitationMail(),
+        );
     }
 
     public function boot(): void

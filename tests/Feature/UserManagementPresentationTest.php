@@ -17,7 +17,6 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Password;
-use RuntimeException;
 
 uses(RefreshDatabase::class);
 
@@ -68,7 +67,8 @@ it('mengirim invitation melalui reset token tanpa mengekspos token', function ()
     $actor->givePermissionTo([$invite, $create]);
 
     $this->actingAs($actor)->post(route('system.users.invitations.store'), [
-        'name' => 'Invitation User', 'email' => 'invitation@example.test',
+        'name' => 'Invitation User',
+        'email' => 'invitation@example.test',
     ])->assertRedirect()->assertSessionHas('inertia.flash_data.toast.type', 'success');
 
     $user = User::query()->where('email', 'invitation@example.test')->firstOrFail();
@@ -90,7 +90,8 @@ it('menghapus user baru saat delivery invitation gagal', function (): void {
 
     $this->withoutExceptionHandling();
     expect(fn () => $this->actingAs($actor)->post(route('system.users.invitations.store'), [
-        'name' => 'Delivery Failure', 'email' => 'delivery-failure@example.test',
+        'name' => 'Delivery Failure',
+        'email' => 'delivery-failure@example.test',
     ]))->toThrow(RuntimeException::class);
 
     expect(User::query()->where('email', 'delivery-failure@example.test')->exists())->toBeFalse();
@@ -108,9 +109,10 @@ it('mengirim role option typed dan mengizinkan assignment melalui capability pub
     $this->actingAs($actor)
         ->get(route('system.users.index'))
         ->assertOk()
-        ->assertInertia(fn ($page) => $page
-            ->has('roles', 1)
-            ->where('roles.0.name', 'SecurityAdmin')
+        ->assertInertia(
+            fn ($page) => $page
+                ->has('roles', 1)
+                ->where('roles.0.name', 'SecurityAdmin')
         );
 
     $this->actingAs($actor)
@@ -172,13 +174,14 @@ it('mengirim identity dan access read model dengan fallback aktivitas aman', fun
     $this->actingAs($actor)
         ->get(route('system.users.index', ['search' => 'identity']))
         ->assertOk()
-        ->assertInertia(fn ($page) => $page
-            ->has('users', 1)
-            ->where('users.0.name', 'Identity User')
-            ->where('users.0.roles', ['SecurityAdmin'])
-            ->where('users.0.avatarUrl', null)
-            ->where('users.0.emailVerified', false)
-            ->where('users.0.lastLoginAt', null)
+        ->assertInertia(
+            fn ($page) => $page
+                ->has('users', 1)
+                ->where('users.0.name', 'Identity User')
+                ->where('users.0.roles', ['SecurityAdmin'])
+                ->where('users.0.avatarUrl', null)
+                ->where('users.0.emailVerified', false)
+                ->where('users.0.lastLoginAt', null)
         );
 });
 
@@ -218,20 +221,22 @@ it('memfilter daftar user berdasarkan pencarian, status, role, dan arsip', funct
             'archive' => 'active',
         ]))
         ->assertOk()
-        ->assertInertia(fn ($page) => $page
-            ->has('users', 1)
-            ->where('users.0.email', $matched->email)
-            ->where('filters.status', UserStatus::ACTIVE->value)
-            ->where('filters.role', 'SecurityAdmin')
-            ->where('filters.archive', 'active')
+        ->assertInertia(
+            fn ($page) => $page
+                ->has('users', 1)
+                ->where('users.0.email', $matched->email)
+                ->where('filters.status', UserStatus::ACTIVE->value)
+                ->where('filters.role', 'SecurityAdmin')
+                ->where('filters.archive', 'active')
         );
 
     $this->actingAs($actor)
         ->get(route('system.users.index', ['archive' => 'archived']))
         ->assertOk()
-        ->assertInertia(fn ($page) => $page
-            ->has('users', 1)
-            ->where('users.0.email', $archived->email)
+        ->assertInertia(
+            fn ($page) => $page
+                ->has('users', 1)
+                ->where('users.0.email', $archived->email)
         );
 });
 
@@ -250,14 +255,15 @@ it('memaginasi daftar user di server dan mempertahankan filter aktif', function 
             'per_page' => 5,
         ]))
         ->assertOk()
-        ->assertInertia(fn ($page) => $page
-            ->has('users', 5)
-            ->where('filters.search', 'Pagination User')
-            ->where('filters.page', 2)
-            ->where('filters.perPage', 5)
-            ->where('pagination.total', 12)
-            ->where('pagination.currentPage', 2)
-            ->where('pagination.lastPage', 3)
+        ->assertInertia(
+            fn ($page) => $page
+                ->has('users', 5)
+                ->where('filters.search', 'Pagination User')
+                ->where('filters.page', 2)
+                ->where('filters.perPage', 5)
+                ->where('pagination.total', 12)
+                ->where('pagination.currentPage', 2)
+                ->where('pagination.lastPage', 3)
         );
 });
 

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "242ddef4776386391616832a2b666477",
+    "content-hash": "48e5c1da3a3fbadff166b75b51f39057",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -4910,11 +4910,13 @@
             "dist": {
                 "type": "path",
                 "url": "packages/StarterKit",
-                "reference": "d936cb0e82233ccabb049760fb386380a7576571"
+                "reference": "026be396bdb3e075ef055688e83a04d39c27f945"
             },
             "require": {
                 "illuminate/console": "^13.0",
                 "illuminate/contracts": "^13.0",
+                "illuminate/database": "^13.0",
+                "illuminate/http": "^13.0",
                 "illuminate/support": "^13.0",
                 "php": "^8.4"
             },

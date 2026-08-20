@@ -5,16 +5,17 @@ declare(strict_types=1);
 use App\Models\User;
 use App\Modules\System\AccessControl\Database\Seeders\AccessControlSeeder;
 use App\Modules\System\AuditLog\Infrastructure\Persistence\Models\AuditRecord;
-use App\Modules\System\SystemSetting\Application\Contracts\IdempotencyRepository;
-use App\Modules\System\SystemSetting\Application\DTO\IdempotencyReservationData;
 use App\Modules\System\SystemSetting\Database\Seeders\SystemSettingSeeder;
-use App\Modules\System\SystemSetting\Domain\Exceptions\SettingStorageUnavailable;
 use App\Modules\System\SystemSetting\Infrastructure\Persistence\Models\IdempotencyKeyRecord;
 use App\Modules\System\SystemSetting\Infrastructure\Persistence\Models\SystemSettingRecord;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
+use StarterKit\Http\Idempotency\Contracts\IdempotencyRepository;
+use StarterKit\Http\Idempotency\DTO\IdempotencyReservationData;
+use StarterKit\Http\Idempotency\Exceptions\IdempotencyStorageUnavailable;
+use StarterKit\Http\Idempotency\Runtime\UnavailableIdempotencyRepository;
 
 beforeEach(function (): void {
     $this->seed(AccessControlSeeder::class);
@@ -134,7 +135,12 @@ it('mengabaikan record expired dan mewajibkan idempotency header', function (): 
     $this->actingAs($actor)->patchJson($url, [
         'value' => false,
         'reason' => 'Header sengaja kosong.',
-    ])->assertUnprocessable()->assertJsonPath('message', 'Idempotency-Key wajib diisi.');
+    ])->assertUnprocessable()
+        ->assertJsonPath('message', 'Request tidak valid.')
+        ->assertJsonPath(
+            'errors.idempotency_key.0',
+            'Idempotency-Key wajib diisi dan memakai format yang valid.',
+        );
 });
 
 it('melakukan rollback mutation ketika response idempotency gagal disimpan', function (): void {
@@ -154,7 +160,7 @@ it('melakukan rollback mutation ketika response idempotency gagal disimpan', fun
     ));
     $repository->shouldReceive('complete')
         ->once()
-        ->andThrow(new SettingStorageUnavailable('credential-database'));
+        ->andThrow(new IdempotencyStorageUnavailable('credential-database'));
     $repository->shouldReceive('delete')->once();
     app()->instance(IdempotencyRepository::class, $repository);
 
@@ -163,10 +169,30 @@ it('melakukan rollback mutation ketika response idempotency gagal disimpan', fun
         ['value' => 88, 'reason' => 'Harus rollback.'],
         ['Idempotency-Key' => (string) Str::ulid()],
     )->assertStatus(503)
-        ->assertJsonPath('message', 'Layanan konfigurasi sementara tidak tersedia.')
+        ->assertJsonPath('message', 'Layanan idempotency sementara tidak tersedia.')
+        ->assertJsonPath('code', 'SERVICE_UNAVAILABLE')
         ->assertDontSee('credential-database');
 
     $record = SystemSettingRecord::query()->where('key', 'api.rate_limit.per_minute')->firstOrFail();
+    expect(json_decode($record->value, true, flags: JSON_THROW_ON_ERROR))->toBe(60)
+        ->and(AuditRecord::query()->where('action', 'system_setting.updated')->count())->toBe(0);
+});
+
+it('gagal tertutup sebelum mutation ketika adapter idempotency tidak tersedia', function (): void {
+    $actor = User::query()->where('email', 'super-system@example.test')->firstOrFail();
+    app()->instance(IdempotencyRepository::class, new UnavailableIdempotencyRepository);
+
+    $this->actingAs($actor)->patchJson(
+        route('api.v1.system-settings.update', 'api.rate_limit.per_minute'),
+        ['value' => 90, 'reason' => 'Adapter persistence sengaja tidak tersedia.'],
+        ['Idempotency-Key' => (string) Str::ulid()],
+    )->assertServiceUnavailable()
+        ->assertJsonPath('success', false)
+        ->assertJsonPath('message', 'Layanan idempotency sementara tidak tersedia.')
+        ->assertJsonPath('code', 'SERVICE_UNAVAILABLE');
+
+    $record = SystemSettingRecord::query()->where('key', 'api.rate_limit.per_minute')->firstOrFail();
+
     expect(json_decode($record->value, true, flags: JSON_THROW_ON_ERROR))->toBe(60)
         ->and(AuditRecord::query()->where('action', 'system_setting.updated')->count())->toBe(0);
 });

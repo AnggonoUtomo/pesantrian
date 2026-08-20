@@ -171,7 +171,11 @@ Implementasi tidak boleh menambahkan bus, handler, event consumer, facade, atau
 job hanya karena pola tersebut tersedia. Perubahan status harus disertai
 acceptance criteria, focused test, verification command, dan rencana rollback.
 
-## Risiko
+## Risiko Plan Awal (Riwayat)
+
+Risiko pada tabel berikut merupakan kondisi sebelum vertical slice selesai.
+Status implementasi terkini berada pada README, specification, task, dan
+execution log increment terkait.
 
 | Risiko | Mitigasi |
 | --- | --- |
@@ -183,17 +187,13 @@ acceptance criteria, focused test, verification command, dan rencana rollback.
 | AuditLog belum tersedia | Sediakan event/contract boundary; jangan membuat audit storage kedua |
 | Frontend hanya selesai sebagai mock | Wajib browser flow sampai response backend |
 
-## Scope Lanjutan yang Belum Dibuat
+## Status Scope Lanjutan
 
-Scope ini menjadi backlog resmi setelah Task 12. Tidak ada coding atau checklist
-selesai untuk item berikut pada increment saat ini:
-
-| Scope | Pekerjaan minimum sebelum coding | Bukti selesai |
-| --- | --- | --- |
-| Restore user | Policy, permission, action, audit event, aturan `SuperSystem`, dan migration/read model yang diperlukan | Test restore aktif/terhapus, negative authorization test, dan browser flow |
-| Invitation email | Token sekali pakai, expiry, mail contract, redaction, dan failure path | Mail-fake test, token expiry test, dan UI invitation yang dapat diuji |
-| Role revoke atau multi-role management | Contract AccessControl, operasi atomik, guard role terlindungi, dan audit | Positive/negative test, concurrency/atomicity evidence, dan browser flow |
-| Migration shared/production | Rehearsal, backup/restore, lock/downtime check, approval, dan rollback runbook | Output rehearsal dan catatan operator pada environment target |
+Restore/force-delete, invitation email, role revoke/multi-role, bulk lifecycle,
+avatar, dan activity login sudah ditutup pada increment masing-masing. Backlog
+yang tersisa adalah release gate external untuk migration shared/production:
+upgrade dari snapshot release lama, backup/restore, pemeriksaan lock/downtime,
+approval operator, dan rollback runbook.
 
 Migration shared/production adalah release gate eksternal. CI dan workspace
 lokal hanya dapat memeriksa migration secara statis atau pada database test;

@@ -29,6 +29,10 @@ nilai yang benar-benar berubah dikirim; seluruh batch divalidasi, diperiksa
 konsistensinya, disimpan, dan diaudit secara atomik. Endpoint satu key tetap
 tersedia bagi console/API yang sudah ada. Nilai SMTP sensitif tidak ditampilkan
 atau diprefill pada form, dan hanya berubah jika operator mengisinya kembali.
+Command console juga menolak secret sebagai argumen posisi. Gunakan prompt
+tersembunyi atau `--value-stdin` agar secret tidak masuk shell history dan
+process list. Parser command mempertahankan input sensitif sebagai string,
+termasuk ketika nilainya menyerupai integer, boolean, atau `null`.
 
 Setiap kategori dan nilai aktif juga memiliki panduan operator berbahasa awam:
 tujuan pengaturan, cara mengisi beserta contoh, dan peringatan dampak bila
@@ -42,8 +46,11 @@ satunya penjelasan bagi operator.
 - Namespace: `App\Modules\System\SystemSetting`.
 - Owner capability: registry schema setting, persistence, validasi, aktivasi,
   safe default, diagnostic, dan tampilan pengaturan runtime global.
-- Dependency langsung: `AccessControl` dan `AuditLog`.
+- Dependency langsung: `AccessControl`, `UserManagement`, dan `AuditLog`.
 - Data owner: tabel `system_settings` dan `idempotency_keys`.
+- Adapter owner: repository idempotency serta policy retention/rate untuk
+  contract generik `packages/StarterKit`. Middleware dan reservation lifecycle
+  generik tidak dimiliki module ini.
 
 SystemSetting bukan pengganti halaman pengaturan profile atau appearance pribadi
 dari starter kit. Nilai branding dan appearance pada SystemSetting adalah

@@ -7,6 +7,7 @@ namespace Tests\Feature;
 use App\Models\User;
 use App\Modules\System\AccessControl\Application\Actions\CreateRole;
 use App\Modules\System\AccessControl\Application\Contracts\AuthorizationCapability;
+use App\Modules\System\AccessControl\Application\DTO\RoleData;
 use App\Modules\System\AccessControl\Infrastructure\Persistence\Models\Permission;
 use App\Modules\System\AccessControl\Infrastructure\Persistence\Models\Role;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -42,7 +43,7 @@ final class AccessControlAuthorizationCapabilityTest extends TestCase
         self::assertFalse($capability->hasRole($user, 'MissingRole')->allowed);
     }
 
-    public function test_create_role_returns_module_role_model(): void
+    public function test_create_role_returns_typed_role_data(): void
     {
         $actor = User::factory()->create();
         $permission = Permission::create(['name' => 'access_control.role.manage', 'guard_name' => 'web']);
@@ -50,7 +51,7 @@ final class AccessControlAuthorizationCapabilityTest extends TestCase
 
         $role = $this->app->make(CreateRole::class)->execute($actor, 'Auditor');
 
-        self::assertInstanceOf(Role::class, $role);
+        self::assertInstanceOf(RoleData::class, $role);
         self::assertSame('Auditor', $role->name);
     }
 }

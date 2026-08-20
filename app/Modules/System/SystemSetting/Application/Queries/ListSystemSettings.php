@@ -24,8 +24,8 @@ final readonly class ListSystemSettings
             return new SystemSettingItemData(
                 key: $definition->key,
                 type: $definition->type->value,
-                value: $definition->sensitive && $value->source === 'database' ? '••••••••' : $value->value,
-                defaultValue: $definition->defaultValue,
+                value: $definition->sensitive ? null : $value->value,
+                defaultValue: $definition->sensitive ? null : $definition->defaultValue,
                 description: $definition->description,
                 source: $value->source,
                 updatedAt: $value->updatedAt,
@@ -34,6 +34,7 @@ final readonly class ListSystemSettings
                 options: $definition->options,
                 nullable: $definition->nullable,
                 sensitive: $definition->sensitive,
+                hasValue: $value->value !== null,
             );
         }, $this->definitions->all());
     }

@@ -16,6 +16,9 @@
 - Disk avatar dan kontrak URL media tetap Open Decision pada ADR-0005.
 - Implementasi menunggu konfirmasi user untuk setiap increment agar penyesuaian UI/UX dapat dilakukan sambil berjalan.
 
+Catatan historis: keputusan tersebut ditutup setelah implementasi diverifikasi
+dan user menerima ADR-0005 pada 14 Agustus 2026.
+
 ## 2026-08-10 - INC-001 kontrak dan visual identity
 
 - Kondisi awal: `UserData` hanya membawa identitas dasar, status, perlindungan,
@@ -115,3 +118,15 @@
   ada kredensial pengujian yang dapat digunakan ulang. Halaman login memuat
   tanpa console error/warning; interaksi upload avatar belum diklaim lulus
   pada browser nyata.
+
+## 2026-08-14 - Penutupan keputusan ADR-0005
+
+- Kondisi awal: ADR-0005 masih `Proposed` dan disk/URL avatar masih tercatat
+  sebagai Open Decision, sedangkan implementasi sudah memakai disk `local`
+  privat dan route module berpolicy `view`.
+- Perubahan: user menerima ADR-0005. Status diubah menjadi `Accepted`; keputusan
+  disk privat dan URL terotorisasi dicatat sebagai batas keamanan.
+- Evidence: `config/media-library.php`, `config/filesystems.php`,
+  `UserController::avatar()`, route UserManagement, dan
+  `UserManagementAvatarTest` cocok dengan keputusan tersebut.
+- Risiko: perpindahan ke public disk atau URL public harus melalui ADR pengganti.

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\System\SystemSetting\Application\DTO;
+namespace StarterKit\Http\Idempotency\DTO;
 
 final readonly class IdempotencyDecision
 {

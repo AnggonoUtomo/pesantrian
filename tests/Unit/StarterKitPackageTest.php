@@ -13,7 +13,11 @@ it('menyediakan contract dan service utama framework package', function () {
     expect(class_exists('StarterKit\\Modules\\ModuleRegistry'))->toBeTrue()
         ->and(class_exists('StarterKit\\Modules\\Contracts\\ModuleManifest'))->toBeTrue()
         ->and(class_exists('StarterKit\\Modules\\Contracts\\PermissionIdentity'))->toBeTrue()
-        ->and(class_exists('StarterKit\\Console\\Commands\\ModuleMakeCommand'))->toBeTrue();
+        ->and(class_exists('StarterKit\\Console\\Commands\\ModuleMakeCommand'))->toBeTrue()
+        ->and(interface_exists('StarterKit\\Http\\Idempotency\\Contracts\\IdempotencyRepository'))->toBeTrue()
+        ->and(interface_exists('StarterKit\\Http\\Idempotency\\Contracts\\RuntimeApiPolicy'))->toBeTrue()
+        ->and(class_exists('StarterKit\\Http\\Idempotency\\IdempotencyManager'))->toBeTrue()
+        ->and(class_exists('StarterKit\\Http\\Middleware\\EnforceIdempotency'))->toBeTrue();
 });
 
 it('memakai constraint PHP 8.4 pada package framework', function () {

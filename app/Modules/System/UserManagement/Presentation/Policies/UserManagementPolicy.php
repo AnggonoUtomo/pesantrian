@@ -27,6 +27,17 @@ final readonly class UserManagementPolicy
         return $this->authorization->can($actor, 'user.create')->allowed;
     }
 
+    public function mutate(?Authenticatable $actor): bool
+    {
+        return $this->authorization->can($actor, 'user.update')->allowed
+            || $this->authorization->can($actor, 'user.status.manage')->allowed;
+    }
+
+    public function deleteAny(?Authenticatable $actor): bool
+    {
+        return $this->authorization->can($actor, 'user.delete')->allowed;
+    }
+
     public function update(?Authenticatable $actor, User $user): bool
     {
         return ! $user->isSuperSystem()

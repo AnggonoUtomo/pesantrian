@@ -2,13 +2,13 @@
 
 ## Status
 
-`Proposed - siap menjadi acuan implementasi bertahap.`
+`Accepted - 14 Agustus 2026.`
 
 ## Context
 
 UserManagement sudah dapat mengelola lifecycle user, tetapi data identitas, akses awal, verifikasi email, dan aktivitas login belum terbaca lengkap pada UI. Avatar juga membutuhkan owner media yang jelas.
 
-## Keputusan yang Diusulkan
+## Keputusan
 
 1. Avatar dimiliki model `User` melalui Spatie Media Library collection `avatar` dengan `singleFile` dan conversion `avatar-thumb` 256 x 256.
 2. Create user dapat menerima role awal opsional dan status awal hanya setelah authorization backend melalui public capability AccessControl.
@@ -16,11 +16,17 @@ UserManagement sudah dapat mengelola lifecycle user, tetapi data identitas, akse
 4. `last_login_at` diperbarui oleh listener autentikasi sukses, bukan middleware setiap request.
 5. Tabel dan dialog menampilkan identity, access, serta activity dengan fallback aman bila avatar atau timestamp belum ada.
 
-## Open Decision
+## Keputusan Disk dan URL Avatar
 
-**Disk dan URL avatar** belum diputuskan.
+Avatar memakai disk `local` privat melalui konfigurasi `MEDIA_DISK`, dengan
+default `local`. Response UserManagement tidak mengirim path storage internal.
+URL avatar menunjuk ke route milik module yang menerapkan policy `view` sebelum
+mengirim file. Keputusan ini dipilih karena avatar hanya ditampilkan pada area
+System yang terotorisasi.
 
-Rekomendasi: gunakan disk privat dan endpoint/URL melalui otorisasi karena daftar user berada di area System. Ini lebih aman, tetapi membutuhkan contract untuk menampilkan file. Alternatif public disk lebih sederhana, namun URL avatar dapat dibuka jika diketahui.
+Jika storage dipindah ke object storage atau CDN, akses privat dan authorization
+route harus tetap dipertahankan. Perubahan menjadi URL public memerlukan ADR
+pengganti karena mengubah batas keamanan data user.
 
 ## Konsekuensi
 
@@ -28,6 +34,16 @@ Rekomendasi: gunakan disk privat dan endpoint/URL melalui otorisasi karena dafta
 - Menambah test filesystem, event login, authorization create, dan browser flow.
 - Tidak menambah invitation email, reset password, Employee, atau Profile.
 - Audit login hanya ditambahkan bila consumer AuditLog dan failure contract disetujui; timestamp login tetap dapat berjalan tanpa event audit baru.
+
+## Evidence Implementasi
+
+- `config/media-library.php` memakai `MEDIA_DISK` dengan default `local`, dan
+  disk tersebut mengarah ke `storage/app/private`.
+- `UserController::avatar()` hanya dapat dicapai melalui middleware policy
+  `can:view,user`; resource hanya mengirim URL route module.
+- `UserManagementAvatarTest` membuktikan upload, penggantian file tunggal,
+  validasi tipe/ukuran, dan penghapusan avatar.
+- Persetujuan status `Accepted` diberikan user pada 14 Agustus 2026.
 
 ## Evidence Awal
 

@@ -11,8 +11,10 @@ use App\Modules\System\UserManagement\Application\DTO\PaginatedUserData;
 use App\Modules\System\UserManagement\Application\DTO\UpdateUserData;
 use App\Modules\System\UserManagement\Application\DTO\UserData;
 use App\Modules\System\UserManagement\Application\DTO\UserListFilter;
+use App\Modules\System\UserManagement\Domain\Exceptions\DuplicateUserEmail;
 use App\Modules\System\UserManagement\Domain\ValueObjects\UserStatus;
 use Closure;
+use Illuminate\Database\QueryException;
 
 final class EloquentUserRepository implements UserRepository
 {
@@ -42,7 +44,7 @@ final class EloquentUserRepository implements UserRepository
                     $query->where('name', $filter->role);
                 });
             })
-            ->orderBy('created_at', $filter->sortDirection === 'asc' ? 'asc' : 'desc')
+            ->orderBy($filter->sortBy, $filter->sortDirection === 'asc' ? 'asc' : 'desc')
             ->paginate($filter->perPage, ['*'], 'page', $filter->page);
 
         return new PaginatedUserData(
@@ -63,12 +65,20 @@ final class EloquentUserRepository implements UserRepository
 
     public function create(CreateUserData $data): UserData
     {
-        $user = User::query()->create([
-            'name' => trim($data->name),
-            'email' => trim($data->email),
-            'password' => $data->password,
-            'status' => $data->status,
-        ]);
+        try {
+            $user = User::query()->create([
+                'name' => trim($data->name),
+                'email' => trim($data->email),
+                'password' => $data->password,
+                'status' => $data->status,
+            ]);
+        } catch (QueryException $exception) {
+            if (in_array((string) $exception->getCode(), ['23000', '23505'], true)) {
+                throw new DuplicateUserEmail('Email user sudah digunakan.', previous: $exception);
+            }
+
+            throw $exception;
+        }
 
         return $this->toData($user);
     }
@@ -76,10 +86,19 @@ final class EloquentUserRepository implements UserRepository
     public function update(string $userId, UpdateUserData $data): UserData
     {
         $user = User::query()->withTrashed()->findOrFail($userId);
-        $user->update([
-            'name' => trim($data->name),
-            'email' => trim($data->email),
-        ]);
+
+        try {
+            $user->update([
+                'name' => trim($data->name),
+                'email' => trim($data->email),
+            ]);
+        } catch (QueryException $exception) {
+            if (in_array((string) $exception->getCode(), ['23000', '23505'], true)) {
+                throw new DuplicateUserEmail('Email user sudah digunakan.', previous: $exception);
+            }
+
+            throw $exception;
+        }
 
         return $this->toData($user->refresh());
     }

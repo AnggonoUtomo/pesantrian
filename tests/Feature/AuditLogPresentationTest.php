@@ -313,6 +313,6 @@ it('menyediakan response envelope pada API internal', function (): void {
         ->getJson(route('api.v1.audit-logs.index'))
         ->assertOk()
         ->assertJsonPath('success', true)
-        ->assertJsonPath('data.meta.total', 1)
-        ->assertJsonStructure(['success', 'data' => ['data', 'meta']]);
+        ->assertJsonPath('meta.total', 1)
+        ->assertJsonStructure(['success', 'message', 'data', 'meta']);
 });

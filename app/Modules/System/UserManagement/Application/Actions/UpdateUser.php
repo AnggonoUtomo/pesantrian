@@ -20,8 +20,12 @@ final readonly class UpdateUser
         private UserManagementActivityPublisher $activities,
     ) {}
 
-    public function execute(?Authenticatable $actor, string $userId, UpdateUserData $data): UserData
-    {
+    public function execute(
+        ?Authenticatable $actor,
+        string $userId,
+        UpdateUserData $data,
+        ?string $correlationId = null,
+    ): UserData {
         $this->authorization->ensure($actor, 'user.update');
         $user = $this->repository->find($userId);
 
@@ -36,6 +40,7 @@ final readonly class UpdateUser
             mutation: fn (): UserData => $this->repository->update($userId, $data),
             subjectId: static fn (UserData $user): string => $user->id,
             metadata: static fn (UserData $user): array => ['changed_fields' => ['name', 'email']],
+            correlationId: $correlationId,
         );
     }
 }

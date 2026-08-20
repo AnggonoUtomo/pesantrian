@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\System\SystemSetting\Application\Services;
+namespace StarterKit\Http\Idempotency;
 
-use App\Modules\System\SystemSetting\Application\Contracts\IdempotencyRepository;
-use App\Modules\System\SystemSetting\Application\Contracts\SystemSettingReader;
-use App\Modules\System\SystemSetting\Application\DTO\IdempotencyDecision;
-use App\Modules\System\SystemSetting\Application\DTO\IdempotencyReservationData;
-use App\Modules\System\SystemSetting\Domain\Exceptions\IdempotencyConflict;
 use DateTimeImmutable;
+use StarterKit\Http\Idempotency\Contracts\IdempotencyRepository;
+use StarterKit\Http\Idempotency\Contracts\RuntimeApiPolicy;
+use StarterKit\Http\Idempotency\DTO\IdempotencyDecision;
+use StarterKit\Http\Idempotency\DTO\IdempotencyReservationData;
+use StarterKit\Http\Idempotency\Exceptions\IdempotencyConflict;
 
 final readonly class IdempotencyManager
 {
@@ -27,7 +27,7 @@ final readonly class IdempotencyManager
 
     public function __construct(
         private IdempotencyRepository $repository,
-        private SystemSettingReader $settings,
+        private RuntimeApiPolicy $policy,
     ) {}
 
     /** @param array<string, mixed> $payload */
@@ -37,10 +37,8 @@ final readonly class IdempotencyManager
             $this->canonicalize($payload),
             JSON_THROW_ON_ERROR,
         ));
-        $expiresAt = new DateTimeImmutable(sprintf(
-            '+%d hours',
-            $this->settings->integer('api.idempotency.retention_hours'),
-        ));
+        $retentionHours = max(1, min(168, $this->policy->idempotencyRetentionHours()));
+        $expiresAt = new DateTimeImmutable(sprintf('+%d hours', $retentionHours));
 
         $reservation = $this->repository->reserve(
             $actorId,

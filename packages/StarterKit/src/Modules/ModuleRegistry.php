@@ -13,6 +13,26 @@ use Throwable;
 
 final class ModuleRegistry
 {
+    /** @return array{modules: list<ModuleManifest>, boot_plan: list<ModuleManifest>, diagnostics: list<array{code: string, module: string, phase: string, path: string, message: string}>} */
+    public function bootPlan(string $rootPath): array
+    {
+        $discovery = $this->discover($rootPath);
+        $graph = (new ModuleGraphValidator)->validate($discovery['modules']);
+        $discoveryDiagnostics = array_map(fn (array $diagnostic): array => [
+            'code' => 'manifest_invalid',
+            'module' => $this->moduleFromPath($diagnostic['path']),
+            'phase' => 'discovery',
+            'path' => $diagnostic['path'],
+            'message' => $diagnostic['message'],
+        ], $discovery['diagnostics']);
+
+        return [
+            'modules' => $discovery['modules'],
+            'boot_plan' => $graph['boot_plan'],
+            'diagnostics' => [...$discoveryDiagnostics, ...$graph['diagnostics']],
+        ];
+    }
+
     /** @return array{modules: list<ModuleManifest>, diagnostics: list<array{path: string, message: string}>} */
     public function discover(string $rootPath): array
     {
@@ -154,5 +174,12 @@ final class ModuleRegistry
         }
 
         return 'Manifest atau source module tidak valid.';
+    }
+
+    private function moduleFromPath(string $path): string
+    {
+        $segments = explode('/', str_replace('\\', '/', $path));
+
+        return count($segments) > 1 ? $segments[count($segments) - 2] : 'unknown';
     }
 }

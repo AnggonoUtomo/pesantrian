@@ -32,3 +32,19 @@ it('exposes the extracted application boundaries', function () {
         ->and(class_exists(SyncRolePermissions::class))->toBeTrue()
         ->and(class_exists(DeleteRole::class))->toBeTrue();
 });
+
+it('keeps the entire application layer free from infrastructure imports', function (): void {
+    $applicationPath = app_path('Modules/System/AccessControl/Application');
+    $files = new RecursiveIteratorIterator(
+        new RecursiveDirectoryIterator($applicationPath, FilesystemIterator::SKIP_DOTS),
+    );
+
+    foreach ($files as $file) {
+        if (! $file->isFile() || $file->getExtension() !== 'php') {
+            continue;
+        }
+
+        expect(file_get_contents($file->getPathname()))
+            ->not->toContain('App\\Modules\\System\\AccessControl\\Infrastructure\\');
+    }
+});

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Modules\System\AccessControl\Application\Services;
 
 use App\Modules\System\AccessControl\Application\Contracts\AuthorizationCapability;
-use App\Modules\System\AccessControl\Infrastructure\Persistence\Models\Role;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Auth\Authenticatable;
 
@@ -28,30 +27,31 @@ final class AuthorizeRoleMutation
     public function canViewAccessControl(?Authenticatable $actor): bool
     {
         return $this->canManage($actor)
+            || $this->authorization->can($actor, 'access_control.permission.manage')->allowed
             || $this->authorization->can($actor, 'access_control.permission.assign')->allowed;
     }
 
-    public function canMutateRole(?Authenticatable $actor, Role $role): bool
+    public function canMutateRole(?Authenticatable $actor, string $roleName): bool
     {
-        return $this->canManage($actor) && $role->name !== 'SuperSystem';
+        return $this->canManage($actor) && $roleName !== 'SuperSystem';
     }
 
-    public function canAssignPermissions(?Authenticatable $actor, Role $role): bool
+    public function canAssignPermissions(?Authenticatable $actor, string $roleName): bool
     {
         return $this->authorization->can($actor, 'access_control.permission.assign')->allowed
-            && $role->name !== 'SuperSystem';
+            && $roleName !== 'SuperSystem';
     }
 
-    public function ensureRoleCanBeMutated(?Authenticatable $actor, Role $role): void
+    public function ensureRoleCanBeMutated(?Authenticatable $actor, string $roleName): void
     {
-        if (! $this->canMutateRole($actor, $role)) {
+        if (! $this->canMutateRole($actor, $roleName)) {
             throw new AuthorizationException('Role mutation tidak diizinkan.');
         }
     }
 
-    public function ensurePermissionsCanBeAssigned(?Authenticatable $actor, Role $role): void
+    public function ensurePermissionsCanBeAssigned(?Authenticatable $actor, string $roleName): void
     {
-        if (! $this->canAssignPermissions($actor, $role)) {
+        if (! $this->canAssignPermissions($actor, $roleName)) {
             throw new AuthorizationException('Sinkronisasi permission tidak diizinkan.');
         }
     }

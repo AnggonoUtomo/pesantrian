@@ -18,7 +18,7 @@ Route::middleware(['web', 'auth', 'verified'])
             ->middleware([
                 'throttle:system-api',
                 'can:update,'.SystemSettingRecord::class,
-                'system-setting.idempotency',
+                'api.idempotency',
             ])
             ->name('update');
     });

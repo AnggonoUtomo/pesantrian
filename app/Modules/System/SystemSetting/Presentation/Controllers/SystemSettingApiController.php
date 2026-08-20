@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace App\Modules\System\SystemSetting\Presentation\Controllers;
 
+use App\Http\ApiResponseFactory;
 use App\Modules\System\SystemSetting\Application\Actions\UpdateSystemSetting;
 use App\Modules\System\SystemSetting\Application\Queries\ListSystemSettings;
 use App\Modules\System\SystemSetting\Domain\Exceptions\UnknownSettingDefinition;
 use App\Modules\System\SystemSetting\Infrastructure\Persistence\Models\SystemSettingRecord;
 use App\Modules\System\SystemSetting\Presentation\Requests\UpdateSystemSettingRequest;
 use App\Modules\System\SystemSetting\Presentation\Resources\SystemSettingResource;
+use App\Modules\System\SystemSetting\Presentation\Support\SystemSettingOutputPresenter;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Validation\ValidationException;
@@ -22,6 +25,8 @@ final readonly class SystemSettingApiController implements HasMiddleware
     public function __construct(
         private ListSystemSettings $listSystemSettings,
         private UpdateSystemSetting $updateSystemSetting,
+        private SystemSettingOutputPresenter $outputPresenter,
+        private ApiResponseFactory $responses,
     ) {}
 
     public static function middleware(): array
@@ -32,15 +37,16 @@ final readonly class SystemSettingApiController implements HasMiddleware
         ];
     }
 
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        return response()->json([
-            'success' => true,
-            'data' => array_map(
-                static fn ($setting): array => (new SystemSettingResource($setting))->toArray(),
+        return $this->responses->success(
+            $request,
+            'Daftar SystemSetting berhasil dibaca.',
+            array_map(
+                fn ($setting): array => (new SystemSettingResource($setting, $this->outputPresenter))->toArray(),
                 $this->listSystemSettings->execute(),
             ),
-        ]);
+        );
     }
 
     public function update(UpdateSystemSettingRequest $request, string $key): JsonResponse
@@ -53,10 +59,11 @@ final readonly class SystemSettingApiController implements HasMiddleware
             throw ValidationException::withMessages(['value' => $exception->getMessage()]);
         }
 
-        return response()->json([
-            'success' => true,
-            'data' => (new SystemSettingResource($setting))->toArray(),
-        ]);
+        return $this->responses->success(
+            $request,
+            'SystemSetting berhasil diperbarui.',
+            (new SystemSettingResource($setting, $this->outputPresenter))->toArray(),
+        );
     }
 
     private function actor(UpdateSystemSettingRequest $request): Authenticatable

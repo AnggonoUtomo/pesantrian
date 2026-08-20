@@ -4,7 +4,8 @@ Dokumen ini menjadi pusat evaluasi `AccessControl`, `UserManagement`, `AuditLog`
 
 ## Status
 
-`Discovery serta review AccessControl, UserManagement, dan AuditLog selesai; review SystemSetting dan peta backlog masih terbuka.`
+`Evaluasi empat module selesai; program remediasi kode dan dokumentasi sedang
+berjalan secara incremental.`
 
 ## Boundary Evaluasi
 
@@ -23,6 +24,7 @@ Dokumen ini menjadi pusat evaluasi `AccessControl`, `UserManagement`, `AuditLog`
 6. [Temuan UserManagement](findings-user-management.md)
 7. [Temuan AuditLog](findings-audit-log.md)
 8. [01. Security hardening](01.security-hardening/README.md)
+9. [02. Remediasi kode dan dokumentasi](02.code-and-documentation-remediation/README.md)
 
 ## Dokumen Terkait
 
@@ -38,3 +40,4 @@ Dokumen ini menjadi pusat evaluasi `AccessControl`, `UserManagement`, `AuditLog`
 | --- | --- | --- |
 | 1.0 | 2026-08-06 | Membuat baseline evaluasi ulang empat module System |
 | 1.1 | 2026-08-10 | Menambahkan increment hardening security lintas module |
+| 1.2 | 2026-08-14 | Menutup status evaluasi empat module dan menautkan program remediasi. |

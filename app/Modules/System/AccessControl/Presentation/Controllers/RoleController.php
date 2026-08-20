@@ -64,7 +64,7 @@ final class RoleController implements HasMiddleware
     {
         /** @var array<int, string> $permissions */
         $permissions = $request->validated('permissions');
-        $this->syncRolePermissions->execute($request->user(), $role, $permissions);
+        $this->syncRolePermissions->execute($request->user(), (string) $role->getKey(), $permissions);
 
         Inertia::flash('toast', [
             'type' => 'success',
@@ -76,7 +76,7 @@ final class RoleController implements HasMiddleware
 
     public function destroy(Request $request, Role $role): RedirectResponse
     {
-        $this->deleteRole->execute($request->user(), $role);
+        $this->deleteRole->execute($request->user(), (string) $role->getKey());
 
         Inertia::flash('toast', [
             'type' => 'success',

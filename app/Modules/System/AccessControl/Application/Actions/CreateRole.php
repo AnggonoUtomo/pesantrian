@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Modules\System\AccessControl\Application\Actions;
 
 use App\Modules\System\AccessControl\Application\Contracts\AccessControlActivityPublisher;
+use App\Modules\System\AccessControl\Application\Contracts\RoleRepository;
+use App\Modules\System\AccessControl\Application\DTO\RoleData;
 use App\Modules\System\AccessControl\Application\Services\AuthorizeRoleMutation;
-use App\Modules\System\AccessControl\Infrastructure\Persistence\Models\Role;
+use App\Modules\System\AccessControl\Domain\Exceptions\DuplicateRole;
 use Illuminate\Contracts\Auth\Authenticatable;
 use InvalidArgumentException;
 
@@ -15,10 +17,14 @@ final readonly class CreateRole
     public function __construct(
         private AuthorizeRoleMutation $authorization,
         private AccessControlActivityPublisher $activities,
+        private RoleRepository $roles,
     ) {}
 
-    public function execute(?Authenticatable $actor, string $name): Role
-    {
+    public function execute(
+        ?Authenticatable $actor,
+        string $name,
+        ?string $correlationId = null,
+    ): RoleData {
         $this->authorization->ensureAllowed($actor);
 
         $name = trim($name);
@@ -27,20 +33,18 @@ final readonly class CreateRole
             throw new InvalidArgumentException('Nama role tidak valid.');
         }
 
-        if (Role::query()->where('name', $name)->where('guard_name', 'web')->exists()) {
-            throw new InvalidArgumentException('Role sudah tersedia.');
+        if ($this->roles->existsByName($name, 'web')) {
+            throw new DuplicateRole;
         }
 
         return $this->activities->publish(
             actorId: $actor ? (string) $actor->getAuthIdentifier() : null,
             action: 'access_control.role.created',
             subjectType: 'role',
-            mutation: static fn (): Role => Role::query()->create([
-                'name' => $name,
-                'guard_name' => 'web',
-            ]),
-            subjectId: static fn (Role $role): string => (string) $role->getKey(),
-            metadata: static fn (Role $role): array => ['role_name' => $role->name],
+            mutation: fn (): RoleData => $this->roles->create($name, 'web'),
+            subjectId: static fn (RoleData $role): string => $role->id,
+            metadata: static fn (RoleData $role): array => ['role_name' => $role->name],
+            correlationId: $correlationId,
         );
     }
 }

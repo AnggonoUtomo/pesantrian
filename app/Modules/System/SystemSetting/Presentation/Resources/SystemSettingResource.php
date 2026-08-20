@@ -6,23 +6,18 @@ namespace App\Modules\System\SystemSetting\Presentation\Resources;
 
 use App\Modules\System\SystemSetting\Application\DTO\SettingValueData;
 use App\Modules\System\SystemSetting\Application\DTO\SystemSettingItemData;
+use App\Modules\System\SystemSetting\Presentation\Support\SystemSettingOutputPresenter;
 
 final readonly class SystemSettingResource
 {
-    public function __construct(private SystemSettingItemData|SettingValueData $setting) {}
+    public function __construct(
+        private SystemSettingItemData|SettingValueData $setting,
+        private SystemSettingOutputPresenter $presenter,
+    ) {}
 
     /** @return array<string, mixed> */
     public function toArray(): array
     {
-        if ($this->setting instanceof SystemSettingItemData) {
-            return $this->setting->toArray();
-        }
-
-        return [
-            'key' => $this->setting->key,
-            'value' => $this->setting->value,
-            'source' => $this->setting->source,
-            'updated_at' => $this->setting->updatedAt,
-        ];
+        return $this->presenter->toArray($this->setting);
     }
 }

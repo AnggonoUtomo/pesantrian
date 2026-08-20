@@ -41,23 +41,13 @@ di `app/Models`, `packages/StarterKit`, atau private layer AccessControl.
 - menyediakan loading, empty, error, permission visibility, responsive layout,
   dan browser flow.
 
-## Scope Lanjutan yang Belum Dibuat
+## Status Scope Lanjutan
 
-Scope berikut belum termasuk implementasi saat ini:
-
-1. **Restore user**: memulihkan user dari soft delete dengan authorization,
-   audit, aturan `SuperSystem`, dan test positive/negative.
-2. **Invitation email**: mengirim undangan dengan token sekali pakai yang
-   memiliki expiry, redaction, mail-fake test, dan failure handling.
-3. **Role revoke atau multi-role management**: mencabut role tertentu serta
-   mengatur banyak role dalam satu operasi yang atomik dan aman.
-4. **Migration shared/production**: rehearsal pada database yang menyerupai
-   target, backup/restore test, pemeriksaan lock/downtime, dan persetujuan
-   operator sebelum deployment.
-
-Item di atas baru boleh masuk increment coding setelah decision, contract,
-acceptance criteria, focused test, dan rollback trace ditambahkan. UI tidak
-boleh menampilkan fitur yang belum memiliki backend authority.
+Restore/force-delete, invitation email, multi-role, bulk lifecycle, avatar, dan
+aktivitas login sudah tersedia dengan authorization, audit, focused test, serta
+UI module. Risiko operasional yang masih terbuka adalah rehearsal upgrade dari
+snapshot release lama, backup/restore pada environment target, pemeriksaan
+lock/downtime, dan persetujuan operator sebelum deployment production.
 
 ## Non-Scope
 
@@ -65,8 +55,6 @@ boleh menampilkan fitur yang belum memiliki backend authority.
 - membuat adapter Spatie kedua di UserManagement;
 - mengimpor private model, repository, policy, atau service AccessControl;
 - mengubah role atau permission langsung melalui model Spatie dari UserManagement;
-- invitation flow untuk create user pada increment awal;
-- menghapus permanen user dari database;
 - membuat audit implementation sendiri sebelum AuditLog tersedia;
 - mengubah module AccessControl yang sudah selesai tanpa increment terpisah.
 

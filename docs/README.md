@@ -12,9 +12,8 @@ Starter kit menggunakan Laravel 13, runtime PHP 8.4+, Laravel React starter kit,
 React, TypeScript, Vite, Tailwind, shadcn/ui, MySQL, Redis, Ziggy, dan
 package Spatie yang disetujui.
 
-Runtime lokal terakhir terverifikasi pada PHP 8.4.16. `composer.json` saat ini
-masih mengizinkan constraint PHP `^8.3`; penyempitan constraint menjadi `^8.4`
-adalah pekerjaan konfigurasi terpisah dan belum dilakukan.
+Runtime lokal terakhir terverifikasi pada PHP 8.4.16. `composer.json` memakai
+constraint PHP `^8.4` sesuai baseline runtime project.
 
 ## Entry Point
 

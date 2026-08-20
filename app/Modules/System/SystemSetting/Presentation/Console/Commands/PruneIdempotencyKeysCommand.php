@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\System\SystemSetting\Presentation\Console\Commands;
 
-use App\Modules\System\SystemSetting\Application\Contracts\IdempotencyRepository;
 use Illuminate\Console\Command;
+use StarterKit\Http\Idempotency\Contracts\IdempotencyRepository;
 
 final class PruneIdempotencyKeysCommand extends Command
 {

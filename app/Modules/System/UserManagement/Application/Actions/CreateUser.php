@@ -22,8 +22,11 @@ final readonly class CreateUser
         private UserManagementActivityPublisher $activities,
     ) {}
 
-    public function execute(?Authenticatable $actor, CreateUserData $data): UserData
-    {
+    public function execute(
+        ?Authenticatable $actor,
+        CreateUserData $data,
+        ?string $correlationId = null,
+    ): UserData {
         $this->authorization->ensure($actor, 'user.create');
         if ($data->status->value !== 'active') {
             $this->authorization->ensure($actor, 'user.status.manage');
@@ -47,6 +50,7 @@ final readonly class CreateUser
             metadata: static fn (UserData $user): array => [
                 'changed_fields' => ['name', 'email', 'status', 'role'],
             ],
+            correlationId: $correlationId,
         );
     }
 }

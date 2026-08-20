@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Models\User;
 use App\Modules\System\AccessControl\Database\Seeders\AccessControlSeeder;
+use App\Modules\System\AuditLog\Infrastructure\Persistence\Models\AuditRecord;
 use App\Modules\System\SystemSetting\Database\Seeders\SystemSettingSeeder;
 use App\Modules\System\SystemSetting\Infrastructure\Persistence\Models\SystemSettingRecord;
 use Illuminate\Support\Str;
@@ -154,6 +155,68 @@ it('menyediakan API typed untuk list dan mutation', function (): void {
         ->assertJsonPath('success', true)
         ->assertJsonPath('data.key', 'monitoring.external_enabled')
         ->assertJsonPath('data.value', true);
+});
+
+it('meredaksi nilai sensitif secara konsisten pada update dan list API', function (): void {
+    $secret = 'dummy-secret-api-redaction-c7e4';
+    $actor = User::query()->where('email', 'super-system@example.test')->firstOrFail();
+
+    $updateResponse = $this->actingAs($actor)
+        ->patchJson(route('api.v1.system-settings.update', ['key' => 'mail.password']), [
+            'value' => $secret,
+            'reason' => 'Regression test redaksi response API.',
+        ], ['Idempotency-Key' => (string) Str::ulid()]);
+
+    $updateResponse
+        ->assertOk()
+        ->assertJsonPath('success', true)
+        ->assertJsonPath('data.key', 'mail.password')
+        ->assertJsonPath('data.value', null)
+        ->assertJsonPath('data.sensitive', true)
+        ->assertJsonPath('data.has_value', true);
+
+    expect($updateResponse->getContent())->not->toContain($secret);
+
+    $listResponse = $this->actingAs($actor)
+        ->getJson(route('api.v1.system-settings.index'))
+        ->assertOk();
+    $mailPassword = collect($listResponse->json('data'))
+        ->firstWhere('key', 'mail.password');
+
+    expect($listResponse->getContent())->not->toContain($secret)
+        ->and($mailPassword)->toMatchArray([
+            'key' => 'mail.password',
+            'value' => null,
+            'sensitive' => true,
+            'has_value' => true,
+        ]);
+
+    $audit = AuditRecord::query()
+        ->where('action', 'system_setting.updated')
+        ->latest('created_at')
+        ->firstOrFail();
+    $auditPayload = json_encode($audit->metadata, JSON_THROW_ON_ERROR);
+
+    expect($auditPayload)->not->toContain($secret)
+        ->and($auditPayload)->toContain('[REDACTED]');
+});
+
+it('membedakan nilai sensitif yang belum diatur tanpa memakai mask sebagai nilai', function (): void {
+    $actor = User::query()->where('email', 'super-system@example.test')->firstOrFail();
+
+    $response = $this->actingAs($actor)
+        ->getJson(route('api.v1.system-settings.index'))
+        ->assertOk();
+    $mailPassword = collect($response->json('data'))
+        ->firstWhere('key', 'mail.password');
+
+    expect($mailPassword)->toMatchArray([
+        'key' => 'mail.password',
+        'value' => null,
+        'default_value' => null,
+        'sensitive' => true,
+        'has_value' => false,
+    ]);
 });
 
 it('mendaftarkan route web pada daftar Ziggy', function (): void {

@@ -11,6 +11,7 @@ use App\Modules\System\SystemSetting\Infrastructure\Persistence\Models\SystemSet
 use App\Modules\System\SystemSetting\Presentation\Requests\UpdateSystemSettingCategoryRequest;
 use App\Modules\System\SystemSetting\Presentation\Requests\UpdateSystemSettingRequest;
 use App\Modules\System\SystemSetting\Presentation\Resources\SystemSettingResource;
+use App\Modules\System\SystemSetting\Presentation\Support\SystemSettingOutputPresenter;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -26,6 +27,7 @@ final readonly class SystemSettingController implements HasMiddleware
     public function __construct(
         private ListSystemSettings $listSystemSettings,
         private UpdateSystemSetting $updateSystemSetting,
+        private SystemSettingOutputPresenter $outputPresenter,
     ) {}
 
     public static function middleware(): array
@@ -40,7 +42,7 @@ final readonly class SystemSettingController implements HasMiddleware
     {
         return Inertia::render('System/SystemSetting/pages/Index', [
             'settings' => array_map(
-                static fn ($setting): array => (new SystemSettingResource($setting))->toArray(),
+                fn ($setting): array => (new SystemSettingResource($setting, $this->outputPresenter))->toArray(),
                 $this->listSystemSettings->execute(),
             ),
         ]);

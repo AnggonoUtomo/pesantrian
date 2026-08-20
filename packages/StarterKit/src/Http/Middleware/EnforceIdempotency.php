@@ -2,20 +2,21 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\System\SystemSetting\Presentation\Middleware;
+namespace StarterKit\Http\Middleware;
 
-use App\Modules\System\SystemSetting\Application\Services\IdempotencyManager;
-use App\Modules\System\SystemSetting\Domain\Exceptions\IdempotencyConflict;
 use Closure;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use Psr\Log\LoggerInterface;
+use StarterKit\Http\Idempotency\IdempotencyManager;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
-final readonly class EnforceSystemSettingIdempotency
+final readonly class EnforceIdempotency
 {
     public function __construct(
         private IdempotencyManager $idempotency,
@@ -28,26 +29,28 @@ final readonly class EnforceSystemSettingIdempotency
         $key = trim((string) $request->header('Idempotency-Key'));
 
         if ($key === '' || mb_strlen($key) > 120 || preg_match('/^[A-Za-z0-9._:-]+$/', $key) !== 1) {
-            return response()->json(['message' => 'Idempotency-Key wajib diisi.'], 422);
+            throw ValidationException::withMessages([
+                'idempotency_key' => ['Idempotency-Key wajib diisi dan memakai format yang valid.'],
+            ]);
         }
 
         $actorId = (string) $request->user()?->getAuthIdentifier();
 
         if (! Str::isUlid($actorId)) {
-            return response()->json(['message' => 'Unauthenticated.'], 401);
+            throw new AuthenticationException('Authentication diperlukan.');
         }
 
         $endpoint = $request->method().' '.$request->path();
-
-        try {
-            $decision = $this->idempotency->begin($actorId, $endpoint, $key, $request->all());
-        } catch (IdempotencyConflict $exception) {
-            return response()->json(['message' => $exception->getMessage()], 409);
-        }
+        $decision = $this->idempotency->begin($actorId, $endpoint, $key, $request->all());
 
         if ($decision->isReplay()) {
-            return response()->json($decision->responseBody, $decision->responseStatus)
+            $response = response()->json($decision->responseBody, $decision->responseStatus)
                 ->header('Idempotency-Replayed', 'true');
+            $correlationId = data_get($decision->responseBody, 'meta.correlation_id');
+
+            return is_string($correlationId) && Str::isUlid($correlationId)
+                ? $response->header('X-Correlation-ID', $correlationId)
+                : $response;
         }
 
         try {

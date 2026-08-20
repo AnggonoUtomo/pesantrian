@@ -8,6 +8,7 @@ use App\Modules\System\UserManagement\Application\Contracts\UserManagementActivi
 use App\Modules\System\UserManagement\Application\Contracts\UserRepository;
 use App\Modules\System\UserManagement\Application\Services\AuthorizeUserAction;
 use App\Modules\System\UserManagement\Domain\Exceptions\ProtectedUserMutation;
+use App\Modules\System\UserManagement\Domain\Exceptions\SelfUserMutation;
 use Illuminate\Contracts\Auth\Authenticatable;
 
 final readonly class SoftDeleteUser
@@ -18,13 +19,21 @@ final readonly class SoftDeleteUser
         private UserManagementActivityPublisher $activities,
     ) {}
 
-    public function execute(?Authenticatable $actor, string $userId): void
-    {
+    public function execute(
+        ?Authenticatable $actor,
+        string $userId,
+        ?string $reason = null,
+        ?string $correlationId = null,
+    ): void {
         $this->authorization->ensure($actor, 'user.delete');
         $user = $this->repository->find($userId);
 
-        if ($user === null || $user->isProtected) {
+        if ($user === null || $user->isProtected || $user->deletedAt !== null) {
             throw new ProtectedUserMutation;
+        }
+
+        if ($actor !== null && (string) $actor->getAuthIdentifier() === $userId) {
+            throw new SelfUserMutation;
         }
 
         $this->activities->publish(
@@ -38,6 +47,8 @@ final readonly class SoftDeleteUser
             },
             subjectId: static fn (string $deletedUserId): string => $deletedUserId,
             metadata: static fn (string $deletedUserId): array => ['changed_fields' => ['deleted_at']],
+            reason: $reason,
+            correlationId: $correlationId,
         );
     }
 }

@@ -24,6 +24,7 @@ final readonly class SystemSettingItemData
         public array $options,
         public bool $nullable,
         public bool $sensitive,
+        public bool $hasValue,
     ) {}
 
     /** @return array<string, mixed> */
@@ -42,6 +43,7 @@ final readonly class SystemSettingItemData
             'options' => $this->options,
             'nullable' => $this->nullable,
             'sensitive' => $this->sensitive,
+            'has_value' => $this->hasValue,
         ];
     }
 }

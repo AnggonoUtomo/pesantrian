@@ -43,7 +43,7 @@ final readonly class ModuleManifest
 
         $namespaceSegments = is_string($data['namespace']) ? explode('\\', $data['namespace']) : [];
 
-        if ($namespaceSegments === [] || array_filter($namespaceSegments, static fn (mixed $segment): bool => is_string($segment) && preg_match('/^[A-Z][A-Za-z0-9]*$/', $segment) === 1) !== $namespaceSegments) {
+        if ($namespaceSegments === [] || array_filter($namespaceSegments, static fn (string $segment): bool => preg_match('/^[A-Z][A-Za-z0-9]*$/', $segment) === 1) !== $namespaceSegments) {
             throw new InvalidArgumentException('Manifest namespace is invalid.');
         }
 

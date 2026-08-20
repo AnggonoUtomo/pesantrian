@@ -9,6 +9,7 @@
     "provider": "App\\Modules\\System\\SystemSetting\\ServiceProvider",
     "dependencies": [
         "AccessControl",
+        "UserManagement",
         "AuditLog"
     ],
     "permission_source": "permissions.php",

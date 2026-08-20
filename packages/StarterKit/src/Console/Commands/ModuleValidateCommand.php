@@ -6,6 +6,7 @@ namespace StarterKit\Console\Commands;
 
 use Illuminate\Console\Command;
 use StarterKit\Modules\ModuleRegistry;
+use StarterKit\Modules\ModuleRuntimeState;
 
 final class ModuleValidateCommand extends Command
 {
@@ -15,12 +16,14 @@ final class ModuleValidateCommand extends Command
 
     protected $description = 'Memvalidasi manifest module tanpa mengubah file.';
 
-    public function handle(ModuleRegistry $registry): int
+    public function handle(ModuleRegistry $registry, ModuleRuntimeState $runtimeState): int
     {
-        $result = $registry->discover(app_path('Modules'));
+        $result = $registry->bootPlan(app_path('Modules'));
+        $result['diagnostics'] = [...$result['diagnostics'], ...$runtimeState->runtimeDiagnostics()];
         $target = $this->argument('module');
         $diagnostics = $result['diagnostics'];
         $modules = $result['modules'];
+        $bootPlan = $result['boot_plan'];
 
         if ($target !== null) {
             $target = trim((string) $target, '/');
@@ -40,9 +43,14 @@ final class ModuleValidateCommand extends Command
                 $modules,
                 static fn ($module): bool => $module->domain === $domain && $module->name === $name,
             ));
+            $bootPlan = array_values(array_filter(
+                $bootPlan,
+                static fn ($module): bool => $module->domain === $domain && $module->name === $name,
+            ));
             $diagnostics = array_values(array_filter(
                 $diagnostics,
-                static fn (array $diagnostic): bool => str_starts_with($diagnostic['path'], $target.'/'),
+                static fn (array $diagnostic): bool => $diagnostic['module'] === $name
+                    || str_starts_with($diagnostic['path'], $target.'/'),
             ));
 
             if ($modules === [] && $diagnostics === []) {
@@ -56,7 +64,7 @@ final class ModuleValidateCommand extends Command
             }
         }
 
-        $success = $diagnostics === [] && $modules !== [] || $target === null && $diagnostics === [];
+        $success = $diagnostics === [] && ($target === null || $bootPlan !== []);
         $payload = [
             'success' => $success,
             'code' => $success ? 'MODULE_VALID' : 'MODULE_INVALID',
@@ -65,14 +73,15 @@ final class ModuleValidateCommand extends Command
                 : 'Ada module yang tidak valid.',
             'data' => [
                 'target' => $target,
-                'valid' => count($modules),
+                'valid' => count($bootPlan),
+                'boot_plan' => array_map(static fn ($module): string => $module->name, $bootPlan),
                 'diagnostics' => $diagnostics,
             ],
             'diagnostics' => $diagnostics,
         ];
 
         if ($this->option('json')) {
-            $this->line(json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+            $this->line(json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR));
         } else {
             $success ? $this->info($target === null ? 'Semua module yang ditemukan valid.' : "Target module [$target] valid.") : $this->error('Ada module yang tidak valid.');
             foreach ($diagnostics as $diagnostic) {

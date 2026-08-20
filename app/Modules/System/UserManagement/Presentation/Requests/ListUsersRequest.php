@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\System\UserManagement\Presentation\Requests;
 
 use App\Modules\System\AccessControl\Application\Contracts\RoleCatalogCapability;
-use App\Modules\System\SystemSetting\Application\Contracts\SystemRuntimeSettings;
+use App\Modules\System\UserManagement\Application\Contracts\UserRuntimeSettings;
 use App\Modules\System\UserManagement\Domain\ValueObjects\UserStatus;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -32,7 +32,7 @@ final class ListUsersRequest extends FormRequest
             'role' => ['nullable', 'string', 'max:100', Rule::in($roleNames)],
             'archive' => ['nullable', 'string', Rule::in(['all', 'active', 'archived'])],
             'page' => ['nullable', 'integer', 'min:1'],
-            'per_page' => ['nullable', 'integer', Rule::in(app(SystemRuntimeSettings::class)->current()->paginationPerPageOptions)],
+            'per_page' => ['nullable', 'integer', Rule::in(app(UserRuntimeSettings::class)->pagination()->perPageOptions)],
             'sort_direction' => ['nullable', 'string', Rule::in(['asc', 'desc'])],
         ];
     }

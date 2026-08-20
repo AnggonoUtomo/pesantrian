@@ -40,6 +40,8 @@ diubah `SuperSystem`, dan setiap mutation wajib memiliki jejak AuditLog.
 - Data owner: `system_settings` dan `idempotency_keys`.
 - Permission owner: `system_setting.view` dan `system_setting.manage`.
 - Public Module API: `SystemSettingReader` dan `SettingDefinitionRegistrar`.
+  Adapter idempotency mengimplementasikan contract public `packages/StarterKit`;
+  contract dan middleware generiknya bukan public API SystemSetting.
 - Mutation owner: Application Action internal SystemSetting.
 - Dependency langsung: `AccessControl`, `AuditLog`.
 
@@ -64,8 +66,9 @@ membuka halaman atau mutation SystemSetting.
 - Command list, get, set, dan validate.
 - Page Inertia pada area System memakai `system-dashboard-layout`.
 - Route frontend memakai Ziggy.
-- Runtime integration untuk rate limit, idempotency, session, dan default
-  branding/appearance.
+- Runtime integration untuk adapter policy retention/rate, repository
+  idempotency, session, dan default branding/appearance. Reservation lifecycle
+  serta middleware idempotency generik berada di `packages/StarterKit`.
 - Positive, negative, architecture, migration, cache/storage failure, API,
   frontend, browser, dan accessibility test.
 
@@ -103,10 +106,10 @@ membuka halaman atau mutation SystemSetting.
 | --- | --- |
 | `id` | ULID primary key |
 | `key` | String unik dan memakai dot notation |
-| `value` | JSON typed value |
-| `type` | Enum schema type: integer, boolean, string, enum, atau path |
+| `value` | JSON typed value; nilai sensitif disimpan sebagai ciphertext terenkripsi |
+| `type` | Enum schema type: integer, integer list, boolean, string, enum, path, atau secret |
 | `description` | Tujuan setting dalam Bahasa Indonesia sederhana |
-| `is_sensitive` | Exposure control; baseline selalu `false` karena secret dilarang |
+| `is_sensitive` | Exposure control dari registry; hanya key sensitif terdaftar yang boleh bernilai `true` |
 | `updated_by` | Nullable foreign ULID ke `users`, `nullOnDelete` |
 | `created_at`, `updated_at` | Timestamp |
 
@@ -218,18 +221,36 @@ memeriksa konsistensi gabungan, lalu menyimpan seluruh item dan auditnya di satu
 transaction. Satu `reason` dan `correlation_id` dipakai untuk semua audit dalam
 batch. Endpoint satu key/API tetap dipertahankan untuk kompatibilitas.
 
+Response publik list dan mutation memakai contract berikut:
+
+- setting non-sensitive membawa typed `value` seperti sebelumnya;
+- setting sensitive selalu membawa `value: null`, `sensitive: true`, dan
+  `has_value` untuk membedakan nilai tersimpan dengan nilai yang belum diatur;
+- `default_value` sensitive juga selalu `null` pada response list;
+- typed `SystemSettingReader` internal tetap dapat membawa nilai asli untuk
+  runtime, tetapi nilainya tidak boleh diserialisasi langsung oleh CLI, web,
+  API, audit, diagnostic, atau log.
+
 Command console:
 
 ```bash
 php artisan system-setting:list
 php artisan system-setting:get {key}
 php artisan system-setting:set {key} {value} --actor={user-ulid} --reason="..."
+php artisan system-setting:set mail.password --actor={user-ulid} --reason="..."
+secret-provider-command | php artisan system-setting:set mail.password --actor={user-ulid} --reason="..." --value-stdin
 php artisan system-setting:validate
 ```
 
 `system-setting:set` wajib memvalidasi bahwa `--actor` adalah user
 `SuperSystem`. Mutation tanpa actor atau reason ditolak. Output tidak boleh
-menampilkan nilai sensitif atau stack trace.
+menampilkan nilai sensitif atau stack trace. Argumen posisi `{value}` tetap
+wajib untuk setting non-sensitive. Setting sensitive menolak argumen posisi:
+operator memakai prompt tersembunyi, sedangkan otomasi mengirim nilai melalui
+STDIN dan opsi `--value-stdin`. Contoh tidak boleh menulis secret literal pada
+command, dokumentasi, atau log. Input sensitif tetap diteruskan sebagai string
+ke definition terkait. Literal seperti `123`, `true`, atau `null` tidak boleh
+diubah tipenya oleh parser command.
 
 ## Authorization dan Audit
 
@@ -260,7 +281,8 @@ diredaaksi sebelum audit, termasuk pada mutation batch kategori.
 - Nilai tidak disimpan pada cache lintas request pada increment awal. Ini
   mencegah stale value ketika invalidation cache gagal.
 - Perubahan aktif pada request berikutnya. Response mutation memakai nilai baru
-  yang sudah tervalidasi.
+  yang sudah tervalidasi untuk setting non-sensitive; setting sensitive hanya
+  membawa metadata `has_value` dan tidak mengembalikan nilai asli.
 - Storage failure memakai default registry dan menghasilkan diagnostic aman.
 - Cache lintas request hanya boleh ditambahkan melalui increment dan test
   versioned invalidation/failure yang terpisah.
@@ -276,6 +298,9 @@ diredaaksi sebelum audit, termasuk pada mutation batch kategori.
 - Satu reason wajib diisi untuk seluruh perubahan yang dipilih dalam kategori.
 - Nilai sensitif tidak diprefill; field kosong berarti mempertahankan nilai
   tersimpan.
+- Status nilai sensitif ditampilkan sebagai `Rahasia terisi` atau
+  `Rahasia belum diatur` berdasarkan `has_value`, bukan mask yang menyerupai
+  nilai asli.
 - Loading, empty, validation error, storage error, success toast, dan
   unauthorized state tersedia.
 - Nilai default dan source value terlihat tanpa membuka data sensitif.
@@ -296,6 +321,8 @@ diredaaksi sebelum audit, termasuk pada mutation batch kategori.
 - Audit gagal menyebabkan mutation gagal dan data setting tidak berubah.
 - Storage unavailable atau record invalid menghasilkan safe default dan
   diagnostic tanpa secret.
+- Output CLI dan response API untuk setting sensitive tidak memuat nilai asli;
+  metadata key, source, `sensitive`, dan `has_value` tetap tersedia.
 - Migration fresh, rollback, relation, index, unique key, dan global seeder
   lulus pada MySQL.
 - Rate limit, idempotency, session, branding, monitoring, RTO, dan RPO membaca

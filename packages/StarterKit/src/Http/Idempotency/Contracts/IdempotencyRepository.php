@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\System\SystemSetting\Application\Contracts;
+namespace StarterKit\Http\Idempotency\Contracts;
 
-use App\Modules\System\SystemSetting\Application\DTO\IdempotencyReservationData;
 use DateTimeImmutable;
+use StarterKit\Http\Idempotency\DTO\IdempotencyReservationData;
 
 interface IdempotencyRepository
 {

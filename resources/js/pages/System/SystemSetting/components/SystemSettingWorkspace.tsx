@@ -10,16 +10,20 @@ type Props = {
     onEditCategory: () => void;
 };
 
-function displayValue(value: SystemSettingItem['value']): string {
-    if (value === null) {
+function displayValue(setting: SystemSettingItem): string {
+    if (setting.sensitive) {
+        return setting.has_value ? 'Rahasia terisi' : 'Rahasia belum diatur';
+    }
+
+    if (setting.value === null) {
         return 'Belum diatur';
     }
 
-    if (typeof value === 'boolean') {
-        return value ? 'Aktif' : 'Nonaktif';
+    if (typeof setting.value === 'boolean') {
+        return setting.value ? 'Aktif' : 'Nonaktif';
     }
 
-    return String(value);
+    return String(setting.value);
 }
 
 export function SystemSettingWorkspace({
@@ -142,7 +146,7 @@ export function SystemSettingWorkspace({
                                         <span className="text-foreground/65">
                                             Nilai saat ini:
                                         </span>{' '}
-                                        {displayValue(setting.value)}
+                                        {displayValue(setting)}
                                     </p>
                                 </div>
                             </article>

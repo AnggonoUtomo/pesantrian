@@ -11,6 +11,7 @@ use App\Modules\System\SystemSetting\Application\Services\SettingDefinitionRegis
 use App\Modules\System\SystemSetting\Domain\Exceptions\SettingStorageUnavailable;
 use App\Modules\System\SystemSetting\Infrastructure\Persistence\Models\SystemSettingRecord;
 use App\Modules\System\SystemSetting\Infrastructure\Persistence\Repositories\EloquentSystemSettingRepository;
+use Illuminate\Encryption\Encrypter;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Psr\Log\LoggerInterface;
@@ -185,6 +186,91 @@ it('memakai default dan diagnostic aman saat storage gagal', function (): void {
     );
 
     expect($reader->integer('api.rate_limit.per_minute'))->toBe(60);
+});
+
+it('memakai default aman ketika ciphertext sensitif rusak pada single read', function (): void {
+    $corruptCiphertext = 'ciphertext-corrupt-fixture-71ad';
+    SystemSettingRecord::query()->create([
+        'id' => (string) Str::ulid(),
+        'key' => 'mail.password',
+        'value' => json_encode($corruptCiphertext, JSON_THROW_ON_ERROR),
+        'type' => 'secret',
+        'description' => 'Fixture ciphertext rusak.',
+        'is_sensitive' => true,
+        'updated_by' => null,
+    ]);
+
+    $logger = Mockery::mock(LoggerInterface::class);
+    $logger->shouldReceive('warning')
+        ->once()
+        ->with('SystemSetting memakai default aman.', [
+            'setting_key' => 'mail.password',
+            'failure_type' => SettingStorageUnavailable::class,
+        ]);
+    $reader = new DatabaseSystemSettingReader(
+        app(SettingDefinitionRegistry::class),
+        app(EloquentSystemSettingRepository::class),
+        new RequestSettingMemoizer,
+        $logger,
+    );
+
+    $value = $reader->get('mail.password');
+
+    expect($value->value)->toBeNull()
+        ->and($value->source)->toBe('default');
+});
+
+it('memakai default aman pada batch read ketika ciphertext berasal dari key lain', function (): void {
+    $foreignEncrypter = new Encrypter(random_bytes(32), (string) config('app.cipher'));
+    $foreignCiphertext = $foreignEncrypter->encryptString(
+        json_encode('dummy-key-mismatch-value', JSON_THROW_ON_ERROR),
+    );
+    SystemSettingRecord::query()->insert([
+        [
+            'id' => (string) Str::ulid(),
+            'key' => 'mail.password',
+            'value' => json_encode($foreignCiphertext, JSON_THROW_ON_ERROR),
+            'type' => 'secret',
+            'description' => 'Fixture key mismatch.',
+            'is_sensitive' => true,
+            'updated_by' => null,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ],
+        [
+            'id' => (string) Str::ulid(),
+            'key' => 'api.rate_limit.per_minute',
+            'value' => json_encode(90, JSON_THROW_ON_ERROR),
+            'type' => 'integer',
+            'description' => 'Fixture batch valid.',
+            'is_sensitive' => false,
+            'updated_by' => null,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ],
+    ]);
+
+    $logger = Mockery::mock(LoggerInterface::class);
+    $logger->shouldReceive('warning')
+        ->twice()
+        ->with('SystemSetting memakai default aman.', Mockery::on(
+            static fn (array $context): bool => $context['failure_type'] === SettingStorageUnavailable::class
+                && in_array($context['setting_key'], ['mail.password', 'api.rate_limit.per_minute'], true)
+                && count($context) === 2,
+        ));
+    $reader = new DatabaseSystemSettingReader(
+        app(SettingDefinitionRegistry::class),
+        app(EloquentSystemSettingRepository::class),
+        new RequestSettingMemoizer,
+        $logger,
+    );
+
+    $values = $reader->many(['mail.password', 'api.rate_limit.per_minute']);
+
+    expect($values['mail.password']->value)->toBeNull()
+        ->and($values['mail.password']->source)->toBe('default')
+        ->and($values['api.rate_limit.per_minute']->value)->toBe(60)
+        ->and($values['api.rate_limit.per_minute']->source)->toBe('default');
 });
 
 it('dapat rollback dan membuat ulang schema module', function (): void {

@@ -64,12 +64,12 @@ mengambil alih private implementation AccessControl.
 8. [01. Filter daftar user](01.user-list-filters/README.md) — selesai
 
 9. [02. Archive, force delete, dan perlindungan](02.archive-force-delete-and-protection/README.md) — selesai
-10. [03. Pagination, role efektif, dan toolbar](03.pagination-role-visibility-and-toolbar/README.md) — direncanakan
+10. [03. Pagination, role efektif, dan toolbar](03.pagination-role-visibility-and-toolbar/README.md) — selesai
 
 ## Dokumen Terkait
 
-- [05. Identity, akses CRUD, dan avatar](05.identity-access-crud-and-avatar/README.md) - berjalan, INC-001 selesai
-- [ADR-0005 identity, akses awal, avatar, dan aktivitas login](decisions/ADR-0005-IDENTITY-ACCESS-AVATAR-AND-LOGIN-ACTIVITY.md) - proposed; keputusan disk avatar terbuka
+- [05. Identity, akses CRUD, dan avatar](05.identity-access-crud-and-avatar/README.md) - selesai
+- [ADR-0005 identity, akses awal, avatar, dan aktivitas login](decisions/ADR-0005-IDENTITY-ACCESS-AVATAR-AND-LOGIN-ACTIVITY.md) - `Accepted`; avatar memakai disk privat dan route terotorisasi
 - [04. Bulk lifecycle user](04.bulk-user-lifecycle/README.md) - selesai dan browser terverifikasi
 - [AccessControl](../01.AccessControl/README.md)
 - [AccessControl code-flow](../01-1.AccessControl-code-flow/README.md)
@@ -79,7 +79,7 @@ mengambil alih private implementation AccessControl.
 - [Module communication and execution](../../../03-IMPLEMENTATION/03.12-MODULE-COMMUNICATION-AND-EXECUTION.md)
 - [Project rules](../../../AGENTS.md)
 
-## Kemampuan yang Direncanakan
+## Kemampuan yang Tersedia
 
 - daftar dan detail user;
 - membuat dan memperbarui data user;
@@ -102,33 +102,10 @@ approval rilis, dan rollback mengikuti
 [`migration-runbook.md`](migration-runbook.md). Rehearsal lokal sudah dicatat;
 dokumen ini tidak mengklaim deployment target telah berlangsung.
 
-Empat scope berikut masih menjadi pekerjaan lanjutan. AuditLog consumer sudah
-ditutup melalui increment `System/AuditLog`. Item berikut belum dianggap selesai
-dan tidak boleh dibuat hanya dengan menambahkan tombol pada frontend.
-Setiap item harus memiliki specification, acceptance criteria, focused test,
-permission atau contract yang sesuai, browser flow bila memiliki UI, dan
-execution evidence sebelum ditandai selesai.
-
-1. **Restore user** — memulihkan user yang sudah di-soft-delete. Wajib memiliki
-   policy, permission, aturan untuk `SuperSystem`, audit event, dan test untuk
-   user yang masih aktif serta user yang sudah dihapus.
-2. **Invitation email** — membuat user melalui email undangan, token sekali
-   pakai, masa berlaku, dan alur menetapkan password. Jangan mencatat token atau
-   password ke log. Integrasi email perlu diuji dengan mail fake dan failure
-   path.
-3. **Role revoke dan multi-role management** — mencabut role tertentu dan
-   mengelola beberapa role user secara atomik. Perlu aturan agar role terakhir,
-   role `SuperSystem`, dan perubahan tanpa permission tidak dapat disalahgunakan.
-4. **Migration shared/production** — melakukan rehearsal migration pada salinan
-   database, backup/restore test, verifikasi lock dan downtime, serta prosedur
-   rollback. Workspace lokal tidak dapat membuktikan deployment production tanpa
-   database nyata, backup, dan persetujuan operator.
-5. **Restore dan force delete user** — keputusan archive, permission,
-   server-side guard `SuperSystem`, audit, dan UI tercatat pada
-   [ADR-0003](decisions/ADR-0003-USER-ARCHIVE-AND-PROTECTION-LIFECYCLE.md).
-5. **Restore dan force delete user** — keputusan archive, permission,
-   server-side guard `SuperSystem`, audit, dan UI tercatat pada
-   [ADR-0003](decisions/ADR-0003-USER-ARCHIVE-AND-PROTECTION-LIFECYCLE.md).
+Scope repository pada daftar historis sudah selesai. Pekerjaan yang tetap berada
+di luar workspace adalah rehearsal upgrade dari snapshot release lama,
+backup/restore pada environment target, verifikasi lock/downtime, dan approval
+operator production.
 
 ## Aturan UI UserManagement
 

@@ -44,8 +44,7 @@ mutation, atau aturan `SuperSystem`.
 
 Dokumen yang dibaca sebelum plan dibuat:
 
-- root `AGENTS.md`, `docs/AGENTS.md`, `docs/README.md`, dan
-  `docs/AI-PROMPT-GUIDE.md`;
+- root `AGENTS.md`, `docs/AGENTS.md`, dan `docs/README.md`;
 - `01.01-FUNCTIONAL-REQUIREMENTS.md` dan
   `01.05-BASELINE-SPECIFICATION.md`;
 - database, security, system, dan UI/UX design;
@@ -181,6 +180,8 @@ fail-closed test lulus.
 - Tambahkan SystemSettingSeeder ke `DatabaseSeeder` setelah AuditLog.
 - Buat command list/get/set/validate.
 - Command set mewajibkan actor SuperSystem dan reason.
+- Argumen posisi value hanya untuk setting non-sensitive. Setting sensitive
+  memakai prompt tersembunyi atau `--value-stdin`.
 
 Checkpoint: `migrate:fresh --seed`, focused seeder, idempotency, dan command
 positive/negative test lulus.
@@ -273,7 +274,7 @@ lebih dahulu.
 | Unit | Key/type/value object, registry, validation, safe default |
 | Contract | Reader, registrar, DTO, no private model leak |
 | Feature | Action, policy, controller, command, API, audit failure |
-| Integration | MySQL migration/repository, idempotency, session, rate limit |
+| Integration | MySQL migration/repository adapter idempotency, policy retention/rate, session |
 | Architecture | Dependency manifest dan forbidden concrete import |
 | Frontend | Type, schema, state, keyboard, Ziggy, authorization visibility |
 | Browser | List/edit, invalid input, success/error toast, mobile, light/dark |

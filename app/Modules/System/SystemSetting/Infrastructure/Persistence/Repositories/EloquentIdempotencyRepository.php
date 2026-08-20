@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Modules\System\SystemSetting\Infrastructure\Persistence\Repositories;
 
-use App\Modules\System\SystemSetting\Application\Contracts\IdempotencyRepository;
-use App\Modules\System\SystemSetting\Application\DTO\IdempotencyReservationData;
-use App\Modules\System\SystemSetting\Domain\Exceptions\SettingStorageUnavailable;
 use App\Modules\System\SystemSetting\Infrastructure\Persistence\Models\IdempotencyKeyRecord;
 use DateTimeImmutable;
 use Illuminate\Database\QueryException;
+use StarterKit\Http\Idempotency\Contracts\IdempotencyRepository;
+use StarterKit\Http\Idempotency\DTO\IdempotencyReservationData;
+use StarterKit\Http\Idempotency\Exceptions\IdempotencyStorageUnavailable;
 
 final class EloquentIdempotencyRepository implements IdempotencyRepository
 {
@@ -35,7 +35,7 @@ final class EloquentIdempotencyRepository implements IdempotencyRepository
                 ],
             );
         } catch (QueryException $exception) {
-            throw new SettingStorageUnavailable('Penyimpanan idempotency tidak tersedia.', previous: $exception);
+            throw new IdempotencyStorageUnavailable('Penyimpanan idempotency tidak tersedia.', previous: $exception);
         }
 
         return new IdempotencyReservationData(
@@ -56,7 +56,7 @@ final class EloquentIdempotencyRepository implements IdempotencyRepository
                 'response_body' => $responseBody,
             ]);
         } catch (QueryException $exception) {
-            throw new SettingStorageUnavailable('Penyimpanan idempotency tidak tersedia.', previous: $exception);
+            throw new IdempotencyStorageUnavailable('Penyimpanan idempotency tidak tersedia.', previous: $exception);
         }
     }
 
@@ -65,7 +65,7 @@ final class EloquentIdempotencyRepository implements IdempotencyRepository
         try {
             IdempotencyKeyRecord::query()->whereKey($reservationId)->delete();
         } catch (QueryException $exception) {
-            throw new SettingStorageUnavailable('Penyimpanan idempotency tidak tersedia.', previous: $exception);
+            throw new IdempotencyStorageUnavailable('Penyimpanan idempotency tidak tersedia.', previous: $exception);
         }
     }
 
@@ -76,7 +76,7 @@ final class EloquentIdempotencyRepository implements IdempotencyRepository
                 ->where('expires_at', '<', now())
                 ->delete();
         } catch (QueryException $exception) {
-            throw new SettingStorageUnavailable('Penyimpanan idempotency tidak tersedia.', previous: $exception);
+            throw new IdempotencyStorageUnavailable('Penyimpanan idempotency tidak tersedia.', previous: $exception);
         }
     }
 }

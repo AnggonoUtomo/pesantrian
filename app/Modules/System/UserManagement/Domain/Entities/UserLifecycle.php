@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\System\UserManagement\Domain\Entities;
 
+use App\Modules\System\UserManagement\Domain\Exceptions\InvalidUserStatusTransition;
 use App\Modules\System\UserManagement\Domain\Exceptions\ProtectedUserMutation;
 use App\Modules\System\UserManagement\Domain\ValueObjects\UserStatus;
-use InvalidArgumentException;
 
 final class UserLifecycle
 {
@@ -32,7 +32,7 @@ final class UserLifecycle
         $this->guardMutation();
 
         if ($this->status === $status) {
-            throw new InvalidArgumentException('Status user harus berbeda dari status saat ini.');
+            throw new InvalidUserStatusTransition;
         }
 
         $this->status = $status;

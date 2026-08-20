@@ -24,11 +24,11 @@ final class AccessControlPolicy
 
     public function update(?Authenticatable $actor, Role $role): bool
     {
-        return $this->authorization->canAssignPermissions($actor, $role);
+        return $this->authorization->canAssignPermissions($actor, $role->name);
     }
 
     public function delete(?Authenticatable $actor, Role $role): bool
     {
-        return $this->authorization->canMutateRole($actor, $role);
+        return $this->authorization->canMutateRole($actor, $role->name);
     }
 }

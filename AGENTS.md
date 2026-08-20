@@ -92,7 +92,6 @@ Instruksi arsitektur dan workflow authoritative berada di:
 
 - [`docs/AGENTS.md`](docs/AGENTS.md)
 - [`docs/README.md`](docs/README.md)
-- [`docs/AI-PROMPT-GUIDE.md`](docs/AI-PROMPT-GUIDE.md)
 
 Agent wajib membaca file di atas sebelum melakukan perubahan. Jika instruksi
 project ini berbeda dengan `docs/AGENTS.md`, laporkan konflik dan ikuti aturan

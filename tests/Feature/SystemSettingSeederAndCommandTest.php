@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 use App\Models\User;
 use App\Modules\System\AccessControl\Infrastructure\Persistence\Models\Role;
+use App\Modules\System\SystemSetting\Application\Contracts\SystemSettingRepository;
 use App\Modules\System\SystemSetting\Application\Queries\ValidateSystemSettings;
+use App\Modules\System\SystemSetting\Application\Services\SettingDefinitionRegistry;
 use App\Modules\System\SystemSetting\Database\Seeders\SystemSettingSeeder;
 use App\Modules\System\SystemSetting\Infrastructure\Persistence\Models\SystemSettingRecord;
 use Database\Seeders\DatabaseSeeder;
+use Illuminate\Support\Facades\Artisan;
+use Symfony\Component\Console\Tester\CommandTester;
 
 it('menjalankan seeder module secara idempotent tanpa menimpa override', function (): void {
     $this->seed(SystemSettingSeeder::class);
@@ -42,6 +46,38 @@ it('menyediakan command list dan get tanpa mengubah data', function (): void {
     expect(SystemSettingRecord::query()->count())->toBe(26);
 });
 
+it('meredaksi nilai sensitif pada output command get table dan json', function (): void {
+    $secret = 'dummy-secret-cli-get-8d2d';
+    $definitions = app(SettingDefinitionRegistry::class);
+    app(SystemSettingRepository::class)->upsert(
+        $definitions->definition('mail.password'),
+        $secret,
+        null,
+    );
+
+    Artisan::call('system-setting:get', ['key' => 'mail.password']);
+    $tableOutput = Artisan::output();
+
+    expect($tableOutput)
+        ->not->toContain($secret)
+        ->toContain('mail.password')
+        ->toContain('database')
+        ->toContain('Rahasia terisi');
+
+    Artisan::call('system-setting:get', ['key' => 'mail.password', '--json' => true]);
+    $jsonOutput = Artisan::output();
+    $payload = json_decode(trim($jsonOutput), true, flags: JSON_THROW_ON_ERROR);
+
+    expect($jsonOutput)->not->toContain($secret)
+        ->and($payload)->toMatchArray([
+            'key' => 'mail.password',
+            'value' => null,
+            'source' => 'database',
+            'sensitive' => true,
+            'has_value' => true,
+        ]);
+});
+
 it('mengubah setting melalui command dengan SuperSystem dan reason', function (): void {
     $actor = User::factory()->create();
     Role::create(['name' => 'SuperSystem', 'guard_name' => 'web']);
@@ -59,6 +95,129 @@ it('mengubah setting melalui command dengan SuperSystem dan reason', function ()
 
     expect(json_decode($record->value, true, flags: JSON_THROW_ON_ERROR))->toBe(75);
 });
+
+it('meredaksi nilai sensitif pada output json command set', function (): void {
+    $secret = 'dummy-secret-cli-set-5ab1';
+    $actor = User::factory()->create();
+    Role::create(['name' => 'SuperSystem', 'guard_name' => 'web']);
+    $actor->assignRole('SuperSystem');
+
+    $command = Artisan::all()['system-setting:set'];
+    $tester = new CommandTester($command);
+    $tester->setInputs([$secret]);
+    $exitCode = $tester->execute([
+        'key' => 'mail.password',
+        '--actor' => $actor->id,
+        '--reason' => 'Regression test redaksi output.',
+        '--value-stdin' => true,
+        '--json' => true,
+    ]);
+
+    $output = $tester->getDisplay();
+    $payload = json_decode(trim($output), true, flags: JSON_THROW_ON_ERROR);
+
+    expect($exitCode)->toBe(0)
+        ->and($output)->not->toContain($secret)
+        ->and($payload)->toMatchArray([
+            'key' => 'mail.password',
+            'value' => null,
+            'source' => 'database',
+            'sensitive' => true,
+            'has_value' => true,
+        ]);
+});
+
+it('menolak nilai posisi untuk setting sensitif tanpa membocorkannya', function (): void {
+    $secret = 'dummy-secret-positional-rejected-2d94';
+    $actor = User::factory()->create();
+    Role::create(['name' => 'SuperSystem', 'guard_name' => 'web']);
+    $actor->assignRole('SuperSystem');
+
+    $exitCode = Artisan::call('system-setting:set', [
+        'key' => 'mail.password',
+        'value' => $secret,
+        '--actor' => $actor->id,
+        '--reason' => 'Nilai posisi sensitif harus ditolak.',
+    ]);
+    $output = Artisan::output();
+
+    expect($exitCode)->toBe(1)
+        ->and($output)->not->toContain($secret)
+        ->and($output)->toContain('tidak boleh memakai argumen posisi')
+        ->and(SystemSettingRecord::query()->where('key', 'mail.password')->exists())->toBeFalse();
+});
+
+it('menerima nilai sensitif melalui prompt tersembunyi interaktif', function (): void {
+    $secret = 'dummy-secret-hidden-prompt-9ea1';
+    $actor = User::factory()->create();
+    Role::create(['name' => 'SuperSystem', 'guard_name' => 'web']);
+    $actor->assignRole('SuperSystem');
+
+    $this->artisan('system-setting:set', [
+        'key' => 'mail.password',
+        '--actor' => $actor->id,
+        '--reason' => 'Mengisi secret lewat prompt tersembunyi.',
+        '--json' => true,
+    ])
+        ->expectsQuestion('Masukkan nilai sensitif untuk [mail.password]', $secret)
+        ->assertSuccessful()
+        ->doesntExpectOutputToContain($secret);
+
+    expect(app(SystemSettingRepository::class)->find('mail.password')?->value)->toBe($secret);
+});
+
+it('menerima nilai sensitif dari stdin untuk otomasi', function (): void {
+    $secret = 'dummy-secret-stdin-automation-4c7b';
+    $actor = User::factory()->create();
+    Role::create(['name' => 'SuperSystem', 'guard_name' => 'web']);
+    $actor->assignRole('SuperSystem');
+
+    $command = Artisan::all()['system-setting:set'];
+    $tester = new CommandTester($command);
+    $tester->setInputs([$secret]);
+    $exitCode = $tester->execute([
+        'key' => 'mail.password',
+        '--actor' => $actor->id,
+        '--reason' => 'Mengisi secret dari stdin.',
+        '--value-stdin' => true,
+        '--json' => true,
+    ]);
+
+    expect($exitCode)->toBe(0)
+        ->and($tester->getDisplay())->not->toContain($secret)
+        ->and(app(SystemSettingRepository::class)->find('mail.password')?->value)->toBe($secret);
+});
+
+it('mempertahankan literal sensitif dari stdin tanpa type coercion', function (string $secret): void {
+    $actor = User::factory()->create();
+    Role::create(['name' => 'SuperSystem', 'guard_name' => 'web']);
+    $actor->assignRole('SuperSystem');
+
+    $command = Artisan::all()['system-setting:set'];
+    $tester = new CommandTester($command);
+    $tester->setInputs([$secret]);
+    $exitCode = $tester->execute([
+        'key' => 'mail.password',
+        '--actor' => $actor->id,
+        '--reason' => 'Memastikan literal sensitif tidak berubah tipe.',
+        '--value-stdin' => true,
+        '--json' => true,
+    ]);
+    $payload = json_decode(trim($tester->getDisplay()), true, flags: JSON_THROW_ON_ERROR);
+
+    expect($exitCode)->toBe(0)
+        ->and($payload)->toMatchArray([
+            'key' => 'mail.password',
+            'value' => null,
+            'sensitive' => true,
+            'has_value' => true,
+        ])
+        ->and(app(SystemSettingRepository::class)->find('mail.password')?->value)->toBe($secret);
+})->with([
+    'angka' => '123',
+    'boolean' => 'true',
+    'null' => 'null',
+]);
 
 it('menolak command set tanpa SuperSystem atau reason', function (): void {
     $actor = User::factory()->create();

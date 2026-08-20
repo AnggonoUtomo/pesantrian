@@ -8,11 +8,14 @@ use App\Modules\System\AccessControl\Application\Events\SystemActivityOccurred;
 use App\Modules\System\AuditLog\Application\Actions\RecordAuditEntry;
 use App\Modules\System\AuditLog\Application\Contracts\AuditLogRepository;
 use App\Modules\System\AuditLog\Application\Contracts\AuditRecorder;
+use App\Modules\System\AuditLog\Application\Contracts\AuditRuntimeSettings;
+use App\Modules\System\AuditLog\Application\DTO\AuditPaginationSettings;
 use App\Modules\System\AuditLog\Application\Listeners\RecordAuthenticationActivity;
 use App\Modules\System\AuditLog\Application\Listeners\RecordSystemActivity;
 use App\Modules\System\AuditLog\Application\Services\MetadataRedactor;
 use App\Modules\System\AuditLog\Infrastructure\Persistence\Models\AuditRecord;
 use App\Modules\System\AuditLog\Infrastructure\Persistence\Repositories\EloquentAuditLogRepository;
+use App\Modules\System\AuditLog\Infrastructure\Runtime\DefaultAuditRuntimeSettings;
 use App\Modules\System\AuditLog\Presentation\Policies\AuditLogPolicy;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Logout;
@@ -32,6 +35,11 @@ final class ServiceProvider extends FrameworkServiceProvider
 
         $this->app->bind(AuditLogRepository::class, EloquentAuditLogRepository::class);
         $this->app->bind(AuditRecorder::class, RecordAuditEntry::class);
+        $this->app->scoped(AuditRuntimeSettings::class, DefaultAuditRuntimeSettings::class);
+        $this->app->scoped(
+            AuditPaginationSettings::class,
+            static fn (Application $app): AuditPaginationSettings => $app->make(DefaultAuditRuntimeSettings::class)->pagination(),
+        );
         $this->app->singleton(MetadataRedactor::class, function (Application $app): MetadataRedactor {
             $repository = $app->make(ConfigRepository::class);
 

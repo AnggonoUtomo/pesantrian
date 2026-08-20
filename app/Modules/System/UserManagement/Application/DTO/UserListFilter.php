@@ -16,6 +16,7 @@ final readonly class UserListFilter
         public string $archive,
         public int $page,
         public int $perPage,
+        public string $sortBy,
         public string $sortDirection,
     ) {}
 
@@ -30,12 +31,14 @@ final readonly class UserListFilter
         int $defaultPerPage = 25,
         array $perPageOptions = [10, 25, 50, 100],
         ?string $sortDirection = null,
+        ?string $sortBy = null,
     ): self {
         $search = trim((string) $search);
         $statusValue = trim((string) $status);
         $role = trim((string) $role);
         $archive = trim((string) $archive);
         $sortDirection = strtolower(trim((string) $sortDirection));
+        $sortBy = strtolower(trim((string) $sortBy));
 
         if (mb_strlen($search) > 100 || mb_strlen($role) > 100) {
             throw new InvalidArgumentException('Pencarian user terlalu panjang.');
@@ -43,7 +46,10 @@ final readonly class UserListFilter
 
         $status = $statusValue === '' ? null : UserStatus::tryFrom($statusValue);
 
-        if (($statusValue !== '' && $status === null) || ! in_array($archive, ['', 'all', 'active', 'archived'], true) || ! in_array($sortDirection, ['', 'asc', 'desc'], true)) {
+        if (($statusValue !== '' && $status === null)
+            || ! in_array($archive, ['', 'all', 'active', 'archived'], true)
+            || ! in_array($sortDirection, ['', 'asc', 'desc'], true)
+            || ! in_array($sortBy, ['', 'created_at', 'name'], true)) {
             throw new InvalidArgumentException('Filter daftar user tidak valid.');
         }
 
@@ -61,6 +67,7 @@ final readonly class UserListFilter
             $archive === '' ? 'all' : $archive,
             $page,
             $perPage,
+            $sortBy === '' ? 'created_at' : $sortBy,
             $sortDirection === '' ? 'desc' : $sortDirection,
         );
     }

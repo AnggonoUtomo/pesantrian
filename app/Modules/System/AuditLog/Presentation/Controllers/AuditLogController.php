@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Modules\System\AuditLog\Presentation\Controllers;
 
+use App\Modules\System\AuditLog\Application\Contracts\AuditRuntimeSettings;
 use App\Modules\System\AuditLog\Application\Queries\GetAuditLog;
 use App\Modules\System\AuditLog\Application\Queries\ListAuditLogs;
 use App\Modules\System\AuditLog\Infrastructure\Persistence\Models\AuditRecord;
 use App\Modules\System\AuditLog\Presentation\Requests\AuditLogFilterRequest;
 use App\Modules\System\AuditLog\Presentation\Resources\AuditLogPageResource;
 use App\Modules\System\AuditLog\Presentation\Resources\AuditLogResource;
-use App\Modules\System\SystemSetting\Application\Contracts\SystemRuntimeSettings;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controllers\HasMiddleware;
@@ -23,7 +23,7 @@ final readonly class AuditLogController implements HasMiddleware
     public function __construct(
         private ListAuditLogs $listAuditLogs,
         private GetAuditLog $getAuditLog,
-        private SystemRuntimeSettings $systemRuntimeSettings,
+        private AuditRuntimeSettings $runtimeSettings,
     ) {}
 
     public static function middleware(): array
@@ -46,7 +46,7 @@ final readonly class AuditLogController implements HasMiddleware
                 'per_page',
                 'sort_direction',
             ]),
-            'pagination' => $this->systemRuntimeSettings->current()->pagination(),
+            'pagination' => $this->runtimeSettings->pagination()->toArray(),
         ]);
     }
 

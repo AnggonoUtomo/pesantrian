@@ -8,6 +8,7 @@ use App\Modules\System\UserManagement\Application\Contracts\UserManagementActivi
 use App\Modules\System\UserManagement\Application\Contracts\UserRepository;
 use App\Modules\System\UserManagement\Application\DTO\UserData;
 use App\Modules\System\UserManagement\Application\Services\AuthorizeUserAction;
+use App\Modules\System\UserManagement\Domain\Entities\UserLifecycle;
 use App\Modules\System\UserManagement\Domain\Exceptions\ProtectedUserMutation;
 use App\Modules\System\UserManagement\Domain\ValueObjects\UserStatus;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -20,8 +21,12 @@ final readonly class ChangeUserStatus
         private UserManagementActivityPublisher $activities,
     ) {}
 
-    public function execute(?Authenticatable $actor, string $userId, UserStatus $status): void
-    {
+    public function execute(
+        ?Authenticatable $actor,
+        string $userId,
+        UserStatus $status,
+        ?string $correlationId = null,
+    ): UserData {
         $this->authorization->ensure($actor, 'user.status.manage');
         $user = $this->repository->find($userId);
 
@@ -29,7 +34,10 @@ final readonly class ChangeUserStatus
             throw new ProtectedUserMutation;
         }
 
-        $this->activities->publish(
+        $lifecycle = UserLifecycle::for($user->id, $user->status);
+        $lifecycle->changeStatus($status);
+
+        return $this->activities->publish(
             actorId: $actor ? (string) $actor->getAuthIdentifier() : null,
             action: 'user.status_changed',
             subjectType: 'user',
@@ -40,6 +48,7 @@ final readonly class ChangeUserStatus
                 'to_status' => $status->value,
                 'changed_fields' => ['status'],
             ],
+            correlationId: $correlationId,
         );
     }
 }

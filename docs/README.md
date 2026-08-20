@@ -6,11 +6,19 @@ benar-benar diperlukan.
 
 ## Mulai di sini
 
-1. Baca [Arsitektur](ARCHITECTURE.md) untuk batas struktur dan dependensi.
-2. Baca [Workflow](WORKFLOW.md) sebelum mengubah kode atau konfigurasi.
-3. Baca [Keputusan](DECISIONS.md) saat pekerjaan menyentuh keputusan yang telah
-   ditetapkan.
-4. Baca [API](API.md) saat mengubah endpoint publik.
+1. Baca [Project](PROJECT.md) untuk tujuan dan scope produk.
+2. Baca [Arsitektur](ARCHITECTURE.md) untuk batas struktur dan dependensi.
+3. Baca [Struktur Folder](FOLDER-STRUCTURE.md) sebelum membuat atau mengubah
+   module, generator, port, adapter, atau struktur.
+4. Baca [Daftar Modul](MODULES.md) untuk ownership dan dependency modul.
+5. Baca [Workflow](WORKFLOW.md) sebelum memulai pekerjaan.
+6. Pilih pemeriksaan dari [Quality](QUALITY.md) sesuai risiko perubahan.
+7. Baca [Keputusan](DECISIONS.md) saat menyentuh keputusan yang telah ditetapkan.
+8. Baca [API](API.md) saat mengubah endpoint publik.
+
+Template untuk PRD, module, work item, plan, task, dan ADR tersedia di
+[`templates/`](templates/README.md). Aturan folder pekerjaan berada di
+[`modules/`](modules/README.md) dan [`work-items/`](work-items/README.md).
 
 ## Stack saat ini
 

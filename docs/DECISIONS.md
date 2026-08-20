@@ -4,12 +4,15 @@
 
 Starter13 memakai DDD-lite Modular Monolith. Batas modul dan public contract
 dipertahankan agar perubahan satu modul tidak mengikat implementasi modul lain.
+Hexagonal Architecture menetapkan arah dependency dan pemisahan port-adapter.
+Lihat [ADR-006](decisions/ADR-006-DDD-LITE-MODULAR-MONOLITH-HEXAGONAL.md).
 
 ## Runtime setting
 
 Dynamic module bootstrap dan port runtime setting yang dimiliki consumer
 berstatus **Accepted** (ADR-005). Implementasi harus tetap menjaga ownership
 setting pada consumer dan tidak membuat dependency konkret lintas modul.
+Lihat [ADR-005](decisions/ADR-005-DYNAMIC-MODULE-AND-RUNTIME-SETTING.md).
 
 ## Input setting sensitif
 

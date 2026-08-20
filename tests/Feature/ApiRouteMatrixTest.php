@@ -5,7 +5,7 @@ declare(strict_types=1);
 use Illuminate\Routing\Router;
 
 it('menjaga route API tepat sama dengan matrix authoritative', function (): void {
-    $specification = file_get_contents(base_path('docs/02-DESIGN/02.01-API-SPEC.md'));
+    $specification = file_get_contents(base_path('docs/API.md'));
     expect($specification)->toBeString();
 
     preg_match_all(

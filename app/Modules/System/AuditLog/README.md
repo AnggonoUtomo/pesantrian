@@ -47,4 +47,4 @@ development/test yang memang boleh dibuat ulang.
 ## Dokumentasi
 
 Dokumen keputusan, specification, implementation plan, tasks, dan execution log
-berada di `docs/Projects/06.System/03.AuditLog`.
+lama diarsipkan pada `Old_docs/Projects/06.System/03.AuditLog`.

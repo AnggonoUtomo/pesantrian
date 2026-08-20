@@ -38,6 +38,21 @@ final readonly class UserManagementPolicy
         return $this->authorization->can($actor, 'user.delete')->allowed;
     }
 
+    public function assignRole(?Authenticatable $actor): bool
+    {
+        return $this->authorization->can($actor, 'access_control.role.assign')->allowed;
+    }
+
+    public function assignPermission(?Authenticatable $actor): bool
+    {
+        return $this->authorization->can($actor, 'access_control.permission.assign')->allowed;
+    }
+
+    public function startImpersonation(?Authenticatable $actor): bool
+    {
+        return $this->authorization->can($actor, 'user.impersonate')->allowed;
+    }
+
     public function update(?Authenticatable $actor, User $user): bool
     {
         return ! $user->isSuperSystem()

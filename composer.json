@@ -90,6 +90,10 @@
             "@types:check",
             "@php artisan test"
         ],
+        "test:coverage": [
+            "@php vendor/bin/pest --coverage-clover build/coverage/clover.xml --log-junit build/test-results/phpunit.xml",
+            "@php tools/ci/verify-php-coverage.php build/coverage/clover.xml"
+        ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"

@@ -2,12 +2,12 @@
 
 ## Status
 
-Status: `Partially Executed`.
+Status: `Executed - local release gate passed`.
 
-Open risk operasional yang tidak bergantung pada keputusan arsitektur sudah
-dikerjakan. Keputusan dynamic module bootstrap dan consumer-owned
-runtime-setting port diterima pada 14 Agustus 2026. Increment berikutnya tetap
-mengikuti prerequisite dan checkpoint pada task checklist.
+Seluruh increment dan open risk workspace sudah dikerjakan. Keputusan dynamic
+module bootstrap dan consumer-owned runtime-setting port diterima pada
+14 Agustus 2026. First hosted GitHub Actions run tetap menjadi release evidence
+eksternal sebelum merge atau deploy, bukan pekerjaan implementasi lokal.
 
 ## Kondisi Awal
 
@@ -23,24 +23,25 @@ mengikuti prerequisite dan checkpoint pada task checklist.
   Verifikasi read-only empat module, desktop/mobile, light/dark, role positif
   dan negatif, console, network list, accessibility tree, serta trace awal
   sudah dilakukan.
-- Rehearsal MySQL disposable dan perbaikan exact constraint Composer sudah
-  lulus. Upgrade path historis dan automated browser/security gate belum ada.
+- Rehearsal MySQL disposable, upgrade path legacy, exact constraint Composer,
+  serta automated browser/security gate sudah tersedia dan lulus pada lane
+  lokal yang setara.
 - Working tree sudah memiliki perubahan user pada
   `tests/Feature/UserManagementPresentationTest.php`. Perubahan tersebut bukan
   bagian dari rencana dan wajib dipertahankan.
 
 ## Preflight dan Traceability
 
-| Item | Acuan dan kondisi |
-|---|---|
-| Authoritative source | `AGENTS.md`, `docs/AGENTS.md`, `docs/README.md`, baseline requirement, system design, API spec, security design, coding standard, module guide, technical spec, test plan, CI/CD, dan specification setiap module |
-| Lifecycle panduan lama | User memutuskan panduan prompt lama tetap dihapus; root `AGENTS.md` tidak lagi mewajibkan `docs/AI-PROMPT-GUIDE.md` |
-| Downstream docs | README utama, specification UserManagement/SystemSetting, API implementation spec, ADR module bootstrap, ADR dependency inversion, ModuleEvaluation, CI/CD, task, dan execution log |
-| Existing code | Output SystemSetting, repository encrypted setting, ModuleRegistry, `bootstrap/providers.php`, manifest empat module, public contract SystemSetting, Application AccessControl, route API, dan workflow GitHub Actions |
-| Golden structure | DDD-lite Modular Monolith; `packages/StarterKit` untuk framework; module di `app/Modules/{Domain}/{SubModule}`; ULID; dependency di `module.json`; API melalui contract/DTO/resource; frontend melalui Ziggy |
-| Dependency order | Framework -> AccessControl -> UserManagement -> AuditLog -> SystemSetting |
-| Acceptance global | Tidak ada secret pada output; module invalid terisolasi; graph dependency acyclic; API baseline tersedia; gate CI dan browser lulus; dokumentasi sinkron |
-| Rollback trace | Setiap increment mencatat file sebelum/sesudah, command, hasil, dan risiko. Commit hanya dibuat jika user meminta secara eksplisit |
+| Item                   | Acuan dan kondisi                                                                                                                                                                                                      |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Authoritative source   | `AGENTS.md`, `docs/AGENTS.md`, `docs/README.md`, baseline requirement, system design, API spec, security design, coding standard, module guide, technical spec, test plan, CI/CD, dan specification setiap module      |
+| Lifecycle panduan lama | User memutuskan panduan prompt lama tetap dihapus; root `AGENTS.md` tidak lagi mewajibkan `docs/AI-PROMPT-GUIDE.md`                                                                                                    |
+| Downstream docs        | README utama, specification UserManagement/SystemSetting, API implementation spec, ADR module bootstrap, ADR dependency inversion, ModuleEvaluation, CI/CD, task, dan execution log                                    |
+| Existing code          | Output SystemSetting, repository encrypted setting, ModuleRegistry, `bootstrap/providers.php`, manifest empat module, public contract SystemSetting, Application AccessControl, route API, dan workflow GitHub Actions |
+| Golden structure       | DDD-lite Modular Monolith; `packages/StarterKit` untuk framework; module di `app/Modules/{Domain}/{SubModule}`; ULID; dependency di `module.json`; API melalui contract/DTO/resource; frontend melalui Ziggy           |
+| Dependency order       | Framework -> AccessControl -> UserManagement -> AuditLog -> SystemSetting                                                                                                                                              |
+| Acceptance global      | Tidak ada secret pada output; module invalid terisolasi; graph dependency acyclic; API baseline tersedia; gate CI dan browser lulus; dokumentasi sinkron                                                               |
+| Rollback trace         | Setiap increment mencatat file sebelum/sesudah, command, hasil, dan risiko. Commit hanya dibuat jika user meminta secara eksplisit                                                                                     |
 
 ## Keputusan Arsitektur yang Diterima
 
@@ -294,10 +295,11 @@ controller yang menjalankan query Eloquent atau business rule langsung.
 relation, idempotency, global seeder, atau upgrade migration gagal. Rehearsal
 tidak pernah memakai database default developer.
 
-**Evidence parsial:** Rehearsal lokal memakai database baru bernama unik dan
-lulus fresh/seed, seed ulang idempotent, rollback, serta migrate/seed ulang.
-Database test dihapus setelah selesai. Upgrade dari snapshot release lama dan
-job CI tetap terbuka.
+**Evidence:** Rehearsal lokal memakai database baru bernama unik dan lulus
+fresh/seed, seed ulang idempotent, rollback, serta migrate/seed ulang. Fixture
+legacy BIGINT mempertahankan dua user, satu session, dan satu Passkey setelah
+upgrade ULID. Database test dihapus setelah selesai. Workflow memiliki lane
+MySQL fresh dan upgrade yang memakai service database disposable.
 
 ### INC-11 - Gate Frontend, Browser, Accessibility, dan Security
 
@@ -313,10 +315,11 @@ job CI tetap terbuka.
 **Acceptance:** Browser nyata memiliki console bersih, request utama sukses,
 interactive control memiliki accessible name, dan critical flow lulus pada CI.
 
-**Evidence parsial:** Koneksi MCP dan pemeriksaan read-only sudah lulus. Temuan
-SSR aktif tanpa server diperbaiki menjadi opt-in; LCP login menjadi 1,053 detik,
-TTFB 575 ms, dan CLS 0. Mutation, empty/error, focus lengkap, Playwright/axe,
-dan CI browser tetap menjadi task terpisah.
+**Evidence:** Koneksi MCP, pemeriksaan read-only, mutation, loading, toast,
+focus, empty/error state, desktop/mobile, light/dark, dan negative authorization
+sudah lulus. Temuan SSR aktif tanpa server diperbaiki menjadi opt-in; LCP login
+menjadi 1,053 detik, TTFB 575 ms, dan CLS 0. Playwright/axe lulus empat test
+pada Chromium desktop dan Pixel 5 tanpa high-impact violation.
 
 ### INC-12 - Dependency Policy, Dokumentasi, dan Release Evidence
 
@@ -333,9 +336,10 @@ dan CI browser tetap menjadi task terpisah.
 ADR yang disetujui. Tidak ada broken link, stale status, forbidden dependency,
 atau open risk tanpa owner.
 
-**Evidence parsial:** Empat exact pin sudah menjadi caret range berbatas major.
+**Evidence:** Empat exact pin sudah menjadi caret range berbatas major.
 `composer update --lock --no-install --no-scripts` tidak mengubah versi package,
-strict validation bersih, dan audit dependency tidak menemukan advisory.
+strict validation bersih, audit dependency tidak menemukan advisory, seluruh
+gate lokal lulus, dan downstream document disinkronkan dengan hasil nyata.
 
 ## Strategi Verifikasi Global
 
@@ -362,37 +366,39 @@ destruktif tidak dijalankan pada database default.
 
 ## Risiko dan Mitigasi
 
-| Risiko | Dampak | Mitigasi |
-|---|---|---|
-| Redaksi mengubah contract consumer | Client membaca value lama dan gagal | Kunci contract dahulu, tambah contract test, sediakan metadata pengganti tanpa raw secret |
-| Dynamic bootstrap gagal terlalu awal | Aplikasi atau Artisan tidak dapat boot | Buat bootstrap test sebelum mengganti provider statis; registrasi framework provider tetap minimal |
-| Dependency inversion mengubah nilai runtime | Pagination/mail memakai default yang salah | Consumer-owned default, adapter parity test, dan test saat SystemSetting disabled |
-| Refactor repository mengubah authorization | Mutation role menjadi terlalu longgar/ketat | Characterization test sebelum refactor dan negative permission test |
-| API matrix memperluas attack surface | Data atau mutation terpapar | Policy/capability backend, FormRequest, rate limit, idempotency, audit, dan scope test |
-| Migration rehearsal merusak data lokal | Kehilangan data | Hanya service container/dedicated test database; verifikasi target sebelum fresh migration |
-| Flow browser belum lengkap | Mutation, empty/error, dan focus belum terbukti penuh | Koneksi MCP sudah pulih; lanjutkan fixture disposable, manual flow, lalu Playwright/axe |
-| SSR aktif tanpa proses SSR | Initial page menunggu sekitar dua detik | SSR dibuat opt-in dan diuji; aktifkan hanya bersama proses SSR yang dikelola |
-| Dependency range terlalu lebar | Update tidak terkontrol | Batas major/minor yang disetujui, lock file, audit, full CI, dan changelog |
+| Risiko                                      | Dampak                                                 | Mitigasi                                                                                                            |
+| ------------------------------------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
+| Redaksi mengubah contract consumer          | Client membaca value lama dan gagal                    | Kunci contract dahulu, tambah contract test, sediakan metadata pengganti tanpa raw secret                           |
+| Dynamic bootstrap gagal terlalu awal        | Aplikasi atau Artisan tidak dapat boot                 | Buat bootstrap test sebelum mengganti provider statis; registrasi framework provider tetap minimal                  |
+| Dependency inversion mengubah nilai runtime | Pagination/mail memakai default yang salah             | Consumer-owned default, adapter parity test, dan test saat SystemSetting disabled                                   |
+| Refactor repository mengubah authorization  | Mutation role menjadi terlalu longgar/ketat            | Characterization test sebelum refactor dan negative permission test                                                 |
+| API matrix memperluas attack surface        | Data atau mutation terpapar                            | Policy/capability backend, FormRequest, rate limit, idempotency, audit, dan scope test                              |
+| Migration rehearsal merusak data lokal      | Kehilangan data                                        | Hanya service container/dedicated test database; verifikasi target sebelum fresh migration                          |
+| Flow browser mengalami regresi              | Mutation, empty/error, focus, atau accessibility rusak | MCP manual serta Playwright/axe desktop/mobile sudah menjadi evidence; jalankan ulang gate pada setiap perubahan UI |
+| SSR aktif tanpa proses SSR                  | Initial page menunggu sekitar dua detik                | SSR dibuat opt-in dan diuji; aktifkan hanya bersama proses SSR yang dikelola                                        |
+| Dependency range terlalu lebar              | Update tidak terkontrol                                | Batas major/minor yang disetujui, lock file, audit, full CI, dan changelog                                          |
 
 ## Definition of Ready untuk Implementasi
 
 - [x] User menyetujui dynamic bootstrap dan consumer-owned runtime-setting
-  port pada 14 Agustus 2026.
+      port pada 14 Agustus 2026.
 - [x] ADR bootstrap dan dependency inversion berstatus accepted.
-- [ ] API implementation specification telah memiliki payload dan error schema.
+- [x] API implementation specification telah memiliki payload dan error schema.
 - [x] Working tree serta perubahan user telah diinventarisasi ulang.
 - [x] Test fokus dan rollback trace untuk increment pertama sudah ditentukan.
 - [x] Tidak ada blocker authoritative document yang belum diputuskan.
 
 ## Definition of Done Program
 
-- [ ] Seluruh temuan critical, high, dan medium memiliki test pencegah regresi.
-- [ ] Positive dan negative test tiap increment lulus.
-- [ ] Module discovery, validation, inspect, dan runtime isolation lulus.
-- [ ] API route serta response contract cocok dengan specification.
-- [ ] Fresh/upgrade migration lulus pada MySQL terisolasi.
-- [ ] CI backend, frontend, browser, accessibility, dan security lulus.
-- [ ] Browser nyata diverifikasi dengan console dan network bersih.
-- [ ] Dokumentasi authoritative dan downstream sinkron.
-- [ ] Checklist serta execution log mencatat evidence nyata, bukan rencana.
-- [ ] Risiko tersisa memiliki owner, batasan, dan keputusan eksplisit.
+- [x] Seluruh temuan critical, high, dan medium memiliki test pencegah regresi.
+- [x] Positive dan negative test tiap increment lulus.
+- [x] Module discovery, validation, inspect, dan runtime isolation lulus.
+- [x] API route serta response contract cocok dengan specification.
+- [x] Fresh/upgrade migration lulus pada MySQL terisolasi.
+- [x] Workflow CI backend, frontend, browser, accessibility, dan security
+      tervalidasi; lane lokal setara lulus.
+- [x] Browser nyata diverifikasi dengan console dan network bersih.
+- [x] Dokumentasi authoritative dan downstream sinkron.
+- [x] Checklist serta execution log mencatat evidence nyata, bukan rencana.
+- [x] Risiko eksternal tersisa memiliki owner, batasan, dan keputusan eksplisit:
+      release maintainer wajib menjalankan workflow hosted sebelum merge/deploy.

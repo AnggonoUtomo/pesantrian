@@ -2,14 +2,14 @@
 
 ## Status
 
-Status: `Berjalan - security, bootstrap, boundary, dan fondasi API selesai;
-vertical slice API berikutnya`.
+Status: `Selesai secara lokal - seluruh increment dan open risk workspace
+terverifikasi; first hosted GitHub Actions run menjadi release evidence`.
 
 Dokumen ini menjadi pintu masuk rencana perbaikan hasil evaluasi kode terhadap
 baseline pada folder `docs/`. Open risk koneksi browser, performa SSR lokal,
 rehearsal MySQL, dan exact constraint Composer sudah dikerjakan. Remediasi
 Security SystemSetting dan dynamic module bootstrap sudah selesai. Remediasi
-boundary serta API dilanjutkan sesuai dependency dan checkpoint task.
+boundary serta API juga diselesaikan sesuai dependency dan checkpoint task.
 
 ## Tujuan
 
@@ -58,10 +58,16 @@ boundary serta API dilanjutkan sesuai dependency dan checkpoint task.
 - Boundary Application AccessControl, runtime-setting port, canonical API
   envelope, serta capability idempotency framework sudah selesai. Persistence
   idempotency dan policy retention/rate tetap dimiliki adapter SystemSetting.
-- Open risk tersisa: upgrade migration dari snapshot release lama, automation
-  Playwright/axe/CodeQL, flow browser mutation/empty/error/focus lengkap, dan
-  static analysis package menyeluruh serta vertical slice API pada
-  implementation plan.
+- Upgrade BIGINT ke ULID sudah memiliki migration forward-only, fixture legacy,
+  rehearsal MySQL terisolasi, ADR, dan runbook restore/forward-fix.
+- CI backend/frontend/MySQL/browser/security, coverage threshold, Playwright,
+  axe, serta artifact policy sudah tersedia. Lane lokal setara lulus.
+- Flow browser manual melalui MCP `chrome-devtools` membuktikan mutation,
+  loading disabled, toast, focus, empty state, error aman, cleanup dummy,
+  console bersih, dan request utama 200.
+- Tidak ada open risk implementasi workspace yang tersisa. Release maintainer
+  wajib memperoleh first hosted GitHub Actions run sebelum menjadikan workflow
+  sebagai required check atau melakukan deploy.
 
 ## Keputusan Arsitektur
 

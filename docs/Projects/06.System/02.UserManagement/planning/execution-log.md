@@ -3,8 +3,8 @@
 Log ini mencatat quality checkpoint UserManagement tanpa bergantung pada
 riwayat percakapan.
 
-| Tanggal | Task | Kondisi awal dan tindakan | File/kode terdampak | Evidence | Status/risiko |
-| --- | --- | --- | --- | --- | --- |
+| Tanggal    | Task     | Kondisi awal dan tindakan                                                                                                                                                                                                     | File/kode terdampak                                                                                                                                     | Evidence                                                                                                                                                                                                                                                                                                                                                                                                   | Status/risiko                                                                                                                                                                        |
+| ---------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | 2026-08-06 | TASK-010 | AccessControl sudah menjadi baseline. UserManagement memiliki implementasi backend, page list/detail, dialog create dasar, dan impersonation, tetapi status dokumen utama belum menyebut checkpoint terbaru secara konsisten. | `docs/Projects/06.System/02.UserManagement/*.md`; `app/Modules/System/UserManagement`; `resources/js/pages/System/UserManagement`; test UserManagement. | `module:validate System/UserManagement` dan `module:inspect System/UserManagement` lulus tanpa diagnostic; focused test 30 test/163 assertion lulus; TypeScript, ESLint, dan Prettier lulus; browser page `/system/users` tampil; dialog Tambah user membuka dan fokus ke field Nama; console error/warning kosong; Lighthouse mobile Accessibility/Best Practices/SEO/Agentic Browsing masing-masing 100. | Selesai untuk scope list/detail, create dialog dasar, dan impersonation. Mutation UI umum, migration shared/production, dan consumer AuditLog tetap menjadi risiko/scope berikutnya. |
 
 ## Handoff
@@ -101,3 +101,28 @@ riwayat percakapan.
 - Security: secret disimpan melalui `Crypt`, dimasking pada listing, dan nilai before/after audit menjadi `[REDACTED]`. Token tidak dicatat pada audit atau dokumentasi.
 - Evidence: focused test invitation sukses serta penolakan permission lulus. Browser login SuperSystem membuka dialog, submit menghasilkan toast sukses; MailHog API menerima pesan tujuan uji dengan link password-reset dan expiry 60 menit.
 - Risiko: execution MailHog lokal sempat macet; service dipulihkan dan delivery ulang berhasil. Shared/production tetap wajib memakai konfigurasi SMTP serta release procedure target.
+
+## Task 16 - Failure Contract Invitation
+
+- Kondisi awal: `InviteUser` hanya menghapus user saat broker password-reset
+  mengembalikan status gagal. Exception transport melewati cleanup dan
+  menghasilkan 500; browser manual membuktikan satu user dummy tertinggal.
+- File diubah: `InviteUser.php`, `InvitationDeliveryFailed.php`,
+  `UserController.php`, `InviteUserDialog.tsx`, page UserManagement, test
+  backend, test frontend, specification, dan log ini.
+- Perubahan: exception transport ditangkap tanpa meneruskan detail internal,
+  user baru dihapus permanen, typed Application exception diterjemahkan menjadi
+  validation error email, dan dialog menampilkan pesan dekat input dengan
+  `role="alert"`, `aria-invalid`, serta `aria-describedby`. Page-level alert
+  hanya membaca key `errors.users` agar validation error dialog tidak dianggap
+  sebagai kegagalan load.
+- Alasan: invitation tidak boleh meninggalkan identity tanpa delivery dan
+  diagnostic SMTP tidak boleh muncul pada response browser.
+- Evidence: test status gagal dan exception transport lulus 2 test/13 assertion;
+  source regression page error lulus; frontend dialog lulus 1 test. MCP
+  membuktikan tombol `Mengirim...` disabled, pesan aman terlihat, tidak ada
+  overlay 500, dan query exact dua email dummy menghasilkan count 0.
+- Risiko/batasan: kegagalan setelah email berhasil diterima tetapi sebelum
+  operasi persistence lain selesai tidak diselesaikan dengan distributed
+  transaction. Flow saat ini tidak memiliki mutation persistence setelah
+  delivery; perubahan urutan membutuhkan review contract baru.

@@ -70,6 +70,7 @@ mengambil alih private implementation AccessControl.
 
 - [05. Identity, akses CRUD, dan avatar](05.identity-access-crud-and-avatar/README.md) - selesai
 - [ADR-0005 identity, akses awal, avatar, dan aktivitas login](decisions/ADR-0005-IDENTITY-ACCESS-AVATAR-AND-LOGIN-ACTIVITY.md) - `Accepted`; avatar memakai disk privat dan route terotorisasi
+- [ADR-0006 upgrade identifier user lama ke ULID](decisions/ADR-0006-LEGACY-USER-ID-TO-ULID-UPGRADE.md) - `Accepted`; upgrade bersifat forward-only dengan backup/restore
 - [04. Bulk lifecycle user](04.bulk-user-lifecycle/README.md) - selesai dan browser terverifikasi
 - [AccessControl](../01.AccessControl/README.md)
 - [AccessControl code-flow](../01-1.AccessControl-code-flow/README.md)
@@ -102,10 +103,10 @@ approval rilis, dan rollback mengikuti
 [`migration-runbook.md`](migration-runbook.md). Rehearsal lokal sudah dicatat;
 dokumen ini tidak mengklaim deployment target telah berlangsung.
 
-Scope repository pada daftar historis sudah selesai. Pekerjaan yang tetap berada
-di luar workspace adalah rehearsal upgrade dari snapshot release lama,
-backup/restore pada environment target, verifikasi lock/downtime, dan approval
-operator production.
+Scope repository pada daftar historis sudah selesai. Rehearsal upgrade dari
+fixture release lama juga sudah lulus. Pekerjaan yang tetap berada di luar
+workspace adalah backup/restore pada environment target, pengukuran
+lock/downtime terhadap data nyata, dan approval operator production.
 
 ## Aturan UI UserManagement
 
@@ -204,9 +205,9 @@ business secara otomatis.
 
 ## Status Keputusan
 
-Keputusan scope awal dan ADR impersonation session/audit sudah disetujui. Coding
-Task 09 mengikuti key session, public event, route leave, dan redaction pada ADR
-khusus tersebut.
+Keputusan scope awal, impersonation session/audit, serta upgrade identifier
+legacy sudah disetujui. Upgrade `BIGINT` ke ULID mengikuti ADR-0006 dan runbook
+forward-only.
 
 ## Revision History
 
@@ -227,3 +228,4 @@ khusus tersebut.
 | 2.3 | 2026-08-06 | Menambahkan dokumentasi increment pagination, role efektif, dan toolbar. |
 | 2.4 | 2026-08-10 | Menambahkan rencana identity, akses awal, avatar Media Library, verifikasi email, dan aktivitas login. |
 | 2.5 | 2026-08-10 | Menyelesaikan INC-001 read contract dan visual identitas UserManagement. |
+| 2.6 | 2026-08-20 | Mencatat ADR dan rehearsal upgrade identifier legacy ke ULID. |

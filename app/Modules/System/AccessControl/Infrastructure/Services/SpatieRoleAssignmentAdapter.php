@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\System\AccessControl\Infrastructure\Services;
 
 use App\Modules\System\AccessControl\Application\Contracts\AuthorizationCapability;
+use App\Modules\System\AccessControl\Application\Contracts\Exceptions\RoleNotFound;
 use App\Modules\System\AccessControl\Application\Contracts\RoleAssignmentCapability;
 use App\Modules\System\AccessControl\Infrastructure\Persistence\Models\Role;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -81,7 +82,7 @@ final readonly class SpatieRoleAssignmentAdapter implements RoleAssignmentCapabi
             ->first();
 
         if (! $resolved instanceof Role) {
-            throw new InvalidArgumentException("Role [$role] tidak ditemukan.");
+            throw new RoleNotFound;
         }
 
         return $resolved;

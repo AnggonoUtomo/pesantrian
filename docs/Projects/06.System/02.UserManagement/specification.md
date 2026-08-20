@@ -60,13 +60,13 @@ lock/downtime, dan persetujuan operator sebelum deployment production.
 
 ## Existing Capability Contract
 
-| Capability | Source | Cara Pakai |
-| --- | --- | --- |
-| Authentication | Laravel Fortify dan `App\\Models\\User` | Dipakai kembali untuk login, password, Passkey, dan 2FA |
-| User persistence | `users` migration dan `App\\Models\\User` | UserManagement menjadi owner lifecycle di atas tabel existing |
-| Authorization | `AccessControl\\Application\\Contracts\\AuthorizationCapability` | Dipakai melalui public contract, bukan private adapter |
-| Role/permission context | `HandleInertiaRequests` | Dipakai frontend untuk UX, bukan security boundary |
-| UI shell | `system-dashboard-layout` dan shared theme | Menjadi baseline frontend module |
+| Capability              | Source                                                           | Cara Pakai                                                    |
+| ----------------------- | ---------------------------------------------------------------- | ------------------------------------------------------------- |
+| Authentication          | Laravel Fortify dan `App\\Models\\User`                          | Dipakai kembali untuk login, password, Passkey, dan 2FA       |
+| User persistence        | `users` migration dan `App\\Models\\User`                        | UserManagement menjadi owner lifecycle di atas tabel existing |
+| Authorization           | `AccessControl\\Application\\Contracts\\AuthorizationCapability` | Dipakai melalui public contract, bukan private adapter        |
+| Role/permission context | `HandleInertiaRequests`                                          | Dipakai frontend untuk UX, bukan security boundary            |
+| UI shell                | `system-dashboard-layout` dan shared theme                       | Menjadi baseline frontend module                              |
 
 ### Baseline warna dan surface frontend
 
@@ -103,17 +103,17 @@ UserManagement wajib mengikuti pola visual AccessControl:
 
 Setiap increment wajib memperbarui status fondasi berikut sebelum coding:
 
-| Fondasi | Status saat ini | Aturan |
-| --- | --- | --- |
-| Contract/Interface | `implemented` | Port internal dan public capability AccessControl harus typed |
-| Domain Event | `implemented terbatas` | Event impersonation synchronous tanpa secret |
-| Application Event | `planned` | Hanya jika beberapa handler application perlu dikoordinasikan |
-| Integration Event | `implemented synchronous` | AuditLog mengonsumsi event version 1 dengan event ID, correlation ID, redaction, dan failure propagation |
-| Command | `planned` | Action dapat dinaikkan menjadi Command + Handler melalui ADR |
-| Query/Read Contract | `implemented` internal | Query typed, pagination jelas, tanpa side effect |
-| Shared Kernel | `not applicable` | Value object lintas module memerlukan owner dan dua consumer |
-| Facade/Module API | `implemented` melalui public contract | Tidak membuat Facade tambahan tanpa consumer |
-| Queue/Job | `planned` | Wajib memiliki retry, idempotency, actor/correlation ID, dan failure path |
+| Fondasi             | Status saat ini                       | Aturan                                                                                                   |
+| ------------------- | ------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| Contract/Interface  | `implemented`                         | Port internal dan public capability AccessControl harus typed                                            |
+| Domain Event        | `implemented terbatas`                | Event impersonation synchronous tanpa secret                                                             |
+| Application Event   | `planned`                             | Hanya jika beberapa handler application perlu dikoordinasikan                                            |
+| Integration Event   | `implemented synchronous`             | AuditLog mengonsumsi event version 1 dengan event ID, correlation ID, redaction, dan failure propagation |
+| Command             | `planned`                             | Action dapat dinaikkan menjadi Command + Handler melalui ADR                                             |
+| Query/Read Contract | `implemented` internal                | Query typed, pagination jelas, tanpa side effect                                                         |
+| Shared Kernel       | `not applicable`                      | Value object lintas module memerlukan owner dan dua consumer                                             |
+| Facade/Module API   | `implemented` melalui public contract | Tidak membuat Facade tambahan tanpa consumer                                                             |
+| Queue/Job           | `planned`                             | Wajib memiliki retry, idempotency, actor/correlation ID, dan failure path                                |
 
 Status dan acceptance fondasi ini wajib selaras dengan dokumen global 03.12 dan
 ADR-0003.
@@ -132,14 +132,14 @@ Dependency: AccessControl public capability
 
 Definisi berikut adalah permission identity yang disetujui untuk increment awal:
 
-| Key | Tujuan | Sensitive |
-| --- | --- | --- |
-| `user.view` | Melihat daftar dan detail user | false |
-| `user.create` | Membuat user | true |
-| `user.update` | Mengubah data user | true |
-| `user.status.manage` | Mengubah status lifecycle user | true |
-| `user.delete` | Soft delete user | true |
-| `user.impersonate` | Masuk sebagai user target | true |
+| Key                  | Tujuan                         | Sensitive |
+| -------------------- | ------------------------------ | --------- |
+| `user.view`          | Melihat daftar dan detail user | false     |
+| `user.create`        | Membuat user                   | true      |
+| `user.update`        | Mengubah data user             | true      |
+| `user.status.manage` | Mengubah status lifecycle user | true      |
+| `user.delete`        | Soft delete user               | true      |
+| `user.impersonate`   | Masuk sebagai user target      | true      |
 
 Permission owner tetap UserManagement melalui `permissions.php`. AccessControl
 hanya melakukan discovery dan sync permission berdasarkan contract yang tersedia.
@@ -176,6 +176,13 @@ PATCH  /system/users/{user}/roles
 DELETE /system/users/{user}
 POST   /system/users/{user}/impersonate
 POST   /system/users/impersonation/leave
+
+POST   /api/v1/users/{user}/roles
+DELETE /api/v1/users/{user}/roles/{role}
+POST   /api/v1/users/{user}/permissions
+DELETE /api/v1/users/{user}/permissions/{permission}
+POST   /api/v1/users/{user}/impersonation
+DELETE /api/v1/impersonation
 ```
 
 Session key, actor restore, event audit, dan aturan redaction mengikuti
@@ -192,6 +199,10 @@ application action. Frontend route dibuat dengan Ziggy.
 - Assignment role memakai `RoleAssignmentCapability`, sedangkan daftar role
   memakai `RoleCatalogCapability` dari AccessControl. UserManagement tidak boleh
   mengimpor model atau adapter private.
+- Assignment direct permission memakai `DirectPermissionAssignmentCapability`
+  dari AccessControl. Lookup nama/ULID dan mutation Spatie tetap dimiliki
+  AccessControl, sedangkan invariant target serta audit flow dimiliki
+  UserManagement.
 - Target `SuperSystem` tidak boleh diubah statusnya, dihapus, atau dijadikan
   target impersonation.
 - Impersonation harus memiliki permission dan alasan eksplisit.
@@ -206,6 +217,8 @@ application action. Frontend route dibuat dengan Ziggy.
 - status user dapat diubah dengan aturan state yang jelas;
 - soft delete tidak menghapus row secara permanen;
 - role assignment tidak mengakses private implementation AccessControl;
+- kegagalan delivery undangan menghapus kembali user baru, tidak menampilkan
+  detail transport, dan mengembalikan error email yang dapat ditindaklanjuti;
 - `SuperSystem` terlindungi dari mutation berbahaya;
 - impersonation menolak tanpa reason, tanpa permission, atau dengan target
   `SuperSystem`;
@@ -291,12 +304,15 @@ Focused test yang akan dibuat:
 
 ## Revision History
 
-| Version | Date | Description |
-| --- | --- | --- |
-| 1.1 | 2026-08-06 | Menetapkan keputusan scope dan vertical slice awal |
-| 1.2 | 2026-08-06 | Menetapkan enam permission identity dan status Task 04 |
-| 1.3 | 2026-08-06 | Menambahkan domain lifecycle dan guard SuperSystem |
-| 1.4 | 2026-08-06 | Menambahkan application DTO, query, action, dan session contract |
-| 1.5 | 2026-08-06 | Menambahkan migration additive dan repository UserManagement |
-| 1.6 | 2026-08-06 | Menambahkan presentation route, policy, request, dan resource |
-| 1.7 | 2026-08-06 | Menyelaraskan status Task 12 dan mencatat scope lanjutan |
+| Version | Date       | Description                                                                 |
+| ------- | ---------- | --------------------------------------------------------------------------- |
+| 1.1     | 2026-08-06 | Menetapkan keputusan scope dan vertical slice awal                          |
+| 1.2     | 2026-08-06 | Menetapkan enam permission identity dan status Task 04                      |
+| 1.3     | 2026-08-06 | Menambahkan domain lifecycle dan guard SuperSystem                          |
+| 1.4     | 2026-08-06 | Menambahkan application DTO, query, action, dan session contract            |
+| 1.5     | 2026-08-06 | Menambahkan migration additive dan repository UserManagement                |
+| 1.6     | 2026-08-06 | Menambahkan presentation route, policy, request, dan resource               |
+| 1.7     | 2026-08-06 | Menyelaraskan status Task 12 dan mencatat scope lanjutan                    |
+| 1.8     | 2026-08-20 | Menambahkan API assign/revoke role melalui public capability AccessControl. |
+| 1.9     | 2026-08-20 | Menambahkan API direct permission melalui public capability AccessControl.  |
+| 2.0     | 2026-08-20 | Menambahkan API start/end impersonation yang idempotent dan secret-safe.    |

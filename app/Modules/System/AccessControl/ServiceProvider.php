@@ -7,6 +7,7 @@ namespace App\Modules\System\AccessControl;
 use App\Modules\System\AccessControl\Application\Contracts\AccessControlActivityPublisher;
 use App\Modules\System\AccessControl\Application\Contracts\AccessControlReadRepository;
 use App\Modules\System\AccessControl\Application\Contracts\AuthorizationCapability;
+use App\Modules\System\AccessControl\Application\Contracts\DirectPermissionAssignmentCapability;
 use App\Modules\System\AccessControl\Application\Contracts\PermissionCatalog;
 use App\Modules\System\AccessControl\Application\Contracts\RoleAssignmentCapability;
 use App\Modules\System\AccessControl\Application\Contracts\RoleCatalogCapability;
@@ -17,6 +18,7 @@ use App\Modules\System\AccessControl\Infrastructure\Persistence\Repositories\Elo
 use App\Modules\System\AccessControl\Infrastructure\Persistence\Repositories\EloquentPermissionCatalog;
 use App\Modules\System\AccessControl\Infrastructure\Persistence\Repositories\EloquentRoleRepository;
 use App\Modules\System\AccessControl\Infrastructure\Services\SpatieAuthorizationAdapter;
+use App\Modules\System\AccessControl\Infrastructure\Services\SpatieDirectPermissionAssignmentAdapter;
 use App\Modules\System\AccessControl\Infrastructure\Services\SpatieRoleAssignmentAdapter;
 use App\Modules\System\AccessControl\Infrastructure\Services\SpatieRoleCatalogAdapter;
 use App\Modules\System\AccessControl\Presentation\Console\Commands\SeedAccessControlCommand;
@@ -29,6 +31,7 @@ final class ServiceProvider extends FrameworkServiceProvider
     public function register(): void
     {
         $this->app->singleton(AuthorizationCapability::class, SpatieAuthorizationAdapter::class);
+        $this->app->singleton(DirectPermissionAssignmentCapability::class, SpatieDirectPermissionAssignmentAdapter::class);
         $this->app->bind(AccessControlActivityPublisher::class, LaravelAccessControlActivityPublisher::class);
         $this->app->singleton(RoleAssignmentCapability::class, SpatieRoleAssignmentAdapter::class);
         $this->app->singleton(RoleCatalogCapability::class, SpatieRoleCatalogAdapter::class);

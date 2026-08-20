@@ -34,7 +34,12 @@ final readonly class EnforceIdempotency
             ]);
         }
 
-        $actorId = (string) $request->user()?->getAuthIdentifier();
+        $impersonationActorId = $request->hasSession()
+            ? $request->session()->get('impersonation.actor_id')
+            : null;
+        $actorId = is_string($impersonationActorId) && Str::isUlid($impersonationActorId)
+            ? $impersonationActorId
+            : (string) $request->user()?->getAuthIdentifier();
 
         if (! Str::isUlid($actorId)) {
             throw new AuthenticationException('Authentication diperlukan.');

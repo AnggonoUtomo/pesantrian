@@ -6,7 +6,10 @@ namespace StarterKit\Generator\Contracts;
 
 final readonly class ModuleGenerationPlan
 {
-    /** @param list<string> $directories @param array<string, string> $files */
+    /**
+     * @param  list<string>  $directories
+     * @param  array<string, string>  $files
+     */
     public function __construct(
         public string $profile,
         public string $targetPath,

@@ -3,6 +3,7 @@ import { Keyboard } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import SystemDashboardLayout from '@/layouts/system-dashboard-layout';
+import { canAccess } from '@/lib/authorization';
 import route from '@/lib/route';
 import { AddRoleDialog } from '../components/AddRoleDialog';
 import { DeleteRoleDialog } from '../components/DeleteRoleDialog';
@@ -32,12 +33,10 @@ export default function Index() {
         () => roles.find((role) => role.id === activeRoleId) ?? null,
         [activeRoleId, roles],
     );
-    const canManageRole = Boolean(
-        auth.superSystem || auth.permissions?.['access_control.role.manage'],
-    );
-    const canAssignPermissions = Boolean(
-        auth.superSystem ||
-        auth.permissions?.['access_control.permission.assign'],
+    const canManageRole = canAccess(auth, 'access_control.role.manage');
+    const canAssignPermissions = canAccess(
+        auth,
+        'access_control.permission.assign',
     );
     const selectedPermissions = useMemo(
         () => (activeRole ? (rolePermissions[activeRole.id] ?? []) : []),

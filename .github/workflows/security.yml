@@ -1,0 +1,137 @@
+name: security
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  schedule:
+    - cron: '17 2 * * 1'
+  workflow_dispatch:
+
+concurrency:
+  group: security-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  dependency-audit:
+    name: Audit dependency
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
+        with:
+          php-version: '8.4'
+          tools: composer:v2
+          coverage: none
+
+      - name: Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .node-version
+          cache: npm
+
+      - name: Audit lockfile dan CI security verifier
+        run: |
+          composer validate --strict --no-check-publish
+          composer audit --locked --no-interaction
+          npm audit --audit-level=high
+          npm run test:ci-tools
+
+  codeql:
+    name: CodeQL JavaScript dan TypeScript
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Inisialisasi CodeQL
+        uses: github/codeql-action/init@ff2f1c621b7f889edc0d3c761ac2e6a3f8cdb0dd # v4
+        with:
+          languages: javascript-typescript
+          queries: security-extended
+
+      - name: Analisis dan tulis SARIF
+        uses: github/codeql-action/analyze@ff2f1c621b7f889edc0d3c761ac2e6a3f8cdb0dd # v4
+        with:
+          category: /language:javascript-typescript
+          output: build/security/codeql
+
+      - name: Tolak finding high atau critical
+        run: node tools/ci/verify-sarif-security.mjs build/security/codeql/*.sarif
+
+      - name: Unggah SARIF CodeQL yang aman
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: codeql-sarif-${{ github.run_id }}
+          path: build/security/codeql/*.sarif
+          if-no-files-found: warn
+          retention-days: 30
+
+  dependency-check:
+    name: OWASP Dependency-Check
+    runs-on: ubuntu-latest
+    env:
+      NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Cache database vulnerability
+        uses: actions/cache@a7833574556fa59680c1b7cb190c1735db73ebf0 # v5.0.0
+        with:
+          path: .dependency-check
+          key: dependency-check-v12.1.9-${{ runner.os }}-${{ hashFiles('composer.lock', 'package-lock.json') }}
+          restore-keys: dependency-check-v12.1.9-${{ runner.os }}-
+
+      - name: Scan lockfile dengan image terverifikasi
+        shell: bash
+        run: |
+          mkdir -p build/security/dependency-check .dependency-check
+          args=(
+            --project starter13
+            --scan /src/composer.lock
+            --scan /src/package-lock.json
+            --format ALL
+            --out /report
+            --failOnCVSS 7
+            --enableExperimental
+            --disableOssIndex
+          )
+          if [[ -n "${NVD_API_KEY:-}" ]]; then
+            args+=(--nvdApiKey "$NVD_API_KEY")
+          fi
+          docker run --rm \
+            --volume "$PWD:/src:ro" \
+            --volume "$PWD/build/security/dependency-check:/report" \
+            --volume "$PWD/.dependency-check:/usr/share/dependency-check/data" \
+            owasp/dependency-check:12.1.9@sha256:b7faa63f1840928f90bcaa3bb06ecfe19b18a38dc7bf6f30d34c5af6cbaff4ec \
+            "${args[@]}"
+
+      - name: Unggah report dependency yang aman
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: dependency-check-${{ github.run_id }}
+          path: |
+            build/security/dependency-check/dependency-check-report.html
+            build/security/dependency-check/dependency-check-report.json
+            build/security/dependency-check/dependency-check-report.sarif
+          if-no-files-found: warn
+          retention-days: 30

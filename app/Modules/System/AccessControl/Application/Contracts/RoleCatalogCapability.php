@@ -10,4 +10,6 @@ interface RoleCatalogCapability
 {
     /** @return list<RoleOption> */
     public function listRoles(): array;
+
+    public function findRole(string $roleId): ?RoleOption;
 }

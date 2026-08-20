@@ -352,6 +352,7 @@ it('menolak restore dan force delete untuk user aktif atau protected', function 
 
 it('memisahkan actor asli dan target pada session impersonation', function (): void {
     $actor = Mockery::mock(Authenticatable::class);
+    $actor->expects('getAuthIdentifier')->andReturn('01JUSERMANAGEMENT000000000011');
     $authorization = Mockery::mock(AuthorizationCapability::class);
     $authorization->expects('can')
         ->with($actor, 'user.impersonate')
@@ -369,8 +370,11 @@ it('memisahkan actor asli dan target pada session impersonation', function (): v
     $session = Mockery::mock(ImpersonationSession::class);
     $session->expects('start')->with($actor, '01JUSERMANAGEMENT000000000012', 'support request');
 
-    (new StartImpersonation($authorizer, $repository, $session))->execute(
+    $state = (new StartImpersonation($authorizer, $repository, $session))->execute(
         $actor,
         new ImpersonationRequestData('01JUSERMANAGEMENT000000000012', 'support request'),
     );
+
+    expect($state->active)->toBeTrue()
+        ->and($state->targetName)->toBe('Target User');
 });

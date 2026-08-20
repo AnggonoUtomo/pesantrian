@@ -8,12 +8,13 @@ use App\Modules\System\UserManagement\Application\Contracts\UserRepository;
 use App\Modules\System\UserManagement\Application\Contracts\UserRuntimeSettings;
 use App\Modules\System\UserManagement\Application\DTO\CreateUserData;
 use App\Modules\System\UserManagement\Application\DTO\UserData;
+use App\Modules\System\UserManagement\Application\Exceptions\InvitationDeliveryFailed;
 use App\Modules\System\UserManagement\Domain\ValueObjects\UserStatus;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
-use RuntimeException;
+use Throwable;
 
 final readonly class InviteUser
 {
@@ -39,10 +40,19 @@ final readonly class InviteUser
         ]);
         Mail::purge();
         $user = $this->createUser->execute($actor, new CreateUserData(trim($name), trim($email), Str::password(64), $status, $role));
-        if (Password::sendResetLink(['email' => $user->email]) !== Password::RESET_LINK_SENT) {
+
+        try {
+            $deliveryStatus = Password::sendResetLink(['email' => $user->email]);
+        } catch (Throwable) {
             $this->users->forceDelete($user->id);
 
-            throw new RuntimeException('Email undangan tidak dapat dikirim.');
+            throw new InvitationDeliveryFailed;
+        }
+
+        if ($deliveryStatus !== Password::RESET_LINK_SENT) {
+            $this->users->forceDelete($user->id);
+
+            throw new InvitationDeliveryFailed;
         }
 
         return $user;

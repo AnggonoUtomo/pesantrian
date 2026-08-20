@@ -107,6 +107,14 @@ export default [
         },
     },
     {
+        files: ['tools/ci/**/*.mjs', 'tests/Node/**/*.mjs'],
+        languageOptions: {
+            globals: {
+                ...globals.node,
+            },
+        },
+    },
+    {
         ignores: [
             'vendor',
             'node_modules',

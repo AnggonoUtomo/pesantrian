@@ -5,7 +5,7 @@ declare(strict_types=1);
 use App\Modules\System\AuditLog\Presentation\Controllers\AuditLogApiController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['web', 'auth', 'verified'])
+Route::middleware(['web', 'auth', 'verified', 'throttle:system-api'])
     ->prefix('api/v1/audit-logs')
     ->name('api.v1.audit-logs.')
     ->group(function (): void {

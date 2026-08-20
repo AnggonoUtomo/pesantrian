@@ -21,8 +21,11 @@ final class AuditLogOperatorLabels
         'user.force_deleted' => 'Pengguna dihapus permanen',
         'user.impersonation_ended' => 'Penyamaran pengguna diakhiri',
         'user.impersonation_started' => 'Penyamaran pengguna dimulai',
+        'user.permission_assigned' => 'Direct permission pengguna diberikan',
+        'user.permission_revoked' => 'Direct permission pengguna dicabut',
         'user.restored' => 'Pengguna dipulihkan',
         'user.role_assigned' => 'Role pengguna diperbarui',
+        'user.role_revoked' => 'Role pengguna dicabut',
         'user.status_changed' => 'Status pengguna diperbarui',
         'user.updated' => 'Data pengguna diperbarui',
     ];

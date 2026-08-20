@@ -90,7 +90,10 @@ export default function Index() {
                 title="SystemSetting"
                 description="Kelola konfigurasi runtime global yang tervalidasi, langsung aktif, dan tercatat pada AuditLog."
                 actions={
-                    <Badge className="dashboard-badge dashboard-badge--blue gap-2 rounded-full px-3 py-1.5">
+                    <Badge
+                        variant="outline"
+                        className="dashboard-badge dashboard-badge--blue gap-2 rounded-full px-3 py-1.5"
+                    >
                         <Settings2 aria-hidden="true" />
                         SuperSystem only
                     </Badge>

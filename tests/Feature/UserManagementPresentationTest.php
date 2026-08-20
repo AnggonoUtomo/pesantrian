@@ -88,13 +88,42 @@ it('menghapus user baru saat delivery invitation gagal', function (): void {
     $actor->givePermissionTo([$invite, $create]);
     Password::shouldReceive('sendResetLink')->once()->andReturn(Password::INVALID_USER);
 
-    $this->withoutExceptionHandling();
-    expect(fn () => $this->actingAs($actor)->post(route('system.users.invitations.store'), [
-        'name' => 'Delivery Failure',
-        'email' => 'delivery-failure@example.test',
-    ]))->toThrow(RuntimeException::class);
+    $this->actingAs($actor)
+        ->from(route('system.users.index'))
+        ->post(route('system.users.invitations.store'), [
+            'name' => 'Delivery Failure',
+            'email' => 'delivery-failure@example.test',
+        ])
+        ->assertRedirect(route('system.users.index'))
+        ->assertSessionHasErrors([
+            'email' => 'Email undangan tidak dapat dikirim. Coba lagi setelah layanan email tersedia.',
+        ]);
 
     expect(User::query()->where('email', 'delivery-failure@example.test')->exists())->toBeFalse();
+});
+
+it('menghapus user baru dan menyembunyikan detail transport saat mailer melempar exception', function (): void {
+    $invite = Permission::create(['name' => 'user.invite', 'guard_name' => 'web']);
+    $create = Permission::create(['name' => 'user.create', 'guard_name' => 'web']);
+    $actor = User::factory()->create();
+    $actor->givePermissionTo([$invite, $create]);
+    Password::shouldReceive('sendResetLink')
+        ->once()
+        ->andThrow(new RuntimeException('internal transport diagnostic sentinel'));
+
+    $this->actingAs($actor)
+        ->from(route('system.users.index'))
+        ->post(route('system.users.invitations.store'), [
+            'name' => 'Transport Failure',
+            'email' => 'transport-failure@example.test',
+        ])
+        ->assertRedirect(route('system.users.index'))
+        ->assertSessionHasErrors([
+            'email' => 'Email undangan tidak dapat dikirim. Coba lagi setelah layanan email tersedia.',
+        ])
+        ->assertSessionMissing('internal transport diagnostic sentinel');
+
+    expect(User::query()->where('email', 'transport-failure@example.test')->exists())->toBeFalse();
 });
 
 it('mengirim role option typed dan mengizinkan assignment melalui capability publik', function (): void {
@@ -496,4 +525,11 @@ it('menyembunyikan kontrol avatar untuk user yang diarsipkan', function (): void
     $source = file_get_contents(resource_path('js/pages/System/UserManagement/components/UserViewDialog.tsx'));
 
     expect($source)->toContain('user.deletedAt === null');
+});
+
+it('tidak menganggap validation error dialog sebagai kegagalan load halaman', function (): void {
+    $source = file_get_contents(resource_path('js/pages/System/UserManagement/pages/Index.tsx'));
+
+    expect($source)->toContain('errors?.users')
+        ->and($source)->not->toContain('Object.keys(errors).length');
 });

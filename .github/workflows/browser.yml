@@ -1,0 +1,98 @@
+name: browser
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: browser-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  critical-flow:
+    name: Critical flow Chromium
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      APP_ENV: testing
+      APP_DEBUG: false
+      DB_CONNECTION: sqlite
+      DB_DATABASE: ${{ github.workspace }}/build/browser-runtime/database.sqlite
+      CACHE_STORE: array
+      SESSION_DRIVER: file
+      QUEUE_CONNECTION: sync
+      MAIL_MAILER: log
+      MAIL_LOG_CHANNEL: '"null"'
+      LOG_CHANNEL: '"null"'
+      BCRYPT_ROUNDS: 4
+      E2E_EMAIL: super-system@example.test
+      E2E_START_SERVER: true
+      E2E_BASE_URL: http://127.0.0.1:8013
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
+        with:
+          php-version: '8.4'
+          tools: composer:v2
+          coverage: none
+
+      - name: Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .node-version
+          cache: npm
+
+      - name: Install dependency dari lockfile
+        run: |
+          composer validate --strict --no-check-publish
+          composer install --no-interaction --prefer-dist --no-progress
+          npm ci --ignore-scripts
+
+      - name: Install Chromium dan dependency sistem
+        run: npx playwright install --with-deps chromium
+
+      - name: Siapkan runtime disposable tanpa credential tersimpan
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build/browser-runtime
+          : > build/browser-runtime/database.sqlite
+
+          app_key="base64:$(openssl rand -base64 32 | tr -d '\n')"
+          browser_password="$(openssl rand -base64 48 | tr -d '\n')"
+
+          echo "::add-mask::$app_key"
+          echo "::add-mask::$browser_password"
+          echo "APP_KEY=$app_key" >> "$GITHUB_ENV"
+          echo "ACCESS_CONTROL_DUMMY_PASSWORD=$browser_password" >> "$GITHUB_ENV"
+          echo "E2E_PASSWORD=$browser_password" >> "$GITHUB_ENV"
+
+      - name: Migrasi, seed, dan kunci mail sink
+        run: |
+          php artisan migrate:fresh --seed --force
+          php tools/ci/prepare-browser-runtime.php
+
+      - name: Jalankan critical flow desktop dan mobile
+        run: npm run test:e2e
+
+      - name: Unggah evidence browser yang diizinkan
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: browser-evidence-${{ github.run_id }}
+          path: |
+            build/playwright/report.json
+            build/playwright/results/**/*.png
+          if-no-files-found: warn
+          retention-days: 14

@@ -23,6 +23,7 @@ use App\Modules\System\UserManagement\Application\DTO\CreateUserData;
 use App\Modules\System\UserManagement\Application\DTO\ImpersonationRequestData;
 use App\Modules\System\UserManagement\Application\DTO\UpdateUserData;
 use App\Modules\System\UserManagement\Application\DTO\UserListFilter;
+use App\Modules\System\UserManagement\Application\Exceptions\InvitationDeliveryFailed;
 use App\Modules\System\UserManagement\Application\Queries\GetUser;
 use App\Modules\System\UserManagement\Application\Queries\ListUsers;
 use App\Modules\System\UserManagement\Domain\ValueObjects\UserStatus;
@@ -41,6 +42,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -162,7 +164,13 @@ final class UserController implements HasMiddleware
     public function invite(InviteUserRequest $request): RedirectResponse
     {
         $data = $request->validated();
-        $this->inviteUser->execute($request->user(), $data['name'], $data['email'], UserStatus::from($data['status'] ?? 'active'), $data['role'] ?? null);
+
+        try {
+            $this->inviteUser->execute($request->user(), $data['name'], $data['email'], UserStatus::from($data['status'] ?? 'active'), $data['role'] ?? null);
+        } catch (InvitationDeliveryFailed $exception) {
+            throw ValidationException::withMessages(['email' => $exception->getMessage()]);
+        }
+
         Inertia::flash('toast', ['type' => 'success', 'message' => 'Undangan user berhasil dikirim.']);
 
         return back();

@@ -6,73 +6,95 @@ lokal tanpa backup dan persetujuan operator database.
 
 ## Migration yang terlibat
 
-Migration `2026_08_06_000000_add_lifecycle_columns_to_users_table` menambahkan:
+Ada dua jenis perubahan yang perlu dibedakan:
 
-- `users.status` dengan default `active`;
-- `users.deleted_at` yang nullable;
-- index untuk kedua kolom tersebut.
+1. `2026_08_04_235959_migrate_legacy_user_ids_to_ulids.php` mengubah database
+   release lama dari identifier `BIGINT` menjadi ULID. Relasi session dan
+   Passkey dipindahkan melalui pemetaan sementara. Migration ini no-op pada
+   fresh install yang sudah memakai ULID.
+2. `2026_08_06_000000_add_lifecycle_columns_to_users_table.php` menambahkan
+   `users.status`, `users.deleted_at`, dan index terkait setelah identity sudah
+   ULID.
 
-Migration tidak mengubah `users.id`, password, token, 2FA, atau tabel Passkey.
+Nilai password, remember token, data 2FA, session payload, dan credential
+Passkey dipindahkan tanpa dicetak. Nilai tersebut tidak boleh masuk evidence.
 
 ## Scope Migration Lanjutan
 
-Migration shared/production belum dianggap selesai. Sebelum dijalankan pada
-environment bersama atau production, harus ada rehearsal pada database yang
-menyerupai target, backup yang dapat dipulihkan, pemeriksaan lock/downtime, dan
-persetujuan operator. Workspace lokal tidak memiliki database production,
-backup nyata, atau kewenangan untuk membuktikan langkah tersebut.
+Rehearsal fresh dan upgrade legacy sudah lulus pada database MySQL lokal yang
+terisolasi. Eksekusi shared/production tetap belum dianggap selesai karena
+workspace tidak memiliki backup target, bukti restore, atau persetujuan
+operator database.
 
 ## Urutan aman
 
-1. Pastikan release yang akan dijalankan sama dengan commit yang sudah lulus CI.
-2. Buat backup database dan catat waktu serta lokasi backup.
-3. Periksa migration tanpa menjalankan perubahan:
+1. Pastikan release sama dengan commit yang sudah lulus seluruh required check.
+2. Identifikasi tipe `users.id`. Jika masih integer, jadwalkan maintenance
+   window dan hentikan seluruh write traffic sebelum melanjutkan.
+3. Buat backup database, uji restore ke target terisolasi, lalu catat release
+   identifier dan referensi backup tanpa menyalin credential ke log.
+4. Jalankan lane upgrade pada salinan database atau fixture yang setara.
+5. Periksa migration tanpa menjalankan perubahan:
 
    ```bash
    php artisan migrate --pretend --env=production
    ```
 
-4. Jalankan migration dengan persetujuan operator:
+6. Jalankan migration dengan persetujuan operator:
 
    ```bash
    php artisan migrate --force --env=production
    ```
 
-5. Verifikasi status migration:
+7. Verifikasi status migration:
 
    ```bash
    php artisan migrate:status --env=production
    ```
 
-6. Verifikasi aplikasi dapat login dan fitur Passkey/2FA tetap berjalan.
-7. Simpan output status dan referensi backup pada catatan deployment.
+8. Jalankan verifier upgrade yang disetujui pada target rehearsal. Pada
+   production, lakukan pemeriksaan jumlah record dan relasi tanpa menampilkan
+   data sensitif.
+9. Verifikasi login, logout, session, reset password, Passkey, dan 2FA.
+10. Aktifkan kembali write traffic setelah health check lulus.
+11. Simpan output status, jumlah record, release identifier, dan referensi
+    backup pada catatan deployment.
 
 ## Rollback
 
-Rollback hanya boleh dilakukan setelah dampak dan backup dikonfirmasi:
+Upgrade `BIGINT` ke ULID bersifat forward-only. Method `down()` akan menolak
+rollback karena ULID baru tidak dapat dipetakan kembali ke angka secara aman.
 
-```bash
-php artisan migrate:rollback --step=1 --force --env=production
-```
-
-Rollback migration ini menghapus `status` dan `deleted_at`. Jangan melakukan
-rollback jika aplikasi sudah menulis data lifecycle baru tanpa rencana restore.
+- Jika migration gagal sebelum traffic dibuka, hentikan release dan pulihkan
+  backup yang sudah diuji.
+- Jika traffic sudah dibuka atau data ULID baru sudah ditulis, jangan jalankan
+  rollback schema. Buat forward-fix yang direview dan pertahankan audit release.
+- Migration lifecycle lain hanya boleh di-rollback sesuai urutan migration dan
+  setelah dampak data diperiksa. `--step=1` tidak boleh dianggap otomatis
+  menunjuk migration identifier.
 
 ## Batasan
 
-Workspace ini hanya memverifikasi fresh migration, upgrade simulation, dan
-rollback pada environment testing. Eksekusi database shared/production tetap
-memerlukan akses operator, backup nyata, dan persetujuan deployment.
+Workspace memverifikasi fresh install dan upgrade fixture release lama pada
+environment testing. Workspace tidak membuktikan ukuran data production,
+durasi lock, maintenance window, restore backup nyata, replikasi, atau behavior
+provider database terkelola.
 
 ## Evidence Rehearsal Lokal
 
-- Kondisi: 10 Agustus 2026, database lokal dipakai sebagai rehearsal terisolasi.
-- Command: `php artisan migrate:fresh --seed` menyelesaikan seluruh migration
-  module dan `AccessControlSeeder`, `UserManagementSeeder`, `AuditLogSeeder`,
-  serta `SystemSettingSeeder`.
-- Rollback: `php artisan migrate:rollback --step=1` mengembalikan migration
-  `2026_08_10_004225_create_media_table` ke `Pending` tanpa kegagalan.
-- Pemulihan: `php artisan migrate` menjalankan kembali migration media dan
-  `php artisan migrate:status` mengonfirmasi seluruh migration kembali `Ran`.
-- Batasan: rehearsal ini tidak menggantikan backup/restore, lock, downtime,
-  dan persetujuan operator pada shared/production.
+- Fresh rehearsal 10 Agustus 2026 menjalankan `migrate:fresh --seed`, seed
+  kedua, rollback migration media terakhir, dan migrate/seed ulang. Seluruh
+  migration kembali berstatus `Ran`.
+- Upgrade rehearsal 20 Agustus 2026 mengimpor
+  `tests/Fixtures/Database/mysql-legacy-bigint.sql`, menjalankan migration dan
+  seed dua kali, lalu menjalankan `tools/ci/verify-legacy-user-upgrade.php`.
+- Hasil upgrade: dua user, satu session, dan satu Passkey terpelihara sebagai
+  ULID; tidak ada relasi yatim atau tabel pemetaan sementara yang tersisa.
+- Database rehearsal memakai nama unik, diperiksa agar bukan database default,
+  lalu dihapus setelah verifikasi.
+- Evidence ini tidak menggantikan backup/restore, pengukuran lock, downtime,
+  dan persetujuan operator shared/production.
+
+## Keputusan Terkait
+
+- [ADR-0006: Upgrade Identifier User Lama ke ULID](decisions/ADR-0006-LEGACY-USER-ID-TO-ULID-UPGRADE.md)

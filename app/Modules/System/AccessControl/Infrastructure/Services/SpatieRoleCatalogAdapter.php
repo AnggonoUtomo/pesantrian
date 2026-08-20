@@ -26,4 +26,15 @@ final class SpatieRoleCatalogAdapter implements RoleCatalogCapability
 
         return array_values($roles);
     }
+
+    public function findRole(string $roleId): ?RoleOption
+    {
+        $role = Role::query()
+            ->where('guard_name', 'web')
+            ->find($roleId);
+
+        return $role instanceof Role
+            ? new RoleOption(id: (string) $role->getKey(), name: $role->name)
+            : null;
+    }
 }

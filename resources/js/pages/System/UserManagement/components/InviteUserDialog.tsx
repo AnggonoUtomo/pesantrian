@@ -1,5 +1,6 @@
 import { useForm } from '@inertiajs/react';
 import { MailPlus } from 'lucide-react';
+import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -48,27 +49,61 @@ export function InviteUserDialog({
                         });
                     }}
                 >
-                    <label className="space-y-2 text-sm font-medium">
-                        Nama
+                    <div className="space-y-2">
+                        <label
+                            htmlFor="invite-user-name"
+                            className="text-sm font-medium"
+                        >
+                            Nama
+                        </label>
                         <Input
+                            id="invite-user-name"
                             value={form.data.name}
                             onChange={(event) =>
                                 form.setData('name', event.target.value)
                             }
+                            aria-describedby={
+                                form.errors.name
+                                    ? 'invite-name-error'
+                                    : undefined
+                            }
+                            aria-invalid={Boolean(form.errors.name)}
                             required
                         />
-                    </label>
-                    <label className="space-y-2 text-sm font-medium">
-                        Email
+                        <InputError
+                            id="invite-name-error"
+                            role="alert"
+                            message={form.errors.name}
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <label
+                            htmlFor="invite-user-email"
+                            className="text-sm font-medium"
+                        >
+                            Email
+                        </label>
                         <Input
+                            id="invite-user-email"
                             type="email"
                             value={form.data.email}
                             onChange={(event) =>
                                 form.setData('email', event.target.value)
                             }
+                            aria-describedby={
+                                form.errors.email
+                                    ? 'invite-email-error'
+                                    : undefined
+                            }
+                            aria-invalid={Boolean(form.errors.email)}
                             required
                         />
-                    </label>
+                        <InputError
+                            id="invite-email-error"
+                            role="alert"
+                            message={form.errors.email}
+                        />
+                    </div>
                     <DialogFooter>
                         <Button
                             type="button"

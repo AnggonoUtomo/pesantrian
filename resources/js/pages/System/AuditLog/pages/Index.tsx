@@ -2,6 +2,7 @@ import { Head, usePage } from '@inertiajs/react';
 import { ScrollText, ShieldCheck } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import SystemDashboardLayout from '@/layouts/system-dashboard-layout';
+import { canAccess } from '@/lib/authorization';
 import { AuditLogDetailDialog } from '../components/AuditLogDetailDialog';
 import { AuditLogFilterBar } from '../components/AuditLogFilterBar';
 import { AuditLogShortcutBar } from '../components/AuditLogShortcutBar';
@@ -16,9 +17,7 @@ export default function Index() {
         null,
     );
     const [loading, setLoading] = useState(false);
-    const canView =
-        auth.superSystem === true ||
-        auth.permissions?.['audit_log.view'] === true;
+    const canView = canAccess(auth, 'audit_log.view');
 
     useEffect(() => {
         const handleShortcut = (event: KeyboardEvent) => {

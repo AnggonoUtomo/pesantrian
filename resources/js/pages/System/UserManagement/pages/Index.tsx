@@ -3,6 +3,7 @@ import { ShieldCheck } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import SystemDashboardLayout from '@/layouts/system-dashboard-layout';
+import { canAccess } from '@/lib/authorization';
 import { ChangeUserStatusDialog } from '../components/ChangeUserStatusDialog';
 import { DeleteUserDialog } from '../components/DeleteUserDialog';
 import { ForceDeleteUserDialog } from '../components/ForceDeleteUserDialog';
@@ -43,8 +44,7 @@ export default function Index() {
     const [forceDeletingUser, setForceDeletingUser] =
         useState<UserManagementUser | null>(null);
     const [inviting, setInviting] = useState(false);
-    const can = (permission: string) =>
-        auth.superSystem === true || auth.permissions?.[permission] === true;
+    const can = (permission: string) => canAccess(auth, permission);
     const canView = can('user.view');
     const canCreate = can('user.create');
     const canInvite = can('user.invite');
@@ -206,12 +206,12 @@ export default function Index() {
                 <div className="space-y-5">
                     <UserSummaryCards users={users} />
                     <UserShortcutBar />
-                    {errors && Object.keys(errors).length > 0 ? (
+                    {errors?.users ? (
                         <p
                             role="alert"
                             className="dashboard-message--error text-sm"
                         >
-                            Data user tidak dapat dimuat. Silakan coba lagi.
+                            {errors.users}
                         </p>
                     ) : null}
                     <UserTable

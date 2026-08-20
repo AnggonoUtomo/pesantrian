@@ -657,7 +657,7 @@ function UserTableRow({
 
     return (
         <tr className="dashboard-table-row transition-colors">
-            <td className="hidden px-5 py-4 xl:table-cell">
+            <td className="w-12 px-5 py-4">
                 <Checkbox
                     aria-label={`Pilih ${user.name}`}
                     checked={isSelected}
@@ -667,7 +667,7 @@ function UserTableRow({
                     }
                 />
             </td>
-            <td className="hidden px-5 py-4 xl:table-cell">
+            <td className="px-5 py-4">
                 <button
                     id={`user-table-row-${index}`}
                     type="button"
@@ -741,7 +741,7 @@ function UserTableRow({
                     </Badge>
                 )}
             </td>
-            <td className="px-5 py-4">
+            <td className="hidden px-5 py-4 xl:table-cell">
                 <Badge
                     variant="outline"
                     className={cn(

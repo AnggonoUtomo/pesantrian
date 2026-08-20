@@ -25,4 +25,5 @@ yarn-error.log
 /.zed
 coverage/
 dist/
+/build/
 FrontendContoh/

@@ -4,12 +4,17 @@ use App\Http\ApiResponseFactory;
 use App\Http\Middleware\EnsureActiveUser;
 use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
+use App\Modules\System\AccessControl\Application\Contracts\Exceptions\PermissionNotFound;
+use App\Modules\System\AccessControl\Application\Contracts\Exceptions\RoleNotFound;
 use App\Modules\System\AccessControl\Domain\Exceptions\DuplicateRole;
 use App\Modules\System\AccessControl\Domain\Exceptions\ProtectedRoleMutation;
 use App\Modules\System\AuditLog\Domain\Exceptions\SensitiveAuditReason;
 use App\Modules\System\SystemSetting\Domain\Exceptions\SettingStorageUnavailable;
 use App\Modules\System\SystemSetting\Presentation\Middleware\EnforceConfiguredSessionLifetime;
 use App\Modules\System\UserManagement\Domain\Exceptions\DuplicateUserEmail;
+use App\Modules\System\UserManagement\Domain\Exceptions\ImpersonationNotActive;
+use App\Modules\System\UserManagement\Domain\Exceptions\ImpersonationReasonRequired;
+use App\Modules\System\UserManagement\Domain\Exceptions\ImpersonationTargetForbidden;
 use App\Modules\System\UserManagement\Domain\Exceptions\InvalidUserStatusTransition;
 use App\Modules\System\UserManagement\Domain\Exceptions\ProtectedUserMutation;
 use App\Modules\System\UserManagement\Domain\Exceptions\SelfUserMutation;
@@ -128,6 +133,32 @@ return Application::configure(basePath: dirname(__DIR__))
             return null;
         });
 
+        $exceptions->render(function (RoleNotFound $exception, Request $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                return app(ApiResponseFactory::class)->error(
+                    $request,
+                    'Resource tidak ditemukan.',
+                    'RESOURCE_NOT_FOUND',
+                    404,
+                );
+            }
+
+            return null;
+        });
+
+        $exceptions->render(function (PermissionNotFound $exception, Request $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                return app(ApiResponseFactory::class)->error(
+                    $request,
+                    'Resource tidak ditemukan.',
+                    'RESOURCE_NOT_FOUND',
+                    404,
+                );
+            }
+
+            return null;
+        });
+
         $exceptions->render(function (InvalidUserStatusTransition $exception, Request $request) {
             if ($request->is('api/*') || $request->expectsJson()) {
                 return app(ApiResponseFactory::class)->error(
@@ -159,6 +190,46 @@ return Application::configure(basePath: dirname(__DIR__))
                 return app(ApiResponseFactory::class)->error(
                     $request,
                     'Aktor tidak boleh mengarsipkan akunnya sendiri.',
+                    'CONFLICT',
+                    409,
+                );
+            }
+
+            return null;
+        });
+
+        $exceptions->render(function (ImpersonationReasonRequired $exception, Request $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                return app(ApiResponseFactory::class)->error(
+                    $request,
+                    $exception->getMessage(),
+                    'IMPERSONATION_REASON_REQUIRED',
+                    422,
+                    ['reason' => [$exception->getMessage()]],
+                );
+            }
+
+            return null;
+        });
+
+        $exceptions->render(function (ImpersonationTargetForbidden $exception, Request $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                return app(ApiResponseFactory::class)->error(
+                    $request,
+                    'Target impersonation tidak diizinkan.',
+                    'IMPERSONATION_TARGET_FORBIDDEN',
+                    409,
+                );
+            }
+
+            return null;
+        });
+
+        $exceptions->render(function (ImpersonationNotActive $exception, Request $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                return app(ApiResponseFactory::class)->error(
+                    $request,
+                    'Session impersonation tidak aktif.',
                     'CONFLICT',
                     409,
                 );

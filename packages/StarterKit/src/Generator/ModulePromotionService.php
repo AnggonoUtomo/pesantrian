@@ -120,7 +120,13 @@ final class ModulePromotionService
         }
     }
 
-    /** @param list<string> $createdFiles @param list<string> $overwrittenFiles */
+    /**
+     * @param  list<string>  $createdFiles
+     * @param  list<string>  $overwrittenFiles
+     *
+     * @param-out list<string> $createdFiles
+     * @param-out list<string> $overwrittenFiles
+     */
     private function promoteExtension(
         ModuleGenerationPlan $plan,
         string $outputPath,

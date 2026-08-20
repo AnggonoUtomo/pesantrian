@@ -75,10 +75,10 @@
     --secondary: oklch(0.97 0 0);
     --secondary-foreground: oklch(0.205 0 0);
     --muted: oklch(0.97 0 0);
-    --muted-foreground: oklch(0.556 0 0);
+    --muted-foreground: oklch(0.53 0 0);
     --accent: oklch(0.97 0 0);
     --accent-foreground: oklch(0.205 0 0);
-    --destructive: oklch(0.577 0.245 27.325);
+    --destructive: oklch(0.55 0.245 27.325);
     --destructive-foreground: oklch(0.577 0.245 27.325);
     --border: oklch(0.922 0 0);
     --input: oklch(0.922 0 0);
@@ -856,8 +856,8 @@ html[data-typography='mono'] body {
     }
 
     .toaster [data-sonner-toast][data-type='success'] {
-        border-color: oklch(0.43 0.16 145) !important;
-        background: oklch(0.52 0.17 145) !important;
+        border-color: oklch(0.38 0.16 145) !important;
+        background: oklch(0.47 0.17 145) !important;
         color: oklch(0.98 0.01 145) !important;
     }
 

@@ -24,4 +24,35 @@ Route::middleware(['web', 'auth', 'verified', 'throttle:system-api'])
             ->whereUlid('user')
             ->middleware('api.idempotency')
             ->name('destroy');
+        Route::post('/{user}/roles', [UserApiController::class, 'assignRole'])
+            ->whereUlid('user')
+            ->middleware('api.idempotency')
+            ->name('roles.store');
+        Route::delete('/{user}/roles/{role}', [UserApiController::class, 'revokeRole'])
+            ->whereUlid('user')
+            ->whereUlid('role')
+            ->middleware('api.idempotency')
+            ->name('roles.destroy');
+        Route::post('/{user}/permissions', [UserApiController::class, 'assignPermission'])
+            ->whereUlid('user')
+            ->middleware('api.idempotency')
+            ->name('permissions.store');
+        Route::delete('/{user}/permissions/{permission}', [UserApiController::class, 'revokePermission'])
+            ->whereUlid('user')
+            ->whereUlid('permission')
+            ->middleware('api.idempotency')
+            ->name('permissions.destroy');
+        Route::post('/{user}/impersonation', [UserApiController::class, 'startImpersonation'])
+            ->whereUlid('user')
+            ->middleware('api.idempotency')
+            ->name('impersonation.store');
+    });
+
+Route::middleware(['web', 'auth', 'verified', 'throttle:system-api'])
+    ->prefix('api/v1')
+    ->name('api.v1.')
+    ->group(function (): void {
+        Route::delete('/impersonation', [UserApiController::class, 'endImpersonation'])
+            ->middleware('api.idempotency')
+            ->name('impersonation.destroy');
     });

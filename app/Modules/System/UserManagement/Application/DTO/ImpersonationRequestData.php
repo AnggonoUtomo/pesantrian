@@ -11,6 +11,7 @@ final readonly class ImpersonationRequestData
     public function __construct(
         public string $targetUserId,
         public string $reason,
+        public ?string $correlationId = null,
     ) {
         if (trim($targetUserId) === '' || trim($reason) === '') {
             throw new InvalidArgumentException('Target user dan reason wajib diisi.');

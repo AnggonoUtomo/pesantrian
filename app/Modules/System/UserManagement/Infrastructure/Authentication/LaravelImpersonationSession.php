@@ -23,10 +23,14 @@ final readonly class LaravelImpersonationSession implements ImpersonationSession
         private UserManagementActivityPublisher $activities,
     ) {}
 
-    public function start(Authenticatable $actor, string $targetUserId, string $reason): void
-    {
+    public function start(
+        Authenticatable $actor,
+        string $targetUserId,
+        string $reason,
+        ?string $correlationId = null,
+    ): void {
         $startedAt = now()->toIso8601String();
-        $correlationId = (string) Str::ulid();
+        $correlationId ??= (string) Str::ulid();
         $session = $this->session();
         $actorId = (string) $actor->getAuthIdentifier();
 
@@ -139,6 +143,17 @@ final readonly class LaravelImpersonationSession implements ImpersonationSession
 
             throw $exception;
         }
+    }
+
+    public function active(): bool
+    {
+        $session = $this->session();
+
+        return is_string($session->get('impersonation.actor_id'))
+            && is_string($session->get('impersonation.target_id'))
+            && is_string($session->get('impersonation.started_at'))
+            && is_string($session->get('impersonation.reason'))
+            && is_string($session->get('impersonation.correlation_id'));
     }
 
     private function session(): Session

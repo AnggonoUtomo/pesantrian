@@ -1,44 +1,25 @@
-name: tests
+name: quality
 
 on:
   push:
     branches:
       - main
   pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
 
 jobs:
-  ci:
+  static-frontend:
+    name: Static dan frontend
     runs-on: ubuntu-latest
-
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_DATABASE: starter13
-          MYSQL_ROOT_PASSWORD: mysql
-        options: >-
-          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -pmysql"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 3306:3306
-
-      redis:
-        image: redis:7
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 6379:6379
-
     steps:
-      - name: Checkout code
+      - name: Checkout source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
@@ -50,31 +31,280 @@ jobs:
           tools: composer:v2
           coverage: none
 
+      - name: Temukan cache Composer
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Composer
+        uses: actions/cache@a7833574556fa59680c1b7cb190c1735db73ebf0 # v5.0.0
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: composer-${{ runner.os }}-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-${{ runner.os }}-
+
       - name: Setup Node
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: '22'
+          node-version-file: .node-version
+          cache: npm
 
-      - name: Setup Application
-        env:
-          DB_CONNECTION: mysql
-          DB_HOST: 127.0.0.1
-          DB_PORT: 3306
-          DB_DATABASE: starter13
-          DB_USERNAME: root
-          DB_PASSWORD: mysql
-          REDIS_HOST: 127.0.0.1
-          REDIS_PORT: 6379
-        run: composer setup
+      - name: Install dependency dari lockfile
+        run: |
+          composer validate --strict --no-check-publish
+          composer install --no-interaction --prefer-dist --no-progress
+          npm ci --ignore-scripts
 
-      - name: Run CI Checks
+      - name: Siapkan application key sementara
+        run: |
+          cp .env.example .env
+          php artisan key:generate --ansi
+
+      - name: Jalankan static dan frontend gate
+        run: |
+          vendor/bin/pint --parallel --test
+          vendor/bin/phpstan analyse --no-progress
+          npm run lint:check
+          npm run format:check
+          npm run types:check
+          npm run test:ci-tools
+          npm run test:coverage
+          npm run build
+
+      - name: Unggah frontend evidence
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: frontend-evidence-${{ github.run_id }}
+          path: |
+            build/coverage/
+            public/build/
+          if-no-files-found: warn
+          retention-days: 14
+
+  backend-coverage:
+    name: Backend dan coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup PHP dengan PCOV
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
+        with:
+          php-version: '8.4'
+          tools: composer:v2
+          coverage: pcov
+
+      - name: Temukan cache Composer
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Composer
+        uses: actions/cache@a7833574556fa59680c1b7cb190c1735db73ebf0 # v5.0.0
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: composer-${{ runner.os }}-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-${{ runner.os }}-
+
+      - name: Install Composer dari lockfile
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Siapkan application dan direktori report
+        run: |
+          cp .env.example .env
+          php artisan key:generate --ansi
+          mkdir -p build/coverage build/test-results
+
+      - name: Jalankan module dan coverage gate
+        run: |
+          php artisan module:discover --json
+          php artisan module:validate --json
+          php artisan module:list --json
+          php artisan module:inspect System/AccessControl --json
+          php artisan module:inspect System/UserManagement --json
+          php artisan module:inspect System/AuditLog --json
+          php artisan module:inspect System/SystemSetting --json
+          composer test:coverage
+
+      - name: Unggah backend coverage dan test report
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: backend-evidence-${{ github.run_id }}
+          path: |
+            build/coverage/clover.xml
+            build/test-results/phpunit.xml
+          if-no-files-found: warn
+          retention-days: 14
+
+  mysql-fresh:
+    name: MySQL fresh dan seed
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
         env:
-          DB_CONNECTION: mysql
-          DB_HOST: 127.0.0.1
-          DB_PORT: 3306
-          DB_DATABASE: starter13
-          DB_USERNAME: root
-          DB_PASSWORD: mysql
-          REDIS_HOST: 127.0.0.1
-          REDIS_PORT: 6379
-        run: composer ci:check
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+          MYSQL_DATABASE: starter13_test
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+        ports:
+          - 3306:3306
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd="redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+    env:
+      APP_ENV: testing
+      DB_CONNECTION: mysql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      DB_DATABASE: starter13_test
+      DB_USERNAME: root
+      DB_PASSWORD: ''
+      REDIS_HOST: 127.0.0.1
+      REDIS_PORT: 6379
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
+        with:
+          php-version: '8.4'
+          tools: composer:v2
+          coverage: none
+
+      - name: Install Composer dari lockfile
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Siapkan application key sementara
+        run: |
+          cp .env.example .env
+          php artisan key:generate --ansi
+
+      - name: Jalankan fresh, seed idempotent, rollback, dan focused test
+        run: |
+          php artisan migrate:fresh --seed --force
+          php artisan db:seed --force
+          php artisan migrate:rollback --step=1 --force
+          php artisan migrate --seed --force
+          php artisan test \
+            tests/Feature/AccessControlSchemaTest.php \
+            tests/Feature/UserManagementInfrastructureTest.php \
+            tests/Feature/AuditLogPersistenceTest.php \
+            tests/Feature/SystemSettingPersistenceTest.php \
+            tests/Feature/SystemSettingSeederAndCommandTest.php \
+            --compact
+
+      - name: Buat evidence schema tanpa data
+        run: |
+          mkdir -p build/schema
+          mysqldump \
+            --host=127.0.0.1 \
+            --user=root \
+            --no-data \
+            --no-tablespaces \
+            --skip-comments \
+            --skip-add-locks \
+            starter13_test > build/schema/mysql-fresh.sql
+
+      - name: Unggah schema fresh tanpa data
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: mysql-fresh-schema-${{ github.run_id }}
+          path: build/schema/mysql-fresh.sql
+          if-no-files-found: warn
+          retention-days: 14
+
+  mysql-upgrade:
+    name: MySQL upgrade BIGINT ke ULID
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+          MYSQL_DATABASE: starter13_upgrade
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+        ports:
+          - 3306:3306
+    env:
+      APP_ENV: testing
+      DB_CONNECTION: mysql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      DB_DATABASE: starter13_upgrade
+      DB_USERNAME: root
+      DB_PASSWORD: ''
+      CACHE_STORE: array
+      SESSION_DRIVER: array
+      QUEUE_CONNECTION: sync
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
+        with:
+          php-version: '8.4'
+          tools: composer:v2
+          coverage: none
+
+      - name: Install Composer dari lockfile
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Siapkan application dan fixture release lama
+        run: |
+          cp .env.example .env
+          php artisan key:generate --ansi
+          mysql \
+            --host=127.0.0.1 \
+            --user=root \
+            starter13_upgrade < tests/Fixtures/Database/mysql-legacy-bigint.sql
+
+      - name: Jalankan upgrade, seed idempotent, dan verifier
+        run: |
+          php artisan migrate --seed --force
+          php artisan db:seed --force
+          php tools/ci/verify-legacy-user-upgrade.php
+
+      - name: Buat evidence schema upgrade tanpa data
+        run: |
+          mkdir -p build/schema
+          mysqldump \
+            --host=127.0.0.1 \
+            --user=root \
+            --no-data \
+            --no-tablespaces \
+            --skip-comments \
+            --skip-add-locks \
+            starter13_upgrade > build/schema/mysql-upgrade.sql
+
+      - name: Unggah schema upgrade tanpa data
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: mysql-upgrade-schema-${{ github.run_id }}
+          path: build/schema/mysql-upgrade.sql
+          if-no-files-found: warn
+          retention-days: 14

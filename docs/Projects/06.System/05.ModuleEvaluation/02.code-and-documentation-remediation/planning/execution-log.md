@@ -71,7 +71,7 @@ berbeda. Hasil tersebut digantikan oleh koneksi MCP `chrome-devtools` pada
   proses SSR tidak berjalan. SSR yang dinonaktifkan di memori menurunkan waktu
   `/login` menjadi sekitar 207 ms pada kernel test.
 - Test merah: `php artisan test
-  tests/Feature/InertiaSsrConfigurationTest.php --no-coverage` gagal 2 test
+tests/Feature/InertiaSsrConfigurationTest.php --no-coverage` gagal 2 test
   karena SSR masih aktif dan `.env.example` belum memiliki flag opt-in.
 - Perubahan: `config/inertia.php` memakai `INERTIA_SSR_ENABLED=false` sebagai
   default serta `INERTIA_SSR_URL`; `.env.example` mendokumentasikan kedua flag;
@@ -108,8 +108,9 @@ berbeda. Hasil tersebut digantikan oleh koneksi MCP `chrome-devtools` pada
 - Perubahan: `predis/predis`, `spatie/laravel-medialibrary`,
   `spatie/laravel-permission`, dan `starterkit/framework` memakai caret range.
   `composer.lock` hanya berubah pada `content-hash`.
-- Evidence dependency: `composer update --lock --no-install --no-audit
-  --no-scripts --no-interaction` melaporkan tidak ada package yang berubah.
+- Evidence dependency: command
+  `composer update --lock --no-install --no-audit --no-scripts --no-interaction`
+  melaporkan tidak ada package yang berubah.
   Empat versi terkunci tetap 3.5.1, 11.23.4, 8.3.0, dan 1.0.0.
 - Evidence quality: `composer validate --strict --no-check-publish` lulus;
   `composer audit --locked` dan `npm audit --omit=dev --audit-level=high`
@@ -188,7 +189,7 @@ digantikan oleh bagian penutupan decision gate di bawahnya.
   encrypted, perbedaan typed reader internal dengan boundary publik, contract
   redaksi list/update, dan status UI berdasarkan `has_value`.
 - Evidence test: `php artisan test tests/Feature/SystemSettingSeederAndCommandTest.php
-  tests/Feature/SystemSettingPresentationTest.php` lulus 18 test/118 assertion.
+tests/Feature/SystemSettingPresentationTest.php` lulus 18 test/118 assertion.
   Test memeriksa response update, list, dan audit tidak memuat dummy secret.
 - Evidence quality: PHPStan pada folder Presentation, ESLint, TypeScript, dan
   Pint pada file terkait lulus tanpa ignore/baseline.
@@ -466,8 +467,9 @@ digantikan oleh bagian penutupan decision gate di bawahnya.
 - Evidence operasional: `module:validate --json` melaporkan empat module valid,
   boot plan canonical, dan diagnostic kosong. `route:list --path=api/v1 --json`
   menunjukkan route PATCH SystemSetting memakai `api.idempotency`.
-- Evidence Composer: percobaan `composer update starterkit/framework --lock
-  --no-install` ditolak karena opsi tidak kompatibel. Command sempit
+- Evidence Composer: percobaan
+  `composer update starterkit/framework --lock --no-install` ditolak karena
+  opsi tidak kompatibel. Command sempit
   `composer update starterkit/framework --no-install` kemudian memperbarui satu
   reference path-package tanpa install/removal. `composer dump-autoload`
   menyegarkan classmap setelah deletion; warning PSR-4 hanya berasal dari
@@ -666,3 +668,215 @@ digantikan oleh bagian penutupan decision gate di bawahnya.
 - Risiko/batasan: hasil ini menutup gate checkpoint arsitektur, bukan seluruh
   release gate. API AccessControl lanjutan, CI MySQL, Vitest, Playwright/axe,
   dan security workflow masih mengikuti task terbuka masing-masing.
+
+## 20 Agustus 2026 - T09.2 API Mutation Role dan Sinkronisasi Contract
+
+- Kondisi awal: create, update, dan delete role beserta test sudah tersedia,
+  tetapi T09.2 masih terbuka. Matrix global juga belum mencantumkan endpoint
+  detail serta delete role yang sudah ada pada implementation specification.
+- Perubahan: `02.01-API-SPEC.md` menambahkan `GET /api/v1/roles/{role}` dan
+  `DELETE /api/v1/roles/{role}` setelah user menyetujui keduanya. T09.2 dan
+  Definition of Ready implementation specification disinkronkan dengan kondisi
+  source aktual.
+- Alasan: global API spec adalah authority. Route dan test tidak boleh menjadi
+  contract tersembunyi yang berbeda dari matrix authoritative.
+- Evidence: `php artisan test tests/Feature/AccessControlApiMutationTest.php`
+  lulus 5 test/47 assertion. Source membuktikan middleware authentication,
+  verification, limiter, idempotency, policy, typed Application Action, error
+  canonical, rollback atomik, dan audit.
+- Risiko/batasan: assignment role/direct permission serta impersonation belum
+  termasuk increment ini dan tetap ditutup melalui T09.3 sampai T09.5.
+
+## 20 Agustus 2026 - T09.3 API Assign dan Revoke Role User
+
+- Kondisi awal: web memiliki sinkronisasi multi-role, tetapi API belum memiliki
+  operasi additive assign/revoke. `RoleAssignmentCapability` hanya menerima
+  nama role, sedangkan path revoke wajib memakai identifier ULID.
+- Test merah: lima test gagal karena route `api.v1.users.roles.store` dan
+  `api.v1.users.roles.destroy` belum tersedia.
+- Perubahan: `RoleCatalogCapability` ditambah lookup typed berdasarkan ULID;
+  `MutateUserRole` mengorkestrasi invariant target, public assignment
+  capability, transaction audit, dan readback DTO. FormRequest, policy coarse
+  permission, route idempotent, response resource, error `RoleNotFound`, serta
+  label audit revoke ditambahkan pada boundary pemiliknya.
+- Alasan: UserManagement memiliki target user dan workflow, sedangkan
+  AccessControl tetap menjadi authority role. Tidak ada import model,
+  repository, policy, atau service private lintas module.
+- Evidence: focused test hijau 5 test/37 assertion. Regression application,
+  presentation, dan authorization lulus total 46 test/274 assertion. PHPStan
+  lulus 0 error; Pint lulus; target AccessControl/UserManagement valid tanpa
+  diagnostic; route list menunjukkan auth, verified, throttle, policy, dan
+  `api.idempotency` pada kedua route.
+- Temuan static analysis: arrow function `void` sempat mengembalikan `null` dan
+  menghasilkan `return.void`. Dokumentasi resmi PHPStan dibaca melalui MCP
+  `chrome-devtools`, lalu callback diubah menjadi block closure side-effect
+  tanpa suppression.
+- Risiko/batasan: direct permission belum memiliki capability assignment dan
+  tetap menjadi scope T09.4.
+
+## 20 Agustus 2026 - T09.4 API Direct Permission User
+
+- Kondisi awal: AccessControl belum memiliki public capability khusus direct
+  permission. UserManagement dilarang memanggil model atau service Spatie
+  private untuk memenuhi endpoint baseline.
+- Test merah: lima test gagal karena route assign/revoke direct permission belum
+  tersedia.
+- Perubahan: AccessControl menambah `DirectPermissionAssignmentCapability`,
+  `SpatieDirectPermissionAssignmentAdapter`, dan error typed
+  `PermissionNotFound`. UserManagement menambah `MutateUserPermission`,
+  FormRequest, policy coarse permission, controller orchestration, route ULID,
+  serta event audit assign/revoke.
+- Alasan: ownership permission identity serta adapter Spatie tetap pada
+  AccessControl. Ownership target user, invariant protected, transaction audit,
+  dan resource response tetap pada UserManagement.
+- Evidence: focused test hijau 5 test/33 assertion. Regression role,
+  application, presentation, dan authorization lulus total 51 test/307
+  assertion. PHPStan lulus 0 error; Pint lulus; AccessControl/UserManagement
+  valid tanpa diagnostic; route list menunjukkan middleware lengkap.
+- Risiko/batasan: resource user canonical tidak mengekspos daftar direct
+  permission agar response tetap minimal. Test memastikan state persistence
+  melalui `hasDirectPermission()` dan response tidak membawa field sensitif.
+
+## 20 Agustus 2026 - T09.5 API Impersonation
+
+- Kondisi awal: start/end impersonation hanya tersedia pada web. Session adapter
+  sudah memisahkan actor dan target, tetapi start API memiliki risiko replay
+  berubah owner setelah guard berpindah ke target.
+- Test merah: lima test gagal karena route API start/end belum tersedia.
+- Perubahan: API menambah FormRequest reason 10-500 karakter, error typed,
+  `ImpersonationStateData`, `EndImpersonation`, route idempotent, serta response
+  display-only. `StartImpersonation` kini menolak self dan mengembalikan state
+  typed. Session contract menerima correlation ID dan melaporkan active state.
+  Middleware idempotency memilih actor asli dari session impersonation sebelum
+  fallback ke user guard saat ini.
+- Alasan: perubahan identity tidak boleh memutus ownership reservation atau
+  membuat retry melakukan mutation kedua. Response API tidak membutuhkan
+  identifier/session context internal untuk menyatakan keberhasilan.
+- Evidence: focused test hijau 5 test/53 assertion. Regression impersonation,
+  direct permission, role, application, presentation, dan framework
+  idempotency lulus total 58 test/396 assertion. PHPStan lulus 0 error; Pint
+  lulus; target UserManagement valid; route list menunjukkan start/end dengan
+  auth, verified, throttle, policy start, dan idempotency.
+- Risiko/batasan: session impersonation tetap stateful dan hanya berlaku pada
+  guard web internal sesuai ADR-0002. Public token-based API tetap di luar
+  baseline.
+
+## 20 Agustus 2026 - T09.6 Route Matrix dan Checkpoint API
+
+- Kondisi awal: matriks API belum memuat dua endpoint SystemSetting, route
+  AuditLog belum memakai limiter `system-api`, dan belum ada automated parity
+  maupun controller-boundary test.
+- Test merah: `ApiRouteMatrixTest` gagal pada dua selisih SystemSetting dan
+  middleware limiter AuditLog. Setelah focused test hijau, full suite menemukan
+  `MutateUserRole` mengimpor `RoleNotFound` dari private Domain AccessControl.
+- Perubahan: matriks authoritative kini memuat 21 route dan OD-API-001 sampai
+  OD-API-003 dinyatakan resolved sesuai implementation specification yang telah
+  disetujui. AuditLog memakai limiter runtime. Test membandingkan matriks dengan
+  router, memeriksa security/idempotency middleware, serta melarang Eloquent,
+  validasi, dan business mutation langsung pada API controller. Failure role
+  dan permission dipindahkan ke public `Application/Contracts/Exceptions`.
+- Alasan: contract dokumentasi dan runtime harus identik, seluruh API wajib
+  memperoleh limiter yang sama, dan consumer tidak boleh mengetahui private
+  domain exception module lain.
+- Evidence: focused route/architecture gate lulus 3 test/156 assertion; focused
+  boundary dan role/permission regression lulus 13 test/85 assertion.
+  `composer ci:check` lulus 394 test/2.525 assertion; ESLint, Prettier,
+  TypeScript, Pint, serta PHPStan lulus tanpa error.
+- Risiko/batasan: Checkpoint API selesai. Coverage threshold, CI MySQL upgrade,
+  Vitest, Playwright/axe, security workflow, dan manual interactive browser flow
+  tetap dilanjutkan pada Phase 4.
+
+## 20 Agustus 2026 - T10 Quality Gate dan Upgrade MySQL
+
+- Kondisi awal: PHPStan belum menganalisis seluruh package/tool, coverage
+  backend tidak memiliki threshold, workflow MySQL hanya membuktikan fresh
+  install, dan tidak ada fixture release lama.
+- File diubah: `composer.json`, `phpstan.neon`, `phpunit.xml`, workflow test,
+  verifier coverage, migration legacy, fixture SQL, verifier upgrade,
+  ADR-0006, migration runbook, CI/CD docs, serta test verifier.
+- Perubahan: PCOV menghasilkan Clover/JUnit dan threshold 80%; PHPStan mencakup
+  `packages/StarterKit/src` serta `tools/ci`; MySQL memiliki job fresh dan
+  upgrade. Migration forward-only memetakan users/sessions/passkeys BIGINT ke
+  ULID, memeriksa count/orphan, dan menolak rollback numerik.
+- Alasan: fresh install tidak membuktikan keselamatan data release lama, dan
+  quality gate harus gagal secara deterministik saat coverage menurun.
+- Evidence: `composer ci:check` lulus 398 test/2.547 assertion dengan PHPStan 0.
+  Verifier threshold memiliki positive/negative test. Rehearsal MySQL
+  terisolasi mempertahankan dua user, satu session, dan satu Passkey; seed kedua
+  idempotent; database disposable dihapus.
+- Risiko/batasan: backend coverage aktual dijalankan oleh PCOV pada hosted CI
+  karena driver coverage lokal tidak tersedia. First hosted run adalah release
+  evidence milik release maintainer sebelum merge/deploy.
+
+## 20 Agustus 2026 - T11 Frontend, Browser, Accessibility, dan Security
+
+- Kondisi awal: tidak ada Vitest, Playwright/axe, browser workflow, CodeQL,
+  Dependency-Check, verifier SARIF severity, atau artifact retention eksplisit.
+- File diubah: package manifest/lock, Vitest/Playwright config, browser tests,
+  helper runtime/accessibility, frontend tests, CSS/component UI, workflow
+  browser/security, Dependabot, build contamination guard, SARIF verifier, serta
+  CI/security docs.
+- Perubahan: critical flow empat module berjalan pada Chromium desktop
+  `1440x1000` dan Pixel 5. Axe menolak serious/critical violation setelah
+  transition dinonaktifkan hanya saat audit. Browser runtime memakai SQLite
+  disposable, credential acak bermask, mail sink `null`, screenshot failure
+  allowlist, tanpa trace/video/session/database artifact.
+- Temuan yang diperbaiki: contrast destructive/toast, badge dark mode,
+  positive tab index, keyboard show-password, identity mobile, race transition
+  dark mode, dan sinkronisasi empty state AuditLog. Build guard juga menolak
+  test yang sempat masuk page discovery; test dipindahkan ke `tests/Frontend`.
+- Evidence: Vitest lulus 5 file/10 test dengan statement 90,69%, branch 97,36%,
+  function 89,47%, dan line 90,24%. Node SARIF verifier lulus 3/3. Production
+  build mentransformasi 2.745 module dan bebas entry/dependency test. Playwright
+  final lulus 4/4 pada database baru. Composer/npm audit bersih; 540 package
+  memiliki registry signature dan 186 memiliki attestation.
+- Risiko/batasan: CodeQL hanya mendukung JavaScript/TypeScript. PHP dicakup
+  PHPStan/Larastan, Pest, coverage, Composer audit, dan OWASP. Hosted scan tetap
+  wajib dijalankan sebelum merge/deploy.
+
+## 20 Agustus 2026 - T11.8 Browser Manual dan Failure Invitation
+
+- Kondisi awal: flow read-only sudah lulus, tetapi mutation, loading, toast,
+  focus, empty/error, dan cleanup failure belum terbukti lengkap melalui MCP.
+- MCP yang dipakai: hanya server `chrome-devtools`; tidak memakai Browser,
+  @Chrome, computer use, atau `node_repl`.
+- Flow manual: AccessControl membuat lalu menghapus role dummy; UserManagement
+  menguji shortcut/search/empty state dan invitation; SystemSetting menguji
+  shortcut `/` serta empty state; AuditLog menguji shortcut `/`, loading
+  disabled, empty state, reset filter, console, dan daftar URL/status request.
+- Temuan kritis: SMTP yang tidak tersedia melempar exception sesudah user
+  dibuat, sehingga satu dummy tertinggal dan diagnostic 500 tampil. Sesi lama
+  langsung di-logout melalui UI. User dummy exact dihapus setelah target
+  diverifikasi, lalu backend memperoleh cleanup serta safe validation contract.
+- Temuan UI: dialog tidak merender error server dan page menganggap validation
+  field sebagai load failure. Keduanya diperbaiki dengan regression backend,
+  frontend, dan source test sebelum flow diulang.
+- Evidence akhir: tombol `Mengirim...` disabled; error email aman tampil sebagai
+  alert dan tidak ada overlay 500; dua email dummy count 0; SystemSetting dan
+  AuditLog empty state lulus; request AuditLog 200; console tanpa error/warning;
+  filter dikembalikan ke state awal. Mutation sukses/toast dan 403 role negatif
+  dilengkapi oleh Playwright disposable.
+- Risiko/batasan: entry AuditLog append-only dari mutation manual tetap
+  dipertahankan sebagai histori; tidak memuat credential atau raw secret.
+
+## 20 Agustus 2026 - T12 Release Gate Lokal dan Sinkronisasi
+
+- Kondisi awal: README, implementation plan, task, dan log masih menyebut
+  upgrade, automation, browser flow, serta final gate sebagai pekerjaan terbuka.
+- File diubah: README remediation, implementation plan, task checklist,
+  execution log, UserManagement specification/log, CI/CD, security design,
+  ADR-0006, migration runbook, dan README module.
+- Perubahan: status disinkronkan dengan source serta evidence aktual. Hosted
+  GitHub Actions dipisahkan sebagai release evidence eksternal dengan owner
+  release maintainer; tidak diklaim telah berjalan dari workspace lokal.
+- Evidence: `composer ci:check` lulus 398 test/2.547 assertion; PHPStan 0;
+  frontend coverage 10/10 di atas 80%; build 2.745 module; Playwright 4/4;
+  module discover/validate/list/inspect empat target exit 0 dengan boot plan
+  canonical; route matrix memuat 21 endpoint; Composer/npm audit bersih.
+- Evidence dokumentasi: link checker memeriksa 687 link lokal pada 220 file;
+  terminology scan tidak menemukan status stale atau checklist terbuka pada
+  program remediation; Prettier Markdown, parser YAML empat konfigurasi, dan
+  `git diff --check` lulus.
+- Risiko/batasan: perubahan terakhir belum di-commit/push karena user tidak
+  memberi perintah Git baru setelah checkpoint sebelumnya. First hosted run,
+  required check, dan production deploy berada di luar mutation lokal ini.

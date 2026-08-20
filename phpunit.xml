@@ -15,6 +15,7 @@
     <source>
         <include>
             <directory>app</directory>
+            <directory>packages/StarterKit/src</directory>
         </include>
     </source>
     <php>

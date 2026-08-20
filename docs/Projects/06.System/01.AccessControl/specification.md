@@ -58,6 +58,10 @@ Contract awal memakai `AuthorizationCapability`, dengan result typed
 
 - `AuthorizationCapability` adalah public contract untuk pemeriksaan capability.
 - `RoleAssignmentCapability` adalah public contract untuk assignment role.
+- `RoleCatalogCapability` dan `DirectPermissionAssignmentCapability` menjadi
+  contract lintas module untuk lookup role serta direct permission mutation.
+  Failure `RoleNotFound` dan `PermissionNotFound` berada pada public
+  `Application/Contracts/Exceptions`, bukan private domain boundary.
 - Application Action menjadi pola mutation synchronous.
 - Application Query menjadi pola read typed.
 - Domain Event hanya dipakai untuk fakta internal module.

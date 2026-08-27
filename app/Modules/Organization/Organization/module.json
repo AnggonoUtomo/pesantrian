@@ -1,0 +1,13 @@
+{
+    "name": "Organization",
+    "namespace": "App\\Modules\\Organization\\Organization",
+    "version": "1.0.0",
+    "schema_version": 1,
+    "status": "enabled",
+    "domain": "Organization",
+    "path": "app/Modules/Organization/Organization",
+    "provider": "App\\Modules\\Organization\\Organization\\ServiceProvider",
+    "dependencies": [],
+    "permission_source": "permissions.php",
+    "config_source": "module.php"
+}

@@ -9,7 +9,7 @@ dikerjakan.
 | Console | AccessControl | User account, authentication integration, role, permission, policy, 2FA, profile access | Spatie Permission, Fortify | Planned |
 | Console | SystemSetting | Dynamic application setting, setting definition, setting group/value, module-owned setting registration | Module pemilik setting | Planned |
 | Console | AuditTrail | Audit entry, actor/action/resource trace, governance trail | Event atau audit contract module lain | Planned |
-| Organization | Organization | Yayasan, pesantren, unit, lokasi, struktur organisasi, hierarchy, affiliation | Tidak ada pada baseline awal | Planned |
+| Organization | Organization | Yayasan, pesantren, unit, lokasi, struktur organisasi, hierarchy, affiliation | Tidak ada pada baseline awal | Active |
 | Academic | AcademicPeriod | Academic year, semester, term, calendar, active period, period opening/closing | Organization | Planned |
 | Academic | Academic | Class, subject, teaching assignment, attendance, academic workflow | Organization, AcademicPeriod, Student contract, HumanResource contract | Planned |
 | HumanResource | HumanResource | Employee, teacher, ustadz, staff, position, employment status, work assignment, attendance dasar | Organization | Planned |

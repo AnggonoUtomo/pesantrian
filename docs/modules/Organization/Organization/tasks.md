@@ -41,14 +41,14 @@
 
 ## Increment 3: Data foundation
 
-- [ ] Tambahkan migration `organization_units`.
+- [x] Tambahkan migration `organization_units`.
   - Acceptance: ULID primary key, unique `code`, parent nullable, status, dan
     timestamp tersedia.
   - Verification: focused migration/model tests.
-- [ ] Tambahkan persistence minimum.
+- [x] Tambahkan persistence minimum.
   - Acceptance: model/repository hanya dibuat bila dipakai oleh use case.
   - Verification: focused unit tests.
-- [ ] Tambahkan permission identity awal.
+- [x] Tambahkan permission identity awal.
   - Acceptance: `organization.view` dan `organization.manage` valid.
   - Verification: focused permission identity test.
 

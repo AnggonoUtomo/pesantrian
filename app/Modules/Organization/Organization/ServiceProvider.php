@@ -8,4 +8,8 @@ use Illuminate\Support\ServiceProvider as FrameworkServiceProvider;
 
 final class ServiceProvider extends FrameworkServiceProvider
 {
+    public function boot(): void
+    {
+        $this->loadMigrationsFrom(__DIR__.'/Database/Migrations');
+    }
 }

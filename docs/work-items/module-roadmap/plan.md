@@ -17,7 +17,7 @@ Architecture.
 | Foundation | `php artisan starter:verify --no-ansi` lulus. |
 | Identifier | Migration aplikasi sudah dominan memakai ULID; media table package masih memakai integer id karena mengikuti Spatie Media Library. |
 | Frontend | UI module sekarang berada di `resources/js/pages/System/*`, belum di `resources/js/modules/*`. |
-| Generator | `module:make {Module} --domain={Domain}` tersedia, tetapi belum sepenuhnya selaras dengan istilah dan struktur baseline baru. |
+| Generator | `module:make <Namespace> <Module>` tersedia untuk baseline baru; `--domain` tetap alias kompatibilitas. |
 
 ## Mapping Current ke Target
 
@@ -44,26 +44,41 @@ Architecture.
 Tujuan: memastikan 4 module existing punya dokumentasi module, dependency, route,
 permission, migration, UI, dan test map.
 
+Status: selesai melalui work item
+[`starterkit-alignment`](../starterkit-alignment/README.md). Source `System/*`
+tetap menjadi implementation bridge; rename fisik ke `Console/*` tidak dilakukan
+di Phase 0.
+
 Acceptance:
 
-- `docs/modules/System/{AccessControl,UserManagement,SystemSetting,AuditLog}/` atau mapping dokumentasi setara tersedia.
-- Consumer route name, permission key, Inertia page, test, seeder, dan public contract tercatat sebelum rename.
+- Mapping dokumentasi setara tersedia di
+  [`starterkit-alignment`](../starterkit-alignment/README.md).
+- Consumer route name, permission key, Inertia page, migration, dan public
+  boundary tercatat sebelum rename.
 - `module:validate`, `starter:verify`, dan route listing tetap lulus.
 
 ### 0.2 Selaraskan generator dengan baseline
 
 Tujuan: generator menghasilkan module baru sesuai baseline SakaSantri.
 
+Status: selesai melalui commit `3e2460b` dan didokumentasikan di
+[`starterkit-alignment/module-generation.md`](../starterkit-alignment/module-generation.md).
+
 Acceptance:
 
-- Command tetap backward compatible dengan `--domain`, tetapi mendukung istilah `namespace` atau dokumentasi jelas.
-- Default skeleton tidak membuat folder optional tanpa concern nyata.
+- Command tetap backward compatible dengan `--domain`, dan mendukung argumen
+  `Namespace Module`.
+- Default skeleton tidak membuat folder kosong tanpa concern nyata.
 - `module.json`, `module.php`, `permissions.php`, `ServiceProvider.php`, `Routes/*`, dan README dibuat konsisten.
 - Dry-run untuk `Organization Organization` dan `Academic AcademicPeriod` valid tanpa menulis file.
 
 ### 0.3 Selaraskan frontend module path
 
 Tujuan: menentukan pola final untuk UI module sebelum menambah UI baru.
+
+Status: belum dikerjakan. Tidak menjadi blocker untuk dokumentasi, skeleton, dan
+backend slice minimum `Organization/Organization`, tetapi menjadi gate sebelum
+UI module baru atau pemindahan UI existing.
 
 Acceptance:
 
@@ -74,6 +89,10 @@ Acceptance:
 ### 0.4 Tetapkan strategy compatibility `System` ke `Console`
 
 Tujuan: mencegah rename besar yang mematahkan foundation.
+
+Status: keputusan sementara sudah tercatat: `System/*` tetap implementation
+bridge. Keputusan rename fisik final ditunda sampai ada work item migrasi
+khusus.
 
 Acceptance:
 
@@ -88,6 +107,10 @@ Checkpoint P0:
 - `php artisan module:validate --no-ansi`
 - `php artisan starter:verify --no-ansi`
 - Focused tests untuk module generator dan 4 module foundation.
+
+Gate menuju `Organization/Organization`: Task 1 dan Task 2 roadmap selesai.
+Task 3 frontend path decision boleh tetap terbuka selama slice Organization
+belum menambah UI baru.
 
 ## Phase 1: Console, Organization, dan Academic Period (P1)
 

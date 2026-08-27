@@ -15,18 +15,22 @@ apapun.
 
 **Acceptance criteria:**
 
-- [ ] Daftar route name, permission key, Inertia component path, test, seeder,
+- [x] Daftar route name, permission key, Inertia component path, test, seeder,
   migration, dan public contract untuk `System/*` tersedia.
-- [ ] Risiko rename `System -> Console` dan `AuditLog -> AuditTrail` tercatat.
-- [ ] Baseline final `Console` disetujui, dengan `System/*` hanya sebagai bridge
+- [x] Risiko rename `System -> Console` dan `AuditLog -> AuditTrail` tercatat.
+- [x] Baseline final `Console` disetujui, dengan `System/*` hanya sebagai bridge
   sementara bila dibutuhkan.
-- [ ] Keputusan bridge/rename disetujui user.
+- [x] Keputusan sementara: `System/*` tetap implementation bridge; rename fisik
+  butuh work item migrasi terpisah.
 
 **Verification:**
 
-- [ ] `php artisan route:list --path=system --no-ansi`.
-- [ ] `php artisan module:validate --no-ansi`.
-- [ ] Focused tests module foundation.
+- [x] `php artisan route:list --path=system --no-ansi`.
+- [x] `php artisan module:validate --no-ansi`.
+- [x] `php artisan starter:verify --no-ansi`.
+
+**Evidence:** selesai melalui
+[`../starterkit-alignment/`](../starterkit-alignment/).
 
 **Dependencies:** None.
 
@@ -39,19 +43,22 @@ module domain baru dibuat.
 
 **Acceptance criteria:**
 
-- [ ] Generator tidak membuat folder optional tanpa concern nyata secara default.
-- [ ] Command/dokumentasi mendukung istilah `Namespace` sambil menjaga
+- [x] Generator tidak membuat folder optional tanpa concern nyata secara default.
+- [x] Command/dokumentasi mendukung istilah `Namespace` sambil menjaga
   backward compatibility `--domain`.
-- [ ] Dry-run untuk `Organization Organization` dan `Academic AcademicPeriod`
+- [x] Dry-run untuk `Organization Organization` dan `Academic AcademicPeriod`
   valid.
-- [ ] Test generator diperbarui.
+- [x] Test generator diperbarui.
 
 **Verification:**
 
-- [ ] `php artisan module:make Organization --domain=Organization --dry-run --json`.
-- [ ] `php artisan module:make AcademicPeriod --domain=Academic --dry-run --json`.
-- [ ] `php artisan test --filter=ModuleMakeCommandTest`.
-- [ ] `php artisan module:validate --no-ansi`.
+- [x] `php artisan module:make Organization Organization --dry-run --json --no-ansi`.
+- [x] `php artisan module:make Academic AcademicPeriod --dry-run --json --no-ansi`.
+- [x] `php artisan test --filter=ModuleMakeCommandTest`.
+- [x] `php artisan module:validate --no-ansi`.
+
+**Evidence:** selesai melalui
+[`../starterkit-alignment/module-generation.md`](../starterkit-alignment/module-generation.md).
 
 **Dependencies:** Task 1.
 
@@ -78,6 +85,10 @@ module domain baru dibuat.
 
 **Estimated scope:** S untuk keputusan, M bila mulai move path.
 
+**Gate:** belum menjadi blocker untuk dokumentasi, skeleton, dan backend slice
+minimum `Organization/Organization`. Wajib diputuskan sebelum UI module baru
+atau pemindahan UI existing.
+
 ## Task 4: Organization Foundation
 
 **Description:** Bangun module pertama domain pesantren sebagai source of truth
@@ -99,6 +110,9 @@ yayasan, unit, lokasi, dan hierarchy.
 **Dependencies:** Tasks 1-2.
 
 **Estimated scope:** M per vertical slice.
+
+**Ready:** ya, untuk work item dokumentasi, generator skeleton, dan backend
+slice minimum tanpa UI baru.
 
 ## Task 5: Academic Period Foundation
 
@@ -187,7 +201,8 @@ siap.
 
 ## Checkpoint
 
-- [ ] Setelah Phase 0, user review dan setujui keputusan compatibility.
+- [x] Setelah Phase 0, user review dan setujui keputusan compatibility untuk
+  mulai `Organization/Organization` tanpa rename fisik `System -> Console`.
 - [ ] Setelah Phase 1, user review Organization dan AcademicPeriod sebagai
   foundation bisnis.
 - [ ] Setelah Phase 2, user review data orang utama sebelum Dormitory/Academic.

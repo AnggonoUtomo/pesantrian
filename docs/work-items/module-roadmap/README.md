@@ -2,7 +2,7 @@
 
 ## Status
 
-Planned
+Active - Phase 0 foundation siap untuk work item Organization.
 
 ## Owner dan Lokasi
 
@@ -27,6 +27,20 @@ Command dan runtime yang sudah terbukti:
 - `php artisan module:validate --no-ansi` lulus.
 - `php artisan starter:verify --no-ansi` lulus.
 
+## Update Phase 0
+
+Work item [`starterkit-alignment`](../starterkit-alignment/README.md) sudah
+menutup gate awal sebelum module domain pertama:
+
+- Foundation `System/*` diaudit sebagai implementation bridge menuju baseline
+  `Console/*`.
+- Generator module sudah menerima pola baseline `module:make <Namespace>
+  <Module>`.
+- `--domain` tetap tersedia sebagai alias kompatibilitas untuk source lama.
+- Skeleton generator tidak membuat folder kosong sebagai placeholder.
+- Panduan pembuatan module baru tersedia di
+  [`../starterkit-alignment/module-generation.md`](../starterkit-alignment/module-generation.md).
+
 ## Scope
 
 - Membuat mapping prioritas module SakaSantri berdasarkan baseline dan kode starterkit.
@@ -37,7 +51,7 @@ Command dan runtime yang sudah terbukti:
 
 - Tidak membuat module baru.
 - Tidak memindahkan namespace/folder module existing.
-- Tidak mengubah generator, route, UI, migration, atau source runtime.
+- Tidak memindahkan route, UI, migration, atau source runtime existing.
 - Tidak menghapus compatibility path `System/*`.
 
 ## Prinsip Prioritas
@@ -50,13 +64,13 @@ Command dan runtime yang sudah terbukti:
 
 ## Risiko Terbuka
 
-- Dokumen baseline memakai istilah `Namespace`, sedangkan manifest, generator, dan CLI masih memakai field/opsi `domain`.
 - Baseline frontend memakai `resources/js/modules/*`, sedangkan source sekarang memakai `resources/js/pages/System/*`.
 - Baseline menyebut `Console/AuditTrail`, source sekarang memakai `System/AuditLog`.
 - Baseline memasukkan user lifecycle ke `AccessControl`, source sekarang memisah `UserManagement`.
-- Generator default masih membuat beberapa folder optional yang baseline minta hanya on-demand.
 - Namespace teknis area kesantrian memakai `StudentLife`, dengan label baca
   Bahasa Indonesia "Kesantrian".
 
-Risiko di atas tidak menghambat planning, tetapi harus masuk Phase 0 sebelum
-ekspansi module besar.
+Risiko frontend dan rename `System -> Console` tidak menghambat work item
+`Organization/Organization` untuk dokumentasi, skeleton, dan backend slice
+minimum. Risiko tersebut menjadi gate sebelum memindahkan UI existing atau
+menambah UI module baru.

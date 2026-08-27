@@ -1,4 +1,4 @@
-import { Archive, PencilLine } from 'lucide-react';
+import { Archive, PencilLine, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { OrganizationUnit } from '../types';
 import { typeLabels } from './organizationUnitDisplay';
@@ -10,6 +10,7 @@ type Props = {
     parentNameById: Map<string, string>;
     onEdit: (unit: OrganizationUnit) => void;
     onArchive: (unit: OrganizationUnit) => void;
+    onRestore: (unit: OrganizationUnit) => void;
 };
 
 export function OrganizationUnitList({
@@ -18,6 +19,7 @@ export function OrganizationUnitList({
     parentNameById,
     onEdit,
     onArchive,
+    onRestore,
 }: Props) {
     return (
         <div className="overflow-hidden rounded-xl border">
@@ -81,8 +83,10 @@ export function OrganizationUnitList({
                                             unit={unit}
                                             editLabel="Edit"
                                             archiveLabel="Archive"
+                                            restoreLabel="Restore"
                                             onEdit={onEdit}
                                             onArchive={onArchive}
+                                            onRestore={onRestore}
                                         />
                                     </td>
                                 ) : null}
@@ -123,8 +127,10 @@ export function OrganizationUnitList({
                                 unit={unit}
                                 editLabel="Edit unit"
                                 archiveLabel="Archive unit"
+                                restoreLabel="Restore unit"
                                 onEdit={onEdit}
                                 onArchive={onArchive}
+                                onRestore={onRestore}
                             />
                         ) : null}
                     </article>
@@ -152,14 +158,18 @@ function OrganizationUnitRowActions({
     unit,
     editLabel,
     archiveLabel,
+    restoreLabel,
     onEdit,
     onArchive,
+    onRestore,
 }: {
     unit: OrganizationUnit;
     editLabel: string;
     archiveLabel: string;
+    restoreLabel: string;
     onEdit: (unit: OrganizationUnit) => void;
     onArchive: (unit: OrganizationUnit) => void;
+    onRestore: (unit: OrganizationUnit) => void;
 }) {
     return (
         <div className="flex flex-wrap gap-2">
@@ -181,6 +191,17 @@ function OrganizationUnitRowActions({
                 >
                     <Archive className="size-4" />
                     {archiveLabel}
+                </Button>
+            ) : null}
+            {unit.status === 'inactive' ? (
+                <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => onRestore(unit)}
+                >
+                    <RotateCcw className="size-4" />
+                    {restoreLabel}
                 </Button>
             ) : null}
         </div>

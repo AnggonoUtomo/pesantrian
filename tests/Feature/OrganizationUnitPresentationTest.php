@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Models\User;
 use App\Modules\Organization\Organization\Infrastructure\Models\OrganizationUnitRecord;
 use App\Modules\System\AccessControl\Infrastructure\Persistence\Models\Permission;
+use App\Modules\System\AuditLog\Infrastructure\Persistence\Models\AuditRecord;
 use Inertia\Testing\AssertableInertia as Assert;
 
 it('menolak actor tanpa permission organization view', function (): void {
@@ -163,6 +164,54 @@ it('mengarsipkan unit organisasi secara non-destruktif melalui form Inertia', fu
     ]);
 });
 
+it('mengaktifkan kembali unit organisasi nonaktif melalui form Inertia', function (): void {
+    $manage = Permission::create(['name' => 'organization.manage', 'guard_name' => 'web']);
+    $actor = User::factory()->create();
+    $actor->givePermissionTo($manage);
+    $unit = OrganizationUnitRecord::query()->create([
+        'code' => 'PST',
+        'name' => 'Pesantren Saka',
+        'type' => 'pesantren',
+        'status' => 'inactive',
+    ]);
+
+    $this->actingAs($actor)
+        ->from(route('organization.units.index'))
+        ->patch(route('organization.units.restore', $unit->id))
+        ->assertRedirect(route('organization.units.index'))
+        ->assertSessionHas('inertia.flash_data.toast', [
+            'type' => 'success',
+            'message' => 'Unit organisasi berhasil diaktifkan kembali.',
+        ]);
+
+    $this->assertDatabaseHas('organization_units', [
+        'id' => $unit->id,
+        'code' => 'PST',
+        'status' => 'active',
+    ]);
+
+    $restoreAudit = AuditRecord::query()
+        ->where('action', 'organization.unit.restored')
+        ->firstOrFail();
+
+    expect($restoreAudit->module)->toBe('Organization')
+        ->and($restoreAudit->actor_id)->toBe($actor->id)
+        ->and($restoreAudit->subject_type)->toBe('organization_unit')
+        ->and($restoreAudit->subject_id)->toBe($unit->id)
+        ->and($restoreAudit->metadata)->toMatchArray([
+            'changed_fields' => ['status'],
+            'to_status' => 'active',
+            'result' => [
+                'code' => 'PST',
+                'name' => 'Pesantren Saka',
+                'type' => 'pesantren',
+                'status' => 'active',
+                'parent_id' => null,
+                'location_name' => null,
+            ],
+        ]);
+});
+
 it('menolak archive unit organisasi yang masih memiliki child aktif', function (): void {
     $manage = Permission::create(['name' => 'organization.manage', 'guard_name' => 'web']);
     $actor = User::factory()->create();
@@ -222,6 +271,10 @@ it('menolak form mutation unit organisasi tanpa permission manage', function ():
     $this->actingAs($actor)
         ->patch(route('organization.units.archive', $unit->id))
         ->assertForbidden();
+
+    $this->actingAs($actor)
+        ->patch(route('organization.units.restore', $unit->id))
+        ->assertForbidden();
 });
 
 it('menghubungkan kontrol create edit dan archive UI ke permission organization manage', function (): void {
@@ -231,12 +284,14 @@ it('menghubungkan kontrol create edit dan archive UI ke permission organization 
     $pagination = file_get_contents(resource_path('js/pages/Organization/Organization/components/OrganizationUnitPagination.tsx'));
     $dialog = file_get_contents(resource_path('js/pages/Organization/Organization/components/OrganizationUnitFormDialog.tsx'));
     $archiveDialog = file_get_contents(resource_path('js/pages/Organization/Organization/components/ArchiveOrganizationUnitDialog.tsx'));
+    $restoreDialog = file_get_contents(resource_path('js/pages/Organization/Organization/components/RestoreOrganizationUnitDialog.tsx'));
 
     expect($page)->toContain("canAccess(auth, 'organization.manage')")
         ->and($page)->toContain('OrganizationUnitHeaderActions')
         ->and($page)->toContain('OrganizationUnitList')
         ->and($page)->toContain('onEdit')
         ->and($page)->toContain('onArchive')
+        ->and($page)->toContain('onRestore')
         ->and($page)->toContain('parentOptions')
         ->and($page)->toContain('OrganizationUnitPagination')
         ->and($page)->toContain('onPageChange')
@@ -244,6 +299,7 @@ it('menghubungkan kontrol create edit dan archive UI ke permission organization 
         ->and($headerActions)->toContain('Tambah unit')
         ->and($list)->toContain('Edit unit')
         ->and($list)->toContain('Archive unit')
+        ->and($list)->toContain('Restore unit')
         ->and($pagination)->toContain('Sebelumnya')
         ->and($pagination)->toContain('Berikutnya')
         ->and($pagination)->toContain('Jumlah baris per halaman')
@@ -257,5 +313,8 @@ it('menghubungkan kontrol create edit dan archive UI ke permission organization 
         ->and($archiveDialog)->toContain("route('organization.units.archive', unit.id)")
         ->and($archiveDialog)->toContain('Arsipkan unit organisasi')
         ->and($archiveDialog)->toContain('role="alert"')
+        ->and($restoreDialog)->toContain("route('organization.units.restore', unit.id)")
+        ->and($restoreDialog)->toContain('Aktifkan kembali unit organisasi')
+        ->and($restoreDialog)->toContain('role="alert"')
         ->and($dialog)->toContain('role="alert"');
 });

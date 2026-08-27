@@ -69,5 +69,6 @@ return [
         'organization.units.store',
         'organization.units.update',
         'organization.units.archive',
+        'organization.units.restore',
     ],
 ];

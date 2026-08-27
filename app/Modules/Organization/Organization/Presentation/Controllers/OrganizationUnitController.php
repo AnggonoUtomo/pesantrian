@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\Modules\Organization\Organization\Presentation\Controllers;
 
-use App\Modules\Organization\Organization\Application\DTO\OrganizationUnitData;
-use App\Modules\Organization\Organization\Application\DTO\PaginatedOrganizationUnitData;
-use App\Modules\Organization\Organization\Application\Actions\CreateOrganizationUnit;
 use App\Modules\Organization\Organization\Application\Actions\ArchiveOrganizationUnit;
+use App\Modules\Organization\Organization\Application\Actions\CreateOrganizationUnit;
+use App\Modules\Organization\Organization\Application\Actions\RestoreOrganizationUnit;
 use App\Modules\Organization\Organization\Application\Actions\UpdateOrganizationUnit;
+use App\Modules\Organization\Organization\Application\DTO\OrganizationUnitData;
 use App\Modules\Organization\Organization\Application\DTO\OrganizationUnitParentOptionData;
+use App\Modules\Organization\Organization\Application\DTO\PaginatedOrganizationUnitData;
 use App\Modules\Organization\Organization\Application\Queries\ListOrganizationUnitParentOptions;
 use App\Modules\Organization\Organization\Application\Queries\ListOrganizationUnits;
 use App\Modules\Organization\Organization\Presentation\Requests\ListOrganizationUnitsApiRequest;
@@ -32,13 +33,14 @@ final readonly class OrganizationUnitController implements HasMiddleware
         private CreateOrganizationUnit $createOrganizationUnit,
         private UpdateOrganizationUnit $updateOrganizationUnit,
         private ArchiveOrganizationUnit $archiveOrganizationUnit,
+        private RestoreOrganizationUnit $restoreOrganizationUnit,
     ) {}
 
     public static function middleware(): array
     {
         return [
             new Middleware('can:organization.view', only: ['index']),
-            new Middleware('can:organization.manage', only: ['store', 'update', 'archive']),
+            new Middleware('can:organization.manage', only: ['store', 'update', 'archive', 'restore']),
         ];
     }
 
@@ -94,6 +96,17 @@ final readonly class OrganizationUnitController implements HasMiddleware
         abort_if($archived === null, 404);
 
         Inertia::flash('toast', ['type' => 'success', 'message' => 'Unit organisasi berhasil diarsipkan.']);
+
+        return back();
+    }
+
+    public function restore(Request $request, string $unit): RedirectResponse
+    {
+        $restored = $this->restoreOrganizationUnit->execute($request->user(), $unit);
+
+        abort_if($restored === null, 404);
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Unit organisasi berhasil diaktifkan kembali.']);
 
         return back();
     }

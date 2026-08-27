@@ -17,4 +17,7 @@ Route::middleware(['web', 'auth', 'verified'])
         Route::patch('/{unit}/archive', [OrganizationUnitController::class, 'archive'])
             ->whereUlid('unit')
             ->name('archive');
+        Route::patch('/{unit}/restore', [OrganizationUnitController::class, 'restore'])
+            ->whereUlid('unit')
+            ->name('restore');
     });

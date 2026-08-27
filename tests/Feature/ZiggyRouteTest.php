@@ -21,6 +21,7 @@ it('membagikan route yang dibutuhkan frontend', function () {
         'organization.units.store',
         'organization.units.update',
         'organization.units.archive',
+        'organization.units.restore',
         'two-factor.qr-code',
         'passkey.confirm',
     ]);

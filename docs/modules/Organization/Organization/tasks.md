@@ -182,4 +182,19 @@
     search, filter status, filter type, sort, page, dan per_page yang aktif.
   - Verification: focused source/UI test.
 
+## Increment 13: Restore unit organisasi
+
+- [x] Tambahkan web mutation restore.
+  - Acceptance: actor dengan `organization.manage` dapat mengaktifkan kembali
+    unit organisasi nonaktif.
+  - Verification: focused Inertia mutation feature test.
+- [x] Tambahkan audit restore.
+  - Acceptance: restore mencatat event `organization.unit.restored` dengan
+    metadata aman.
+  - Verification: focused audit assertion.
+- [x] Tambahkan dialog restore pada UI/Inertia.
+  - Acceptance: tombol restore hanya tampil untuk unit `inactive` sebagai UX,
+    dialog memiliki loading state dan error state.
+  - Verification: focused source/UI test dan `npm run build`.
+
 Jangan menambahkan pekerjaan baru ke checklist ini tanpa persetujuan user.

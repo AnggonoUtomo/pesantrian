@@ -13,6 +13,7 @@ import { OrganizationUnitHeaderActions } from '../components/OrganizationUnitHea
 import { OrganizationUnitList } from '../components/OrganizationUnitList';
 import { OrganizationUnitPagination } from '../components/OrganizationUnitPagination';
 import { OrganizationUnitSummary } from '../components/OrganizationUnitSummary';
+import { RestoreOrganizationUnitDialog } from '../components/RestoreOrganizationUnitDialog';
 import type { OrganizationUnit, OrganizationUnitPageProps } from '../types';
 
 export default function Index() {
@@ -27,6 +28,8 @@ export default function Index() {
         null,
     );
     const [archivingUnit, setArchivingUnit] =
+        useState<OrganizationUnit | null>(null);
+    const [restoringUnit, setRestoringUnit] =
         useState<OrganizationUnit | null>(null);
     const [formOpen, setFormOpen] = useState(false);
 
@@ -166,6 +169,7 @@ export default function Index() {
                                     parentNameById={parentNameById}
                                     onEdit={openEditDialog}
                                     onArchive={setArchivingUnit}
+                                    onRestore={setRestoringUnit}
                                 />
                                 <OrganizationUnitPagination
                                     meta={units.meta}
@@ -207,6 +211,16 @@ export default function Index() {
                 onOpenChange={(open) => {
                     if (!open) {
                         setArchivingUnit(null);
+                    }
+                }}
+            />
+            <RestoreOrganizationUnitDialog
+                key={restoringUnit?.id ?? 'restore'}
+                open={restoringUnit !== null}
+                unit={restoringUnit}
+                onOpenChange={(open) => {
+                    if (!open) {
+                        setRestoringUnit(null);
                     }
                 }}
             />

@@ -19,6 +19,8 @@ interface OrganizationUnitRepository
     /** @return list<OrganizationUnitParentOptionData> */
     public function activeParentOptions(): array;
 
+    public function hasActiveChildren(string $id): bool;
+
     public function create(UpsertOrganizationUnitData $data): OrganizationUnitData;
 
     /** @param array<string, string|null> $changes */

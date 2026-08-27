@@ -7,6 +7,7 @@ namespace App\Modules\Organization\Organization\Presentation\Controllers;
 use App\Modules\Organization\Organization\Application\DTO\OrganizationUnitData;
 use App\Modules\Organization\Organization\Application\DTO\PaginatedOrganizationUnitData;
 use App\Modules\Organization\Organization\Application\Actions\CreateOrganizationUnit;
+use App\Modules\Organization\Organization\Application\Actions\ArchiveOrganizationUnit;
 use App\Modules\Organization\Organization\Application\Actions\UpdateOrganizationUnit;
 use App\Modules\Organization\Organization\Application\DTO\OrganizationUnitParentOptionData;
 use App\Modules\Organization\Organization\Application\Queries\ListOrganizationUnitParentOptions;
@@ -15,10 +16,13 @@ use App\Modules\Organization\Organization\Presentation\Requests\ListOrganization
 use App\Modules\Organization\Organization\Presentation\Requests\StoreOrganizationUnitApiRequest;
 use App\Modules\Organization\Organization\Presentation\Requests\UpdateOrganizationUnitApiRequest;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
+use InvalidArgumentException;
 
 final readonly class OrganizationUnitController implements HasMiddleware
 {
@@ -27,13 +31,14 @@ final readonly class OrganizationUnitController implements HasMiddleware
         private ListOrganizationUnitParentOptions $listOrganizationUnitParentOptions,
         private CreateOrganizationUnit $createOrganizationUnit,
         private UpdateOrganizationUnit $updateOrganizationUnit,
+        private ArchiveOrganizationUnit $archiveOrganizationUnit,
     ) {}
 
     public static function middleware(): array
     {
         return [
             new Middleware('can:organization.view', only: ['index']),
-            new Middleware('can:organization.manage', only: ['store', 'update']),
+            new Middleware('can:organization.manage', only: ['store', 'update', 'archive']),
         ];
     }
 
@@ -74,6 +79,21 @@ final readonly class OrganizationUnitController implements HasMiddleware
         abort_if($updated === null, 404);
 
         Inertia::flash('toast', ['type' => 'success', 'message' => 'Unit organisasi berhasil diperbarui.']);
+
+        return back();
+    }
+
+    public function archive(Request $request, string $unit): RedirectResponse
+    {
+        try {
+            $archived = $this->archiveOrganizationUnit->execute($request->user(), $unit);
+        } catch (InvalidArgumentException $exception) {
+            throw ValidationException::withMessages(['unit' => $exception->getMessage()]);
+        }
+
+        abort_if($archived === null, 404);
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Unit organisasi berhasil diarsipkan.']);
 
         return back();
     }

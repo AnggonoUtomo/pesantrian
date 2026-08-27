@@ -136,6 +136,65 @@ it('membuat dan memperbarui unit organisasi melalui form Inertia', function (): 
     ]);
 });
 
+it('mengarsipkan unit organisasi secara non-destruktif melalui form Inertia', function (): void {
+    $manage = Permission::create(['name' => 'organization.manage', 'guard_name' => 'web']);
+    $actor = User::factory()->create();
+    $actor->givePermissionTo($manage);
+    $unit = OrganizationUnitRecord::query()->create([
+        'code' => 'PST',
+        'name' => 'Pesantren Saka',
+        'type' => 'pesantren',
+        'status' => 'active',
+    ]);
+
+    $this->actingAs($actor)
+        ->from(route('organization.units.index'))
+        ->patch(route('organization.units.archive', $unit->id))
+        ->assertRedirect(route('organization.units.index'))
+        ->assertSessionHas('inertia.flash_data.toast', [
+            'type' => 'success',
+            'message' => 'Unit organisasi berhasil diarsipkan.',
+        ]);
+
+    $this->assertDatabaseHas('organization_units', [
+        'id' => $unit->id,
+        'code' => 'PST',
+        'status' => 'inactive',
+    ]);
+});
+
+it('menolak archive unit organisasi yang masih memiliki child aktif', function (): void {
+    $manage = Permission::create(['name' => 'organization.manage', 'guard_name' => 'web']);
+    $actor = User::factory()->create();
+    $actor->givePermissionTo($manage);
+    $parent = OrganizationUnitRecord::query()->create([
+        'code' => 'YA',
+        'name' => 'Yayasan Saka',
+        'type' => 'foundation',
+        'status' => 'active',
+    ]);
+    OrganizationUnitRecord::query()->create([
+        'parent_id' => $parent->id,
+        'code' => 'PST',
+        'name' => 'Pesantren Saka',
+        'type' => 'pesantren',
+        'status' => 'active',
+    ]);
+
+    $this->actingAs($actor)
+        ->from(route('organization.units.index'))
+        ->patch(route('organization.units.archive', $parent->id))
+        ->assertRedirect(route('organization.units.index'))
+        ->assertSessionHasErrors([
+            'unit' => 'Unit organisasi masih memiliki child aktif.',
+        ]);
+
+    $this->assertDatabaseHas('organization_units', [
+        'id' => $parent->id,
+        'status' => 'active',
+    ]);
+});
+
 it('menolak form mutation unit organisasi tanpa permission manage', function (): void {
     $actor = User::factory()->create();
     $unit = OrganizationUnitRecord::query()->create([
@@ -159,21 +218,36 @@ it('menolak form mutation unit organisasi tanpa permission manage', function ():
             'name' => 'Tidak Berubah',
         ])
         ->assertForbidden();
+
+    $this->actingAs($actor)
+        ->patch(route('organization.units.archive', $unit->id))
+        ->assertForbidden();
 });
 
-it('menghubungkan kontrol create dan edit UI ke permission organization manage', function (): void {
+it('menghubungkan kontrol create edit dan archive UI ke permission organization manage', function (): void {
     $page = file_get_contents(resource_path('js/pages/Organization/Organization/pages/Index.tsx'));
+    $headerActions = file_get_contents(resource_path('js/pages/Organization/Organization/components/OrganizationUnitHeaderActions.tsx'));
+    $list = file_get_contents(resource_path('js/pages/Organization/Organization/components/OrganizationUnitList.tsx'));
     $dialog = file_get_contents(resource_path('js/pages/Organization/Organization/components/OrganizationUnitFormDialog.tsx'));
+    $archiveDialog = file_get_contents(resource_path('js/pages/Organization/Organization/components/ArchiveOrganizationUnitDialog.tsx'));
 
     expect($page)->toContain("canAccess(auth, 'organization.manage')")
-        ->and($page)->toContain('Tambah unit')
+        ->and($page)->toContain('OrganizationUnitHeaderActions')
+        ->and($page)->toContain('OrganizationUnitList')
         ->and($page)->toContain('onEdit')
+        ->and($page)->toContain('onArchive')
         ->and($page)->toContain('parentOptions')
+        ->and($headerActions)->toContain('Tambah unit')
+        ->and($list)->toContain('Edit unit')
+        ->and($list)->toContain('Archive unit')
         ->and($dialog)->toContain("route('organization.units.store')")
         ->and($dialog)->toContain("route('organization.units.update', unit.id)")
         ->and($dialog)->toContain('parent_id')
         ->and($dialog)->toContain('organization-unit-parent')
         ->and($dialog)->toContain('htmlFor="organization-unit-code"')
         ->and($dialog)->toContain('htmlFor="organization-unit-name"')
+        ->and($archiveDialog)->toContain("route('organization.units.archive', unit.id)")
+        ->and($archiveDialog)->toContain('Arsipkan unit organisasi')
+        ->and($archiveDialog)->toContain('role="alert"')
         ->and($dialog)->toContain('role="alert"');
 });

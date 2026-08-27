@@ -65,6 +65,14 @@ final class EloquentOrganizationUnitRepository implements OrganizationUnitReposi
             ->all();
     }
 
+    public function hasActiveChildren(string $id): bool
+    {
+        return OrganizationUnitRecord::query()
+            ->where('parent_id', $id)
+            ->where('status', 'active')
+            ->exists();
+    }
+
     public function create(UpsertOrganizationUnitData $data): OrganizationUnitData
     {
         /** @var OrganizationUnitRecord $record */

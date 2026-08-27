@@ -127,4 +127,32 @@
   - Verification: focused source/UI test, mutation feature test, dan
     `npm run build`.
 
+## Increment 9: Archive unit organisasi aman
+
+- [x] Tambahkan web mutation archive.
+  - Acceptance: actor dengan `organization.manage` dapat mengarsipkan unit
+    aktif secara non-destruktif; record tidak dihapus.
+  - Verification: focused Inertia mutation feature test.
+- [x] Lindungi unit parent yang masih memiliki child aktif.
+  - Acceptance: unit dengan child aktif tidak dapat diarsipkan sampai child
+    ditangani lebih dulu.
+  - Verification: focused Inertia mutation feature test.
+- [x] Tambahkan dialog archive pada UI/Inertia.
+  - Acceptance: tombol archive hanya tampil sebagai UX untuk actor dengan
+    `organization.manage`, dialog menjelaskan archive non-destruktif, memiliki
+    loading state dan error state.
+  - Verification: focused source/UI test dan `npm run build`.
+
+## Increment 10: Refactor komponen UI unit organisasi
+
+- [x] Pecah `Index.tsx` menjadi page container dan komponen presentational.
+  - Acceptance: `Index.tsx` hanya menangani auth, state dialog, filter routing,
+    dan komposisi layout; daftar, filter, summary, empty state, access denied,
+    dan header action berada di `components/`.
+  - Verification: focused source/UI test dan `npm run build`.
+- [x] Pertahankan behavior UI yang sudah ada.
+  - Acceptance: permission UX, create/update/archive dialog, parent display,
+    filter, dan state kosong tetap memakai kontrak route/props yang sama.
+  - Verification: focused Inertia feature test.
+
 Jangan menambahkan pekerjaan baru ke checklist ini tanpa persetujuan user.

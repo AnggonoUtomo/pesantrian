@@ -1,0 +1,13 @@
+{
+    "name": "AcademicPeriod",
+    "namespace": "App\\Modules\\Academic\\AcademicPeriod",
+    "version": "1.0.0",
+    "schema_version": 1,
+    "status": "enabled",
+    "domain": "Academic",
+    "path": "app/Modules/Academic/AcademicPeriod",
+    "provider": "App\\Modules\\Academic\\AcademicPeriod\\ServiceProvider",
+    "dependencies": [],
+    "permission_source": "permissions.php",
+    "config_source": "module.php"
+}

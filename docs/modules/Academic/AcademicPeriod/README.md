@@ -9,7 +9,7 @@ Source module mengikuti [`docs/ARCHITECTURE.md`](../../../ARCHITECTURE.md) dan
 - Module: `AcademicPeriod`
 - Source: `app/Modules/Academic/AcademicPeriod/`
 - Frontend: ditunda sampai backend foundation dan contract stabil.
-- Status: `Planned`
+- Status: `Active`
 
 ## Tujuan
 

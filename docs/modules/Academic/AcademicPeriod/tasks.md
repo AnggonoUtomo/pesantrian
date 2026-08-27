@@ -25,16 +25,16 @@
 
 ## Increment 2: Skeleton module
 
-- [ ] Dry-run generator.
+- [x] Dry-run generator.
   - Acceptance: target `app/Modules/Academic/AcademicPeriod`, diagnostics
     kosong, dan tidak ada folder optional placeholder.
   - Verification:
     `php artisan module:make Academic AcademicPeriod --dry-run --json --no-ansi`.
-- [ ] Generate skeleton module.
+- [x] Generate skeleton module.
   - Acceptance: file awal module dibuat tanpa folder kosong placeholder.
   - Verification:
     `php artisan module:make Academic AcademicPeriod --force --yes --no-ansi`.
-- [ ] Validasi module registry.
+- [x] Validasi module registry.
   - Acceptance: semua module valid.
   - Verification: `php artisan module:validate --no-ansi`.
 

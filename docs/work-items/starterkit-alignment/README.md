@@ -21,6 +21,8 @@ sebelum module baru dibuat secara incremental.
 - Skeleton default tidak membuat folder kosong tanpa isi nyata.
 - Gap `System` ke `Console` terdokumentasi, bukan diselesaikan dengan rename
   massal tanpa audit consumer.
+- Panduan pembuatan module baru tersedia di
+  [`module-generation.md`](module-generation.md).
 
 ## Verifikasi
 
@@ -31,3 +33,9 @@ sebelum module baru dibuat secara incremental.
   - `php artisan test --filter=DefaultModuleProfileTest`
   - `php artisan test --filter=ModuleMakeCommandTest`
 - `git diff --check`
+
+## Hasil
+
+- Task 1 audit foundation selesai.
+- Task 2 generator baseline selesai.
+- Task 3 dokumentasi pembuatan module baru selesai.

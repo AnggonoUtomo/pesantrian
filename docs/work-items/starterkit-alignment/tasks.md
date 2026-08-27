@@ -21,7 +21,7 @@
 
 ## Task 3: Dokumentasi pembuatan module baru
 
-- [ ] Tulis panduan ringkas pembuatan module baru berbasis generator.
-- [ ] Tulis contoh command dry-run dan create.
-- [ ] Tulis catatan larangan placeholder folder.
-- [ ] Tulis checklist verifikasi module baru.
+- [x] Tulis panduan ringkas pembuatan module baru berbasis generator.
+- [x] Tulis contoh command dry-run dan create.
+- [x] Tulis catatan larangan placeholder folder.
+- [x] Tulis checklist verifikasi module baru.

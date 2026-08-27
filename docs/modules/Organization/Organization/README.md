@@ -8,7 +8,9 @@ Source module mengikuti [`docs/ARCHITECTURE.md`](../../../ARCHITECTURE.md) dan
 - Namespace: `Organization`
 - Module: `Organization`
 - Source: `app/Modules/Organization/Organization/`
-- Frontend: ditunda sampai keputusan frontend module path selesai
+- Frontend: `resources/js/pages/Organization/Organization/` sebagai path
+  Inertia aktif sementara sampai keputusan `resources/js/modules/*` dibuat
+  melalui work item terpisah.
 - Status: `Active`
 
 ## Tujuan
@@ -36,12 +38,13 @@ unit.
   - asrama/kamar,
   - kelas/rombel akademik,
   - tagihan atau pembayaran,
-  - UI penuh sebelum keputusan frontend path.
+  - import/export organisasi,
+  - pemindahan frontend ke `resources/js/modules/*`.
 
 ## Public Boundary
 
-Public boundary dibuat hanya ketika ada consumer nyata. Pada slice pertama,
-module belum mengekspor contract lintas module.
+Public boundary dibuat hanya ketika ada consumer nyata. Saat ini module belum
+mengekspor contract lintas module untuk consumer lain.
 
 Candidate public boundary untuk increment berikutnya:
 
@@ -64,8 +67,9 @@ Candidate public boundary untuk increment berikutnya:
   - `organization.view`
   - `organization.manage`
 - Backend menjadi authority authorization.
-- Audit perubahan struktur dicatat untuk create/update unit melalui bridge
-  AuditLog/AuditTrail existing ketika slice audit diimplementasikan.
+- Frontend permission hanya UX untuk menampilkan/menyembunyikan kontrol.
+- Audit perubahan struktur dicatat melalui bridge AuditLog/AuditTrail existing
+  untuk create, update, archive, dan restore unit organisasi.
 
 ## Operasi
 
@@ -74,16 +78,21 @@ Candidate public boundary untuk increment berikutnya:
 - Seeder/factory hanya dibuat ketika ada data/test nyata.
 - `ServiceProvider.php` menjadi composition root dan tidak berisi business
   logic.
-- Route file boleh kosong sampai ada endpoint nyata.
+- Route web aktif untuk halaman Inertia dan mutation form.
+- Route API aktif untuk list/create/update minimum.
 
 ## Verifikasi Utama
 
 ```bash
 php artisan module:make Organization Organization --dry-run --json --no-ansi
+php artisan test --filter=Organization
+php artisan test --filter=NavigationSidebarTest
+npm run build
 php artisan module:validate --no-ansi
 php artisan starter:verify --no-ansi
 git diff --check
 ```
 
-Focused tests ditambahkan saat behavior backend pertama dibuat.
-
+Focused tests berada di `tests/Feature/OrganizationUnitApiTest.php`,
+`tests/Feature/OrganizationUnitPresentationTest.php`, dan test terkait sidebar
+serta Ziggy route.

@@ -2,7 +2,7 @@
 
 ## Status
 
-Active - Phase 0 foundation siap untuk work item Organization.
+Active - Organization foundation selesai; siap menuju AcademicPeriod.
 
 ## Owner dan Lokasi
 
@@ -40,6 +40,26 @@ menutup gate awal sebelum module domain pertama:
 - Skeleton generator tidak membuat folder kosong sebagai placeholder.
 - Panduan pembuatan module baru tersedia di
   [`../starterkit-alignment/module-generation.md`](../starterkit-alignment/module-generation.md).
+
+## Update Organization Foundation
+
+Work item [`Organization/Organization`](../../modules/Organization/Organization/)
+sudah menutup foundation module domain pertama:
+
+- module `Organization/Organization` valid;
+- table `organization_units` memakai ULID;
+- read/list, create/update, archive, dan restore unit tersedia;
+- hierarchy parent-child dasar tersedia;
+- UI Inertia sementara tersedia di `resources/js/pages/Organization/Organization/`;
+- sidebar sudah mengelompokkan menu berdasarkan namespace;
+- permission `organization.view` dan `organization.manage` menjadi authority
+  backend;
+- audit mutation struktur organisasi tercatat melalui bridge AuditLog/AuditTrail
+  existing.
+
+Public contract lintas module belum dibuat karena belum ada consumer nyata.
+Keputusan frontend canonical `resources/js/modules/*` tetap menjadi work item
+terpisah sebelum memindahkan UI existing.
 
 ## Scope
 

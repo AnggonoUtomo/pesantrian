@@ -96,23 +96,29 @@ yayasan, unit, lokasi, dan hierarchy.
 
 **Acceptance criteria:**
 
-- [ ] Module `Organization/Organization` valid.
-- [ ] Table inti memakai ULID.
-- [ ] Read/list dan create/update unit minimum tersedia.
-- [ ] Permission dan audit tersedia.
+- [x] Module `Organization/Organization` valid.
+- [x] Table inti memakai ULID.
+- [x] Read/list dan create/update unit minimum tersedia.
+- [x] Permission dan audit tersedia.
 
 **Verification:**
 
-- [ ] Focused feature/unit tests Organization.
-- [ ] `php artisan module:validate --no-ansi`.
-- [ ] `php artisan starter:verify --no-ansi`.
+- [x] Focused feature/unit tests Organization.
+- [x] `php artisan module:validate --no-ansi`.
+- [x] `php artisan starter:verify --no-ansi`.
+
+**Evidence:** selesai melalui
+[`../../modules/Organization/Organization/`](../../modules/Organization/Organization/).
+Slice aktif sudah mencakup API/web read-list, create/update, hierarchy parent
+dasar, archive/restore non-destruktif, pagination UI, sidebar namespace, dan
+audit mutation.
 
 **Dependencies:** Tasks 1-2.
 
 **Estimated scope:** M per vertical slice.
 
-**Ready:** ya, untuk work item dokumentasi, generator skeleton, dan backend
-slice minimum tanpa UI baru.
+**Status:** selesai untuk foundation Organization. Public contract lintas module
+belum dibuat karena belum ada consumer nyata.
 
 ## Task 5: Academic Period Foundation
 

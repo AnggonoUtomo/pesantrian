@@ -52,7 +52,11 @@ final readonly class OrganizationUnitApiController implements HasMiddleware
 
     public function store(StoreOrganizationUnitApiRequest $request): JsonResponse
     {
-        $unit = $this->createOrganizationUnit->execute($request->toData());
+        $unit = $this->createOrganizationUnit->execute(
+            $request->user(),
+            $request->toData(),
+            $this->responses->correlationId($request),
+        );
 
         return $this->responses->success(
             $request,
@@ -64,7 +68,12 @@ final readonly class OrganizationUnitApiController implements HasMiddleware
 
     public function update(UpdateOrganizationUnitApiRequest $request, string $unit): JsonResponse
     {
-        $updated = $this->updateOrganizationUnit->execute($unit, $request->changes());
+        $updated = $this->updateOrganizationUnit->execute(
+            $request->user(),
+            $unit,
+            $request->changes(),
+            $this->responses->correlationId($request),
+        );
 
         abort_if($updated === null, 404);
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Models\User;
 use App\Modules\Organization\Organization\Infrastructure\Models\OrganizationUnitRecord;
 use App\Modules\System\AccessControl\Infrastructure\Persistence\Models\Permission;
+use App\Modules\System\AuditLog\Infrastructure\Persistence\Models\AuditRecord;
 use Illuminate\Support\Str;
 
 it('mengembalikan list unit organisasi dengan filter pagination sort dan envelope canonical', function (): void {
@@ -116,6 +117,81 @@ it('membuat dan memperbarui unit organisasi melalui API terotorisasi', function 
         'name' => 'Pesantren Saka Utama',
         'status' => 'inactive',
     ]);
+});
+
+it('mencatat audit create dan update unit organisasi dengan metadata aman', function (): void {
+    $manage = Permission::create(['name' => 'organization.manage', 'guard_name' => 'web']);
+    $actor = User::factory()->create();
+    $actor->givePermissionTo($manage);
+    $createCorrelationId = (string) Str::ulid();
+    $updateCorrelationId = (string) Str::ulid();
+
+    $created = $this->actingAs($actor)->postJson(route('api.v1.organization.units.store'), [
+        'code' => 'AUD',
+        'name' => 'Unit Audit',
+        'type' => 'operational_unit',
+        'status' => 'active',
+        'location_name' => 'Kampus Audit',
+    ], [
+        'Idempotency-Key' => (string) Str::ulid(),
+        'X-Correlation-ID' => $createCorrelationId,
+    ])->assertCreated();
+
+    $unitId = (string) $created->json('data.id');
+
+    $this->actingAs($actor)->patchJson(route('api.v1.organization.units.update', $unitId), [
+        'name' => 'Unit Audit Baru',
+        'status' => 'inactive',
+    ], [
+        'Idempotency-Key' => (string) Str::ulid(),
+        'X-Correlation-ID' => $updateCorrelationId,
+    ])->assertOk();
+
+    $createAudit = AuditRecord::query()
+        ->where('action', 'organization.unit.created')
+        ->firstOrFail();
+    $updateAudit = AuditRecord::query()
+        ->where('action', 'organization.unit.updated')
+        ->firstOrFail();
+
+    expect(AuditRecord::query()->whereIn('action', [
+        'organization.unit.created',
+        'organization.unit.updated',
+    ])->count())->toBe(2)
+        ->and($createAudit->module)->toBe('Organization')
+        ->and($createAudit->actor_id)->toBe($actor->id)
+        ->and($createAudit->subject_type)->toBe('organization_unit')
+        ->and($createAudit->subject_id)->toBe($unitId)
+        ->and($createAudit->correlation_id)->toBe($createCorrelationId)
+        ->and($createAudit->metadata)->toMatchArray([
+            'changed_fields' => ['parent_id', 'code', 'name', 'type', 'status', 'location_name'],
+            'result' => [
+                'code' => 'AUD',
+                'name' => 'Unit Audit',
+                'type' => 'operational_unit',
+                'status' => 'active',
+                'parent_id' => null,
+                'location_name' => 'Kampus Audit',
+            ],
+        ])
+        ->and($updateAudit->module)->toBe('Organization')
+        ->and($updateAudit->actor_id)->toBe($actor->id)
+        ->and($updateAudit->subject_id)->toBe($unitId)
+        ->and($updateAudit->correlation_id)->toBe($updateCorrelationId)
+        ->and($updateAudit->metadata)->toMatchArray([
+            'changed_fields' => ['name', 'status'],
+            'to_status' => 'inactive',
+            'result' => [
+                'code' => 'AUD',
+                'name' => 'Unit Audit Baru',
+                'type' => 'operational_unit',
+                'status' => 'inactive',
+                'parent_id' => null,
+                'location_name' => 'Kampus Audit',
+            ],
+        ])
+        ->and(array_keys($createAudit->metadata))->not->toContain('password')
+        ->and(array_keys($updateAudit->metadata))->not->toContain('password');
 });
 
 it('menolak guest actor tanpa permission dan payload invalid dengan envelope canonical', function (): void {

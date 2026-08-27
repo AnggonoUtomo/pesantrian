@@ -14,6 +14,7 @@ final readonly class RecordSystemActivity
 {
     private const SUPPORTED_EVENTS = [
         'AccessControl' => 'access-control.activity.occurred',
+        'Organization' => 'organization.activity.occurred',
         'UserManagement' => 'user-management.activity.occurred',
     ];
 

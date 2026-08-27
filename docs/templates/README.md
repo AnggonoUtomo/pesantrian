@@ -10,5 +10,11 @@ Salin hanya template yang diperlukan:
 - `TASKS.md`: checklist dan hasil verifikasi.
 - `ADR.md`: keputusan yang mahal atau sulit dibalik.
 
-Hapus bagian template yang tidak relevan. Jangan mengisi bagian dengan asumsi
-hanya agar dokumen terlihat lengkap.
+Template memakai placeholder `{...}` agar jelas bagian mana yang harus diganti.
+Hapus bagian yang tidak relevan. Jangan mengisi bagian dengan asumsi hanya agar
+dokumen terlihat lengkap.
+
+Untuk SakaSantri, semua template harus mengikuti baseline DDD-lite Modular
+Monolith, path `app/Modules/<Namespace>/<Module>/`, ULID primary identifier,
+Ziggy named routes, backend authorization sebagai source of truth, dan Bahasa
+Indonesia untuk dokumentasi.

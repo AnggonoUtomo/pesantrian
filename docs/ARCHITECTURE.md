@@ -1,17 +1,21 @@
 # Arsitektur
 
-## Gaya arsitektur
+SakaSantri memakai **DDD-lite Modular Monolith dengan Hexagonal Architecture**.
+Arsitektur ini mengikuti baseline lengkap di
+[`SakaSantri_Architecture_Baseline_v0.1-r1-ID.md`](SakaSantri_Architecture_Baseline_v0.1-r1-ID.md).
 
-`[Nama Project]` memakai **DDD-lite Modular Monolith dengan Hexagonal
-Architecture**. Setiap module adalah satu boundary dan satu hexagon. Abstraction
-dibuat karena ada behavior atau dependency nyata, bukan untuk melengkapi pola.
+## Baseline Produk
 
-- Framework reusable: `[path atau tidak ada]`.
-- Module aplikasi: `app/Modules/{Domain}/{Module}`.
-- Frontend module: `[path frontend module]`.
-- Struktur canonical: [FOLDER-STRUCTURE.md](FOLDER-STRUCTURE.md).
+- Model produk: non-SaaS, single yayasan, multi-unit.
+- Namespace module adalah area/kategori bisnis, bukan tenant atau pengganti
+  boundary.
+- Module adalah bounded capability dengan ownership, rule, data, dan lifecycle
+  sendiri.
+- Unit seperti MI, MTs, MA, tahfidz, asrama putra, dan asrama putri adalah data
+  organisasi kecuali ada bounded capability berbeda.
+- Shared Kernel harus kecil dan hanya memuat concern yang benar-benar universal.
 
-## Hexagon pada setiap module
+## Hexagon per Module
 
 ```text
 HTTP / Console / Queue / UI
@@ -20,7 +24,7 @@ HTTP / Console / Queue / UI
 Presentation (inbound adapter)
             |
             v
-Application (use case dan port)
+Application (use case, command, query, DTO, port)
             |
             v
 Domain (aturan bisnis)
@@ -31,24 +35,23 @@ Infrastructure (outbound adapter)
 Database / framework / package / layanan eksternal
 ```
 
-`ServiceProvider.php` atau composition root project menghubungkan port
-Application dengan adapter Infrastructure. Use case tidak mengakses adapter
-konkret secara langsung.
+`ServiceProvider.php` menjadi composition root module. File ini menghubungkan
+contract dengan adapter, memuat route/migration, mendaftarkan policy/listener,
+dan tidak berisi business logic.
 
-## Tanggung jawab layer
+## Tanggung Jawab Layer
 
-| Layer          | Tanggung jawab                                                        | Tidak boleh                                          |
-| -------------- | --------------------------------------------------------------------- | ---------------------------------------------------- |
-| Domain         | Entity, value object, domain service, event, dan invariant            | Bergantung pada layer luar atau framework            |
-| Application    | Use case, command, query, DTO, port, dan orchestration                | Mengimpor adapter Infrastructure atau detail HTTP/UI |
-| Infrastructure | Persistence dan adapter framework/package/layanan eksternal           | Menjadi pemilik business rule                        |
-| Presentation   | Controller, request, resource, policy, middleware, dan command UI/CLI | Menulis persistence atau business mutation langsung  |
+| Layer | Tanggung jawab | Tidak boleh |
+| --- | --- | --- |
+| Domain | Entity, value object, domain service, event, invariant, rule bisnis murni | Bergantung pada framework, HTTP, UI, Eloquent, atau layer luar |
+| Application | Use case, action, command, query, DTO, port, orchestration, transaction boundary | Mengimpor adapter Infrastructure konkret atau detail UI/HTTP |
+| Infrastructure | Persistence, repository implementation, adapter framework/package, listener side effect | Menjadi pemilik business rule |
+| Presentation | Controller, request, resource, route, middleware, console command, Inertia response | Melakukan business mutation atau persistence langsung |
 
-Domain boleh tidak ada pada capability sederhana yang belum memiliki business
-rule murni. Jika digunakan, Domain harus bebas dari detail framework dan
-persistence.
+Domain boleh belum ada pada capability yang benar-benar CRUD sederhana dan belum
+memiliki rule murni. Jika Domain dibuat, ia harus bebas dari detail framework.
 
-## Arah dependency
+## Arah Dependency
 
 ```text
 Presentation ------> Application ------> Domain
@@ -59,36 +62,42 @@ Infrastructure ----> Application ------> Domain
 - Application tidak mengimpor Infrastructure.
 - Presentation memanggil Application.
 - Infrastructure mengimplementasikan port milik Application atau Domain.
-- Binding port-adapter dilakukan oleh composition root.
+- Binding port-adapter dilakukan oleh ServiceProvider module.
 - Route mengarah ke Presentation.
 
-## Port dan adapter
-
-- Action, Command, atau Query menjadi inbound port/use case.
-- Outbound port berada di `Application/Contracts` ketika Application memerlukan
-  persistence, runtime setting, publisher, session, atau integrasi eksternal.
-- Adapter berada di `Infrastructure` dan mengimplementasikan outbound port.
-- `Domain/Contracts` hanya untuk abstraction yang menjadi bahasa domain.
-- Port tidak dibuat tanpa consumer nyata.
-
-## Komunikasi lintas module
+## Komunikasi Lintas Module
 
 Public boundary yang disarankan:
 
-- `Application/Contracts`;
-- `Application/DTO`;
-- `Application/Events`.
+- `Application/Contracts`
+- `Application/DTO`
+- `Application/Events`
+- domain event atau integration event yang memang memiliki consumer
 
-Import model, repository, controller, policy, adapter, atau Domain privat module
-lain dilarang. Dependency nyata dicatat pada manifest atau konfigurasi module.
+Module tidak mengambil Eloquent model, repository, controller, policy, adapter,
+atau Domain privat module lain untuk business mutation. Untuk invariant yang
+harus sinkron, gunakan published contract/application service yang eksplisit.
+Untuk side effect yang dapat dipisahkan, gunakan event/listener.
 
-## Aturan kesederhanaan
+## CQRS dan Action
 
-- Jangan membuat folder atau placeholder agar struktur terlihat lengkap.
-- Jangan membuat port, event, repository, service, atau adapter tanpa kebutuhan.
-- Gunakan lokasi canonical ketika concern benar-benar diperlukan.
-- Perubahan arah dependency atau struktur canonical memerlukan ADR.
+CQRS digunakan pragmatis. Command/action dipakai untuk mutation yang memiliki
+orchestration, transaction boundary, authorization, event, atau audit. Query
+boleh menggunakan read query yang efisien. CRUD sederhana tidak wajib diberi
+ceremony CQRS penuh.
 
-## Gap conformance
+## Guardrail Arsitektur
 
-- [Catat penyimpangan source code terhadap arsitektur dan work item perbaikannya.]
+- Jangan membuat folder kosong hanya untuk melengkapi diagram.
+- Jangan membuat port, event, service, repository, adapter, atau integration
+  tanpa consumer nyata.
+- Jangan menggunakan Laravel Boost atau Wayfinder sebagai source of truth.
+- Jangan memindahkan migration module ke `database/migrations` global untuk
+  table milik module.
+- Perubahan bounded context, stack utama, strategi identifier, atau struktur
+  canonical memerlukan keputusan eksplisit dan ADR bila sulit dibalik.
+
+## Gap Conformance
+
+Catat penyimpangan source code terhadap baseline pada work item terkait. Jangan
+menutup gap di luar scope pekerjaan tanpa persetujuan user.

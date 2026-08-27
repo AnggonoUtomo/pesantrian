@@ -1,53 +1,60 @@
-# Specification: [Nama Module]
+# Specification: {Namespace}/{Module}
 
 ## Status
 
 Draft | Disetujui | Implemented
 
-## Tujuan dan scope
+## Tujuan dan Scope
 
-[Behavior yang menjadi tanggung jawab module.]
+{Behavior yang menjadi tanggung jawab module.}
 
 ## Arsitektur
 
-- Hexagon: `[Domain/Module]`.
-- Inbound adapter: [HTTP, console, queue, atau lainnya].
-- Use case/inbound port: [Action, Command, atau Query].
-- Outbound port: [Application/Contracts yang dibutuhkan].
-- Outbound adapter: [Infrastructure adapter yang mengimplementasikan port].
-- Composition root: `[Domain/Module]/ServiceProvider.php`.
+- Hexagon: `app/Modules/{Namespace}/{Module}`.
+- Inbound adapter: {HTTP, console, queue, event listener, atau lainnya}.
+- Use case/inbound port: {Action, Command, atau Query}.
+- Outbound port: {Application/Contracts atau Domain/Contracts yang dibutuhkan}.
+- Outbound adapter: {Infrastructure adapter yang mengimplementasikan port}.
+- Composition root: `app/Modules/{Namespace}/{Module}/ServiceProvider.php`.
 
-## Di luar scope
+## Di Luar Scope
 
-- [Behavior yang tidak dimiliki module.]
+- {Behavior yang tidak dimiliki module.}
 
 ## Contract
 
-- Input: [DTO/request/command].
-- Output: [DTO/response/event].
-- Failure: [error atau exception publik].
+- Input: {DTO/request/command}.
+- Output: {DTO/response/event}.
+- Failure: {error, exception, validation, atau authorization failure publik}.
 
 ## Data
 
-- [Entity, tabel, ownership migration, dan identifier.]
+- Entity/table: {entity, tabel, dan ownership migration}.
+- Identifier: ULID primary identifier untuk table aplikasi.
+- Historical traceability: {snapshot/status/periode yang harus dipertahankan}.
 
-## Authorization dan audit
+## Authorization dan Audit
 
-- [Permission, policy, resource rule, dan event yang diaudit.]
+- Permission: `{module.permission}`.
+- Policy/resource rule: {domain eligibility atau business rule}.
+- Audit/event: {event yang dicatat atau didengar}.
 
 ## UI
 
-- [Page, mekanisme route, state loading/empty/error, dan accessibility.]
+- Page: `resources/js/modules/{module-slug}/pages/{Page}.tsx`.
+- Routing: Ziggy named routes.
+- State: {loading, empty, error, success, authorization state}.
+- Accessibility: {keyboard, label, focus, atau kebutuhan khusus}.
 
 ## Dependency
 
-- [Public dependency dan alasan.]
+- {Public dependency dan alasan dependency tersebut diperlukan.}
 
-## Acceptance criteria
+## Acceptance Criteria
 
-- [ ] [Behavior positif.]
-- [ ] [Behavior negatif atau failure handling.]
+- [ ] {Behavior positif yang dapat diverifikasi.}
+- [ ] {Behavior negatif atau failure handling yang dapat diverifikasi.}
 
-## Risiko terbuka
+## Risiko Terbuka
 
-- [Risiko yang belum ditutup dan owner keputusannya.]
+- {Risiko yang belum ditutup dan owner keputusannya.}

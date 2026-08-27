@@ -1,109 +1,156 @@
 # Struktur Folder Canonical
 
-Sesuaikan struktur ini dengan source code dan generator project sebelum baseline
-diaktifkan. Folder opsional hanya dibuat ketika memiliki isi dan concern nyata.
+Struktur ini mengikuti baseline SakaSantri. Folder opsional hanya dibuat ketika
+memiliki isi dan concern nyata.
 
-## Backend module
+## Backend Module
 
 ```text
-app/Modules/{Domain}/{Module}/
+app/Modules/<Namespace>/<Module>/
+|-- module.json
+|-- module.php
+|-- permissions.php
+|-- ServiceProvider.php
+|-- README.md
 |-- Application/
 |   |-- Actions/
-|   |-- Commands/             # opsional
-|   |-- Contracts/
 |   |-- DTO/
-|   |-- Events/               # opsional
-|   |-- Exceptions/           # opsional
-|   |-- Listeners/            # opsional
-|   |-- Queries/
-|   `-- Services/             # opsional
-|-- Domain/                   # bila ada aturan bisnis murni
-|   |-- Contracts/            # opsional
+|   `-- Services/
+|-- Domain/
+|   |-- Contracts/
 |   |-- Entities/
 |   |-- Events/
-|   |-- Exceptions/
 |   |-- Services/
 |   `-- ValueObjects/
 |-- Infrastructure/
-|   |-- Persistence/
-|   |   |-- Models/
-|   |   `-- Repositories/
-|   |-- External/
-|   `-- {Capability}/
+|   |-- Models/
+|   |-- Repositories/
+|   |-- Observer/
+|   `-- Providers/
 |-- Presentation/
-|   |-- Console/Commands/
 |   |-- Controllers/
-|   |-- Middleware/
-|   |-- Policies/
 |   |-- Requests/
-|   |-- Resources/
-|   `-- Support/
+|   `-- Resources/
 |-- Database/
-|   |-- Factories/
 |   |-- Migrations/
-|   `-- Seeders/
-|-- Routes/
-|-- README.md
-`-- [manifest, config, permission, dan composition root project]
+|   |-- Seeders/
+|   `-- Factories/
+`-- Routes/
+    |-- web.php
+    |-- api.php
+    |-- console.php
+    `-- channels.php
 ```
 
-Catat nama file root module yang benar untuk project target:
-
-| Artefak             | Path project                        |
-| ------------------- | ----------------------------------- |
-| Manifest module     | `[path atau tidak digunakan]`       |
-| Runtime config      | `[path atau tidak digunakan]`       |
-| Permission identity | `[path atau tidak digunakan]`       |
-| Composition root    | `[path ServiceProvider/alternatif]` |
-
-## Frontend module
+Folder berikut optional/on-demand:
 
 ```text
-[frontend-root]/{Domain}/{Module}/
+Application/Commands/
+Application/Queries/
+Domain/Policies/
+Domain/Specifications/
+Domain/Exceptions/
+Infrastructure/Adapters/
+Infrastructure/Integrations/
+```
+
+Jangan menambahkan `.gitkeep`, placeholder class, atau abstraction tanpa
+behavior hanya untuk mempertahankan folder.
+
+## Artefak Root Module
+
+| Artefak | Path |
+| --- | --- |
+| Manifest module | `app/Modules/<Namespace>/<Module>/module.json` |
+| Runtime config | `app/Modules/<Namespace>/<Module>/module.php` |
+| Permission identity | `app/Modules/<Namespace>/<Module>/permissions.php` |
+| Composition root | `app/Modules/<Namespace>/<Module>/ServiceProvider.php` |
+| Dokumentasi module | `app/Modules/<Namespace>/<Module>/README.md` |
+
+## Frontend Module
+
+```text
+resources/js/
+|-- app.tsx
 |-- components/
+|   |-- ui/
+|   `-- shared/
+|-- layouts/
+|-- hooks/
+|-- lib/
+|-- types/
+`-- modules/
+    |-- access-control/
+    |-- organization/
+    |-- system-setting/
+    |-- academic-period/
+    |-- human-resource/
+    |-- student/
+    |-- guardian/
+    |-- dormitory/
+    |-- academic/
+    |-- finance/
+    |-- document/
+    |-- announcement/
+    |-- notification/
+    |-- reporting/
+    `-- audit-trail/
+```
+
+Per module frontend:
+
+```text
+resources/js/modules/<module>/
 |-- pages/
-|-- hooks/                    # opsional
-|-- lib/                      # opsional
-`-- types.ts                  # opsional
+|-- components/
+|-- hooks/
+|-- types/
+`-- schemas/
 ```
 
-## Test executable
+shadcn/ui berada di `resources/js/components/ui`. Komponen business-specific
+berada di module terkait atau `components/shared` jika benar-benar lintas
+domain.
 
-Isi berdasarkan konfigurasi test runner, bukan asumsi:
+## Tests
 
 ```text
-[path unit test]
-[path feature/integration test]
-[path frontend test]
-[path browser test]
+tests/
+`-- Modules/
+    |-- Student/
+    |-- Academic/
+    |-- StudentFinance/
+    `-- Dormitory/
 ```
 
-Test yang dibuat generator harus berada pada path yang benar-benar ditemukan
-runner. Jika tidak selaras, catat sebagai risiko dan perbaiki melalui work item
-terpisah.
+Gunakan test yang paling spesifik terlebih dahulu. Jika generator atau test
+runner project belum selaras dengan struktur ini, catat sebagai gap dan
+selesaikan melalui work item terpisah.
 
-## Dokumentasi pekerjaan
+## Dokumentasi Pekerjaan
 
 ```text
-docs/modules/{Domain}/{Module}/
+docs/modules/<Namespace>/<Module>/
 |-- README.md
 |-- specification.md
 |-- plan.md
 |-- tasks.md
 |-- decisions/
-`-- work-items/{nama-pekerjaan}/
+`-- work-items/<nama-pekerjaan>/
     |-- README.md
     |-- plan.md
     `-- tasks.md
 ```
 
-Pekerjaan lintas module memakai `docs/work-items/{nama-pekerjaan}`.
+Pekerjaan lintas module memakai `docs/work-items/<nama-pekerjaan>/`.
 
-## Aturan pembuatan
+## Aturan Pembuatan
 
 - Inventarisasi module dan generator sebelum mengubah struktur.
-- Tinjau dry-run generator bila tersedia.
-- Jangan menambahkan `.gitkeep`, placeholder class, atau abstraction tanpa
-  behavior hanya untuk mempertahankan folder.
-- Jika concern tidak cocok dengan struktur, buat ADR atau minta arahan sebelum
-  coding.
+- Gunakan module generator project ketika tersedia.
+- Generator minimum harus menerima namespace dan module, misalnya
+  `php artisan make:module StudentAffairs Student`.
+- Generator tidak membuat `Adapters`, `Integrations`, `Commands`, atau
+  `Queries` secara default.
+- Migration module berada di `Database/Migrations`.
+- Table aplikasi menggunakan ULID sebagai primary identifier.

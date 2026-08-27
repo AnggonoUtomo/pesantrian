@@ -1,28 +1,28 @@
-# Implementation Plan: [Nama Pekerjaan]
+# Implementation Plan: {Nama Pekerjaan}
 
 ## Scope
 
-[Tujuan pendek pekerjaan ini.]
+{Tujuan pendek pekerjaan ini dan batas module yang terdampak.}
 
-## Increment 1: [Nama]
+## Increment 1: {Nama}
 
-- Perubahan: [file atau behavior].
-- Dependency: [prasyarat atau tidak ada].
-- Acceptance: [hasil yang harus terbukti].
-- Verifikasi: `[command]`.
+- Perubahan: {file atau behavior}.
+- Dependency: {prasyarat atau tidak ada}.
+- Acceptance: {hasil yang harus terbukti}.
+- Verifikasi: `{command}`.
 
-## Increment 2: [Nama]
+## Increment 2: {Nama}
 
-- Perubahan: [file atau behavior].
+- Perubahan: {file atau behavior}.
 - Dependency: Increment 1.
-- Acceptance: [hasil yang harus terbukti].
-- Verifikasi: `[command]`.
+- Acceptance: {hasil yang harus terbukti}.
+- Verifikasi: `{command}`.
 
-## Batas berhenti
+## Batas Berhenti
 
 Pekerjaan berhenti ketika acceptance criteria scope ini terpenuhi. Risiko atau
 ide di luar scope dilaporkan dan menunggu persetujuan user.
 
 ## Rollback
 
-[File, migration, feature flag, atau commit yang menjadi titik pemulihan.]
+{File, migration, feature flag, atau commit yang menjadi titik pemulihan.}

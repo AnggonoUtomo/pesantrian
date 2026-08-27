@@ -1,25 +1,39 @@
 # Quality dan Verifikasi
 
-Ganti contoh command dengan script yang benar-benar tersedia pada project.
-Mulai dari test paling spesifik dan gunakan gate luas sesuai risiko.
+Gunakan pemeriksaan yang proporsional dengan risiko. Mulai dari test paling
+spesifik, lalu naik ke gate yang lebih luas ketika perubahan menyentuh boundary,
+module, frontend, migration, atau release.
 
-| Perubahan            | Verifikasi minimum                                    |
-| -------------------- | ----------------------------------------------------- |
-| Dokumentasi          | Tautan Markdown dan `git diff --check`                |
-| Backend behavior     | Focused unit/feature test                             |
-| Boundary atau module | Architecture test dan module validation bila tersedia |
-| Frontend behavior    | Focused component test, typecheck, dan lint           |
-| UI/alur pengguna     | Focused browser test setelah test frontend lulus      |
-| Migration            | Focused migration test pada database disposable       |
-| API contract         | Focused API test dan pembaruan `API.md`               |
+| Perubahan | Verifikasi minimum |
+| --- | --- |
+| Dokumentasi | `git diff --check` dan pemeriksaan placeholder/tautan Markdown yang relevan |
+| Backend behavior | Focused unit/feature test pada behavior terkait |
+| Boundary atau module | Focused test, `php artisan module:validate`, dan pemeriksaan dependency arah layer |
+| Frontend behavior | Focused test bila ada, typecheck/lint, dan build sesuai risiko |
+| UI/alur pengguna | Browser test setelah test frontend lulus |
+| Migration | Migration test pada database disposable atau lingkungan lokal yang disetujui |
+| API contract | Focused API test dan pembaruan `API.md` |
+| Artisan/runtime | Command terkait, `php artisan optimize:clear`, dan command health project |
 
-## Command project
+## Command Project
 
-- Backend focused test: `[command]`.
-- Frontend focused test: `[command]`.
-- Typecheck/lint/build: `[command]`.
-- Module validation: `[command atau tidak tersedia]`.
-- Full quality gate: `[command]`.
+- Artisan health: `php artisan about --no-ansi`.
+- Clear cache/config: `php artisan optimize:clear --no-ansi`.
+- Module validation: `php artisan module:validate --no-ansi`.
+- Starter foundation: `php artisan starter:verify --no-ansi`.
+- Backend focused test: `php artisan test --filter=<NamaTest>`.
+- Full backend test: `php artisan test`.
+- Frontend build: `npm run build`.
+- Frontend dev: `npm run dev`.
+- Composer autoload check: `composer dump-autoload`.
+- Diff hygiene: `git diff --check`.
 
-Full gate digunakan untuk perubahan lintas area, risiko tinggi, atau sebelum
-release. Jangan menjalankannya berulang tanpa perubahan source.
+## Prinsip
+
+- Jangan menjalankan full gate berulang tanpa perubahan source.
+- Jangan mengarang hasil test; laporkan command yang benar-benar dijalankan.
+- Untuk module baru, verifikasi path, namespace, route, permission, migration,
+  ServiceProvider, dan manifest module.
+- Untuk table aplikasi, cek ULID primary identifier dan foreign ULID kompatibel.
+- Untuk perubahan security-sensitive, verifikasi authorization backend, bukan
+  hanya visibility frontend.

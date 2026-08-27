@@ -1,35 +1,50 @@
-# [Nama Module]
+# {Nama Module}
 
 Source module mengikuti `docs/ARCHITECTURE.md` dan
 `docs/FOLDER-STRUCTURE.md`.
 
+## Identitas
+
+- Namespace: `{Namespace}`
+- Module: `{Module}`
+- Source: `app/Modules/{Namespace}/{Module}/`
+- Frontend: `resources/js/modules/{module-slug}/`
+- Status: `{Planned|Active|Deprecated|Disabled}`
+
 ## Tujuan
 
-[Tanggung jawab utama module.]
+{Tanggung jawab utama module sebagai bounded capability.}
 
 ## Boundary
 
-- Memiliki: [data dan behavior yang dimiliki].
-- Tidak memiliki: [hal di luar tanggung jawab].
+- Memiliki: {data dan behavior yang dimiliki module}.
+- Tidak memiliki: {hal di luar tanggung jawab module}.
 
-## Public API
+## Public Boundary
 
-- [Contract, DTO, capability, event, command, atau route publik.]
+- Contract/DTO/event/action/query/route publik: {daftar yang memang diekspos}.
+- Dependency lintas module: {dependency nyata dan alasan penggunaannya}.
 
-## Dependency
+## Data dan Identifier
 
-- [Dependency nyata dan alasan penggunaannya.]
+- Table milik module: {nama table}.
+- Primary identifier: ULID untuk table aplikasi.
+- Business identifier: {nomor bisnis seperti student_no atau invoice_no bila ada}.
 
-## Permission
+## Permission dan Audit
 
-- [Permission identity milik module.]
+- Permission identity: `{module.permission}`.
+- Policy/resource rule: {aturan authorization backend}.
+- Audit/event: {event atau audit entry yang dibuat}.
 
 ## Operasi
 
-- [Konfigurasi, migration, seeder, queue, atau risiko runtime penting.]
+- Migration/seeder/factory: {path atau catatan penting}.
+- Queue/event/listener: {runtime concern bila ada}.
+- Konfigurasi: {module.php, setting, atau env/config yang relevan}.
 
-## Verifikasi utama
+## Verifikasi Utama
 
 ```bash
-[command validasi module atau focused test]
+{command validasi module atau focused test}
 ```

@@ -1,4 +1,4 @@
-# PRD: [Nama Capability]
+# PRD: {Nama Capability}
 
 ## Status
 
@@ -6,32 +6,40 @@ Draft | Disetujui | Selesai
 
 ## Masalah
 
-[Masalah pengguna atau bisnis yang ingin diselesaikan.]
+{Masalah pengguna atau bisnis pesantren yang ingin diselesaikan.}
 
 ## Tujuan
 
-[Hasil yang diinginkan dan alasan prioritasnya.]
+{Hasil yang diinginkan dan alasan prioritasnya.}
 
 ## Pengguna
 
-[Pengguna atau actor yang terdampak.]
+{Pengguna atau actor yang terdampak, misalnya pengurus, admin unit, guru,
+ustadz, musyrif, staff keuangan, santri, atau wali.}
 
 ## Scope
 
-- [Kemampuan yang termasuk.]
+- {Kemampuan yang termasuk.}
 
-## Di luar scope
+## Di Luar Scope
 
-- [Hal yang sengaja tidak dikerjakan.]
+- {Hal yang sengaja tidak dikerjakan.}
 
 ## Requirement
 
-- [Behavior yang diperlukan.]
+- {Behavior yang diperlukan.}
 
-## Acceptance criteria
+## Data dan Kebijakan
 
-- [ ] [Kondisi yang dapat diverifikasi.]
+- Data sensitif: {santri, wali, pegawai, keuangan, dokumen, atau lainnya}.
+- Authorization: backend permission/policy menjadi source of truth.
+- Audit: {event/aksi yang harus dapat ditelusuri}.
 
-## Pertanyaan terbuka
+## Acceptance Criteria
 
-- [Keputusan yang masih memerlukan jawaban.]
+- [ ] {Kondisi produk yang dapat diverifikasi.}
+- [ ] {Kondisi teknis atau operasional yang dapat diverifikasi.}
+
+## Pertanyaan Terbuka
+
+- {Keputusan yang masih memerlukan jawaban.}

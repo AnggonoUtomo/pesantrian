@@ -67,13 +67,13 @@
 
 ## Increment 5: Audit mutation
 
-- [ ] Tambahkan audit create/update unit.
+- [x] Tambahkan audit create/update unit.
   - Acceptance: mutation menghasilkan audit entry/event yang aman.
   - Verification: focused audit test.
 
 ## Hasil
 
-- [ ] Scope backend slice minimum selesai.
+- [x] Scope backend slice minimum selesai.
   - Perubahan: skeleton, data foundation, read/list, create/update, permission,
     dan audit minimum.
   - Verification:
@@ -83,5 +83,19 @@
     - `git diff --check`
   - Risiko terbuka: UI dan hierarchy lanjutan tetap menunggu increment
     terpisah.
+
+## Increment 6: UI/Inertia daftar unit organisasi
+
+- [x] Tambahkan route dan controller Inertia untuk daftar unit.
+  - Acceptance: actor dengan `organization.view` dapat membuka halaman daftar
+    unit organisasi.
+  - Verification: focused Inertia feature test.
+- [x] Tambahkan halaman React daftar unit organisasi.
+  - Acceptance: halaman menampilkan ringkasan, daftar, state kosong, dan
+    pembatasan akses berbasis permission frontend sebagai UX saja.
+  - Verification: `npm run build`.
+- [x] Tambahkan filter/search dasar pada props halaman.
+  - Acceptance: filter yang sama dengan backend list dapat diteruskan ke UI.
+  - Verification: focused Inertia feature test.
 
 Jangan menambahkan pekerjaan baru ke checklist ini tanpa persetujuan user.

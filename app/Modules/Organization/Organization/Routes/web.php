@@ -10,4 +10,8 @@ Route::middleware(['web', 'auth', 'verified'])
     ->name('organization.units.')
     ->group(function (): void {
         Route::get('/', [OrganizationUnitController::class, 'index'])->name('index');
+        Route::post('/', [OrganizationUnitController::class, 'store'])->name('store');
+        Route::put('/{unit}', [OrganizationUnitController::class, 'update'])
+            ->whereUlid('unit')
+            ->name('update');
     });

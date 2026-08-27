@@ -1,5 +1,12 @@
 import { Head, router, usePage } from '@inertiajs/react';
-import { Building2, Filter, Network, ShieldCheck } from 'lucide-react';
+import {
+    Building2,
+    Filter,
+    Network,
+    PencilLine,
+    Plus,
+    ShieldCheck,
+} from 'lucide-react';
 import { FormEvent, useMemo, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -14,6 +21,7 @@ import {
 import SystemDashboardLayout from '@/layouts/system-dashboard-layout';
 import { canAccess } from '@/lib/authorization';
 import route from '@/lib/route';
+import { OrganizationUnitFormDialog } from '../components/OrganizationUnitFormDialog';
 import type {
     OrganizationUnit,
     OrganizationUnitFilters,
@@ -49,7 +57,12 @@ export default function Index() {
         filters.filter?.status ?? 'all',
     );
     const [type, setType] = useState<string>(filters.filter?.type ?? 'all');
+    const [editingUnit, setEditingUnit] = useState<OrganizationUnit | null>(
+        null,
+    );
+    const [formOpen, setFormOpen] = useState(false);
     const canView = canAccess(auth, 'organization.view');
+    const canManage = canAccess(auth, 'organization.manage');
     const activeCount = useMemo(
         () => units.data.filter((unit) => unit.status === 'active').length,
         [units.data],
@@ -125,10 +138,27 @@ export default function Index() {
                 title="Unit Organisasi"
                 description="Tinjau yayasan, pesantren, unit pendidikan, operasional, dan asrama sebagai data organisasi."
                 actions={
-                    <Badge variant="secondary" className="gap-2 rounded-full">
-                        <Network className="size-3.5" aria-hidden="true" />
-                        {units.meta.total} unit
-                    </Badge>
+                    <div className="flex flex-wrap items-center gap-2">
+                        <Badge
+                            variant="secondary"
+                            className="gap-2 rounded-full"
+                        >
+                            <Network className="size-3.5" aria-hidden="true" />
+                            {units.meta.total} unit
+                        </Badge>
+                        {canManage ? (
+                            <Button
+                                type="button"
+                                onClick={() => {
+                                    setEditingUnit(null);
+                                    setFormOpen(true);
+                                }}
+                            >
+                                <Plus className="size-4" />
+                                Tambah unit
+                            </Button>
+                        ) : null}
+                    </div>
                 }
             >
                 <div className="space-y-5">
@@ -255,13 +285,38 @@ export default function Index() {
                         </form>
 
                         {units.data.length > 0 ? (
-                            <OrganizationUnitList units={units.data} />
+                            <OrganizationUnitList
+                                units={units.data}
+                                canManage={canManage}
+                                onEdit={(unit) => {
+                                    setEditingUnit(unit);
+                                    setFormOpen(true);
+                                }}
+                            />
                         ) : (
-                            <EmptyState />
+                            <EmptyState
+                                canManage={canManage}
+                                onCreate={() => {
+                                    setEditingUnit(null);
+                                    setFormOpen(true);
+                                }}
+                            />
                         )}
                     </section>
                 </div>
             </SystemDashboardLayout>
+            <OrganizationUnitFormDialog
+                key={editingUnit?.id ?? 'new'}
+                open={formOpen}
+                unit={editingUnit}
+                onOpenChange={(open) => {
+                    setFormOpen(open);
+
+                    if (!open) {
+                        setEditingUnit(null);
+                    }
+                }}
+            />
         </>
     );
 }
@@ -284,7 +339,15 @@ function SummaryCard({
     );
 }
 
-function OrganizationUnitList({ units }: { units: OrganizationUnit[] }) {
+function OrganizationUnitList({
+    units,
+    canManage,
+    onEdit,
+}: {
+    units: OrganizationUnit[];
+    canManage: boolean;
+    onEdit: (unit: OrganizationUnit) => void;
+}) {
     return (
         <div className="overflow-hidden rounded-xl border">
             <div className="hidden overflow-x-auto md:block">
@@ -303,6 +366,11 @@ function OrganizationUnitList({ units }: { units: OrganizationUnit[] }) {
                             <th scope="col" className="px-4 py-3">
                                 Lokasi
                             </th>
+                            {canManage ? (
+                                <th scope="col" className="px-4 py-3">
+                                    Aksi
+                                </th>
+                            ) : null}
                         </tr>
                     </thead>
                     <tbody className="divide-y">
@@ -325,6 +393,19 @@ function OrganizationUnitList({ units }: { units: OrganizationUnit[] }) {
                                 <td className="px-4 py-3 text-foreground/70">
                                     {unit.location_name ?? 'Belum diisi'}
                                 </td>
+                                {canManage ? (
+                                    <td className="px-4 py-3">
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => onEdit(unit)}
+                                        >
+                                            <PencilLine className="size-4" />
+                                            Edit
+                                        </Button>
+                                    </td>
+                                ) : null}
                             </tr>
                         ))}
                     </tbody>
@@ -345,6 +426,17 @@ function OrganizationUnitList({ units }: { units: OrganizationUnit[] }) {
                         <p className="text-sm text-foreground/70">
                             {unit.location_name ?? 'Lokasi belum diisi'}
                         </p>
+                        {canManage ? (
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => onEdit(unit)}
+                            >
+                                <PencilLine className="size-4" />
+                                Edit unit
+                            </Button>
+                        ) : null}
                     </article>
                 ))}
             </div>
@@ -360,7 +452,13 @@ function StatusBadge({ status }: { status: OrganizationUnitStatus }) {
     );
 }
 
-function EmptyState() {
+function EmptyState({
+    canManage,
+    onCreate,
+}: {
+    canManage: boolean;
+    onCreate: () => void;
+}) {
     return (
         <div
             role="status"
@@ -372,6 +470,12 @@ function EmptyState() {
                 Ubah filter pencarian atau mulai isi data unit organisasi
                 melalui endpoint backend yang sudah tersedia.
             </p>
+            {canManage ? (
+                <Button type="button" className="mt-4" onClick={onCreate}>
+                    <Plus className="size-4" />
+                    Tambah unit organisasi
+                </Button>
+            ) : null}
         </div>
     );
 }

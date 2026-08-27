@@ -98,4 +98,19 @@
   - Acceptance: filter yang sama dengan backend list dapat diteruskan ke UI.
   - Verification: focused Inertia feature test.
 
+## Increment 7: UI/Inertia create dan update unit organisasi
+
+- [x] Tambahkan web mutation route untuk form Inertia.
+  - Acceptance: actor dengan `organization.manage` dapat membuat dan mengubah
+    unit melalui route web, sedangkan actor tanpa permission ditolak.
+  - Verification: focused Inertia mutation feature test.
+- [x] Tambahkan dialog create/update unit pada halaman React.
+  - Acceptance: dialog memakai label aksesibel, menampilkan error validasi,
+    loading state, dan menutup setelah submit berhasil.
+  - Verification: `npm run build`.
+- [x] Hubungkan kontrol UI dengan permission.
+  - Acceptance: tombol tambah/edit hanya tampil sebagai UX untuk actor dengan
+    `organization.manage`; backend tetap menjadi authority.
+  - Verification: focused source/UI test dan build.
+
 Jangan menambahkan pekerjaan baru ke checklist ini tanpa persetujuan user.

@@ -1,20 +1,22 @@
-# Dokumentasi Starter13
+# Dokumentasi Laboratory Compliance Platform
 
-Dokumentasi ini adalah acuan aktif yang ringkas untuk pengembangan Starter13.
-Arsip baseline sebelumnya tersedia di `../Old_docs/` bila konteks historis
-benar-benar diperlukan.
+Dokumentasi ini adalah acuan aktif yang ringkas untuk membangun Laboratory
+Compliance & Evidence Platform di atas fondasi Starter13. Arsip sebelumnya
+tersedia di `../Old_docs/` bila konteks historis benar-benar diperlukan.
 
 ## Mulai di sini
 
-1. Baca [Project](PROJECT.md) untuk tujuan dan scope produk.
-2. Baca [Arsitektur](ARCHITECTURE.md) untuk batas struktur dan dependensi.
-3. Baca [Struktur Folder](FOLDER-STRUCTURE.md) sebelum membuat atau mengubah
+1. Baca [Product Baseline](PRODUCT-BASELINE.md) untuk visi, scope Release 1,
+   domain, invariant, dan urutan pengembangan.
+2. Baca [Project](PROJECT.md) untuk ringkasan tujuan produk dan fondasi.
+3. Baca [Arsitektur](ARCHITECTURE.md) untuk batas struktur dan dependensi.
+4. Baca [Struktur Folder](FOLDER-STRUCTURE.md) sebelum membuat atau mengubah
    module, generator, port, adapter, atau struktur.
-4. Baca [Daftar Modul](MODULES.md) untuk ownership dan dependency modul.
-5. Baca [Workflow](WORKFLOW.md) sebelum memulai pekerjaan.
-6. Pilih pemeriksaan dari [Quality](QUALITY.md) sesuai risiko perubahan.
-7. Baca [Keputusan](DECISIONS.md) saat menyentuh keputusan yang telah ditetapkan.
-8. Baca [API](API.md) saat mengubah endpoint publik.
+5. Baca [Daftar Modul](MODULES.md) untuk ownership, dependency, dan status.
+6. Baca [Workflow](WORKFLOW.md) sebelum memulai pekerjaan.
+7. Pilih pemeriksaan dari [Quality](QUALITY.md) sesuai risiko perubahan.
+8. Baca [Keputusan](DECISIONS.md) saat menyentuh keputusan yang telah ditetapkan.
+9. Baca [API](API.md) saat mengubah endpoint publik.
 
 Template untuk PRD, module, work item, plan, task, dan ADR tersedia di
 [`templates/`](templates/README.md). Aturan folder pekerjaan berada di

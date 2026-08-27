@@ -22,14 +22,17 @@ belum jelas. Gunakan ADR hanya untuk keputusan yang mahal atau sulit dibalik.
     - bagian module: `modules/{Domain}/{Module}/work-items/{nama-pekerjaan}/`;
     - lintas module: `work-items/{nama-pekerjaan}/`.
 
-Untuk module, generator, atau struktur baru, periksa modul terkait terlebih
-dahulu dengan command yang tersedia, misalnya:
+Untuk module, generator, atau struktur baru, periksa module terkait terlebih
+dahulu dengan command project yang tersedia:
 
 ```bash
-php artisan module:discover --json
-php artisan module:validate --json
-php artisan module:inspect {Domain}/{Module} --json
+[command discovery module]
+[command validation module]
+[command inspect module target]
 ```
+
+Jika project belum memiliki command tersebut, lakukan inventory read-only dan
+catat keterbatasannya. Jangan mengarang hasil discovery atau validation.
 
 Sebelum coding, cocokkan rencana dengan `ARCHITECTURE.md` dan
 `FOLDER-STRUCTURE.md`. Jika lokasi, dependency, atau test structure bertentangan

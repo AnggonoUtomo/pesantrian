@@ -15,9 +15,8 @@ modules/{Domain}/{Module}/
 `-- work-items/
 ```
 
-Nama Domain dan Module mengikuti kode, misalnya `System/UserManagement`.
-Folder work item memakai `kebab-case`, misalnya
-`work-items/invitation-delivery/`.
+Nama Domain dan Module mengikuti source code, misalnya `[Domain]/[Module]`.
+Folder work item memakai `kebab-case`, misalnya `work-items/nama-capability/`.
 
 Gunakan template pada `../templates/`. Tidak perlu membuat folder kosong untuk
 module atau work item yang belum akan dikerjakan.

@@ -1,39 +1,35 @@
-# Dokumentasi Laboratory Compliance Platform
+# Dokumentasi [Nama Project]
 
-Dokumentasi ini adalah acuan aktif yang ringkas untuk membangun Laboratory
-Compliance & Evidence Platform di atas fondasi Starter13. Arsip sebelumnya
-tersedia di `../Old_docs/` bila konteks historis benar-benar diperlukan.
+Dokumentasi ini adalah acuan aktif yang ringkas. Isi placeholder dan cocokkan
+setiap aturan dengan source code sebelum digunakan.
 
 ## Mulai di sini
 
-1. Baca [Product Baseline](PRODUCT-BASELINE.md) untuk visi, scope Release 1,
-   domain, invariant, dan urutan pengembangan.
-2. Baca [Project](PROJECT.md) untuk ringkasan tujuan produk dan fondasi.
-3. Baca [Arsitektur](ARCHITECTURE.md) untuk batas struktur dan dependensi.
-4. Baca [Struktur Folder](FOLDER-STRUCTURE.md) sebelum membuat atau mengubah
-   module, generator, port, adapter, atau struktur.
-5. Baca [Daftar Modul](MODULES.md) untuk ownership, dependency, dan status.
-6. Baca [Workflow](WORKFLOW.md) sebelum memulai pekerjaan.
-7. Pilih pemeriksaan dari [Quality](QUALITY.md) sesuai risiko perubahan.
-8. Baca [Keputusan](DECISIONS.md) saat menyentuh keputusan yang telah ditetapkan.
-9. Baca [API](API.md) saat mengubah endpoint publik.
+1. Baca [Project](PROJECT.md) untuk tujuan dan scope produk.
+2. Baca [Arsitektur](ARCHITECTURE.md) untuk batas dan arah dependency.
+3. Baca [Struktur Folder](FOLDER-STRUCTURE.md) sebelum mengubah struktur.
+4. Baca [Daftar Module](MODULES.md) untuk ownership dan dependency.
+5. Baca [Workflow](WORKFLOW.md) sebelum memulai pekerjaan.
+6. Pilih pemeriksaan dari [Quality](QUALITY.md) sesuai risiko.
+7. Baca [Keputusan](DECISIONS.md) saat menyentuh keputusan aktif.
+8. Baca [API](API.md) saat mengubah endpoint publik.
 
-Template untuk PRD, module, work item, plan, task, dan ADR tersedia di
-[`templates/`](templates/README.md). Aturan folder pekerjaan berada di
-[`modules/`](modules/README.md) dan [`work-items/`](work-items/README.md).
+Template tersedia di [`templates/`](templates/README.md). Konvensi dokumentasi
+module dan work item berada di [`modules/`](modules/README.md) dan
+[`work-items/`](work-items/README.md).
 
-## Stack saat ini
+## Stack
 
-- Laravel 13, PHP 8.4+, MySQL, dan Redis.
-- Laravel React starter kit, Inertia, React, TypeScript, Vite, Tailwind, dan
-  shadcn/ui.
-- Ziggy untuk route frontend dan Spatie Permission untuk authorization.
-- CI menggunakan GitHub Actions; lingkungan lokal utama memakai Laragon.
+- Backend: `[Laravel dan versi PHP]`.
+- Frontend: `[framework, bundler, dan UI library]`.
+- Database/cache/queue: `[teknologi yang digunakan]`.
+- CI/deployment: `[pipeline dan target environment]`.
 
-## Prinsip dokumentasi
+## Prinsip
 
-Dokumentasikan hanya hal yang membantu keputusan atau operasi: contract publik,
-perubahan perilaku, langkah pemulihan, dan keputusan yang sulit dibalik.
-Jangan menduplikasi kode atau membuat log kerja panjang untuk perubahan kecil.
+Dokumentasikan contract publik, perubahan behavior, langkah operasi, serta
+keputusan yang sulit dibalik. Jangan menduplikasi kode atau membuat execution
+log panjang untuk perubahan kecil.
 
-Semua dokumen ditulis dalam Bahasa Indonesia dan memakai tautan relatif.
+Semua tautan memakai path relatif. Hapus semua placeholder sebelum baseline
+project dinyatakan aktif.

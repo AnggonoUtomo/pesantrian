@@ -37,7 +37,7 @@ Draft | Disetujui | Implemented
 
 ## UI
 
-- [Page, route Ziggy, state loading/empty/error, dan accessibility.]
+- [Page, mekanisme route, state loading/empty/error, dan accessibility.]
 
 ## Dependency
 

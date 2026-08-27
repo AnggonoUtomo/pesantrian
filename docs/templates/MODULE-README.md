@@ -31,5 +31,5 @@ Source module mengikuti `docs/ARCHITECTURE.md` dan
 ## Verifikasi utama
 
 ```bash
-php artisan module:validate {Domain}/{Module} --json
+[command validasi module atau focused test]
 ```

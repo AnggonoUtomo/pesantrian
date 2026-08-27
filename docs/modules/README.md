@@ -18,7 +18,8 @@ docs/modules/<Namespace>/<Module>/
 ```
 
 Nama `Namespace` dan `Module` mengikuti source code, misalnya
-`StudentAffairs/Student` atau `Finance/StudentFinance`. Folder work item memakai
+`StudentLife/Student` untuk area kesantrian atau `Finance/StudentFinance`.
+Folder work item memakai
 `kebab-case`, misalnya `work-items/register-new-student/`.
 
 Gunakan template pada `../templates/`. Tidak perlu membuat folder kosong untuk

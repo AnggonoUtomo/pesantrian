@@ -20,7 +20,7 @@ Perubahan utama:
 ```text
 namespace                     -> dipertegas sebagai kategori/area module
 Console                       -> AccessControl, SystemSetting, AuditTrail
-StudentAffairs                -> Student, Guardian, Dormitory
+StudentLife                   -> Student, Guardian, Dormitory
 Academic                      -> AcademicPeriod, Academic
 Finance                       -> StudentFinance
 Communication                 -> Announcement
@@ -170,7 +170,7 @@ Console/AccessControl
 Console/SystemSetting
 Finance/StudentFinance
 Academic/AcademicPeriod
-StudentAffairs/Student
+StudentLife/Student
 ```
 
 `Namespace` bukan:
@@ -352,7 +352,7 @@ app/
 │   ├── Organization/
 │   │   └── Organization/
 │   │
-│   ├── StudentAffairs/
+│   ├── StudentLife/
 │   │   ├── Student/
 │   │   ├── Guardian/
 │   │   └── Dormitory/
@@ -395,7 +395,7 @@ Namespace baseline:
 |---|---|
 | `Console` | administrasi sistem tingkat tinggi |
 | `Organization` | struktur yayasan, unit, lokasi, dan organisasi |
-| `StudentAffairs` | area kesantrian |
+| `StudentLife` | area kesantrian |
 | `Academic` | area akademik |
 | `HumanResource` | area SDM/personalia |
 | `Finance` | area keuangan |
@@ -415,7 +415,7 @@ Contoh namespace PHP:
 
 ```text
 App\Modules\Console\AccessControl
-App\Modules\StudentAffairs\Student
+App\Modules\StudentLife\Student
 App\Modules\Academic\AcademicPeriod
 App\Modules\Finance\StudentFinance
 App\Modules\Platform\Notification
@@ -496,7 +496,7 @@ Contoh:
 ```json
 {
     "name": "Student",
-    "namespace": "App\\Modules\\StudentAffairs\\Student",
+    "namespace": "App\\Modules\\StudentLife\\Student",
     "enabled": true,
     "version": "0.1.0",
     "description": "Student lifecycle and pesantren student administration",
@@ -1324,7 +1324,7 @@ Module tidak mengambil Eloquent Model module lain lalu melakukan business mutati
 Hindari:
 
 ```php
-use App\Modules\StudentAffairs\Student\Infrastructure\Models\StudentModel;
+use App\Modules\StudentLife\Student\Infrastructure\Models\StudentModel;
 ```
 
 di Finance hanya untuk mengubah student.
@@ -1957,14 +1957,14 @@ Module Generator menjadi bagian Phase 0.
 Command utama harus menerima namespace dan module, misalnya:
 
 ```bash
-php artisan make:module StudentAffairs Student
+php artisan make:module StudentLife Student
 php artisan make:module Finance StudentFinance
 ```
 
 Jika implementasi command memakai format separator, format alternatif diperbolehkan selama hasil path dan namespace sama, misalnya:
 
 ```bash
-php artisan make:module StudentAffairs/Student
+php artisan make:module StudentLife/Student
 ```
 
 Output minimum harus mengikuti struktur standar module.
@@ -1983,12 +1983,12 @@ Child generator dapat digunakan ketika diperlukan.
 Contoh:
 
 ```bash
-php artisan module:make-action StudentAffairs Student RegisterStudent
-php artisan module:make-dto StudentAffairs Student StudentData
-php artisan module:make-contract StudentAffairs Student StudentRepository
-php artisan module:make-event StudentAffairs Student StudentRegistered
-php artisan module:make-model StudentAffairs Student Student
-php artisan module:make-repository StudentAffairs Student EloquentStudentRepository
+php artisan module:make-action StudentLife Student RegisterStudent
+php artisan module:make-dto StudentLife Student StudentData
+php artisan module:make-contract StudentLife Student StudentRepository
+php artisan module:make-event StudentLife Student StudentRegistered
+php artisan module:make-model StudentLife Student Student
+php artisan module:make-repository StudentLife Student EloquentStudentRepository
 php artisan module:make-adapter Platform Document SpatieDocumentStorage
 php artisan module:make-integration Finance StudentFinance PaymentGateway
 ```
@@ -2093,14 +2093,14 @@ Academic/AcademicPeriod
 
 ```text
 HumanResource/HumanResource
-StudentAffairs/Student
-StudentAffairs/Guardian
+StudentLife/Student
+StudentLife/Guardian
 ```
 
 ## Phase 3 — Residential & Academic Core
 
 ```text
-StudentAffairs/Dormitory
+StudentLife/Dormitory
 Academic/Academic
 ```
 
@@ -2128,7 +2128,7 @@ exports
 management views
 ```
 
-## Phase 7 — Expansion
+## Phase 7 — Expansion / Ditunda
 
 ```text
 Payroll
@@ -2157,6 +2157,10 @@ AI assistant
 ```
 
 Intelligence layer dibangun setelah volume dan kualitas data memadai.
+
+Catatan prioritas saat ini: phase expansion dan intelligence ditunda dulu sampai
+foundation, people core, operasional inti, finance, document, communication,
+notification, dan reporting release awal selesai serta disetujui.
 
 ---
 

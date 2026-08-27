@@ -149,7 +149,7 @@ Pekerjaan lintas module memakai `docs/work-items/<nama-pekerjaan>/`.
 - Inventarisasi module dan generator sebelum mengubah struktur.
 - Gunakan module generator project ketika tersedia.
 - Generator minimum harus menerima namespace dan module, misalnya
-  `php artisan make:module StudentAffairs Student`.
+  `php artisan make:module StudentLife Student`.
 - Generator tidak membuat `Adapters`, `Integrations`, `Commands`, atau
   `Queries` secara default.
 - Migration module berada di `Database/Migrations`.

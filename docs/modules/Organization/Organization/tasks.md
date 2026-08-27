@@ -54,14 +54,14 @@
 
 ## Increment 4: Backend read/list dan create/update minimum
 
-- [ ] Tambahkan read/list unit.
+- [x] Tambahkan read/list unit.
   - Acceptance: actor dengan `organization.view` dapat membaca daftar unit.
   - Verification: focused feature test.
-- [ ] Tambahkan create/update unit.
+- [x] Tambahkan create/update unit.
   - Acceptance: actor dengan `organization.manage` dapat membuat dan mengubah
     unit; duplicate `code` ditolak.
   - Verification: focused feature test.
-- [ ] Tambahkan authorization failure coverage.
+- [x] Tambahkan authorization failure coverage.
   - Acceptance: actor tanpa permission mendapat response forbidden.
   - Verification: focused feature test.
 

@@ -1,5 +1,6 @@
 import { Head, router, usePage } from '@inertiajs/react';
-import { FormEvent, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
+import type { FormEvent } from 'react';
 import SystemDashboardLayout from '@/layouts/system-dashboard-layout';
 import { canAccess } from '@/lib/authorization';
 import route from '@/lib/route';
@@ -10,6 +11,7 @@ import { OrganizationUnitFilterForm } from '../components/OrganizationUnitFilter
 import { OrganizationUnitFormDialog } from '../components/OrganizationUnitFormDialog';
 import { OrganizationUnitHeaderActions } from '../components/OrganizationUnitHeaderActions';
 import { OrganizationUnitList } from '../components/OrganizationUnitList';
+import { OrganizationUnitPagination } from '../components/OrganizationUnitPagination';
 import { OrganizationUnitSummary } from '../components/OrganizationUnitSummary';
 import type { OrganizationUnit, OrganizationUnitPageProps } from '../types';
 
@@ -55,9 +57,10 @@ export default function Index() {
         setFormOpen(true);
     };
 
-    const submitFilters = (event: FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-
+    const visitUnits = (
+        nextPage = 1,
+        nextPerPage = Number(filters.per_page ?? pagination.defaultPerPage),
+    ) => {
         router.get(
             route('organization.units.index'),
             {
@@ -66,7 +69,11 @@ export default function Index() {
                     status: status === 'all' ? undefined : status,
                     type: type === 'all' ? undefined : type,
                 },
-                per_page: filters.per_page ?? pagination.defaultPerPage,
+                page: nextPage === 1 ? undefined : nextPage,
+                per_page:
+                    nextPerPage === pagination.defaultPerPage
+                        ? undefined
+                        : nextPerPage,
                 sort: filters.sort ?? 'name',
             },
             {
@@ -75,6 +82,11 @@ export default function Index() {
                 replace: true,
             },
         );
+    };
+
+    const submitFilters = (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        visitUnits();
     };
 
     const resetFilters = () => {
@@ -147,13 +159,25 @@ export default function Index() {
                         />
 
                         {units.data.length > 0 ? (
-                            <OrganizationUnitList
-                                units={units.data}
-                                canManage={canManage}
-                                parentNameById={parentNameById}
-                                onEdit={openEditDialog}
-                                onArchive={setArchivingUnit}
-                            />
+                            <>
+                                <OrganizationUnitList
+                                    units={units.data}
+                                    canManage={canManage}
+                                    parentNameById={parentNameById}
+                                    onEdit={openEditDialog}
+                                    onArchive={setArchivingUnit}
+                                />
+                                <OrganizationUnitPagination
+                                    meta={units.meta}
+                                    pagination={pagination}
+                                    onPageChange={(page) =>
+                                        visitUnits(page, units.meta.perPage)
+                                    }
+                                    onPerPageChange={(perPage) =>
+                                        visitUnits(1, perPage)
+                                    }
+                                />
+                            </>
                         ) : (
                             <OrganizationUnitEmptyState
                                 canManage={canManage}

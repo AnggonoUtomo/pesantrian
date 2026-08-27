@@ -65,5 +65,9 @@ return [
         'passkey.destroy',
         'passkey.registration-options',
         'passkey.store',
+        'organization.units.index',
+        'organization.units.store',
+        'organization.units.update',
+        'organization.units.archive',
     ],
 ];

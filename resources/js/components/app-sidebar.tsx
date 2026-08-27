@@ -1,13 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
-import {
-    LayoutGrid,
-    Palette,
-    ScrollText,
-    Settings2,
-    ShieldCheck,
-    UserRound,
-    UsersRound,
-} from 'lucide-react';
+import { Palette, ShieldCheck, UserRound } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavMain } from '@/components/nav-main';
 import {
@@ -21,67 +13,15 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { useCurrentUrl } from '@/hooks/use-current-url';
+import { buildNamespaceNavigation } from '@/lib/navigation';
 import route from '@/lib/route';
-import type { Auth, NavItem } from '@/types';
+import type { Auth } from '@/types';
 
 export function AppSidebar() {
     const { auth } = usePage<{ auth: Auth }>().props;
     const { isCurrentUrl } = useCurrentUrl();
     const dashboardUrl = route('dashboard');
-    const canAccessControl =
-        auth.superSystem === true ||
-        auth.permissions?.['access_control.role.manage'] === true;
-    const canManageUsers =
-        auth.superSystem === true || auth.permissions?.['user.view'] === true;
-    const canViewAuditLogs =
-        auth.superSystem === true ||
-        auth.permissions?.['audit_log.view'] === true;
-    const canManageSystemSettings = auth.superSystem === true;
-
-    const mainNavItems: NavItem[] = [
-        {
-            title: 'System Dashboard',
-            href: dashboardUrl,
-            icon: LayoutGrid,
-            iconClassName: 'text-cyan-600 dark:text-cyan-300',
-        },
-    ];
-
-    if (canAccessControl) {
-        mainNavItems.push({
-            title: 'Access Control',
-            href: route('access-control.index'),
-            icon: ShieldCheck,
-            iconClassName: 'text-violet-600 dark:text-violet-300',
-        });
-    }
-
-    if (canManageUsers) {
-        mainNavItems.push({
-            title: 'User Management',
-            href: route('system.users.index'),
-            icon: UsersRound,
-            iconClassName: 'text-emerald-600 dark:text-emerald-300',
-        });
-    }
-
-    if (canViewAuditLogs) {
-        mainNavItems.push({
-            title: 'Audit Log',
-            href: route('system.audit-logs.index'),
-            icon: ScrollText,
-            iconClassName: 'text-amber-600 dark:text-amber-300',
-        });
-    }
-
-    if (canManageSystemSettings) {
-        mainNavItems.push({
-            title: 'SystemSetting',
-            href: route('system.system-settings.index'),
-            icon: Settings2,
-            iconClassName: 'text-sky-600 dark:text-sky-300',
-        });
-    }
+    const mainNavGroups = buildNamespaceNavigation(auth);
 
     return (
         <Sidebar
@@ -102,7 +42,7 @@ export function AppSidebar() {
             </SidebarHeader>
 
             <SidebarContent className="dashboard-sidebar-content">
-                <NavMain items={mainNavItems} />
+                <NavMain groups={mainNavGroups} />
             </SidebarContent>
 
             <SidebarFooter className="dashboard-sidebar-footer p-2">

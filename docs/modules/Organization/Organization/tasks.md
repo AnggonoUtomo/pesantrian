@@ -155,4 +155,31 @@
     filter, dan state kosong tetap memakai kontrak route/props yang sama.
   - Verification: focused Inertia feature test.
 
+## Increment 11: Sidebar menu per namespace
+
+- [x] Tambahkan menu Organization pada sidebar.
+  - Acceptance: `Unit Organisasi` tampil untuk actor dengan
+    `organization.view`, `organization.manage`, atau `superSystem`.
+  - Verification: focused source/UI test dan `npm run build`.
+- [x] Kelompokkan menu sidebar berdasarkan namespace module.
+  - Acceptance: menu utama sidebar dirender sebagai group namespace seperti
+    `System` dan `Organization`, bukan daftar flat.
+  - Verification: focused source/UI test.
+- [x] Sinkronkan Ziggy route untuk menu Organization.
+  - Acceptance: frontend mendapat route `organization.units.index`,
+    `organization.units.store`, `organization.units.update`, dan
+    `organization.units.archive`.
+  - Verification: `php artisan test --filter=ZiggyRouteTest`.
+
+## Increment 12: Pagination UI unit organisasi
+
+- [x] Tambahkan kontrol pagination pada daftar unit organisasi.
+  - Acceptance: user dapat melihat range data, halaman aktif, total halaman,
+    tombol `Sebelumnya`/`Berikutnya`, dan memilih jumlah baris per halaman.
+  - Verification: focused source/UI test dan `npm run build`.
+- [x] Pertahankan filter saat berpindah halaman.
+  - Acceptance: pagination memakai route `organization.units.index` dengan
+    search, filter status, filter type, sort, page, dan per_page yang aktif.
+  - Verification: focused source/UI test.
+
 Jangan menambahkan pekerjaan baru ke checklist ini tanpa persetujuan user.

@@ -228,6 +228,7 @@ it('menghubungkan kontrol create edit dan archive UI ke permission organization 
     $page = file_get_contents(resource_path('js/pages/Organization/Organization/pages/Index.tsx'));
     $headerActions = file_get_contents(resource_path('js/pages/Organization/Organization/components/OrganizationUnitHeaderActions.tsx'));
     $list = file_get_contents(resource_path('js/pages/Organization/Organization/components/OrganizationUnitList.tsx'));
+    $pagination = file_get_contents(resource_path('js/pages/Organization/Organization/components/OrganizationUnitPagination.tsx'));
     $dialog = file_get_contents(resource_path('js/pages/Organization/Organization/components/OrganizationUnitFormDialog.tsx'));
     $archiveDialog = file_get_contents(resource_path('js/pages/Organization/Organization/components/ArchiveOrganizationUnitDialog.tsx'));
 
@@ -237,9 +238,16 @@ it('menghubungkan kontrol create edit dan archive UI ke permission organization 
         ->and($page)->toContain('onEdit')
         ->and($page)->toContain('onArchive')
         ->and($page)->toContain('parentOptions')
+        ->and($page)->toContain('OrganizationUnitPagination')
+        ->and($page)->toContain('onPageChange')
+        ->and($page)->toContain('onPerPageChange')
         ->and($headerActions)->toContain('Tambah unit')
         ->and($list)->toContain('Edit unit')
         ->and($list)->toContain('Archive unit')
+        ->and($pagination)->toContain('Sebelumnya')
+        ->and($pagination)->toContain('Berikutnya')
+        ->and($pagination)->toContain('Jumlah baris per halaman')
+        ->and($pagination)->toContain('pagination.perPageOptions')
         ->and($dialog)->toContain("route('organization.units.store')")
         ->and($dialog)->toContain("route('organization.units.update', unit.id)")
         ->and($dialog)->toContain('parent_id')

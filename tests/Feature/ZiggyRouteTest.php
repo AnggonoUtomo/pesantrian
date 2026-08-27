@@ -17,6 +17,10 @@ it('membagikan route yang dibutuhkan frontend', function () {
         'system.users.force-delete',
         'system.audit-logs.index',
         'system.audit-logs.show',
+        'organization.units.index',
+        'organization.units.store',
+        'organization.units.update',
+        'organization.units.archive',
         'two-factor.qr-code',
         'passkey.confirm',
     ]);

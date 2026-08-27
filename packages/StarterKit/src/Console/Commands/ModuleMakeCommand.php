@@ -15,8 +15,9 @@ use Throwable;
 final class ModuleMakeCommand extends Command
 {
     protected $signature = 'module:make
-        {module : Nama module dalam PascalCase}
-        {--domain=System : Domain module dalam PascalCase}
+        {namespace : Namespace module dalam PascalCase, atau nama module saat memakai --domain legacy}
+        {module? : Nama module dalam PascalCase}
+        {--domain=System : Alias kompatibilitas untuk namespace module}
         {--profile=default-v1 : Profile generator}
         {--dry-run : Tampilkan rencana tanpa menulis file}
         {--force : Wajib untuk mengizinkan operasi mutasi}
@@ -30,9 +31,17 @@ final class ModuleMakeCommand extends Command
     public function handle(ModuleGenerationPreviewer $previewer, ModulePromotionService $promotion): int
     {
         try {
+            $moduleArgument = $this->argument('module');
+            $namespace = is_string($moduleArgument) && $moduleArgument !== ''
+                ? $this->argument('namespace')
+                : $this->option('domain');
+            $module = is_string($moduleArgument) && $moduleArgument !== ''
+                ? $moduleArgument
+                : $this->argument('namespace');
+
             $request = ModuleGenerationRequest::fromArray([
-                'module' => $this->argument('module'),
-                'domain' => $this->option('domain'),
+                'module' => $module,
+                'namespace' => $namespace,
                 'profile' => $this->option('profile'),
                 'dry_run' => (bool) $this->option('dry-run'),
                 'force' => (bool) $this->option('force'),

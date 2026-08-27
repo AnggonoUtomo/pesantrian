@@ -23,25 +23,35 @@ afterEach(function () {
 });
 
 it('menyediakan dry-run JSON tanpa membuat file', function () {
-    $result = runModuleMake('Billing', ['--domain=System', '--dry-run', '--json']);
+    $result = runModuleMake('Console', 'Billing', ['--dry-run', '--json']);
 
     expect($result->getExitCode())->toBe(0)
         ->and($result->getOutput())->toContain('MODULE_PREVIEWED');
+
+    expect(File::exists(app_path('Modules/Console/Billing')))->toBeFalse();
+});
+
+it('menerima domain sebagai alias kompatibilitas', function () {
+    $result = runLegacyModuleMake('Billing', ['--domain=System', '--dry-run', '--json']);
+
+    expect($result->getExitCode())->toBe(0)
+        ->and($result->getOutput())->toContain('MODULE_PREVIEWED')
+        ->and($result->getOutput())->toContain('app/Modules/System/Billing');
 
     expect(File::exists(app_path('Modules/System/Billing')))->toBeFalse();
 });
 
 it('membuat module baru dan mengembalikan JSON sukses', function () {
-    $result = runModuleMake('GeneratorCreateProbe', ['--domain=System', '--force', '--yes', '--json']);
+    $result = runModuleMake('Console', 'GeneratorCreateProbe', ['--force', '--yes', '--json']);
 
     expect($result->getExitCode())->toBe(0)
         ->and($result->getOutput())->toContain('MODULE_CREATED');
 
-    expect(File::exists(app_path('Modules/System/GeneratorCreateProbe/module.json')))->toBeTrue();
+    expect(File::exists(app_path('Modules/Console/GeneratorCreateProbe/module.json')))->toBeTrue();
 });
 
 it('menolak input invalid sebelum membuat file', function () {
-    $result = runModuleMake('invalid-module', ['--domain=System', '--json']);
+    $result = runModuleMake('System', 'invalid-module', ['--json']);
 
     expect($result->getExitCode())->toBe(1)
         ->and($result->getOutput())->toContain('MODULE_GENERATION_INVALID');
@@ -50,7 +60,7 @@ it('menolak input invalid sebelum membuat file', function () {
 });
 
 it('menolak mutasi tanpa konfirmasi force', function () {
-    $result = runModuleMake('AuditLog', ['--domain=System', '--json']);
+    $result = runModuleMake('System', 'AuditLog', ['--json']);
 
     expect($result->getExitCode())->toBe(1)
         ->and($result->getOutput())->toContain('MODULE_GENERATION_INVALID')
@@ -60,21 +70,21 @@ it('menolak mutasi tanpa konfirmasi force', function () {
 });
 
 it('mengembalikan failure saat target conflict', function () {
-    $initial = runModuleMake('GeneratorConflictProbe', ['--domain=System', '--force', '--yes']);
+    $initial = runModuleMake('System', 'GeneratorConflictProbe', ['--force', '--yes']);
 
     expect($initial->getExitCode())->toBe(0, $initial->getOutput());
 
-    $result = runModuleMake('GeneratorConflictProbe', ['--domain=System', '--force', '--yes', '--json']);
+    $result = runModuleMake('System', 'GeneratorConflictProbe', ['--force', '--yes', '--json']);
 
     expect($result->getExitCode())->toBe(1)
         ->and($result->getOutput())->toContain('MODULE_GENERATION_FAILED');
 });
 
 it('mengizinkan extension additive tanpa overwrite', function () {
-    expect(runModuleMake('GeneratorExtensionProbe', ['--domain=System', '--force', '--yes', '--json'])->getExitCode())->toBe(0);
+    expect(runModuleMake('System', 'GeneratorExtensionProbe', ['--force', '--yes', '--json'])->getExitCode())->toBe(0);
     File::put(app_path('Modules/System/GeneratorExtensionProbe/custom.txt'), 'keep');
 
-    $result = runModuleMake('GeneratorExtensionProbe', ['--domain=System', '--extension', '--force', '--yes', '--json']);
+    $result = runModuleMake('System', 'GeneratorExtensionProbe', ['--extension', '--force', '--yes', '--json']);
 
     expect($result->getExitCode())->toBe(0)
         ->and($result->getOutput())->toContain('MODULE_CREATED')
@@ -82,10 +92,10 @@ it('mengizinkan extension additive tanpa overwrite', function () {
 });
 
 it('menolak overwrite tanpa extension sebelum mutation', function () {
-    expect(runModuleMake('GeneratorOverwriteGuardProbe', ['--domain=System', '--force', '--yes', '--json'])->getExitCode())->toBe(0);
+    expect(runModuleMake('System', 'GeneratorOverwriteGuardProbe', ['--force', '--yes', '--json'])->getExitCode())->toBe(0);
     File::put(app_path('Modules/System/GeneratorOverwriteGuardProbe/module.php'), 'custom');
 
-    $result = runModuleMake('GeneratorOverwriteGuardProbe', ['--domain=System', '--overwrite', '--force', '--yes', '--json']);
+    $result = runModuleMake('System', 'GeneratorOverwriteGuardProbe', ['--overwrite', '--force', '--yes', '--json']);
 
     expect($result->getExitCode())->toBe(1)
         ->and($result->getOutput())->toContain('overwrite membutuhkan extension')
@@ -93,10 +103,10 @@ it('menolak overwrite tanpa extension sebelum mutation', function () {
 });
 
 it('mengizinkan overwrite file plan dengan guard lengkap', function () {
-    expect(runModuleMake('GeneratorOverwriteProbe', ['--domain=System', '--force', '--yes', '--json'])->getExitCode())->toBe(0);
+    expect(runModuleMake('System', 'GeneratorOverwriteProbe', ['--force', '--yes', '--json'])->getExitCode())->toBe(0);
     File::put(app_path('Modules/System/GeneratorOverwriteProbe/module.php'), 'custom');
 
-    $result = runModuleMake('GeneratorOverwriteProbe', ['--domain=System', '--extension', '--overwrite', '--force', '--yes', '--json']);
+    $result = runModuleMake('System', 'GeneratorOverwriteProbe', ['--extension', '--overwrite', '--force', '--yes', '--json']);
 
     expect($result->getExitCode())->toBe(0)
         ->and($result->getOutput())->toContain('MODULE_CREATED')
@@ -104,9 +114,27 @@ it('mengizinkan overwrite file plan dengan guard lengkap', function () {
 });
 
 /** @param list<string> $options */
-function runModuleMake(string $module, array $options): ModuleMakeCommandResult
+function runModuleMake(string $namespace, string $module, array $options): ModuleMakeCommandResult
 {
-    $arguments = ['module' => $module];
+    $arguments = [
+        'namespace' => $namespace,
+        'module' => $module,
+    ];
+
+    foreach ($options as $option) {
+        [$name, $value] = array_pad(explode('=', $option, 2), 2, true);
+        $arguments[$name] = $value;
+    }
+
+    $exitCode = Artisan::call('module:make', $arguments);
+
+    return new ModuleMakeCommandResult($exitCode, Artisan::output());
+}
+
+/** @param list<string> $options */
+function runLegacyModuleMake(string $module, array $options): ModuleMakeCommandResult
+{
+    $arguments = ['namespace' => $module];
 
     foreach ($options as $option) {
         [$name, $value] = array_pad(explode('=', $option, 2), 2, true);
@@ -146,5 +174,6 @@ function cleanupGeneratorProbes(): void
         'GeneratorOverwriteProbe',
     ] as $module) {
         File::deleteDirectory(app_path('Modules/System/'.$module));
+        File::deleteDirectory(app_path('Modules/Console/'.$module));
     }
 }

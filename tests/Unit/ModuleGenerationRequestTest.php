@@ -9,6 +9,7 @@ it('membuat request generator valid dengan default profile', function () {
     ]);
 
     expect($request->module)->toBe('AccessControl')
+        ->and($request->namespace)->toBe('System')
         ->and($request->domain)->toBe('System')
         ->and($request->profile)->toBe('default-v1')
         ->and($request->dryRun)->toBeFalse()
@@ -16,6 +17,17 @@ it('membuat request generator valid dengan default profile', function () {
         ->and($request->yes)->toBeFalse()
         ->and($request->extension)->toBeFalse()
         ->and($request->overwrite)->toBeFalse();
+});
+
+it('menerima namespace sebagai istilah baseline dan domain sebagai alias kompatibilitas', function () {
+    $request = ModuleGenerationRequest::fromArray([
+        'module' => 'Student',
+        'namespace' => 'StudentLife',
+    ]);
+
+    expect($request->module)->toBe('Student')
+        ->and($request->namespace)->toBe('StudentLife')
+        ->and($request->domain)->toBe('StudentLife');
 });
 
 it('menerima opsi profile dan mode generator', function () {
@@ -43,6 +55,7 @@ it('menolak nama module, domain, dan profile yang tidak aman', function (array $
         ->toThrow(InvalidArgumentException::class, $message);
 })->with([
     'module' => [['module' => 'invalid-module', 'domain' => 'System'], 'module'],
+    'namespace' => [['module' => 'Student', 'namespace' => '../StudentLife'], 'namespace'],
     'domain' => [['module' => 'AccessControl', 'domain' => '../System'], 'domain'],
     'profile' => [['module' => 'AccessControl', 'domain' => 'System', 'profile' => '../default'], 'profile'],
 ]);

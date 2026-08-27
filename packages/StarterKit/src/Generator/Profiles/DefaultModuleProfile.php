@@ -16,8 +16,8 @@ final class DefaultModuleProfile
             throw new InvalidArgumentException('DefaultModuleProfile hanya mendukung profile default-v1.');
         }
 
-        $namespace = 'App\\Modules\\'.$request->domain.'\\'.$request->module;
-        $targetPath = 'app/Modules/'.$request->domain.'/'.$request->module;
+        $namespace = 'App\\Modules\\'.$request->namespace.'\\'.$request->module;
+        $targetPath = 'app/Modules/'.$request->namespace.'/'.$request->module;
 
         return new ModuleGenerationPlan(
             profile: $request->profile,
@@ -30,35 +30,7 @@ final class DefaultModuleProfile
     /** @return list<string> */
     private function directories(): array
     {
-        return [
-            'Application/Actions',
-            'Application/DTO',
-            'Application/Queries',
-            'Application/Services',
-            'Application/Contracts',
-            'Domain/Contracts',
-            'Domain/Entities',
-            'Domain/Events',
-            'Domain/Exceptions',
-            'Domain/Services',
-            'Domain/ValueObjects',
-            'Infrastructure/Persistence/Models',
-            'Infrastructure/Persistence/Repositories',
-            'Infrastructure/Observers',
-            'Infrastructure/Providers',
-            'Infrastructure/External',
-            'Presentation/Controllers',
-            'Presentation/Policies',
-            'Presentation/Requests',
-            'Presentation/Resources',
-            'Database/Factories',
-            'Database/Migrations',
-            'Database/Seeders',
-            'Routes',
-            'Tests/Feature',
-            'Tests/Integration',
-            'Tests/Unit',
-        ];
+        return [];
     }
 
     /** @return array<string, string> */
@@ -70,8 +42,8 @@ final class DefaultModuleProfile
             'version' => '1.0.0',
             'schema_version' => 1,
             'status' => 'enabled',
-            'domain' => $request->domain,
-            'path' => 'app/Modules/'.$request->domain.'/'.$request->module,
+            'domain' => $request->namespace,
+            'path' => 'app/Modules/'.$request->namespace.'/'.$request->module,
             'provider' => $namespace.'\\ServiceProvider',
             'dependencies' => [],
             'permission_source' => 'permissions.php',
@@ -83,7 +55,7 @@ final class DefaultModuleProfile
             'module.php' => "<?php\n\nreturn [];\n",
             'permissions.php' => "<?php\n\nreturn [];\n",
             'ServiceProvider.php' => "<?php\n\ndeclare(strict_types=1);\n\nnamespace {$namespace};\n\nuse Illuminate\\Support\\ServiceProvider as FrameworkServiceProvider;\n\nfinal class ServiceProvider extends FrameworkServiceProvider\n{\n}\n",
-            'README.md' => "# {$request->module}\n\nModule {$request->module} pada domain {$request->domain}.\n",
+            'README.md' => "# {$request->module}\n\nModule {$request->module} pada namespace {$request->namespace}.\n",
             'Routes/api.php' => "<?php\n",
             'Routes/web.php' => "<?php\n",
             'Routes/console.php' => "<?php\n",

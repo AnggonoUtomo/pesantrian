@@ -6,20 +6,17 @@ use StarterKit\Generator\Profiles\DefaultModuleProfile;
 it('menghasilkan plan default-v1 dengan struktur canonical', function () {
     $request = ModuleGenerationRequest::fromArray([
         'module' => 'AccessControl',
-        'domain' => 'System',
+        'namespace' => 'Console',
     ]);
 
     $plan = (new DefaultModuleProfile)->plan($request);
 
     expect($plan->profile)->toBe('default-v1')
-        ->and($plan->targetPath)->toBe('app/Modules/System/AccessControl')
-        ->and($plan->directories)->toContain('Application/Actions')
-        ->and($plan->directories)->toContain('Domain/ValueObjects')
-        ->and($plan->directories)->toContain('Infrastructure/Persistence/Models')
-        ->and($plan->directories)->toContain('Tests/Integration')
+        ->and($plan->targetPath)->toBe('app/Modules/Console/AccessControl')
+        ->and($plan->directories)->toBe([])
         ->and(array_keys($plan->files))->toContain('module.json', 'ServiceProvider.php', 'README.md')
-        ->and($plan->files['module.json'])->toContain('App\\\\Modules\\\\System\\\\AccessControl')
-        ->and($plan->files['ServiceProvider.php'])->toContain('namespace App\\Modules\\System\\AccessControl;')
+        ->and($plan->files['module.json'])->toContain('App\\\\Modules\\\\Console\\\\AccessControl')
+        ->and($plan->files['ServiceProvider.php'])->toContain('namespace App\\Modules\\Console\\AccessControl;')
         ->and($plan->files['ServiceProvider.php'])->toContain('use Illuminate\\Support\\ServiceProvider as FrameworkServiceProvider;')
         ->and($plan->files['ServiceProvider.php'])->toContain('final class ServiceProvider extends FrameworkServiceProvider');
 });

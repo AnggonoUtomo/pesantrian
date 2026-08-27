@@ -10,6 +10,7 @@ final readonly class ModuleGenerationRequest
 {
     public function __construct(
         public string $module,
+        public string $namespace,
         public string $domain,
         public string $profile = 'default-v1',
         public bool $dryRun = false,
@@ -23,7 +24,8 @@ final readonly class ModuleGenerationRequest
     public static function fromArray(array $data): self
     {
         $module = self::stringValue($data, 'module');
-        $domain = self::stringValue($data, 'domain');
+        $namespace = self::moduleNamespace($data);
+        $domain = $namespace;
         $profile = $data['profile'] ?? 'default-v1';
 
         if (! is_string($profile) || ! preg_match('/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/', $profile)) {
@@ -34,8 +36,10 @@ final readonly class ModuleGenerationRequest
             throw new InvalidArgumentException('module harus berupa PascalCase.');
         }
 
-        if (! preg_match('/^[A-Z][A-Za-z0-9]*$/', $domain)) {
-            throw new InvalidArgumentException('domain harus berupa PascalCase.');
+        if (! preg_match('/^[A-Z][A-Za-z0-9]*$/', $namespace)) {
+            $key = array_key_exists('namespace', $data) ? 'namespace' : 'domain';
+
+            throw new InvalidArgumentException("$key harus berupa PascalCase.");
         }
 
         $dryRun = self::boolValue($data, 'dry_run');
@@ -60,7 +64,17 @@ final readonly class ModuleGenerationRequest
             throw new InvalidArgumentException('overwrite membutuhkan yes.');
         }
 
-        return new self($module, $domain, $profile, $dryRun, $force, $yes, $extension, $overwrite);
+        return new self($module, $namespace, $domain, $profile, $dryRun, $force, $yes, $extension, $overwrite);
+    }
+
+    /** @param array<string, mixed> $data */
+    private static function moduleNamespace(array $data): string
+    {
+        if (array_key_exists('namespace', $data)) {
+            return self::stringValue($data, 'namespace');
+        }
+
+        return self::stringValue($data, 'domain');
     }
 
     /** @param array<string, mixed> $data */

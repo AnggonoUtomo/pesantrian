@@ -6,6 +6,7 @@ namespace App\Modules\Organization\Organization\Application\Contracts;
 
 use App\Modules\Organization\Organization\Application\DTO\OrganizationUnitData;
 use App\Modules\Organization\Organization\Application\DTO\OrganizationUnitListFilter;
+use App\Modules\Organization\Organization\Application\DTO\OrganizationUnitParentOptionData;
 use App\Modules\Organization\Organization\Application\DTO\PaginatedOrganizationUnitData;
 use App\Modules\Organization\Organization\Application\DTO\UpsertOrganizationUnitData;
 
@@ -14,6 +15,9 @@ interface OrganizationUnitRepository
     public function paginate(OrganizationUnitListFilter $filter): PaginatedOrganizationUnitData;
 
     public function find(string $id): ?OrganizationUnitData;
+
+    /** @return list<OrganizationUnitParentOptionData> */
+    public function activeParentOptions(): array;
 
     public function create(UpsertOrganizationUnitData $data): OrganizationUnitData;
 

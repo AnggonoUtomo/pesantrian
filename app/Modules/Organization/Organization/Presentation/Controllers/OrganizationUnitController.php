@@ -8,6 +8,8 @@ use App\Modules\Organization\Organization\Application\DTO\OrganizationUnitData;
 use App\Modules\Organization\Organization\Application\DTO\PaginatedOrganizationUnitData;
 use App\Modules\Organization\Organization\Application\Actions\CreateOrganizationUnit;
 use App\Modules\Organization\Organization\Application\Actions\UpdateOrganizationUnit;
+use App\Modules\Organization\Organization\Application\DTO\OrganizationUnitParentOptionData;
+use App\Modules\Organization\Organization\Application\Queries\ListOrganizationUnitParentOptions;
 use App\Modules\Organization\Organization\Application\Queries\ListOrganizationUnits;
 use App\Modules\Organization\Organization\Presentation\Requests\ListOrganizationUnitsApiRequest;
 use App\Modules\Organization\Organization\Presentation\Requests\StoreOrganizationUnitApiRequest;
@@ -22,6 +24,7 @@ final readonly class OrganizationUnitController implements HasMiddleware
 {
     public function __construct(
         private ListOrganizationUnits $listOrganizationUnits,
+        private ListOrganizationUnitParentOptions $listOrganizationUnitParentOptions,
         private CreateOrganizationUnit $createOrganizationUnit,
         private UpdateOrganizationUnit $updateOrganizationUnit,
     ) {}
@@ -51,6 +54,7 @@ final readonly class OrganizationUnitController implements HasMiddleware
                 'perPageOptions' => [10, 25, 50, 100],
                 'defaultPerPage' => 25,
             ],
+            'parentOptions' => $this->parentOptions(),
         ]);
     }
 
@@ -83,5 +87,14 @@ final readonly class OrganizationUnitController implements HasMiddleware
             'total' => $result->total,
             'lastPage' => $result->lastPage,
         ];
+    }
+
+    /** @return list<array{id: string, code: string, name: string}> */
+    private function parentOptions(): array
+    {
+        return array_map(
+            static fn (OrganizationUnitParentOptionData $unit): array => $unit->toArray(),
+            $this->listOrganizationUnitParentOptions->execute(),
+        );
     }
 }

@@ -7,6 +7,7 @@ namespace App\Modules\Organization\Organization\Infrastructure\Repositories;
 use App\Modules\Organization\Organization\Application\Contracts\OrganizationUnitRepository;
 use App\Modules\Organization\Organization\Application\DTO\OrganizationUnitData;
 use App\Modules\Organization\Organization\Application\DTO\OrganizationUnitListFilter;
+use App\Modules\Organization\Organization\Application\DTO\OrganizationUnitParentOptionData;
 use App\Modules\Organization\Organization\Application\DTO\PaginatedOrganizationUnitData;
 use App\Modules\Organization\Organization\Application\DTO\UpsertOrganizationUnitData;
 use App\Modules\Organization\Organization\Infrastructure\Models\OrganizationUnitRecord;
@@ -47,6 +48,21 @@ final class EloquentOrganizationUnitRepository implements OrganizationUnitReposi
         $record = OrganizationUnitRecord::query()->find($id);
 
         return $record instanceof OrganizationUnitRecord ? $this->map($record) : null;
+    }
+
+    public function activeParentOptions(): array
+    {
+        return OrganizationUnitRecord::query()
+            ->where('status', 'active')
+            ->orderBy('name')
+            ->get(['id', 'code', 'name'])
+            ->map(static fn (OrganizationUnitRecord $record): OrganizationUnitParentOptionData => new OrganizationUnitParentOptionData(
+                id: (string) $record->getKey(),
+                code: (string) $record->code,
+                name: (string) $record->name,
+            ))
+            ->values()
+            ->all();
     }
 
     public function create(UpsertOrganizationUnitData $data): OrganizationUnitData

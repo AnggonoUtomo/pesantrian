@@ -22,6 +22,7 @@ import {
 import route from '@/lib/route';
 import type {
     OrganizationUnit,
+    OrganizationUnitParentOption,
     OrganizationUnitStatus,
     OrganizationUnitType,
 } from '../types';
@@ -51,6 +52,7 @@ const statusOptions = Object.entries(statusLabels) as [
 ][];
 
 type OrganizationUnitFormData = {
+    parent_id: string;
     code: string;
     name: string;
     type: OrganizationUnitType;
@@ -61,16 +63,22 @@ type OrganizationUnitFormData = {
 type Props = {
     open: boolean;
     unit: OrganizationUnit | null;
+    parentOptions: OrganizationUnitParentOption[];
     onOpenChange: (open: boolean) => void;
 };
 
 export function OrganizationUnitFormDialog({
     open,
     unit,
+    parentOptions,
     onOpenChange,
 }: Props) {
     const isEdit = unit !== null;
+    const availableParents = parentOptions.filter(
+        (parent) => parent.id !== unit?.id,
+    );
     const form = useForm<OrganizationUnitFormData>({
+        parent_id: unit?.parent_id ?? '',
         code: unit?.code ?? '',
         name: unit?.name ?? '',
         type: unit?.type ?? 'operational_unit',
@@ -129,6 +137,46 @@ export function OrganizationUnitFormDialog({
                 </DialogHeader>
 
                 <form onSubmit={submit} className="space-y-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="organization-unit-parent">
+                            Induk unit
+                        </Label>
+                        <Select
+                            value={form.data.parent_id || 'none'}
+                            onValueChange={(value) =>
+                                form.setData(
+                                    'parent_id',
+                                    value === 'none' ? '' : value,
+                                )
+                            }
+                        >
+                            <SelectTrigger id="organization-unit-parent">
+                                <SelectValue placeholder="Tanpa induk" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="none">
+                                    Tanpa induk
+                                </SelectItem>
+                                {availableParents.map((parent) => (
+                                    <SelectItem
+                                        key={parent.id}
+                                        value={parent.id}
+                                    >
+                                        {parent.name} ({parent.code})
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        {form.errors.parent_id ? (
+                            <p
+                                className="text-xs text-destructive"
+                                role="alert"
+                            >
+                                {form.errors.parent_id}
+                            </p>
+                        ) : null}
+                    </div>
+
                     <div className="grid gap-4 sm:grid-cols-[160px_1fr]">
                         <div className="space-y-2">
                             <Label htmlFor="organization-unit-code">

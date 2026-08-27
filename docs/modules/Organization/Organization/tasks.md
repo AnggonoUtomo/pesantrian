@@ -113,4 +113,18 @@
     `organization.manage`; backend tetap menjadi authority.
   - Verification: focused source/UI test dan build.
 
+## Increment 8: Hierarchy parent unit
+
+- [x] Kirim parent option ke halaman Inertia.
+  - Acceptance: halaman menerima daftar unit aktif sebagai kandidat parent.
+  - Verification: focused Inertia feature test.
+- [x] Tampilkan parent unit pada daftar.
+  - Acceptance: table dan card mobile menampilkan induk unit bila tersedia.
+  - Verification: focused source/UI test dan `npm run build`.
+- [x] Tambahkan field parent pada dialog create/update.
+  - Acceptance: user dapat memilih tanpa induk atau parent unit lain; edit tidak
+    menawarkan unit yang sedang diedit sebagai parent.
+  - Verification: focused source/UI test, mutation feature test, dan
+    `npm run build`.
+
 Jangan menambahkan pekerjaan baru ke checklist ini tanpa persetujuan user.

@@ -46,10 +46,17 @@ export type OrganizationUnitFilters = {
 export type OrganizationUnitPageProps = {
     auth: Auth;
     units: OrganizationUnitPage;
+    parentOptions: OrganizationUnitParentOption[];
     filters: OrganizationUnitFilters;
     pagination: {
         perPageOptions: number[];
         defaultPerPage: number;
     };
     errors?: Record<string, string>;
+};
+
+export type OrganizationUnitParentOption = {
+    id: string;
+    code: string;
+    name: string;
 };

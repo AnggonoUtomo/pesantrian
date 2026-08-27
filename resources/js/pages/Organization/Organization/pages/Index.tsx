@@ -50,7 +50,7 @@ const typeOptions = Object.entries(typeLabels) as [
 ][];
 
 export default function Index() {
-    const { auth, units, filters, pagination, errors } =
+    const { auth, units, parentOptions, filters, pagination, errors } =
         usePage<OrganizationUnitPageProps>().props;
     const [search, setSearch] = useState(filters.search ?? '');
     const [status, setStatus] = useState<string>(
@@ -68,6 +68,16 @@ export default function Index() {
         [units.data],
     );
     const inactiveCount = units.data.length - activeCount;
+    const parentNameById = useMemo(
+        () =>
+            new Map(
+                parentOptions.map((parent) => [
+                    parent.id,
+                    `${parent.name} (${parent.code})`,
+                ]),
+            ),
+        [parentOptions],
+    );
 
     const submitFilters = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -288,6 +298,7 @@ export default function Index() {
                             <OrganizationUnitList
                                 units={units.data}
                                 canManage={canManage}
+                                parentNameById={parentNameById}
                                 onEdit={(unit) => {
                                     setEditingUnit(unit);
                                     setFormOpen(true);
@@ -309,6 +320,7 @@ export default function Index() {
                 key={editingUnit?.id ?? 'new'}
                 open={formOpen}
                 unit={editingUnit}
+                parentOptions={parentOptions}
                 onOpenChange={(open) => {
                     setFormOpen(open);
 
@@ -342,10 +354,12 @@ function SummaryCard({
 function OrganizationUnitList({
     units,
     canManage,
+    parentNameById,
     onEdit,
 }: {
     units: OrganizationUnit[];
     canManage: boolean;
+    parentNameById: Map<string, string>;
     onEdit: (unit: OrganizationUnit) => void;
 }) {
     return (
@@ -359,6 +373,9 @@ function OrganizationUnitList({
                             </th>
                             <th scope="col" className="px-4 py-3">
                                 Jenis
+                            </th>
+                            <th scope="col" className="px-4 py-3">
+                                Induk
                             </th>
                             <th scope="col" className="px-4 py-3">
                                 Status
@@ -386,6 +403,13 @@ function OrganizationUnitList({
                                 </td>
                                 <td className="px-4 py-3">
                                     {typeLabels[unit.type]}
+                                </td>
+                                <td className="px-4 py-3 text-foreground/70">
+                                    {unit.parent_id
+                                        ? (parentNameById.get(
+                                              unit.parent_id,
+                                          ) ?? 'Induk tidak ditemukan')
+                                        : 'Tanpa induk'}
                                 </td>
                                 <td className="px-4 py-3">
                                     <StatusBadge status={unit.status} />
@@ -419,6 +443,14 @@ function OrganizationUnitList({
                                 <h3 className="font-medium">{unit.name}</h3>
                                 <p className="text-xs text-foreground/60">
                                     {unit.code} · {typeLabels[unit.type]}
+                                </p>
+                                <p className="text-xs text-foreground/60">
+                                    Induk:{' '}
+                                    {unit.parent_id
+                                        ? (parentNameById.get(
+                                              unit.parent_id,
+                                          ) ?? 'Induk tidak ditemukan')
+                                        : 'Tanpa induk'}
                                 </p>
                             </div>
                             <StatusBadge status={unit.status} />

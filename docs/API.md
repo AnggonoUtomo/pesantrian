@@ -18,7 +18,10 @@ frontend memakai Laravel named routes melalui Ziggy untuk Inertia React.
 | GET | `/api/v1/audit-logs` | `api.v1.audit-logs.index` | Audit log view policy | Tidak | Envelope sukses dengan daftar audit dan pagination meta |
 | GET | `/api/v1/audit-logs/{auditLog}` | `api.v1.audit-logs.show` | Audit log view policy | Tidak | Envelope sukses dengan detail audit |
 | GET | `/api/v1/academic/periods/terms` | `api.v1.academic.periods.terms.index` | `academic_period.view` | Tidak | Envelope sukses dengan daftar term akademik dan pagination meta |
+| GET | `/api/v1/academic/periods/terms/current` | `api.v1.academic.periods.terms.current` | `academic_period.view` | Tidak | Envelope sukses dengan term akademik aktif global atau `null` |
 | POST | `/api/v1/academic/periods/terms` | `api.v1.academic.periods.terms.store` | `academic_period.manage` | Ya | Envelope sukses `201` dengan term akademik yang dibuat |
+| PATCH | `/api/v1/academic/periods/terms/{term}/activate` | `api.v1.academic.periods.terms.activate` | `academic_period.manage` | Ya | Envelope sukses dengan term akademik aktif; menonaktifkan active term sebelumnya |
+| PATCH | `/api/v1/academic/periods/terms/{term}/close` | `api.v1.academic.periods.terms.close` | `academic_period.manage` | Ya | Envelope sukses dengan term akademik closed dan `is_active=false` |
 | PATCH | `/api/v1/academic/periods/terms/{term}` | `api.v1.academic.periods.terms.update` | `academic_period.manage` | Ya | Envelope sukses dengan term akademik yang diperbarui |
 | GET | `/api/v1/academic/periods/years` | `api.v1.academic.periods.years.index` | `academic_period.view` | Tidak | Envelope sukses dengan daftar tahun akademik dan pagination meta |
 | POST | `/api/v1/academic/periods/years` | `api.v1.academic.periods.years.store` | `academic_period.manage` | Ya | Envelope sukses `201` dengan tahun akademik yang dibuat |

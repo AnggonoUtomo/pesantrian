@@ -28,8 +28,14 @@ interface AcademicPeriodRepository
 
     public function findTerm(string $id): ?AcademicTermData;
 
+    public function currentActiveTerm(): ?AcademicTermData;
+
     public function createTerm(UpsertAcademicTermData $data): AcademicTermData;
 
     /** @param array<string, string|int|bool> $changes */
     public function updateTerm(string $id, array $changes): ?AcademicTermData;
+
+    public function activateTerm(string $id): ?AcademicTermData;
+
+    public function closeTerm(string $id): ?AcademicTermData;
 }

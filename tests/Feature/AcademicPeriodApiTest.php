@@ -166,6 +166,141 @@ it('mengembalikan list term akademik dan membuat update term melalui API terotor
         ->assertJsonPath('data.status', 'active');
 });
 
+it('mengelola lifecycle active term global melalui API terotorisasi', function (): void {
+    $view = Permission::create(['name' => 'academic_period.view', 'guard_name' => 'web']);
+    $manage = Permission::create(['name' => 'academic_period.manage', 'guard_name' => 'web']);
+    $actor = User::factory()->create();
+    $actor->givePermissionTo([$view, $manage]);
+    $year = AcademicYearRecord::query()->create([
+        'code' => '2026-2027',
+        'name' => 'Tahun Akademik 2026/2027',
+        'starts_on' => '2026-07-01',
+        'ends_on' => '2027-06-30',
+        'status' => 'draft',
+    ]);
+    $ganjil = AcademicTermRecord::query()->create([
+        'academic_year_id' => $year->id,
+        'code' => '2026-2027-GANJIL',
+        'name' => 'Semester Ganjil',
+        'sequence' => 1,
+        'starts_on' => '2026-07-01',
+        'ends_on' => '2026-12-31',
+        'status' => 'draft',
+        'is_active' => false,
+    ]);
+    $genap = AcademicTermRecord::query()->create([
+        'academic_year_id' => $year->id,
+        'code' => '2026-2027-GENAP',
+        'name' => 'Semester Genap',
+        'sequence' => 2,
+        'starts_on' => '2027-01-01',
+        'ends_on' => '2027-06-30',
+        'status' => 'draft',
+        'is_active' => false,
+    ]);
+
+    $this->actingAs($actor)->patchJson(
+        route('api.v1.academic.periods.terms.activate', $ganjil->id),
+        [],
+        ['Idempotency-Key' => (string) Str::ulid()],
+    )
+        ->assertOk()
+        ->assertJsonPath('message', 'Term akademik berhasil diaktifkan.')
+        ->assertJsonPath('data.id', $ganjil->id)
+        ->assertJsonPath('data.status', 'active')
+        ->assertJsonPath('data.is_active', true);
+
+    $this->assertDatabaseHas('academic_terms', [
+        'id' => $ganjil->id,
+        'status' => 'active',
+        'is_active' => true,
+    ]);
+    $this->assertDatabaseHas('academic_years', [
+        'id' => $year->id,
+        'status' => 'active',
+    ]);
+
+    $this->actingAs($actor)->patchJson(
+        route('api.v1.academic.periods.terms.activate', $genap->id),
+        [],
+        ['Idempotency-Key' => (string) Str::ulid()],
+    )
+        ->assertOk()
+        ->assertJsonPath('data.id', $genap->id)
+        ->assertJsonPath('data.is_active', true);
+
+    $this->assertDatabaseHas('academic_terms', [
+        'id' => $ganjil->id,
+        'is_active' => false,
+    ]);
+    $this->assertDatabaseHas('academic_terms', [
+        'id' => $genap->id,
+        'status' => 'active',
+        'is_active' => true,
+    ]);
+
+    $this->actingAs($actor)
+        ->getJson(route('api.v1.academic.periods.terms.current'))
+        ->assertOk()
+        ->assertJsonPath('message', 'Term akademik aktif berhasil dibaca.')
+        ->assertJsonPath('data.id', $genap->id);
+
+    $this->actingAs($actor)->patchJson(
+        route('api.v1.academic.periods.terms.close', $genap->id),
+        [],
+        ['Idempotency-Key' => (string) Str::ulid()],
+    )
+        ->assertOk()
+        ->assertJsonPath('message', 'Term akademik berhasil ditutup.')
+        ->assertJsonPath('data.status', 'closed')
+        ->assertJsonPath('data.is_active', false);
+
+    $this->actingAs($actor)
+        ->getJson(route('api.v1.academic.periods.terms.current'))
+        ->assertOk()
+        ->assertJsonPath('data', null);
+});
+
+it('menolak closed term sebagai active period dan direct is_active mutation', function (): void {
+    $manage = Permission::create(['name' => 'academic_period.manage', 'guard_name' => 'web']);
+    $actor = User::factory()->create();
+    $actor->givePermissionTo($manage);
+    $year = AcademicYearRecord::query()->create([
+        'code' => '2026-2027',
+        'name' => 'Tahun Akademik 2026/2027',
+        'starts_on' => '2026-07-01',
+        'ends_on' => '2027-06-30',
+        'status' => 'active',
+    ]);
+    $closed = AcademicTermRecord::query()->create([
+        'academic_year_id' => $year->id,
+        'code' => '2026-2027-GANJIL',
+        'name' => 'Semester Ganjil',
+        'sequence' => 1,
+        'starts_on' => '2026-07-01',
+        'ends_on' => '2026-12-31',
+        'status' => 'closed',
+        'is_active' => false,
+    ]);
+
+    $this->actingAs($actor)->patchJson(
+        route('api.v1.academic.periods.terms.activate', $closed->id),
+        [],
+        ['Idempotency-Key' => (string) Str::ulid()],
+    )
+        ->assertUnprocessable()
+        ->assertJsonPath('success', false)
+        ->assertJsonPath('code', 'ACADEMIC_PERIOD_LIFECYCLE_INVALID')
+        ->assertJsonPath('errors.term.0', 'Closed term tidak bisa dijadikan active period.');
+
+    $this->actingAs($actor)->patchJson(route('api.v1.academic.periods.terms.update', $closed->id), [
+        'is_active' => true,
+    ], ['Idempotency-Key' => (string) Str::ulid()])
+        ->assertUnprocessable()
+        ->assertJsonPath('code', 'VALIDATION_ERROR')
+        ->assertJsonStructure(['errors' => ['is_active']]);
+});
+
 it('menolak guest actor tanpa permission dan payload invalid academic period', function (): void {
     $this->getJson(route('api.v1.academic.periods.years.index'))
         ->assertUnauthorized()

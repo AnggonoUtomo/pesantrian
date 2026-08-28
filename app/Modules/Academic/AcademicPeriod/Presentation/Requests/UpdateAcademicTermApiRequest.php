@@ -43,7 +43,7 @@ final class UpdateAcademicTermApiRequest extends FormRequest
             'starts_on' => ['sometimes', 'required', 'date'],
             'ends_on' => ['sometimes', 'required', 'date', 'after:starts_on'],
             'status' => ['sometimes', 'required', 'string', Rule::in($this->statuses())],
-            'is_active' => ['sometimes', 'boolean'],
+            'is_active' => ['sometimes', 'boolean', Rule::in([false, 0, '0'])],
         ];
     }
 

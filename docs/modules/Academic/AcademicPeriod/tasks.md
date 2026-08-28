@@ -72,15 +72,15 @@
 
 ## Increment 5: Active period lifecycle
 
-- [ ] Tambahkan activate term.
+- [x] Tambahkan activate term.
   - Acceptance: actor dengan `academic_period.manage` dapat menetapkan active
     term sesuai rule yang disetujui.
   - Verification: focused lifecycle feature test.
-- [ ] Jaga invariant satu active term.
+- [x] Jaga invariant satu active term.
   - Acceptance: aktivasi term baru menonaktifkan term aktif sebelumnya atau
     menolak aktivasi sesuai keputusan scope.
   - Verification: focused lifecycle feature test.
-- [ ] Tambahkan close term.
+- [x] Tambahkan close term.
   - Acceptance: closed term tidak menjadi active term dan tidak bisa dipakai
     sebagai active period.
   - Verification: focused lifecycle feature test.

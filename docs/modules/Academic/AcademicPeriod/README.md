@@ -17,8 +17,8 @@ Module `Academic/AcademicPeriod` menjadi source of truth untuk tahun akademik,
 semester/term, kalender periode, dan periode akademik aktif SakaSantri.
 
 Module ini dibangun setelah `Organization/Organization` karena periode akademik
-dapat berlaku untuk unit organisasi tertentu atau seluruh pesantren/yayasan,
-tergantung kebutuhan operasional yang diputuskan pada increment implementasi.
+awal berlaku global untuk seluruh aplikasi. Scope per unit organisasi ditunda
+sampai ada kebutuhan operasional nyata.
 
 ## Boundary
 
@@ -80,6 +80,8 @@ Candidate public boundary:
   logic.
 - Seeder/factory hanya dibuat ketika ada data/test nyata.
 - Public contract lintas module tidak dibuat sampai consumer pertama jelas.
+- Active period saat ini global: hanya satu `academic_terms.is_active=true`
+  dengan status `active` pada satu waktu.
 
 ## Verifikasi Utama
 

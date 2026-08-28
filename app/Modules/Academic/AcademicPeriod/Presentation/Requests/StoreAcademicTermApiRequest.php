@@ -38,7 +38,7 @@ final class StoreAcademicTermApiRequest extends FormRequest
             'starts_on' => ['required', 'date'],
             'ends_on' => ['required', 'date', 'after:starts_on'],
             'status' => ['required', 'string', Rule::in($this->statuses())],
-            'is_active' => ['sometimes', 'boolean'],
+            'is_active' => ['sometimes', 'boolean', Rule::in([false, 0, '0'])],
         ];
     }
 

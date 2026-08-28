@@ -16,6 +16,7 @@ use App\Modules\Academic\AcademicPeriod\Application\DTO\UpsertAcademicYearData;
 use App\Modules\Academic\AcademicPeriod\Infrastructure\Models\AcademicTermRecord;
 use App\Modules\Academic\AcademicPeriod\Infrastructure\Models\AcademicYearRecord;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 
 final class EloquentAcademicPeriodRepository implements AcademicPeriodRepository
 {
@@ -111,6 +112,17 @@ final class EloquentAcademicPeriodRepository implements AcademicPeriodRepository
         return $record instanceof AcademicTermRecord ? $this->mapTerm($record) : null;
     }
 
+    public function currentActiveTerm(): ?AcademicTermData
+    {
+        $record = AcademicTermRecord::query()
+            ->where('is_active', true)
+            ->where('status', 'active')
+            ->orderBy('starts_on')
+            ->first();
+
+        return $record instanceof AcademicTermRecord ? $this->mapTerm($record) : null;
+    }
+
     public function createTerm(UpsertAcademicTermData $data): AcademicTermData
     {
         /** @var AcademicTermRecord $record */
@@ -131,6 +143,51 @@ final class EloquentAcademicPeriodRepository implements AcademicPeriodRepository
         $record->save();
 
         return $this->mapTerm($record->refresh());
+    }
+
+    public function activateTerm(string $id): ?AcademicTermData
+    {
+        return DB::transaction(function () use ($id): ?AcademicTermData {
+            $record = AcademicTermRecord::query()->lockForUpdate()->find($id);
+
+            if (! $record instanceof AcademicTermRecord) {
+                return null;
+            }
+
+            AcademicTermRecord::query()
+                ->where('id', '!=', $record->id)
+                ->where('is_active', true)
+                ->update(['is_active' => false]);
+
+            $record->forceFill([
+                'status' => 'active',
+                'is_active' => true,
+            ])->save();
+
+            AcademicYearRecord::query()
+                ->whereKey($record->academic_year_id)
+                ->update(['status' => 'active']);
+
+            return $this->mapTerm($record->refresh());
+        });
+    }
+
+    public function closeTerm(string $id): ?AcademicTermData
+    {
+        return DB::transaction(function () use ($id): ?AcademicTermData {
+            $record = AcademicTermRecord::query()->lockForUpdate()->find($id);
+
+            if (! $record instanceof AcademicTermRecord) {
+                return null;
+            }
+
+            $record->forceFill([
+                'status' => 'closed',
+                'is_active' => false,
+            ])->save();
+
+            return $this->mapTerm($record->refresh());
+        });
     }
 
     private function mapYear(AcademicYearRecord $record): AcademicYearData

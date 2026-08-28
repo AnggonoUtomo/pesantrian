@@ -27,9 +27,18 @@ Route::middleware(['web', 'auth', 'verified', 'throttle:system-api'])
             ->name('terms.')
             ->group(function (): void {
                 Route::get('/', [AcademicTermApiController::class, 'index'])->name('index');
+                Route::get('/current', [AcademicTermApiController::class, 'current'])->name('current');
                 Route::post('/', [AcademicTermApiController::class, 'store'])
                     ->middleware('api.idempotency')
                     ->name('store');
+                Route::patch('/{term}/activate', [AcademicTermApiController::class, 'activate'])
+                    ->whereUlid('term')
+                    ->middleware('api.idempotency')
+                    ->name('activate');
+                Route::patch('/{term}/close', [AcademicTermApiController::class, 'close'])
+                    ->whereUlid('term')
+                    ->middleware('api.idempotency')
+                    ->name('close');
                 Route::patch('/{term}', [AcademicTermApiController::class, 'update'])
                     ->whereUlid('term')
                     ->middleware('api.idempotency')

@@ -16,7 +16,7 @@ Scope slice awal:
 - permission `academic_period.view` dan `academic_period.manage`;
 - read/list tahun akademik dan term;
 - create/update minimum tahun akademik dan term;
-- aktivasi satu periode aktif;
+- aktivasi satu periode aktif global;
 - penutupan periode;
 - audit mutation periode;
 - candidate active-period query contract setelah consumer nyata disetujui.
@@ -80,6 +80,8 @@ Input term minimum:
 - `starts_on`: date wajib;
 - `ends_on`: date wajib, harus setelah `starts_on`;
 - `status`: draft/active/closed.
+- `is_active` tidak boleh diaktifkan lewat create/update umum; aktivasi wajib
+  lewat lifecycle endpoint agar invariant global terjaga.
 
 ### Output
 
@@ -102,6 +104,7 @@ Output read/list minimum:
 - Duplicate code: `422`.
 - Rentang tanggal invalid: `422`.
 - Aktivasi periode ditolak bila rule status/tanggal tidak terpenuhi.
+- Closed term tidak bisa dijadikan active period.
 
 ## Data
 
@@ -151,19 +154,19 @@ tidak relevan.
 UI penuh ditunda sampai backend foundation valid. Bila UI ditambahkan pada
 increment berikutnya:
 
-- Page sementara mengikuti pola project saat ini:
-  `resources/js/pages/Academic/AcademicPeriod/pages/Index.tsx`.
-- Komponen business-specific ditempatkan di folder `components/` module page
-  tersebut sampai keputusan canonical `resources/js/modules/*` dijalankan.
+- Page canonical mengikuti keputusan roadmap Task 3:
+  `resources/js/modules/academic-period/pages/Index.tsx`.
+- Komponen business-specific ditempatkan di
+  `resources/js/modules/academic-period/components/`.
 - Routing memakai Ziggy named routes.
 - State wajib mencakup loading, empty, validation error, success toast, dan
   authorization UX.
 
 ## Dependency
 
-- `Organization/Organization`: dependency produk untuk konteks unit bila
-  periode perlu scoped per unit. Slice awal tidak mengambil model/repository
-  Organization secara langsung.
+- `Organization/Organization`: dependency produk untuk konteks unit bila nanti
+  periode perlu scoped per unit. Slice awal active period global dan tidak
+  mengambil model/repository Organization secara langsung.
 - `System/AccessControl` bridge: permission backend.
 - `System/AuditLog` bridge: audit recorder existing sampai vocabulary final
   `Console/AuditTrail` dimigrasikan.
@@ -179,16 +182,17 @@ Dormitory, atau Academic pada slice awal.
 - [ ] Actor dengan permission dapat list/create/update periode minimum.
 - [ ] Actor tanpa permission ditolak oleh backend.
 - [ ] Duplicate code dan rentang tanggal invalid ditolak.
-- [ ] Hanya satu term aktif pada satu waktu sesuai rule yang disetujui.
+- [x] Hanya satu term aktif global pada satu waktu sesuai rule yang disetujui.
 - [ ] Mutation periode mencatat audit/event aman.
 - [ ] `php artisan module:validate --no-ansi` lulus.
 - [ ] Focused tests AcademicPeriod lulus.
 
 ## Risiko Terbuka
 
-- Perlu keputusan apakah active period global untuk aplikasi atau scoped per
-  unit organisasi.
+- Active period diputuskan global untuk aplikasi pada slice awal; scoped per
+  unit organisasi ditunda sampai ada kebutuhan nyata.
 - Perlu keputusan vocabulary final status: `draft/active/closed` atau
   variasi lain.
 - Public active-period contract belum dibuat sampai consumer pertama jelas.
-- UI path canonical `resources/js/modules/*` masih menjadi work item terpisah.
+- UI path canonical sudah diputuskan melalui roadmap Task 3:
+  `resources/js/modules/academic-period/` untuk UI baru AcademicPeriod.

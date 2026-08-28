@@ -87,10 +87,10 @@
 
 ## Increment 6: Audit mutation
 
-- [ ] Tambahkan audit create/update tahun akademik.
+- [x] Tambahkan audit create/update tahun akademik.
   - Acceptance: mutation menghasilkan audit entry/event yang aman.
   - Verification: focused audit test.
-- [ ] Tambahkan audit create/update/activate/close term.
+- [x] Tambahkan audit create/update/activate/close term.
   - Acceptance: mutation lifecycle menghasilkan audit entry/event yang aman.
   - Verification: focused audit test.
 

@@ -70,7 +70,13 @@ Candidate public boundary:
   - `academic_period.manage`
 - Backend menjadi authority authorization.
 - Frontend permission hanya UX bila UI ditambahkan pada increment berikutnya.
-- Audit mutation dicatat untuk create/update/open/close/activate periode.
+- Audit mutation dicatat melalui bridge AuditLog/AuditTrail existing untuk:
+  - `academic_period.year.created`
+  - `academic_period.year.updated`
+  - `academic_period.term.created`
+  - `academic_period.term.updated`
+  - `academic_period.term.activated`
+  - `academic_period.term.closed`
 
 ## Operasi
 
@@ -82,6 +88,8 @@ Candidate public boundary:
 - Public contract lintas module tidak dibuat sampai consumer pertama jelas.
 - Active period saat ini global: hanya satu `academic_terms.is_active=true`
   dengan status `active` pada satu waktu.
+- Event audit module dipublish sebagai `academic-period.activity.occurred` dan
+  direkam oleh listener AuditLog existing.
 
 ## Verifikasi Utama
 

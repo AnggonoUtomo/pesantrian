@@ -134,7 +134,7 @@ Academic, Finance, dan Reporting.
 - [ ] Module `Academic/AcademicPeriod` valid.
 - [ ] Academic year/term dan active period tersedia.
 - [ ] Query contract active period siap dipakai consumer.
-- [ ] Permission dan audit tersedia.
+- [x] Permission dan audit tersedia.
 
 **Verification:**
 

@@ -59,7 +59,11 @@ final readonly class AcademicTermApiController implements HasMiddleware
 
     public function store(StoreAcademicTermApiRequest $request): JsonResponse
     {
-        $term = $this->createAcademicTerm->execute($request->toData());
+        $term = $this->createAcademicTerm->execute(
+            $request->user(),
+            $request->toData(),
+            $this->responses->correlationId($request),
+        );
 
         return $this->responses->success(
             $request,
@@ -84,7 +88,12 @@ final readonly class AcademicTermApiController implements HasMiddleware
 
     public function update(UpdateAcademicTermApiRequest $request, string $term): JsonResponse
     {
-        $updated = $this->updateAcademicTerm->execute($term, $request->changes());
+        $updated = $this->updateAcademicTerm->execute(
+            $request->user(),
+            $term,
+            $request->changes(),
+            $this->responses->correlationId($request),
+        );
 
         abort_if($updated === null, 404);
 
@@ -98,7 +107,11 @@ final readonly class AcademicTermApiController implements HasMiddleware
     public function activate(ListAcademicTermsApiRequest $request, string $term): JsonResponse
     {
         try {
-            $activated = $this->activateAcademicTerm->execute($term);
+            $activated = $this->activateAcademicTerm->execute(
+                $request->user(),
+                $term,
+                $this->responses->correlationId($request),
+            );
         } catch (AcademicPeriodLifecycleException $exception) {
             return $this->responses->error(
                 $request,
@@ -120,7 +133,11 @@ final readonly class AcademicTermApiController implements HasMiddleware
 
     public function close(ListAcademicTermsApiRequest $request, string $term): JsonResponse
     {
-        $closed = $this->closeAcademicTerm->execute($term);
+        $closed = $this->closeAcademicTerm->execute(
+            $request->user(),
+            $term,
+            $this->responses->correlationId($request),
+        );
 
         abort_if($closed === null, 404);
 

@@ -183,7 +183,7 @@ Dormitory, atau Academic pada slice awal.
 - [ ] Actor tanpa permission ditolak oleh backend.
 - [ ] Duplicate code dan rentang tanggal invalid ditolak.
 - [x] Hanya satu term aktif global pada satu waktu sesuai rule yang disetujui.
-- [ ] Mutation periode mencatat audit/event aman.
+- [x] Mutation periode mencatat audit/event aman.
 - [ ] `php artisan module:validate --no-ansi` lulus.
 - [ ] Focused tests AcademicPeriod lulus.
 

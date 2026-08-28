@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Modules\Academic\AcademicPeriod\Infrastructure\Models\AcademicTermRecord;
 use App\Modules\Academic\AcademicPeriod\Infrastructure\Models\AcademicYearRecord;
 use App\Modules\System\AccessControl\Infrastructure\Persistence\Models\Permission;
+use App\Modules\System\AuditLog\Infrastructure\Persistence\Models\AuditRecord;
 use Illuminate\Support\Str;
 
 it('mengembalikan list tahun akademik dengan filter pagination sort dan envelope canonical', function (): void {
@@ -299,6 +300,140 @@ it('menolak closed term sebagai active period dan direct is_active mutation', fu
         ->assertUnprocessable()
         ->assertJsonPath('code', 'VALIDATION_ERROR')
         ->assertJsonStructure(['errors' => ['is_active']]);
+});
+
+it('mencatat audit mutation academic period dengan metadata aman', function (): void {
+    $manage = Permission::create(['name' => 'academic_period.manage', 'guard_name' => 'web']);
+    $actor = User::factory()->create();
+    $actor->givePermissionTo($manage);
+    $yearCreateCorrelationId = (string) Str::ulid();
+    $yearUpdateCorrelationId = (string) Str::ulid();
+    $termCreateCorrelationId = (string) Str::ulid();
+    $termUpdateCorrelationId = (string) Str::ulid();
+    $termActivateCorrelationId = (string) Str::ulid();
+    $termCloseCorrelationId = (string) Str::ulid();
+
+    $createdYear = $this->actingAs($actor)->postJson(route('api.v1.academic.periods.years.store'), [
+        'code' => '2026-2027',
+        'name' => 'Tahun Akademik 2026/2027',
+        'starts_on' => '2026-07-01',
+        'ends_on' => '2027-06-30',
+        'status' => 'draft',
+    ], [
+        'Idempotency-Key' => (string) Str::ulid(),
+        'X-Correlation-ID' => $yearCreateCorrelationId,
+    ])->assertCreated();
+
+    $yearId = (string) $createdYear->json('data.id');
+
+    $this->actingAs($actor)->patchJson(route('api.v1.academic.periods.years.update', $yearId), [
+        'name' => 'TA 2026/2027',
+    ], [
+        'Idempotency-Key' => (string) Str::ulid(),
+        'X-Correlation-ID' => $yearUpdateCorrelationId,
+    ])->assertOk();
+
+    $createdTerm = $this->actingAs($actor)->postJson(route('api.v1.academic.periods.terms.store'), [
+        'academic_year_id' => $yearId,
+        'code' => '2026-2027-GANJIL',
+        'name' => 'Semester Ganjil',
+        'sequence' => 1,
+        'starts_on' => '2026-07-01',
+        'ends_on' => '2026-12-31',
+        'status' => 'draft',
+    ], [
+        'Idempotency-Key' => (string) Str::ulid(),
+        'X-Correlation-ID' => $termCreateCorrelationId,
+    ])->assertCreated();
+
+    $termId = (string) $createdTerm->json('data.id');
+
+    $this->actingAs($actor)->patchJson(route('api.v1.academic.periods.terms.update', $termId), [
+        'name' => 'Semester 1',
+    ], [
+        'Idempotency-Key' => (string) Str::ulid(),
+        'X-Correlation-ID' => $termUpdateCorrelationId,
+    ])->assertOk();
+
+    $this->actingAs($actor)->patchJson(route('api.v1.academic.periods.terms.activate', $termId), [], [
+        'Idempotency-Key' => (string) Str::ulid(),
+        'X-Correlation-ID' => $termActivateCorrelationId,
+    ])->assertOk();
+
+    $this->actingAs($actor)->patchJson(route('api.v1.academic.periods.terms.close', $termId), [], [
+        'Idempotency-Key' => (string) Str::ulid(),
+        'X-Correlation-ID' => $termCloseCorrelationId,
+    ])->assertOk();
+
+    expect(AuditRecord::query()->where('module', 'AcademicPeriod')->count())->toBe(6);
+
+    $yearCreateAudit = AuditRecord::query()->where('action', 'academic_period.year.created')->firstOrFail();
+    $yearUpdateAudit = AuditRecord::query()->where('action', 'academic_period.year.updated')->firstOrFail();
+    $termCreateAudit = AuditRecord::query()->where('action', 'academic_period.term.created')->firstOrFail();
+    $termUpdateAudit = AuditRecord::query()->where('action', 'academic_period.term.updated')->firstOrFail();
+    $termActivateAudit = AuditRecord::query()->where('action', 'academic_period.term.activated')->firstOrFail();
+    $termCloseAudit = AuditRecord::query()->where('action', 'academic_period.term.closed')->firstOrFail();
+
+    expect($yearCreateAudit->actor_id)->toBe($actor->id)
+        ->and($yearCreateAudit->subject_type)->toBe('academic_year')
+        ->and($yearCreateAudit->subject_id)->toBe($yearId)
+        ->and($yearCreateAudit->correlation_id)->toBe($yearCreateCorrelationId)
+        ->and($yearCreateAudit->metadata)->toMatchArray([
+            'changed_fields' => ['code', 'name', 'starts_on', 'ends_on', 'status'],
+            'result' => [
+                'code' => '2026-2027',
+                'name' => 'Tahun Akademik 2026/2027',
+                'starts_on' => '2026-07-01',
+                'ends_on' => '2027-06-30',
+                'status' => 'draft',
+            ],
+        ])
+        ->and($yearUpdateAudit->correlation_id)->toBe($yearUpdateCorrelationId)
+        ->and($yearUpdateAudit->metadata)->toMatchArray([
+            'changed_fields' => ['name'],
+            'to_status' => 'draft',
+        ])
+        ->and($termCreateAudit->subject_type)->toBe('academic_term')
+        ->and($termCreateAudit->subject_id)->toBe($termId)
+        ->and($termCreateAudit->correlation_id)->toBe($termCreateCorrelationId)
+        ->and($termCreateAudit->metadata)->toMatchArray([
+            'changed_fields' => ['academic_year_id', 'code', 'name', 'sequence', 'starts_on', 'ends_on', 'status'],
+            'result' => [
+                'academic_year_id' => $yearId,
+                'code' => '2026-2027-GANJIL',
+                'name' => 'Semester Ganjil',
+                'sequence' => 1,
+                'starts_on' => '2026-07-01',
+                'ends_on' => '2026-12-31',
+                'status' => 'draft',
+                'is_active' => false,
+            ],
+        ])
+        ->and($termUpdateAudit->correlation_id)->toBe($termUpdateCorrelationId)
+        ->and($termUpdateAudit->metadata)->toMatchArray([
+            'changed_fields' => ['name'],
+            'to_status' => 'draft',
+        ])
+        ->and($termActivateAudit->correlation_id)->toBe($termActivateCorrelationId)
+        ->and($termActivateAudit->metadata)->toMatchArray([
+            'changed_fields' => ['status', 'is_active'],
+            'to_status' => 'active',
+        ])
+        ->and($termActivateAudit->metadata['result'])->toMatchArray([
+            'status' => 'active',
+            'is_active' => true,
+        ])
+        ->and($termCloseAudit->correlation_id)->toBe($termCloseCorrelationId)
+        ->and($termCloseAudit->metadata)->toMatchArray([
+            'changed_fields' => ['status', 'is_active'],
+            'to_status' => 'closed',
+        ])
+        ->and($termCloseAudit->metadata['result'])->toMatchArray([
+            'status' => 'closed',
+            'is_active' => false,
+        ])
+        ->and(array_keys($yearCreateAudit->metadata))->not->toContain('password')
+        ->and(array_keys($termActivateAudit->metadata))->not->toContain('token');
 });
 
 it('menolak guest actor tanpa permission dan payload invalid academic period', function (): void {

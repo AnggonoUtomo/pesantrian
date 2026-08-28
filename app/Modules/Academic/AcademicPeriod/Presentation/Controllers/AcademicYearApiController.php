@@ -52,7 +52,11 @@ final readonly class AcademicYearApiController implements HasMiddleware
 
     public function store(StoreAcademicYearApiRequest $request): JsonResponse
     {
-        $year = $this->createAcademicYear->execute($request->toData());
+        $year = $this->createAcademicYear->execute(
+            $request->user(),
+            $request->toData(),
+            $this->responses->correlationId($request),
+        );
 
         return $this->responses->success(
             $request,
@@ -64,7 +68,12 @@ final readonly class AcademicYearApiController implements HasMiddleware
 
     public function update(UpdateAcademicYearApiRequest $request, string $year): JsonResponse
     {
-        $updated = $this->updateAcademicYear->execute($year, $request->changes());
+        $updated = $this->updateAcademicYear->execute(
+            $request->user(),
+            $year,
+            $request->changes(),
+            $this->responses->correlationId($request),
+        );
 
         abort_if($updated === null, 404);
 

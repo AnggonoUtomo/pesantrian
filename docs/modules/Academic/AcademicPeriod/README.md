@@ -48,8 +48,9 @@ Public boundary dibuat ketika ada consumer nyata. Candidate consumer awal:
 
 Candidate public boundary:
 
-- query active academic period;
-- DTO ringkas academic year dan term;
+- query active academic period, didokumentasikan di
+  [`contracts/active-period.md`](contracts/active-period.md);
+- DTO ringkas active academic period;
 - event perubahan status periode jika AuditTrail atau module consumer perlu
   merespons perubahan.
 
@@ -85,7 +86,8 @@ Candidate public boundary:
 - `ServiceProvider.php` menjadi composition root dan tidak berisi business
   logic.
 - Seeder/factory hanya dibuat ketika ada data/test nyata.
-- Public contract lintas module tidak dibuat sampai consumer pertama jelas.
+- Public contract lintas module belum dibuat di source sampai consumer pertama
+  jelas; candidate contract active period sudah terdokumentasi.
 - Active period saat ini global: hanya satu `academic_terms.is_active=true`
   dengan status `active` pada satu waktu.
 - Event audit module dipublish sebagai `academic-period.activity.occurred` dan

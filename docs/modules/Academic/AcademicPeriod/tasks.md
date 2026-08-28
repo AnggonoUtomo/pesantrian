@@ -96,7 +96,7 @@
 
 ## Increment 7: Candidate active-period contract
 
-- [ ] Dokumentasikan query contract active period.
+- [x] Dokumentasikan query contract active period.
   - Acceptance: contract menjelaskan input/output/failure tanpa mengekspos
     model Infrastructure.
   - Verification: `git diff --check`.
@@ -104,5 +104,8 @@
   - Acceptance: consumer memakai DTO/query public boundary, bukan Eloquent model
     AcademicPeriod.
   - Verification: focused contract/query tests.
+
+  Catatan: belum diimplementasikan pada Increment 7 karena belum ada consumer
+  runtime yang disetujui. Ini menjaga contract tidak menjadi placeholder.
 
 Jangan menambahkan pekerjaan baru ke checklist ini tanpa persetujuan user.

@@ -131,15 +131,15 @@ Academic, Finance, dan Reporting.
 
 **Acceptance criteria:**
 
-- [ ] Module `Academic/AcademicPeriod` valid.
-- [ ] Academic year/term dan active period tersedia.
-- [ ] Query contract active period siap dipakai consumer.
+- [x] Module `Academic/AcademicPeriod` valid.
+- [x] Academic year/term dan active period tersedia.
+- [x] Candidate query contract active period siap menjadi pegangan consumer.
 - [x] Permission dan audit tersedia.
 
 **Verification:**
 
-- [ ] Focused tests AcademicPeriod.
-- [ ] `php artisan module:validate --no-ansi`.
+- [x] Focused tests AcademicPeriod.
+- [x] `php artisan module:validate --no-ansi`.
 
 **Dependencies:** Task 4.
 

@@ -19,7 +19,7 @@ Scope slice awal:
 - aktivasi satu periode aktif global;
 - penutupan periode;
 - audit mutation periode;
-- candidate active-period query contract setelah consumer nyata disetujui.
+- candidate active-period query contract sebagai pegangan consumer berikutnya.
 
 ## Arsitektur
 
@@ -35,6 +35,9 @@ Scope slice awal:
   - `UpdateAcademicTerm`;
   - `ActivateAcademicTerm`;
   - `CloseAcademicTerm`.
+- Candidate public contract:
+  - `ActiveAcademicPeriodReader`;
+  - `ActiveAcademicPeriodData`.
 - Outbound port:
   - repository academic period bila query/mutation membutuhkan boundary
     eksplisit.
@@ -176,16 +179,18 @@ Dormitory, atau Academic pada slice awal.
 
 ## Acceptance Criteria
 
-- [ ] Module `Academic/AcademicPeriod` dapat dibuat oleh generator dan valid.
-- [ ] Migration academic years/terms memakai ULID.
-- [ ] Permission `academic_period.view` dan `academic_period.manage` tersedia.
-- [ ] Actor dengan permission dapat list/create/update periode minimum.
-- [ ] Actor tanpa permission ditolak oleh backend.
-- [ ] Duplicate code dan rentang tanggal invalid ditolak.
+- [x] Module `Academic/AcademicPeriod` dapat dibuat oleh generator dan valid.
+- [x] Migration academic years/terms memakai ULID.
+- [x] Permission `academic_period.view` dan `academic_period.manage` tersedia.
+- [x] Actor dengan permission dapat list/create/update periode minimum.
+- [x] Actor tanpa permission ditolak oleh backend.
+- [x] Duplicate code dan rentang tanggal invalid ditolak.
 - [x] Hanya satu term aktif global pada satu waktu sesuai rule yang disetujui.
 - [x] Mutation periode mencatat audit/event aman.
-- [ ] `php artisan module:validate --no-ansi` lulus.
-- [ ] Focused tests AcademicPeriod lulus.
+- [x] Candidate active-period contract terdokumentasi tanpa mengekspos model
+  Infrastructure.
+- [x] `php artisan module:validate --no-ansi` lulus.
+- [x] Focused tests AcademicPeriod lulus.
 
 ## Risiko Terbuka
 
@@ -193,6 +198,8 @@ Dormitory, atau Academic pada slice awal.
   unit organisasi ditunda sampai ada kebutuhan nyata.
 - Perlu keputusan vocabulary final status: `draft/active/closed` atau
   variasi lain.
-- Public active-period contract belum dibuat sampai consumer pertama jelas.
+- Candidate active-period contract sudah didokumentasikan di
+  `contracts/active-period.md`; runtime interface belum dibuat sampai consumer
+  pertama disetujui.
 - UI path canonical sudah diputuskan melalui roadmap Task 3:
   `resources/js/modules/academic-period/` untuk UI baru AcademicPeriod.

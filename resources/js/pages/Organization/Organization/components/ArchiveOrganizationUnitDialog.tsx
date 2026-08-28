@@ -1,5 +1,6 @@
 import { useForm } from '@inertiajs/react';
 import { Archive } from 'lucide-react';
+import type { FormEvent } from 'react';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -24,9 +25,9 @@ export function ArchiveOrganizationUnitDialog({
     unit,
     onOpenChange,
 }: Props) {
-    const form = useForm({});
+    const form = useForm<{ unit?: string }>({});
 
-    const archiveUnit = (event: React.FormEvent<HTMLFormElement>) => {
+    const archiveUnit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
         if (!unit) {

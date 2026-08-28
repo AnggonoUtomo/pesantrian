@@ -58,15 +58,15 @@
 
 ## Increment 4: Backend read/list dan create/update minimum
 
-- [ ] Tambahkan read/list tahun akademik dan term.
+- [x] Tambahkan read/list tahun akademik dan term.
   - Acceptance: actor dengan `academic_period.view` dapat membaca daftar
     periode akademik.
   - Verification: focused feature test.
-- [ ] Tambahkan create/update tahun akademik dan term.
+- [x] Tambahkan create/update tahun akademik dan term.
   - Acceptance: actor dengan `academic_period.manage` dapat membuat dan
     mengubah periode; duplicate code dan date range invalid ditolak.
   - Verification: focused feature test.
-- [ ] Tambahkan authorization failure coverage.
+- [x] Tambahkan authorization failure coverage.
   - Acceptance: actor tanpa permission mendapat response forbidden.
   - Verification: focused feature test.
 

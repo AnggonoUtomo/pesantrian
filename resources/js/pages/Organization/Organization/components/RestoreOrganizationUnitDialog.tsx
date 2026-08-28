@@ -25,7 +25,7 @@ export function RestoreOrganizationUnitDialog({
     unit,
     onOpenChange,
 }: Props) {
-    const form = useForm({});
+    const form = useForm<{ unit?: string }>({});
 
     const restoreUnit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();

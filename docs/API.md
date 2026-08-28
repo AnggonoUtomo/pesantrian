@@ -17,6 +17,12 @@ frontend memakai Laravel named routes melalui Ziggy untuk Inertia React.
 | --- | --- | --- | --- | --- | --- |
 | GET | `/api/v1/audit-logs` | `api.v1.audit-logs.index` | Audit log view policy | Tidak | Envelope sukses dengan daftar audit dan pagination meta |
 | GET | `/api/v1/audit-logs/{auditLog}` | `api.v1.audit-logs.show` | Audit log view policy | Tidak | Envelope sukses dengan detail audit |
+| GET | `/api/v1/academic/periods/terms` | `api.v1.academic.periods.terms.index` | `academic_period.view` | Tidak | Envelope sukses dengan daftar term akademik dan pagination meta |
+| POST | `/api/v1/academic/periods/terms` | `api.v1.academic.periods.terms.store` | `academic_period.manage` | Ya | Envelope sukses `201` dengan term akademik yang dibuat |
+| PATCH | `/api/v1/academic/periods/terms/{term}` | `api.v1.academic.periods.terms.update` | `academic_period.manage` | Ya | Envelope sukses dengan term akademik yang diperbarui |
+| GET | `/api/v1/academic/periods/years` | `api.v1.academic.periods.years.index` | `academic_period.view` | Tidak | Envelope sukses dengan daftar tahun akademik dan pagination meta |
+| POST | `/api/v1/academic/periods/years` | `api.v1.academic.periods.years.store` | `academic_period.manage` | Ya | Envelope sukses `201` dengan tahun akademik yang dibuat |
+| PATCH | `/api/v1/academic/periods/years/{year}` | `api.v1.academic.periods.years.update` | `academic_period.manage` | Ya | Envelope sukses dengan tahun akademik yang diperbarui |
 | DELETE | `/api/v1/impersonation` | `api.v1.impersonation.destroy` | Authenticated user | Ya | Envelope sukses tanpa data |
 | GET | `/api/v1/organization/units` | `api.v1.organization.units.index` | `organization.view` | Tidak | Envelope sukses dengan daftar unit dan pagination meta |
 | POST | `/api/v1/organization/units` | `api.v1.organization.units.store` | `organization.manage` | Ya | Envelope sukses `201` dengan unit yang dibuat |

@@ -76,15 +76,17 @@ Acceptance:
 
 Tujuan: menentukan pola final untuk UI module sebelum menambah UI baru.
 
-Status: belum dikerjakan. Tidak menjadi blocker untuk dokumentasi, skeleton, dan
-backend slice minimum `Organization/Organization`, tetapi menjadi gate sebelum
-UI module baru atau pemindahan UI existing.
+Status: selesai sebagai keputusan dokumentasi. Detail mapping dan compatibility
+plan tersedia di [`frontend-module-path.md`](frontend-module-path.md).
 
 Acceptance:
 
-- Ada keputusan apakah source lama `resources/js/pages/System/*` tetap sebagai bridge atau dipindah bertahap ke `resources/js/modules/*`.
-- Ziggy route name dan Inertia component path terdokumentasi.
-- Tidak ada route/UI yang patah.
+- Source lama `resources/js/pages/System/*` dan UI Organization existing tetap
+  sebagai bridge sampai ada work item migrasi frontend per module.
+- UI module baru memakai `resources/js/modules/<module>/` sebagai canonical
+  path.
+- Ziggy route name, URL, permission key, dan Inertia component path tidak
+  berubah tanpa compatibility plan.
 
 ### 0.4 Tetapkan strategy compatibility `System` ke `Console`
 
@@ -109,8 +111,9 @@ Checkpoint P0:
 - Focused tests untuk module generator dan 4 module foundation.
 
 Gate menuju `Organization/Organization`: Task 1 dan Task 2 roadmap selesai.
-Task 3 frontend path decision boleh tetap terbuka selama slice Organization
-belum menambah UI baru.
+Task 3 frontend path decision sudah selesai; UI baru setelah keputusan ini
+dibuat di `resources/js/modules/*`, sedangkan UI existing dipindahkan lewat work
+item migration tersendiri.
 
 ## Phase 1: Console, Organization, dan Academic Period (P1)
 

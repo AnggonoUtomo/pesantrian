@@ -2,7 +2,8 @@
 
 ## Status
 
-Active - Organization foundation selesai; siap menuju AcademicPeriod.
+Active - Organization foundation selesai; frontend module path decision selesai;
+AcademicPeriod sedang berjalan.
 
 ## Owner dan Lokasi
 
@@ -58,8 +59,10 @@ sudah menutup foundation module domain pertama:
   existing.
 
 Public contract lintas module belum dibuat karena belum ada consumer nyata.
-Keputusan frontend canonical `resources/js/modules/*` tetap menjadi work item
-terpisah sebelum memindahkan UI existing.
+Keputusan frontend canonical tersedia di
+[`frontend-module-path.md`](frontend-module-path.md): UI baru memakai
+`resources/js/modules/*`, sedangkan UI existing tetap bridge sampai work item
+migrasi frontend per module.
 
 ## Scope
 
@@ -84,13 +87,16 @@ terpisah sebelum memindahkan UI existing.
 
 ## Risiko Terbuka
 
-- Baseline frontend memakai `resources/js/modules/*`, sedangkan source sekarang memakai `resources/js/pages/System/*`.
+- Source UI existing masih berada di `resources/js/pages/System/*` dan
+  `resources/js/pages/Organization/Organization/*`; ini diterima sebagai bridge
+  sementara, bukan canonical untuk UI baru.
 - Baseline menyebut `Console/AuditTrail`, source sekarang memakai `System/AuditLog`.
 - Baseline memasukkan user lifecycle ke `AccessControl`, source sekarang memisah `UserManagement`.
 - Namespace teknis area kesantrian memakai `StudentLife`, dengan label baca
   Bahasa Indonesia "Kesantrian".
 
-Risiko frontend dan rename `System -> Console` tidak menghambat work item
-`Organization/Organization` untuk dokumentasi, skeleton, dan backend slice
-minimum. Risiko tersebut menjadi gate sebelum memindahkan UI existing atau
-menambah UI module baru.
+Rename `System -> Console` tidak menghambat work item `Organization/Organization`
+atau `Academic/AcademicPeriod` untuk dokumentasi, skeleton, dan backend slice
+minimum. Pemindahan UI existing tetap harus memakai work item migrasi frontend
+tersendiri agar Ziggy route name, URL, permission key, dan Inertia component
+path tidak patah diam-diam.

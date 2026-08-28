@@ -71,23 +71,27 @@ module domain baru dibuat.
 
 **Acceptance criteria:**
 
-- [ ] Mapping current page path ke target module path tersedia.
-- [ ] Keputusan bridge atau move bertahap tertulis.
-- [ ] Ziggy/Inertia naming tidak berubah tanpa compatibility plan.
+- [x] Mapping current page path ke target module path tersedia.
+- [x] Keputusan bridge atau move bertahap tertulis.
+- [x] Ziggy/Inertia naming tidak berubah tanpa compatibility plan.
 
 **Verification:**
 
-- [ ] `npm run types:check`.
-- [ ] `npm run build`.
-- [ ] Focused browser smoke bila route/UI dipindah.
+- [x] `npm run types:check`.
+- [x] `npm run build`.
+- [x] Focused browser smoke tidak diperlukan karena belum ada route/UI yang
+  dipindah pada Task 3 ini.
+
+**Evidence:** keputusan tersedia di
+[`frontend-module-path.md`](frontend-module-path.md).
 
 **Dependencies:** Task 1.
 
 **Estimated scope:** S untuk keputusan, M bila mulai move path.
 
-**Gate:** belum menjadi blocker untuk dokumentasi, skeleton, dan backend slice
-minimum `Organization/Organization`. Wajib diputuskan sebelum UI module baru
-atau pemindahan UI existing.
+**Gate:** selesai sebagai keputusan. UI module baru memakai
+`resources/js/modules/*`; UI existing tetap bridge sampai ada work item migrasi
+frontend per module.
 
 ## Task 4: Organization Foundation
 

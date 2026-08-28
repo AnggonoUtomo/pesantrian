@@ -40,19 +40,19 @@
 
 ## Increment 3: Data foundation
 
-- [ ] Tambahkan migration `academic_years`.
+- [x] Tambahkan migration `academic_years`.
   - Acceptance: ULID primary key, unique `code`, date range, status, dan
     timestamp tersedia.
   - Verification: focused migration/model tests.
-- [ ] Tambahkan migration `academic_terms`.
+- [x] Tambahkan migration `academic_terms`.
   - Acceptance: ULID primary key, foreign key ke academic year, unique term code
     per tahun, sequence, date range, status, marker aktif, dan timestamp
     tersedia.
   - Verification: focused migration/model tests.
-- [ ] Tambahkan persistence minimum.
+- [x] Tambahkan persistence minimum.
   - Acceptance: model/repository hanya dibuat bila dipakai oleh use case.
   - Verification: focused unit tests.
-- [ ] Tambahkan permission identity awal.
+- [x] Tambahkan permission identity awal.
   - Acceptance: `academic_period.view` dan `academic_period.manage` valid.
   - Verification: focused permission identity test.
 

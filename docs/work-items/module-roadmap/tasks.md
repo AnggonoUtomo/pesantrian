@@ -67,7 +67,7 @@ module domain baru dibuat.
 ## Task 3: Frontend Module Path Decision
 
 **Description:** Putuskan dan dokumentasikan cara menyelaraskan
-`resources/js/pages/System/*` ke baseline `resources/js/modules/*`.
+`resources/js/pages/System/*` ke namespace final saat consolidation disetujui.
 
 **Acceptance criteria:**
 
@@ -90,7 +90,7 @@ module domain baru dibuat.
 **Estimated scope:** S untuk keputusan, M bila mulai move path.
 
 **Gate:** selesai sebagai keputusan. UI module baru memakai
-`resources/js/modules/*`; UI existing tetap bridge sampai ada work item migrasi
+`resources/js/pages/<Namespace>/<Module>/*`; UI existing tetap bridge sampai ada work item migrasi
 frontend per module.
 
 ## Task 4: Organization Foundation

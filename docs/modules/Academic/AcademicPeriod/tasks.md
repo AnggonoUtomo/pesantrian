@@ -116,9 +116,9 @@
   - Verification: `php artisan test --filter=AcademicPeriodPresentationTest`.
 - [x] Tambahkan frontend module canonical.
   - Acceptance: page berada di
-    `resources/js/modules/academic-period/pages/Index.tsx`, komponen
+    `resources/js/pages/Academic/AcademicPeriod/pages/Index.tsx`, komponen
     business-specific berada di
-    `resources/js/modules/academic-period/components/`, dan `Index.tsx`
+    `resources/js/pages/Academic/AcademicPeriod/components/`, dan `Index.tsx`
     tetap minimal.
   - Verification: `npm run types:check`, `npm run build`.
 - [x] Tambahkan menu sidebar namespace Academic.
@@ -126,9 +126,11 @@
     `academic_period.view` atau `academic_period.manage`.
   - Verification:
     `php artisan test --filter=NavigationSidebarTest|ZiggyRouteTest`.
-- [ ] Tambahkan form mutation dan lifecycle UI.
+- [x] Tambahkan form mutation dan lifecycle UI.
   - Acceptance: create/update tahun, create/update term, activate, dan close
     tersedia via form Inertia dengan flash/validation yang aman.
-  - Verification: focused presentation + frontend tests.
+  - Verification:
+    `php artisan test --filter=AcademicPeriodPresentationTest`,
+    `npm run types:check`, `npm run lint:check`, dan `npm run build`.
 
 Jangan menambahkan pekerjaan baru ke checklist ini tanpa persetujuan user.

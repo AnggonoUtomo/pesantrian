@@ -44,7 +44,7 @@ ditunda sampai ada invariant yang pantas dipisah dari Application/Infrastructure
 ## Di Luar Scope
 
 - UI React/Inertia penuh.
-- Pemindahan frontend ke `resources/js/modules/*`.
+- Pemindahan frontend ke path lain di luar `resources/js/pages/*`.
 - Rename source `System/*` ke `Console/*`.
 - Struktur akademik seperti tahun ajaran, kelas, rombel, atau mata pelajaran.
 - Data pegawai, santri, wali, asrama, finance, atau dokumen.
@@ -123,7 +123,7 @@ diputuskan dalam work item migrasi terpisah.
 UI penuh ditunda karena roadmap Task 3 frontend path decision masih open.
 
 Jika backend slice membutuhkan smoke manual, gunakan route/API response.
-Frontend module baru wajib menunggu keputusan `resources/js/modules/*` agar
+Frontend module baru wajib mengikuti keputusan `resources/js/pages/*` agar
 tidak menambah drift dari `resources/js/pages/System/*`.
 
 ## Dependency
@@ -156,4 +156,3 @@ Document, Communication, Notification, atau Reporting pada slice awal.
 - Rule hierarchy lanjutan seperti cycle prevention, unit closure, dan history
   struktur belum masuk slice awal.
 - Tipe unit final dapat berubah setelah discovery kebutuhan pesantren nyata.
-

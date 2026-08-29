@@ -1,4 +1,5 @@
 import { CalendarClock, CalendarRange, CheckCircle2, Layers3 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
 type AcademicPeriodSummaryCardsProps = {
@@ -7,6 +8,8 @@ type AcademicPeriodSummaryCardsProps = {
     totalTerms: number;
     activeTerms: number;
     canManage: boolean;
+    onCreateYear: () => void;
+    onCreateTerm: () => void;
 };
 
 export function AcademicPeriodSummaryCards({
@@ -15,6 +18,8 @@ export function AcademicPeriodSummaryCards({
     totalTerms,
     activeTerms,
     canManage,
+    onCreateYear,
+    onCreateTerm,
 }: AcademicPeriodSummaryCardsProps) {
     return (
         <section
@@ -43,8 +48,22 @@ export function AcademicPeriodSummaryCards({
                 icon={CalendarClock}
                 label="Mode halaman"
                 value={canManage ? 'Kelola' : 'Lihat'}
-                helper="Mutation disiapkan di increment UI berikutnya"
+                helper={
+                    canManage
+                        ? 'Form mutation tersedia'
+                        : 'Butuh permission manage untuk mutation'
+                }
             />
+            {canManage ? (
+                <div className="flex gap-2 sm:col-span-2 xl:col-span-4">
+                    <Button type="button" onClick={onCreateYear}>
+                        Tambah tahun
+                    </Button>
+                    <Button type="button" variant="outline" onClick={onCreateTerm}>
+                        Tambah term
+                    </Button>
+                </div>
+            ) : null}
         </section>
     );
 }

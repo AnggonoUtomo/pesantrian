@@ -1,5 +1,4 @@
 import { createInertiaApp } from '@inertiajs/react';
-import type { ResolvedComponent } from '@inertiajs/react';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { initializeTheme } from '@/hooks/use-appearance';
@@ -17,22 +16,6 @@ const appName =
     'Laravel';
 
 createInertiaApp({
-    resolve: async (name): Promise<ResolvedComponent> => {
-        const pages = import.meta.glob([
-            './pages/**/*.tsx',
-            './modules/**/*.tsx',
-        ]) as Record<string, () => Promise<{ default: ResolvedComponent }>>;
-        const page = pages[`./pages/${name}.tsx`] || pages[`./${name}.tsx`];
-
-        if (!page) {
-            throw new Error(`Page not found: ${name}`);
-        }
-
-        const module = await page();
-
-        return 'default' in module ? module.default : module;
-    },
-
     title: (title) => (title ? `${title} - ${appName}` : appName),
 
     layout: (name) => {

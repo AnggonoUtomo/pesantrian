@@ -1,4 +1,5 @@
 import { CheckCircle2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import {
     Card,
     CardContent,
@@ -13,13 +14,21 @@ import { AcademicPeriodStatusBadge } from './AcademicPeriodStatusBadge';
 type AcademicTermListProps = {
     terms: AcademicTerm[];
     meta: AcademicPeriodPaginationMeta;
+    canManage: boolean;
     onPageChange: (page: number) => void;
+    onEdit: (term: AcademicTerm) => void;
+    onActivate: (term: AcademicTerm) => void;
+    onClose: (term: AcademicTerm) => void;
 };
 
 export function AcademicTermList({
     terms,
     meta,
+    canManage,
     onPageChange,
+    onEdit,
+    onActivate,
+    onClose,
 }: AcademicTermListProps) {
     return (
         <Card>
@@ -63,6 +72,40 @@ export function AcademicTermList({
                                         status={term.status}
                                     />
                                 </div>
+                                {canManage ? (
+                                    <div className="mt-3 flex flex-wrap justify-end gap-2">
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => onEdit(term)}
+                                        >
+                                            Edit term
+                                        </Button>
+                                        {!term.is_active &&
+                                        term.status !== 'closed' ? (
+                                            <Button
+                                                type="button"
+                                                size="sm"
+                                                onClick={() =>
+                                                    onActivate(term)
+                                                }
+                                            >
+                                                Aktifkan
+                                            </Button>
+                                        ) : null}
+                                        {term.status !== 'closed' ? (
+                                            <Button
+                                                type="button"
+                                                variant="destructive"
+                                                size="sm"
+                                                onClick={() => onClose(term)}
+                                            >
+                                                Tutup
+                                            </Button>
+                                        ) : null}
+                                    </div>
+                                ) : null}
                             </li>
                         ))}
                     </ul>

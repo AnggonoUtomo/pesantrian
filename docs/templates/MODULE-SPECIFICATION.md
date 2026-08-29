@@ -41,7 +41,7 @@ Draft | Disetujui | Implemented
 
 ## UI
 
-- Page: `resources/js/modules/{module-slug}/pages/{Page}.tsx`.
+- Page: `resources/js/pages/{Namespace}/{Module}/pages/{Page}.tsx`.
 - Routing: Ziggy named routes.
 - State: {loading, empty, error, success, authorization state}.
 - Accessibility: {keyboard, label, focus, atau kebutuhan khusus}.

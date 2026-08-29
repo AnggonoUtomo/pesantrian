@@ -10,12 +10,25 @@ use App\Modules\Academic\AcademicPeriod\Application\DTO\AcademicYearData;
 use App\Modules\Academic\AcademicPeriod\Application\DTO\AcademicYearListFilter;
 use App\Modules\Academic\AcademicPeriod\Application\DTO\PaginatedAcademicTermData;
 use App\Modules\Academic\AcademicPeriod\Application\DTO\PaginatedAcademicYearData;
+use App\Modules\Academic\AcademicPeriod\Application\Exceptions\AcademicPeriodLifecycleException;
+use App\Modules\Academic\AcademicPeriod\Application\Actions\ActivateAcademicTerm;
+use App\Modules\Academic\AcademicPeriod\Application\Actions\CloseAcademicTerm;
+use App\Modules\Academic\AcademicPeriod\Application\Actions\CreateAcademicTerm;
+use App\Modules\Academic\AcademicPeriod\Application\Actions\CreateAcademicYear;
+use App\Modules\Academic\AcademicPeriod\Application\Actions\UpdateAcademicTerm;
+use App\Modules\Academic\AcademicPeriod\Application\Actions\UpdateAcademicYear;
 use App\Modules\Academic\AcademicPeriod\Application\Queries\GetCurrentAcademicTerm;
 use App\Modules\Academic\AcademicPeriod\Application\Queries\ListAcademicTerms;
 use App\Modules\Academic\AcademicPeriod\Application\Queries\ListAcademicYears;
+use App\Modules\Academic\AcademicPeriod\Presentation\Requests\StoreAcademicTermApiRequest;
+use App\Modules\Academic\AcademicPeriod\Presentation\Requests\StoreAcademicYearApiRequest;
+use App\Modules\Academic\AcademicPeriod\Presentation\Requests\UpdateAcademicTermApiRequest;
+use App\Modules\Academic\AcademicPeriod\Presentation\Requests\UpdateAcademicYearApiRequest;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -25,12 +38,26 @@ final readonly class AcademicPeriodController implements HasMiddleware
         private ListAcademicYears $listAcademicYears,
         private ListAcademicTerms $listAcademicTerms,
         private GetCurrentAcademicTerm $getCurrentAcademicTerm,
+        private CreateAcademicYear $createAcademicYear,
+        private UpdateAcademicYear $updateAcademicYear,
+        private CreateAcademicTerm $createAcademicTerm,
+        private UpdateAcademicTerm $updateAcademicTerm,
+        private ActivateAcademicTerm $activateAcademicTerm,
+        private CloseAcademicTerm $closeAcademicTerm,
     ) {}
 
     public static function middleware(): array
     {
         return [
             new Middleware('can:academic_period.view', only: ['index']),
+            new Middleware('can:academic_period.manage', only: [
+                'storeYear',
+                'updateYear',
+                'storeTerm',
+                'updateTerm',
+                'activateTerm',
+                'closeTerm',
+            ]),
         ];
     }
 
@@ -62,7 +89,7 @@ final readonly class AcademicPeriodController implements HasMiddleware
         ));
         $currentTerm = $this->getCurrentAcademicTerm->execute();
 
-        return Inertia::render('modules/academic-period/pages/Index', [
+        return Inertia::render('Academic/AcademicPeriod/pages/Index', [
             'years' => [
                 'data' => array_map(
                     static fn (AcademicYearData $year): array => $year->toArray(),
@@ -91,6 +118,72 @@ final readonly class AcademicPeriodController implements HasMiddleware
             ],
             'canManage' => $request->user()?->can('academic_period.manage') === true,
         ]);
+    }
+
+    public function storeYear(StoreAcademicYearApiRequest $request): RedirectResponse
+    {
+        $this->createAcademicYear->execute($request->user(), $request->toData());
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Tahun akademik berhasil dibuat.']);
+
+        return back();
+    }
+
+    public function updateYear(UpdateAcademicYearApiRequest $request, string $year): RedirectResponse
+    {
+        $updated = $this->updateAcademicYear->execute($request->user(), $year, $request->changes());
+
+        abort_if($updated === null, 404);
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Tahun akademik berhasil diperbarui.']);
+
+        return back();
+    }
+
+    public function storeTerm(StoreAcademicTermApiRequest $request): RedirectResponse
+    {
+        $this->createAcademicTerm->execute($request->user(), $request->toData());
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Term akademik berhasil dibuat.']);
+
+        return back();
+    }
+
+    public function updateTerm(UpdateAcademicTermApiRequest $request, string $term): RedirectResponse
+    {
+        $updated = $this->updateAcademicTerm->execute($request->user(), $term, $request->changes());
+
+        abort_if($updated === null, 404);
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Term akademik berhasil diperbarui.']);
+
+        return back();
+    }
+
+    public function activateTerm(Request $request, string $term): RedirectResponse
+    {
+        try {
+            $activated = $this->activateAcademicTerm->execute($request->user(), $term);
+        } catch (AcademicPeriodLifecycleException $exception) {
+            throw ValidationException::withMessages($exception->errors());
+        }
+
+        abort_if($activated === null, 404);
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Term akademik berhasil diaktifkan.']);
+
+        return back();
+    }
+
+    public function closeTerm(Request $request, string $term): RedirectResponse
+    {
+        $closed = $this->closeAcademicTerm->execute($request->user(), $term);
+
+        abort_if($closed === null, 404);
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Term akademik berhasil ditutup.']);
+
+        return back();
     }
 
     /** @return array{currentPage: int, perPage: int, total: int, lastPage: int} */

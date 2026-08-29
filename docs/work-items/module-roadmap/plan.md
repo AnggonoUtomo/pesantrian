@@ -16,7 +16,7 @@ Architecture.
 | Validation | `php artisan module:validate --no-ansi` lulus. |
 | Foundation | `php artisan starter:verify --no-ansi` lulus. |
 | Identifier | Migration aplikasi sudah dominan memakai ULID; media table package masih memakai integer id karena mengikuti Spatie Media Library. |
-| Frontend | UI module sekarang berada di `resources/js/pages/System/*`, belum di `resources/js/modules/*`. |
+| Frontend | UI module berada di `resources/js/pages/<Namespace>/<Module>/*`; `System/*` masih implementation bridge menuju vocabulary `Console`. |
 | Generator | `module:make <Namespace> <Module>` tersedia untuk baseline baru; `--domain` tetap alias kompatibilitas. |
 
 ## Mapping Current ke Target
@@ -72,7 +72,7 @@ Acceptance:
 - `module.json`, `module.php`, `permissions.php`, `ServiceProvider.php`, `Routes/*`, dan README dibuat konsisten.
 - Dry-run untuk `Organization Organization` dan `Academic AcademicPeriod` valid tanpa menulis file.
 
-### 0.3 Selaraskan frontend module path
+### 0.3 Selaraskan frontend page path
 
 Tujuan: menentukan pola final untuk UI module sebelum menambah UI baru.
 
@@ -83,8 +83,8 @@ Acceptance:
 
 - Source lama `resources/js/pages/System/*` dan UI Organization existing tetap
   sebagai bridge sampai ada work item migrasi frontend per module.
-- UI module baru memakai `resources/js/modules/<module>/` sebagai canonical
-  path.
+- UI module baru memakai `resources/js/pages/<Namespace>/<Module>/` sebagai
+  canonical path.
 - Ziggy route name, URL, permission key, dan Inertia component path tidak
   berubah tanpa compatibility plan.
 
@@ -112,8 +112,7 @@ Checkpoint P0:
 
 Gate menuju `Organization/Organization`: Task 1 dan Task 2 roadmap selesai.
 Task 3 frontend path decision sudah selesai; UI baru setelah keputusan ini
-dibuat di `resources/js/modules/*`, sedangkan UI existing dipindahkan lewat work
-item migration tersendiri.
+dibuat di `resources/js/pages/<Namespace>/<Module>/`.
 
 ## Phase 1: Console, Organization, dan Academic Period (P1)
 

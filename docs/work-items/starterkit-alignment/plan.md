@@ -60,5 +60,5 @@ consumer route, permission, page, test, dan migration siap dimigrasikan.
 - Rename route URL `system/*`.
 - Rename permission key existing.
 - Pindah frontend dari `resources/js/pages/System/*` ke
-  `resources/js/modules/*`.
+  `resources/js/pages/<Namespace>/<Module>/*`.
 - Membuat module produk baru.

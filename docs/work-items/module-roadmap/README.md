@@ -60,9 +60,9 @@ sudah menutup foundation module domain pertama:
 
 Public contract lintas module belum dibuat karena belum ada consumer nyata.
 Keputusan frontend canonical tersedia di
-[`frontend-module-path.md`](frontend-module-path.md): UI baru memakai
-`resources/js/modules/*`, sedangkan UI existing tetap bridge sampai work item
-migrasi frontend per module.
+[`frontend-module-path.md`](frontend-module-path.md): UI module memakai
+`resources/js/pages/<Namespace>/<Module>/`; `System/*` tetap bridge sampai work
+item consolidation.
 
 ## Scope
 

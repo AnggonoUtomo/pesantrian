@@ -9,7 +9,7 @@ Source module mengikuti [`docs/ARCHITECTURE.md`](../../../ARCHITECTURE.md) dan
 - Module: `Organization`
 - Source: `app/Modules/Organization/Organization/`
 - Frontend: `resources/js/pages/Organization/Organization/` sebagai path
-  Inertia aktif sementara sampai keputusan `resources/js/modules/*` dibuat
+  Inertia aktif sesuai keputusan `resources/js/pages/*`
   melalui work item terpisah.
 - Status: `Active`
 
@@ -39,7 +39,7 @@ unit.
   - kelas/rombel akademik,
   - tagihan atau pembayaran,
   - import/export organisasi,
-  - pemindahan frontend ke `resources/js/modules/*`.
+  - pemindahan frontend ke path lain di luar `resources/js/pages/*`.
 
 ## Public Boundary
 

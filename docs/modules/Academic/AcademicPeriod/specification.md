@@ -54,7 +54,7 @@ test yang ketat.
 ## Di Luar Scope
 
 - UI React/Inertia penuh.
-- Pemindahan frontend ke `resources/js/modules/*`.
+- Pemindahan frontend ke path lain di luar `resources/js/pages/*`.
 - Calendar event umum.
 - Struktur kelas, rombel, subject, schedule, attendance, dan grade.
 - Billing/fee period detail.
@@ -158,9 +158,9 @@ UI penuh ditunda sampai backend foundation valid. Bila UI ditambahkan pada
 increment berikutnya:
 
 - Page canonical mengikuti keputusan roadmap Task 3:
-  `resources/js/modules/academic-period/pages/Index.tsx`.
+  `resources/js/pages/Academic/AcademicPeriod/pages/Index.tsx`.
 - Komponen business-specific ditempatkan di
-  `resources/js/modules/academic-period/components/`.
+  `resources/js/pages/Academic/AcademicPeriod/components/`.
 - Routing memakai Ziggy named routes.
 - State wajib mencakup loading, empty, validation error, success toast, dan
   authorization UX.
@@ -202,4 +202,4 @@ Dormitory, atau Academic pada slice awal.
   `contracts/active-period.md`; runtime interface belum dibuat sampai consumer
   pertama disetujui.
 - UI path canonical sudah diputuskan melalui roadmap Task 3:
-  `resources/js/modules/academic-period/` untuk UI baru AcademicPeriod.
+  `resources/js/pages/Academic/AcademicPeriod/` untuk UI AcademicPeriod.

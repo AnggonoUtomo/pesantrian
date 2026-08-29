@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button';
 import {
     Card,
     CardContent,
@@ -12,13 +13,17 @@ import { AcademicPeriodStatusBadge } from './AcademicPeriodStatusBadge';
 type AcademicYearListProps = {
     years: AcademicYear[];
     meta: AcademicPeriodPaginationMeta;
+    canManage: boolean;
     onPageChange: (page: number) => void;
+    onEdit: (year: AcademicYear) => void;
 };
 
 export function AcademicYearList({
     years,
     meta,
+    canManage,
     onPageChange,
+    onEdit,
 }: AcademicYearListProps) {
     return (
         <Card>
@@ -50,6 +55,18 @@ export function AcademicYearList({
                                         status={year.status}
                                     />
                                 </div>
+                                {canManage ? (
+                                    <div className="mt-3 flex justify-end">
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => onEdit(year)}
+                                        >
+                                            Edit tahun
+                                        </Button>
+                                    </div>
+                                ) : null}
                             </li>
                         ))}
                     </ul>

@@ -71,5 +71,11 @@ return [
         'organization.units.archive',
         'organization.units.restore',
         'academic.periods.index',
+        'academic.periods.years.store',
+        'academic.periods.years.update',
+        'academic.periods.terms.store',
+        'academic.periods.terms.update',
+        'academic.periods.terms.activate',
+        'academic.periods.terms.close',
     ],
 ];

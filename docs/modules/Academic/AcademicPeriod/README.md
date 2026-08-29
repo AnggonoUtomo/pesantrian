@@ -8,7 +8,7 @@ Source module mengikuti [`docs/ARCHITECTURE.md`](../../../ARCHITECTURE.md) dan
 - Namespace: `Academic`
 - Module: `AcademicPeriod`
 - Source: `app/Modules/Academic/AcademicPeriod/`
-- Frontend: `resources/js/modules/academic-period/`
+- Frontend: `resources/js/pages/Academic/AcademicPeriod/`
 - Status: `Active`
 
 ## Tujuan
@@ -88,6 +88,13 @@ Candidate public boundary:
 - Route web Inertia utama:
   - `GET /academic/periods`
   - route name `academic.periods.index`
+- Route web form mutation:
+  - `POST /academic/periods/years`
+  - `PUT /academic/periods/years/{year}`
+  - `POST /academic/periods/terms`
+  - `PUT /academic/periods/terms/{term}`
+  - `PATCH /academic/periods/terms/{term}/activate`
+  - `PATCH /academic/periods/terms/{term}/close`
 - Seeder/factory hanya dibuat ketika ada data/test nyata.
 - Public contract lintas module belum dibuat di source sampai consumer pertama
   jelas; candidate contract active period sudah terdokumentasi.

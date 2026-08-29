@@ -123,7 +123,7 @@ increment eksplisit setelah backend stabil.
   - route web Inertia `academic.periods.index`;
   - controller presentation untuk props daftar tahun, daftar term, dan current
     term;
-  - frontend canonical di `resources/js/modules/academic-period/`;
+  - frontend canonical di `resources/js/pages/Academic/AcademicPeriod/`;
   - menu sidebar namespace Academic.
 - Dependency: Increment 4-7.
 - Acceptance:

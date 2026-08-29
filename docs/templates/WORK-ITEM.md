@@ -8,7 +8,7 @@ Planned | In progress | Done | Blocked
 
 - Owner module: `{Namespace}/{Module}` atau `lintas module`.
 - Target kode: `app/Modules/{Namespace}/{Module}/` atau path terkait.
-- Target frontend: `resources/js/modules/{module-slug}/` bila relevan.
+- Target frontend: `resources/js/pages/{Namespace}/{Module}/` bila relevan.
 
 ## Kondisi Awal
 

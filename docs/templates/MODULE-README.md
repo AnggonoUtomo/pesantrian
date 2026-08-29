@@ -8,7 +8,7 @@ Source module mengikuti `docs/ARCHITECTURE.md` dan
 - Namespace: `{Namespace}`
 - Module: `{Module}`
 - Source: `app/Modules/{Namespace}/{Module}/`
-- Frontend: `resources/js/modules/{module-slug}/`
+- Frontend: `resources/js/pages/{Namespace}/{Module}/`
 - Status: `{Planned|Active|Deprecated|Disabled}`
 
 ## Tujuan

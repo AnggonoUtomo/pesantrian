@@ -93,7 +93,7 @@ Pola legacy di atas tidak menjadi standar module baru.
 - Table aplikasi memakai ULID sebagai primary identifier.
 - `ServiceProvider.php` adalah composition root, bukan tempat business logic.
 - Route module berada di `Routes/`.
-- Frontend mengikuti baseline `resources/js/modules/<module>/` saat UI module
+- Frontend mengikuti baseline `resources/js/pages/<Namespace>/<Module>/` saat UI module
   mulai dibuat.
 - Folder optional/on-demand hanya dibuat ketika memiliki isi dan concern nyata.
 

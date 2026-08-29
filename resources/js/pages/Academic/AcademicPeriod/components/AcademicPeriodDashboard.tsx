@@ -4,11 +4,14 @@ import type { FormEvent } from 'react';
 import { canAccess } from '@/lib/authorization';
 import route from '@/lib/route';
 import type {
+    AcademicTerm,
     AcademicPeriodPageProps,
     AcademicPeriodStatus,
+    AcademicYear,
 } from '../types';
 import { AcademicPeriodAccessDenied } from './AcademicPeriodAccessDenied';
 import { AcademicPeriodFilterBar } from './AcademicPeriodFilterBar';
+import { AcademicPeriodMutationDialogs } from './AcademicPeriodMutationDialogs';
 import { AcademicPeriodSummaryCards } from './AcademicPeriodSummaryCards';
 import { AcademicTermList } from './AcademicTermList';
 import { AcademicYearList } from './AcademicYearList';
@@ -32,6 +35,13 @@ export function AcademicPeriodDashboard() {
     const [termStatus, setTermStatus] = useState<AcademicPeriodStatus | 'all'>(
         filters.term_status ?? 'all',
     );
+    const [yearFormOpen, setYearFormOpen] = useState(false);
+    const [termFormOpen, setTermFormOpen] = useState(false);
+    const [editingYear, setEditingYear] = useState<AcademicYear | null>(null);
+    const [editingTerm, setEditingTerm] = useState<AcademicTerm | null>(null);
+    const [activatingTerm, setActivatingTerm] =
+        useState<AcademicTerm | null>(null);
+    const [closingTerm, setClosingTerm] = useState<AcademicTerm | null>(null);
     const canView = canAccess(auth, 'academic_period.view');
     const activeYearCount = useMemo(
         () => years.data.filter((year) => year.status === 'active').length,
@@ -106,6 +116,26 @@ export function AcademicPeriodDashboard() {
         return <AcademicPeriodAccessDenied />;
     }
 
+    const openCreateYear = () => {
+        setEditingYear(null);
+        setYearFormOpen(true);
+    };
+
+    const openCreateTerm = () => {
+        setEditingTerm(null);
+        setTermFormOpen(true);
+    };
+
+    const openEditYear = (year: AcademicYear) => {
+        setEditingYear(year);
+        setYearFormOpen(true);
+    };
+
+    const openEditTerm = (term: AcademicTerm) => {
+        setEditingTerm(term);
+        setTermFormOpen(true);
+    };
+
     return (
         <div className="space-y-5">
             <AcademicPeriodSummaryCards
@@ -114,6 +144,8 @@ export function AcademicPeriodDashboard() {
                 totalTerms={terms.meta.total}
                 activeTerms={activeTermCount}
                 canManage={canManage}
+                onCreateYear={openCreateYear}
+                onCreateTerm={openCreateTerm}
             />
             <CurrentAcademicTermCard currentTerm={currentTerm} />
             <AcademicPeriodFilterBar
@@ -135,14 +167,33 @@ export function AcademicPeriodDashboard() {
                 <AcademicYearList
                     years={years.data}
                     meta={years.meta}
+                    canManage={canManage}
                     onPageChange={(page) => visitPeriods({ yearPage: page })}
+                    onEdit={openEditYear}
                 />
                 <AcademicTermList
                     terms={terms.data}
                     meta={terms.meta}
+                    canManage={canManage}
                     onPageChange={(page) => visitPeriods({ termPage: page })}
+                    onEdit={openEditTerm}
+                    onActivate={setActivatingTerm}
+                    onClose={setClosingTerm}
                 />
             </div>
+            <AcademicPeriodMutationDialogs
+                years={years.data}
+                yearFormOpen={yearFormOpen}
+                termFormOpen={termFormOpen}
+                editingYear={editingYear}
+                editingTerm={editingTerm}
+                activatingTerm={activatingTerm}
+                closingTerm={closingTerm}
+                setYearFormOpen={setYearFormOpen}
+                setTermFormOpen={setTermFormOpen}
+                setActivatingTerm={setActivatingTerm}
+                setClosingTerm={setClosingTerm}
+            />
         </div>
     );
 }

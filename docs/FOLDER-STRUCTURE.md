@@ -67,7 +67,7 @@ behavior hanya untuk mempertahankan folder.
 | Composition root | `app/Modules/<Namespace>/<Module>/ServiceProvider.php` |
 | Dokumentasi module | `app/Modules/<Namespace>/<Module>/README.md` |
 
-## Frontend Module
+## Frontend Page Module
 
 ```text
 resources/js/
@@ -79,28 +79,19 @@ resources/js/
 |-- hooks/
 |-- lib/
 |-- types/
-`-- modules/
-    |-- access-control/
-    |-- organization/
-    |-- system-setting/
-    |-- academic-period/
-    |-- human-resource/
-    |-- student/
-    |-- guardian/
-    |-- dormitory/
-    |-- academic/
-    |-- finance/
-    |-- document/
-    |-- announcement/
-    |-- notification/
-    |-- reporting/
-    `-- audit-trail/
+`-- pages/
+    |-- System/
+    |-- Organization/
+    |-- Academic/
+    |-- auth/
+    |-- settings/
+    `-- errors/
 ```
 
 Per module frontend:
 
 ```text
-resources/js/modules/<module>/
+resources/js/pages/<Namespace>/<Module>/
 |-- pages/
 |-- components/
 |-- hooks/
@@ -109,8 +100,8 @@ resources/js/modules/<module>/
 ```
 
 shadcn/ui berada di `resources/js/components/ui`. Komponen business-specific
-berada di module terkait atau `components/shared` jika benar-benar lintas
-domain.
+berada di `resources/js/pages/<Namespace>/<Module>/components/` atau
+`components/shared` jika benar-benar lintas domain.
 
 ## Tests
 

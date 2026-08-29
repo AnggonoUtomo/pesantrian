@@ -36,9 +36,7 @@ return [
     'pages' => [
 
         'paths' => [
-            resource_path('js'),
             resource_path('js/pages'),
-            resource_path('js/modules'),
         ],
 
         'extensions' => [

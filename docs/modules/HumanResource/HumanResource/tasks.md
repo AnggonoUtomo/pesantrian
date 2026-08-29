@@ -110,11 +110,11 @@
 
 ## Increment 8: UI/Inertia read page
 
-- [ ] Tambahkan route web Inertia HumanResource.
+- [x] Tambahkan route web Inertia HumanResource.
   - Acceptance: actor dengan `human_resource.view` dapat membuka halaman
     employee; actor tanpa permission ditolak backend.
   - Verification: focused presentation test.
-- [ ] Tambahkan frontend module canonical.
+- [x] Tambahkan frontend module canonical.
   - Acceptance: page berada di
     `resources/js/pages/HumanResource/HumanResource/pages/Index.tsx`, komponen
     business-specific berada di
@@ -122,7 +122,7 @@
     `Index.tsx` tetap minimal.
   - Verification: `npm run types:check`, `npm run lint:check`,
     dan `npm run build`.
-- [ ] Tambahkan menu sidebar namespace HumanResource.
+- [x] Tambahkan menu sidebar namespace HumanResource.
   - Acceptance: menu employee/SDM muncul untuk actor berizin
     `human_resource.view` atau `human_resource.manage`.
   - Verification: focused sidebar/Ziggy tests.

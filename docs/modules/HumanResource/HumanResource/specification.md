@@ -2,10 +2,10 @@
 
 ## Status
 
-Increment 6 selesai: module memiliki backend API minimum untuk read/list,
+Increment 8 selesai: module memiliki backend API minimum untuk read/list,
 create, update, activate, deactivate, assignment unit, validasi payload,
-authorization backend, dan audit mutation employee create/update/lifecycle serta
-assignment.
+authorization backend, audit mutation employee create/update/lifecycle serta
+assignment, dan UI/Inertia read page untuk daftar employee.
 
 ## Tujuan dan Scope
 
@@ -27,13 +27,15 @@ Scope slice awal:
 - activate/deactivate employee;
 - audit mutation employee;
 - candidate employee lookup contract sebagai pegangan consumer berikutnya.
+- UI/Inertia read page daftar employee;
+- menu sidebar namespace HumanResource.
 
 ## Arsitektur
 
 - Hexagon: `app/Modules/HumanResource/HumanResource`.
 - Inbound adapter:
-  - HTTP API atau web route backend minimum;
-  - UI/Inertia ditunda sampai backend foundation valid.
+  - HTTP API;
+  - web route Inertia read page.
 - Use case awal:
   - `ListEmployees`;
   - `CreateEmployee`;
@@ -254,8 +256,7 @@ sensitif. Relasi ke user account tidak dibuat otomatis pada slice awal.
 
 ## UI
 
-UI penuh ditunda sampai backend foundation valid. Bila UI ditambahkan pada
-increment berikutnya:
+UI/Inertia read page tersedia untuk daftar employee:
 
 - Page canonical:
   `resources/js/pages/HumanResource/HumanResource/pages/Index.tsx`.
@@ -263,8 +264,12 @@ increment berikutnya:
   `resources/js/pages/HumanResource/HumanResource/components/`.
 - `Index.tsx` wajib minimal sebagai komposer page/layout.
 - Routing memakai Ziggy named routes.
-- State wajib mencakup loading, empty, validation error, success toast, dan
+- Backend permission tetap menjadi authority.
+- State read page mencakup filter, empty state, validation error summary, dan
   authorization UX.
+
+UI mutation create/update/activate/deactivate/assignment belum masuk slice ini
+dan menunggu increment terpisah.
 
 ## Dependency
 
@@ -300,6 +305,9 @@ Communication, atau Reporting pada slice awal.
 - [x] Focused lifecycle tests HumanResource lulus.
 - [x] Focused audit tests employee create/update/lifecycle HumanResource lulus.
 - [x] Focused audit tests assignment HumanResource lulus.
+- [x] UI/Inertia read page employee berada pada path canonical.
+- [x] Sidebar menampilkan namespace HumanResource untuk actor berizin.
+- [x] Ziggy membagikan route `human-resource.employees.index`.
 
 ## Risiko Terbuka
 
@@ -313,3 +321,5 @@ Communication, atau Reporting pada slice awal.
   belum dibuat sampai consumer pertama disetujui.
 - Assignment update/close belum dibuat; saat ini baru create assignment dan
   guard deactivate terhadap assignment aktif.
+- UI mutation HumanResource belum dibuat; read page sudah tersedia sebagai slice
+  awal.

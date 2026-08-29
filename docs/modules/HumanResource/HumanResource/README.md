@@ -80,7 +80,7 @@ secara langsung.
   - `human_resource.view`
   - `human_resource.manage`
 - Backend menjadi authority authorization.
-- Frontend permission hanya UX bila UI ditambahkan pada increment berikutnya.
+- Frontend permission hanya UX; backend tetap authority authorization.
 - Audit mutation minimum:
   - `human_resource.employee.created`
   - `human_resource.employee.updated`
@@ -106,6 +106,13 @@ assignment employee melalui event `human-resource.activity.occurred`.
 - Seeder/factory dibuat hanya ketika ada kebutuhan test atau demo nyata.
 - Public contract lintas module belum dibuat di source sampai consumer pertama
   jelas.
+- Web route Inertia read page tersedia di `human-resource/employees` dengan
+  named route `human-resource.employees.index`.
+- Frontend read page tersedia di
+  `resources/js/pages/HumanResource/HumanResource/pages/Index.tsx`, dengan
+  komponen business-specific di folder `components`.
+- Menu sidebar namespace `HumanResource` menampilkan `SDM Pesantren` untuk actor
+  berizin `human_resource.view` atau `human_resource.manage`.
 - API lifecycle minimum tersedia untuk activate/deactivate employee. Deactivate
   wajib menerima `left_on` dan ditolak bila employee masih memiliki assignment
   unit aktif.
@@ -123,6 +130,7 @@ php artisan test --filter=HumanResource
 php artisan module:validate --no-ansi
 php artisan starter:verify --no-ansi
 npm run types:check
+npm run lint:check
 npm run build
 git diff --check
 ```

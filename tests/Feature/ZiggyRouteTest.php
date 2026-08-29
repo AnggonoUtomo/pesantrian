@@ -29,6 +29,7 @@ it('membagikan route yang dibutuhkan frontend', function () {
         'academic.periods.terms.update',
         'academic.periods.terms.activate',
         'academic.periods.terms.close',
+        'human-resource.employees.index',
         'two-factor.qr-code',
         'passkey.confirm',
     ]);

@@ -7,8 +7,8 @@ SDM pesantren: employee identity, tipe kerja, status lifecycle, assignment unit,
 permission, audit, dan candidate lookup contract.
 
 Increment awal berhenti pada dokumentasi, skeleton module, data foundation,
-backend behavior minimum, lifecycle, audit, dan contract candidate. UI penuh
-menunggu increment eksplisit setelah backend stabil.
+backend behavior minimum, lifecycle, audit, contract candidate, dan UI/Inertia
+read page. UI mutation penuh menunggu increment eksplisit berikutnya.
 
 ## Increment 1: Dokumentasi module
 
@@ -138,13 +138,15 @@ menunggu increment eksplisit setelah backend stabil.
   - focused presentation tests HumanResource;
   - focused sidebar/Ziggy tests;
   - `npm run types:check`;
+  - `npm run lint:check`;
   - `npm run build`.
 
 ## Batas Berhenti
 
-Pekerjaan berhenti ketika backend foundation HumanResource valid dan lulus
-focused tests. UI mutation penuh, import/export, payroll, document employee, dan
-consumer integration menunggu persetujuan/increment terpisah.
+Pekerjaan berhenti ketika backend foundation dan UI read page HumanResource
+valid serta lulus focused tests. UI mutation penuh, import/export, payroll,
+document employee, dan consumer integration menunggu persetujuan/increment
+terpisah.
 
 ## Rollback
 

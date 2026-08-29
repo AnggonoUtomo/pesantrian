@@ -21,6 +21,10 @@ export function buildNamespaceNavigation(auth: Auth): NavGroup[] {
             items: buildOrganizationNavigation(auth),
         },
         {
+            title: 'HumanResource',
+            items: buildHumanResourceNavigation(auth),
+        },
+        {
             title: 'Academic',
             items: buildAcademicNavigation(auth),
         },
@@ -112,6 +116,26 @@ function buildAcademicNavigation(auth: Auth): NavItem[] {
             href: route('academic.periods.index'),
             icon: CalendarRange,
             iconClassName: 'text-rose-600 dark:text-rose-300',
+        },
+    ];
+}
+
+function buildHumanResourceNavigation(auth: Auth): NavItem[] {
+    if (
+        !hasAnyPermission(auth, [
+            'human_resource.view',
+            'human_resource.manage',
+        ])
+    ) {
+        return [];
+    }
+
+    return [
+        {
+            title: 'SDM Pesantren',
+            href: route('human-resource.employees.index'),
+            icon: UsersRound,
+            iconClassName: 'text-orange-600 dark:text-orange-300',
         },
     ];
 }

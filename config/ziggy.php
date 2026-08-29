@@ -70,6 +70,7 @@ return [
         'organization.units.update',
         'organization.units.archive',
         'organization.units.restore',
+        'human-resource.employees.index',
         'academic.periods.index',
         'academic.periods.years.store',
         'academic.periods.years.update',

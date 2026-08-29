@@ -7,9 +7,12 @@ namespace App\Modules\HumanResource\HumanResource\Infrastructure\Repositories;
 use App\Modules\HumanResource\HumanResource\Application\Contracts\HumanResourceRepository;
 use App\Modules\HumanResource\HumanResource\Application\DTO\EmployeeData;
 use App\Modules\HumanResource\HumanResource\Application\DTO\EmployeeListFilter;
+use App\Modules\HumanResource\HumanResource\Application\DTO\EmployeeUnitAssignmentData;
 use App\Modules\HumanResource\HumanResource\Application\DTO\PaginatedEmployeeData;
 use App\Modules\HumanResource\HumanResource\Application\DTO\UpsertEmployeeData;
+use App\Modules\HumanResource\HumanResource\Application\DTO\UpsertEmployeeUnitAssignmentData;
 use App\Modules\HumanResource\HumanResource\Infrastructure\Models\EmployeeRecord;
+use App\Modules\HumanResource\HumanResource\Infrastructure\Models\EmployeeUnitAssignmentRecord;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -48,6 +51,13 @@ final class EloquentHumanResourceRepository implements HumanResourceRepository
         );
     }
 
+    public function findEmployee(string $id): ?EmployeeData
+    {
+        $record = EmployeeRecord::query()->find($id);
+
+        return $record instanceof EmployeeRecord ? $this->map($record, $this->primaryUnitsFor([$record])) : null;
+    }
+
     public function createEmployee(UpsertEmployeeData $data): EmployeeData
     {
         /** @var EmployeeRecord $record */
@@ -77,6 +87,14 @@ final class EloquentHumanResourceRepository implements HumanResourceRepository
             ->where('employee_id', $employeeId)
             ->whereNull('ends_on')
             ->exists();
+    }
+
+    public function assignEmployeeToUnit(UpsertEmployeeUnitAssignmentData $data): EmployeeUnitAssignmentData
+    {
+        /** @var EmployeeUnitAssignmentRecord $record */
+        $record = EmployeeUnitAssignmentRecord::query()->create($data->toArray());
+
+        return $this->mapAssignment($record->refresh());
     }
 
     /**
@@ -127,6 +145,21 @@ final class EloquentHumanResourceRepository implements HumanResourceRepository
             joinedOn: $record->joined_on?->toDateString(),
             leftOn: $record->left_on?->toDateString(),
             notes: $record->notes === null ? null : (string) $record->notes,
+            createdAt: $record->created_at->toJSON(),
+            updatedAt: $record->updated_at->toJSON(),
+        );
+    }
+
+    private function mapAssignment(EmployeeUnitAssignmentRecord $record): EmployeeUnitAssignmentData
+    {
+        return new EmployeeUnitAssignmentData(
+            id: (string) $record->getKey(),
+            employeeId: (string) $record->employee_id,
+            organizationUnitId: (string) $record->organization_unit_id,
+            role: (string) $record->role,
+            startsOn: $record->starts_on?->toDateString(),
+            endsOn: $record->ends_on?->toDateString(),
+            isPrimary: (bool) $record->is_primary,
             createdAt: $record->created_at->toJSON(),
             updatedAt: $record->updated_at->toJSON(),
         );

@@ -25,4 +25,8 @@ Route::middleware(['web', 'auth', 'verified', 'throttle:system-api'])
             ->whereUlid('employee')
             ->middleware('api.idempotency')
             ->name('deactivate');
+        Route::post('/{employee}/unit-assignments', [EmployeeApiController::class, 'storeUnitAssignment'])
+            ->whereUlid('employee')
+            ->middleware('api.idempotency')
+            ->name('unit-assignments.store');
     });

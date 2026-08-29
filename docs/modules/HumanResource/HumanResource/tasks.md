@@ -86,10 +86,10 @@
 
 ## Increment 6: Audit mutation
 
-- [ ] Tambahkan audit create/update employee.
+- [x] Tambahkan audit create/update employee.
   - Acceptance: mutation menghasilkan audit entry/event yang aman.
   - Verification: focused audit test.
-- [ ] Tambahkan audit lifecycle dan assignment employee.
+- [x] Tambahkan audit lifecycle dan assignment employee.
   - Acceptance: activate/deactivate/assignment menghasilkan audit entry/event
     yang aman.
   - Verification: focused audit test.

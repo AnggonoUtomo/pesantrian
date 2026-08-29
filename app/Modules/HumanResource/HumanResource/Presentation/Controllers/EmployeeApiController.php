@@ -6,6 +6,7 @@ namespace App\Modules\HumanResource\HumanResource\Presentation\Controllers;
 
 use App\Http\ApiResponseFactory;
 use App\Modules\HumanResource\HumanResource\Application\Actions\ActivateEmployee;
+use App\Modules\HumanResource\HumanResource\Application\Actions\AssignEmployeeToUnit;
 use App\Modules\HumanResource\HumanResource\Application\Actions\CreateEmployee;
 use App\Modules\HumanResource\HumanResource\Application\Actions\DeactivateEmployee;
 use App\Modules\HumanResource\HumanResource\Application\Actions\UpdateEmployee;
@@ -16,8 +17,10 @@ use App\Modules\HumanResource\HumanResource\Presentation\Requests\ActivateEmploy
 use App\Modules\HumanResource\HumanResource\Presentation\Requests\DeactivateEmployeeApiRequest;
 use App\Modules\HumanResource\HumanResource\Presentation\Requests\ListEmployeesApiRequest;
 use App\Modules\HumanResource\HumanResource\Presentation\Requests\StoreEmployeeApiRequest;
+use App\Modules\HumanResource\HumanResource\Presentation\Requests\StoreEmployeeUnitAssignmentApiRequest;
 use App\Modules\HumanResource\HumanResource\Presentation\Requests\UpdateEmployeeApiRequest;
 use App\Modules\HumanResource\HumanResource\Presentation\Resources\EmployeeResource;
+use App\Modules\HumanResource\HumanResource\Presentation\Resources\EmployeeUnitAssignmentResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
@@ -30,6 +33,7 @@ final readonly class EmployeeApiController implements HasMiddleware
         private UpdateEmployee $updateEmployee,
         private ActivateEmployee $activateEmployee,
         private DeactivateEmployee $deactivateEmployee,
+        private AssignEmployeeToUnit $assignEmployeeToUnit,
         private ApiResponseFactory $responses,
     ) {}
 
@@ -37,7 +41,7 @@ final readonly class EmployeeApiController implements HasMiddleware
     {
         return [
             new Middleware('can:human_resource.view', only: ['index']),
-            new Middleware('can:human_resource.manage', only: ['store', 'update', 'activate', 'deactivate']),
+            new Middleware('can:human_resource.manage', only: ['store', 'update', 'activate', 'deactivate', 'storeUnitAssignment']),
         ];
     }
 
@@ -58,7 +62,11 @@ final readonly class EmployeeApiController implements HasMiddleware
 
     public function store(StoreEmployeeApiRequest $request): JsonResponse
     {
-        $employee = $this->createEmployee->execute($request->toData());
+        $employee = $this->createEmployee->execute(
+            $request->user(),
+            $request->toData(),
+            $this->responses->correlationId($request),
+        );
 
         return $this->responses->success(
             $request,
@@ -70,7 +78,12 @@ final readonly class EmployeeApiController implements HasMiddleware
 
     public function update(UpdateEmployeeApiRequest $request, string $employee): JsonResponse
     {
-        $updated = $this->updateEmployee->execute($employee, $request->changes());
+        $updated = $this->updateEmployee->execute(
+            $request->user(),
+            $employee,
+            $request->changes(),
+            $this->responses->correlationId($request),
+        );
 
         abort_if($updated === null, 404);
 
@@ -83,7 +96,11 @@ final readonly class EmployeeApiController implements HasMiddleware
 
     public function activate(ActivateEmployeeApiRequest $request, string $employee): JsonResponse
     {
-        $updated = $this->activateEmployee->execute($employee);
+        $updated = $this->activateEmployee->execute(
+            $request->user(),
+            $employee,
+            $this->responses->correlationId($request),
+        );
 
         abort_if($updated === null, 404);
 
@@ -96,7 +113,12 @@ final readonly class EmployeeApiController implements HasMiddleware
 
     public function deactivate(DeactivateEmployeeApiRequest $request, string $employee): JsonResponse
     {
-        $updated = $this->deactivateEmployee->execute($employee, $request->leftOn());
+        $updated = $this->deactivateEmployee->execute(
+            $request->user(),
+            $employee,
+            $request->leftOn(),
+            $this->responses->correlationId($request),
+        );
 
         abort_if($updated === null, 404);
 
@@ -104,6 +126,25 @@ final readonly class EmployeeApiController implements HasMiddleware
             $request,
             'Employee berhasil dinonaktifkan.',
             (new EmployeeResource($updated))->toArray($request),
+        );
+    }
+
+    public function storeUnitAssignment(StoreEmployeeUnitAssignmentApiRequest $request, string $employee): JsonResponse
+    {
+        $assignment = $this->assignEmployeeToUnit->execute(
+            $request->user(),
+            $employee,
+            $request->toData($employee),
+            $this->responses->correlationId($request),
+        );
+
+        abort_if($assignment === null, 404);
+
+        return $this->responses->success(
+            $request,
+            'Assignment employee berhasil dibuat.',
+            (new EmployeeUnitAssignmentResource($assignment))->toArray($request),
+            status: 201,
         );
     }
 

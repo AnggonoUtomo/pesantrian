@@ -2,9 +2,10 @@
 
 ## Status
 
-Increment 5 selesai: module memiliki backend API minimum untuk read/list,
-create, update, activate, deactivate, validasi payload, dan authorization
-backend.
+Increment 6 selesai: module memiliki backend API minimum untuk read/list,
+create, update, activate, deactivate, assignment unit, validasi payload,
+authorization backend, dan audit mutation employee create/update/lifecycle serta
+assignment.
 
 ## Tujuan dan Scope
 
@@ -89,7 +90,7 @@ Input employee minimum:
 
 Input assignment unit minimum:
 
-- `employee_id`: ULID wajib;
+- `employee_id`: berasal dari path employee;
 - `organization_unit_id`: ULID wajib;
 - `role`: string wajib, misalnya `teacher`, `musyrif`, atau `unit_head`;
 - `starts_on`: date opsional;
@@ -109,6 +110,18 @@ Output read/list minimum:
 - `primary_unit`;
 - `joined_on`;
 - `left_on`.
+
+Output assignment unit minimum:
+
+- `id`;
+- `employee_id`;
+- `organization_unit_id`;
+- `role`;
+- `starts_on`;
+- `ends_on`;
+- `is_primary`;
+- `created_at`;
+- `updated_at`.
 
 Candidate lookup output untuk consumer:
 
@@ -214,13 +227,15 @@ Communication, atau Reporting pada slice awal.
 - [x] Assignment ke unit organisasi memiliki foundation schema dan relasi
   persistence minimum.
 - [x] Activate/deactivate employee menjaga lifecycle dasar.
-- [ ] Mutation employee mencatat audit/event aman.
+- [x] Mutation employee mencatat audit/event aman.
 - [ ] Candidate lookup contract terdokumentasi tanpa mengekspos model
   Infrastructure.
 - [x] `php artisan module:validate --no-ansi` lulus.
 - [x] Focused tests data foundation HumanResource lulus.
 - [x] Focused feature tests backend HumanResource lulus.
 - [x] Focused lifecycle tests HumanResource lulus.
+- [x] Focused audit tests employee create/update/lifecycle HumanResource lulus.
+- [x] Focused audit tests assignment HumanResource lulus.
 
 ## Risiko Terbuka
 
@@ -232,3 +247,5 @@ Communication, atau Reporting pada slice awal.
   increment lifecycle.
 - Public employee lookup belum dibuat di source sampai consumer pertama
   disetujui.
+- Assignment update/close belum dibuat; saat ini baru create assignment dan
+  guard deactivate terhadap assignment aktif.

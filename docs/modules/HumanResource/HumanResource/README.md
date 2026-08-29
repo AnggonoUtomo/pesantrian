@@ -86,6 +86,9 @@ Candidate public boundary:
 Metadata audit tidak boleh menyimpan secret, credential, token, atau payload
 sensitif yang tidak relevan.
 
+Audit runtime saat ini sudah mencatat create, update, activate, deactivate, dan
+assignment employee melalui event `human-resource.activity.occurred`.
+
 ## Operasi
 
 - Migration module berada di
@@ -101,6 +104,8 @@ sensitif yang tidak relevan.
 - API lifecycle minimum tersedia untuk activate/deactivate employee. Deactivate
   wajib menerima `left_on` dan ditolak bila employee masih memiliki assignment
   unit aktif.
+- API assignment minimum tersedia untuk membuat penugasan employee ke unit.
+  Assignment update/close belum masuk slice saat ini.
 - Payroll tidak masuk release awal kecuali diputuskan melalui work item
   terpisah.
 

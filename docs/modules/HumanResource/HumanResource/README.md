@@ -62,11 +62,9 @@ Candidate public boundary:
 
 ## Data dan Identifier
 
-- Table kandidat:
+- Table awal:
   - `employees`
   - `employee_unit_assignments`
-  - `positions` atau enum/reference ringan bila kebutuhan jabatan masih
-    sederhana.
 - Primary identifier: ULID.
 - Business identifier:
   - `employee_no`, misalnya `EMP-2026-0012`.
@@ -92,6 +90,9 @@ sensitif yang tidak relevan.
 
 - Migration module berada di
   `app/Modules/HumanResource/HumanResource/Database/Migrations/`.
+- Persistence minimum tersedia di
+  `app/Modules/HumanResource/HumanResource/Infrastructure/Models/` untuk
+  `EmployeeRecord` dan `EmployeeUnitAssignmentRecord`.
 - `ServiceProvider.php` menjadi composition root dan tidak berisi business
   logic.
 - Seeder/factory dibuat hanya ketika ada kebutuhan test atau demo nyata.

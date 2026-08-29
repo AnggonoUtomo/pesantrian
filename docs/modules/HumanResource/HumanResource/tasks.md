@@ -25,34 +25,34 @@
 
 ## Increment 2: Skeleton module
 
-- [ ] Dry-run generator.
+- [x] Dry-run generator.
   - Acceptance: target `app/Modules/HumanResource/HumanResource`, diagnostics
     kosong, dan tidak ada folder optional placeholder.
   - Verification:
     `php artisan module:make HumanResource HumanResource --dry-run --json --no-ansi`.
-- [ ] Generate skeleton module.
+- [x] Generate skeleton module.
   - Acceptance: file awal module dibuat tanpa folder kosong placeholder.
   - Verification:
     `php artisan module:make HumanResource HumanResource --force --yes --no-ansi`.
-- [ ] Validasi module registry.
+- [x] Validasi module registry.
   - Acceptance: semua module valid.
   - Verification: `php artisan module:validate --no-ansi`.
 
 ## Increment 3: Data foundation
 
-- [ ] Tambahkan migration `employees`.
+- [x] Tambahkan migration `employees`.
   - Acceptance: ULID primary key, unique `employee_no`, type/status, joined/left
     date, dan timestamp tersedia.
   - Verification: focused migration/model tests.
-- [ ] Tambahkan migration `employee_unit_assignments` bila assignment masuk
+- [x] Tambahkan migration `employee_unit_assignments` bila assignment masuk
   slice.
   - Acceptance: ULID primary key, foreign key employee, reference
     organization_unit, role, date range, primary marker, dan timestamp tersedia.
   - Verification: focused migration/model tests.
-- [ ] Tambahkan persistence minimum.
+- [x] Tambahkan persistence minimum.
   - Acceptance: model/repository hanya dibuat bila dipakai oleh use case.
   - Verification: focused unit tests.
-- [ ] Tambahkan permission identity awal.
+- [x] Tambahkan permission identity awal.
   - Acceptance: `human_resource.view` dan `human_resource.manage` valid.
   - Verification: focused permission identity test.
 

@@ -202,20 +202,21 @@ Communication, atau Reporting pada slice awal.
 
 ## Acceptance Criteria
 
-- [ ] Module `HumanResource/HumanResource` dapat dibuat oleh generator dan
+- [x] Module `HumanResource/HumanResource` dapat dibuat oleh generator dan
   valid.
-- [ ] Migration employee minimum memakai ULID.
-- [ ] Permission `human_resource.view` dan `human_resource.manage` tersedia.
+- [x] Migration employee minimum memakai ULID.
+- [x] Permission `human_resource.view` dan `human_resource.manage` tersedia.
 - [ ] Actor dengan permission dapat list/create/update employee minimum.
 - [ ] Actor tanpa permission ditolak oleh backend.
 - [ ] Duplicate `employee_no` ditolak.
-- [ ] Assignment ke unit organisasi tervalidasi.
+- [x] Assignment ke unit organisasi memiliki foundation schema dan relasi
+  persistence minimum.
 - [ ] Activate/deactivate employee menjaga lifecycle dasar.
 - [ ] Mutation employee mencatat audit/event aman.
 - [ ] Candidate lookup contract terdokumentasi tanpa mengekspos model
   Infrastructure.
 - [ ] `php artisan module:validate --no-ansi` lulus.
-- [ ] Focused tests HumanResource lulus.
+- [x] Focused tests data foundation HumanResource lulus.
 
 ## Risiko Terbuka
 

@@ -8,7 +8,7 @@ Source module mengikuti [`docs/ARCHITECTURE.md`](../../../ARCHITECTURE.md) dan
 - Namespace: `Academic`
 - Module: `AcademicPeriod`
 - Source: `app/Modules/Academic/AcademicPeriod/`
-- Frontend: ditunda sampai backend foundation dan contract stabil.
+- Frontend: `resources/js/modules/academic-period/`
 - Status: `Active`
 
 ## Tujuan
@@ -85,6 +85,9 @@ Candidate public boundary:
   `app/Modules/Academic/AcademicPeriod/Database/Migrations/`.
 - `ServiceProvider.php` menjadi composition root dan tidak berisi business
   logic.
+- Route web Inertia utama:
+  - `GET /academic/periods`
+  - route name `academic.periods.index`
 - Seeder/factory hanya dibuat ketika ada data/test nyata.
 - Public contract lintas module belum dibuat di source sampai consumer pertama
   jelas; candidate contract active period sudah terdokumentasi.
@@ -99,7 +102,10 @@ Candidate public boundary:
 php artisan module:make Academic AcademicPeriod --dry-run --json --no-ansi
 php artisan module:make Academic AcademicPeriod --force --yes --no-ansi
 php artisan test --filter=AcademicPeriod
+php artisan test --filter=AcademicPeriodPresentationTest
 php artisan module:validate --no-ansi
 php artisan starter:verify --no-ansi
+npm run types:check
+npm run build
 git diff --check
 ```

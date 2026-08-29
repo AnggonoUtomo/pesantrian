@@ -108,4 +108,27 @@
   Catatan: belum diimplementasikan pada Increment 7 karena belum ada consumer
   runtime yang disetujui. Ini menjaga contract tidak menjadi placeholder.
 
+## Increment 8: UI/Inertia read page
+
+- [x] Tambahkan route web Inertia periode akademik.
+  - Acceptance: actor dengan `academic_period.view` dapat membuka halaman
+    `academic.periods.index`; actor tanpa permission ditolak backend.
+  - Verification: `php artisan test --filter=AcademicPeriodPresentationTest`.
+- [x] Tambahkan frontend module canonical.
+  - Acceptance: page berada di
+    `resources/js/modules/academic-period/pages/Index.tsx`, komponen
+    business-specific berada di
+    `resources/js/modules/academic-period/components/`, dan `Index.tsx`
+    tetap minimal.
+  - Verification: `npm run types:check`, `npm run build`.
+- [x] Tambahkan menu sidebar namespace Academic.
+  - Acceptance: menu `Periode Akademik` muncul untuk actor berizin
+    `academic_period.view` atau `academic_period.manage`.
+  - Verification:
+    `php artisan test --filter=NavigationSidebarTest|ZiggyRouteTest`.
+- [ ] Tambahkan form mutation dan lifecycle UI.
+  - Acceptance: create/update tahun, create/update term, activate, dan close
+    tersedia via form Inertia dengan flash/validation yang aman.
+  - Verification: focused presentation + frontend tests.
+
 Jangan menambahkan pekerjaan baru ke checklist ini tanpa persetujuan user.

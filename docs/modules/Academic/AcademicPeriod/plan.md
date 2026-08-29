@@ -117,11 +117,31 @@ increment eksplisit setelah backend stabil.
   - focused contract/query tests bila diimplementasikan;
   - `php artisan module:validate --no-ansi`.
 
+## Increment 8: UI/Inertia read page
+
+- Perubahan:
+  - route web Inertia `academic.periods.index`;
+  - controller presentation untuk props daftar tahun, daftar term, dan current
+    term;
+  - frontend canonical di `resources/js/modules/academic-period/`;
+  - menu sidebar namespace Academic.
+- Dependency: Increment 4-7.
+- Acceptance:
+  - page resolve dari canonical frontend module;
+  - `Index.tsx` hanya menjadi komposer layout;
+  - komponen business-specific berada di folder `components`;
+  - backend tetap authority untuk permission.
+- Verifikasi:
+  - `php artisan test --filter=AcademicPeriodPresentationTest`;
+  - `php artisan test --filter=NavigationSidebarTest|ZiggyRouteTest`;
+  - `npm run types:check`;
+  - `npm run build`.
+
 ## Batas Berhenti
 
 Pekerjaan berhenti ketika backend foundation AcademicPeriod valid dan lulus
-focused tests. UI/Inertia, import/export, calendar event umum, dan consumer
-integration menunggu persetujuan/increment terpisah.
+focused tests. Form mutation UI, import/export, calendar event umum, dan
+consumer integration menunggu persetujuan/increment terpisah.
 
 ## Rollback
 

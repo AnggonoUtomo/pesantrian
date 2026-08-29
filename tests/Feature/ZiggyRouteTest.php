@@ -22,6 +22,7 @@ it('membagikan route yang dibutuhkan frontend', function () {
         'organization.units.update',
         'organization.units.archive',
         'organization.units.restore',
+        'academic.periods.index',
         'two-factor.qr-code',
         'passkey.confirm',
     ]);

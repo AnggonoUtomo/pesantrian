@@ -1,5 +1,6 @@
 import {
     Building2,
+    CalendarRange,
     LayoutGrid,
     ScrollText,
     Settings2,
@@ -18,6 +19,10 @@ export function buildNamespaceNavigation(auth: Auth): NavGroup[] {
         {
             title: 'Organization',
             items: buildOrganizationNavigation(auth),
+        },
+        {
+            title: 'Academic',
+            items: buildAcademicNavigation(auth),
         },
     ].filter((group) => group.items.length > 0);
 }
@@ -87,6 +92,26 @@ function buildOrganizationNavigation(auth: Auth): NavItem[] {
             href: route('organization.units.index'),
             icon: Building2,
             iconClassName: 'text-lime-600 dark:text-lime-300',
+        },
+    ];
+}
+
+function buildAcademicNavigation(auth: Auth): NavItem[] {
+    if (
+        !hasAnyPermission(auth, [
+            'academic_period.view',
+            'academic_period.manage',
+        ])
+    ) {
+        return [];
+    }
+
+    return [
+        {
+            title: 'Periode Akademik',
+            href: route('academic.periods.index'),
+            icon: CalendarRange,
+            iconClassName: 'text-rose-600 dark:text-rose-300',
         },
     ];
 }

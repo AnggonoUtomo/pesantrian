@@ -70,5 +70,6 @@ return [
         'organization.units.update',
         'organization.units.archive',
         'organization.units.restore',
+        'academic.periods.index',
     ],
 ];

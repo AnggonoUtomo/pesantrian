@@ -2,8 +2,8 @@
 
 ## Status
 
-Active - Organization foundation selesai; frontend module path decision selesai;
-AcademicPeriod sedang berjalan.
+Active - Phase 1 foundation Organization dan AcademicPeriod selesai; Phase 2
+People Core dimulai dari dokumentasi HumanResource.
 
 ## Owner dan Lokasi
 
@@ -64,6 +64,25 @@ Keputusan frontend canonical tersedia di
 `resources/js/pages/<Namespace>/<Module>/`; `System/*` tetap bridge sampai work
 item consolidation.
 
+## Update AcademicPeriod Foundation
+
+Work item [`Academic/AcademicPeriod`](../../modules/Academic/AcademicPeriod/)
+sudah menutup foundation periode akademik:
+
+- module `Academic/AcademicPeriod` valid;
+- table `academic_years` dan `academic_terms` memakai ULID;
+- read/list, create/update, activate, dan close term tersedia;
+- candidate active-period contract terdokumentasi dan belum diimplementasikan
+  sampai consumer nyata disetujui;
+- UI Inertia tersedia di `resources/js/pages/Academic/AcademicPeriod/`;
+- menu `Periode Akademik` muncul pada namespace Academic;
+- permission `academic_period.view` dan `academic_period.manage` menjadi
+  authority backend;
+- audit mutation periode akademik tercatat melalui bridge AuditLog/AuditTrail
+  existing;
+- QA UI desktop/mobile sudah memverifikasi flow mutation, lifecycle, filter,
+  aksesibilitas axe, console error, dan failed network response.
+
 ## Scope
 
 - Membuat mapping prioritas module SakaSantri berdasarkan baseline dan kode starterkit.
@@ -92,8 +111,8 @@ item consolidation.
   sementara, bukan canonical untuk UI baru.
 - Baseline menyebut `Console/AuditTrail`, source sekarang memakai `System/AuditLog`.
 - Baseline memasukkan user lifecycle ke `AccessControl`, source sekarang memisah `UserManagement`.
-- Namespace teknis area kesantrian memakai `StudentLife`, dengan label baca
-  Bahasa Indonesia "Kesantrian".
+- Namespace teknis area Pesantrian memakai `StudentLife`, dengan label baca
+  Bahasa Indonesia "Pesantrian".
 
 Rename `System -> Console` tidak menghambat work item `Organization/Organization`
 atau `Academic/AcademicPeriod` untuk dokumentasi, skeleton, dan backend slice

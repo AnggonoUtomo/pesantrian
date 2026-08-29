@@ -145,10 +145,10 @@ Academic, Finance, dan Reporting.
 
 **Estimated scope:** M.
 
-## Task 6: People Core / Kesantrian Slice
+## Task 6: People Core / Pesantrian Slice
 
 **Description:** Bangun urutan people core: HumanResource, Guardian, lalu
-Student. Area kesantrian memakai namespace teknis `StudentLife`.
+Student. Area Pesantrian memakai namespace teknis `StudentLife`.
 
 **Acceptance criteria:**
 

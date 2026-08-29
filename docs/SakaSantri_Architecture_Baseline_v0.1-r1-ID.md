@@ -395,7 +395,7 @@ Namespace baseline:
 |---|---|
 | `Console` | administrasi sistem tingkat tinggi |
 | `Organization` | struktur yayasan, unit, lokasi, dan organisasi |
-| `StudentLife` | area kesantrian |
+| `StudentLife` | area Pesantrian |
 | `Academic` | area akademik |
 | `HumanResource` | area SDM/personalia |
 | `Finance` | area keuangan |

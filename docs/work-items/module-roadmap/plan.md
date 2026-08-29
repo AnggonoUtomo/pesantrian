@@ -188,10 +188,10 @@ Checkpoint P1:
 - Admin dapat membuat unit organisasi dan periode akademik aktif.
 - Module baru lulus validation dan focused tests.
 
-## Phase 2: People Core / Kesantrian Awal (P2)
+## Phase 2: People Core / Pesantrian Awal (P2)
 
-Catatan istilah: area kesantrian memakai namespace teknis `StudentLife` agar
-lebih mudah dicerna, dengan label Bahasa Indonesia "Kesantrian".
+Catatan istilah: area Pesantrian memakai namespace teknis `StudentLife` agar
+lebih mudah dicerna, dengan label Bahasa Indonesia "Pesantrian".
 
 ### 2.1 HumanResource/HumanResource
 

@@ -17,4 +17,6 @@ interface HumanResourceRepository
 
     /** @param array<string, string|null> $changes */
     public function updateEmployee(string $id, array $changes): ?EmployeeData;
+
+    public function hasActiveUnitAssignments(string $employeeId): bool;
 }

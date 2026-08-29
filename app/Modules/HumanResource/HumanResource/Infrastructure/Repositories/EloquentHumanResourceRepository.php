@@ -71,6 +71,14 @@ final class EloquentHumanResourceRepository implements HumanResourceRepository
         return $this->map($record, $this->primaryUnitsFor([$record]));
     }
 
+    public function hasActiveUnitAssignments(string $employeeId): bool
+    {
+        return DB::table('employee_unit_assignments')
+            ->where('employee_id', $employeeId)
+            ->whereNull('ends_on')
+            ->exists();
+    }
+
     /**
      * @param  list<EmployeeRecord>  $records
      * @return Collection<string, object{id: string, code: string, name: string, status: string}>

@@ -72,15 +72,15 @@
 
 ## Increment 5: Employee lifecycle
 
-- [ ] Tambahkan activate employee.
+- [x] Tambahkan activate employee.
   - Acceptance: actor dengan `human_resource.manage` dapat mengaktifkan kembali
     employee inactive sesuai rule yang disetujui.
   - Verification: focused lifecycle feature test.
-- [ ] Tambahkan deactivate employee.
+- [x] Tambahkan deactivate employee.
   - Acceptance: actor dengan `human_resource.manage` dapat menonaktifkan
     employee secara aman.
   - Verification: focused lifecycle feature test.
-- [ ] Jaga lookup aktif.
+- [x] Jaga lookup aktif.
   - Acceptance: employee inactive tidak muncul pada candidate lookup aktif.
   - Verification: focused lifecycle/query test.
 

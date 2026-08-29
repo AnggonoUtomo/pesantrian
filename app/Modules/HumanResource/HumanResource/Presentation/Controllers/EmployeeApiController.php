@@ -5,11 +5,15 @@ declare(strict_types=1);
 namespace App\Modules\HumanResource\HumanResource\Presentation\Controllers;
 
 use App\Http\ApiResponseFactory;
+use App\Modules\HumanResource\HumanResource\Application\Actions\ActivateEmployee;
 use App\Modules\HumanResource\HumanResource\Application\Actions\CreateEmployee;
+use App\Modules\HumanResource\HumanResource\Application\Actions\DeactivateEmployee;
 use App\Modules\HumanResource\HumanResource\Application\Actions\UpdateEmployee;
 use App\Modules\HumanResource\HumanResource\Application\DTO\EmployeeData;
 use App\Modules\HumanResource\HumanResource\Application\DTO\PaginatedEmployeeData;
 use App\Modules\HumanResource\HumanResource\Application\Queries\ListEmployees;
+use App\Modules\HumanResource\HumanResource\Presentation\Requests\ActivateEmployeeApiRequest;
+use App\Modules\HumanResource\HumanResource\Presentation\Requests\DeactivateEmployeeApiRequest;
 use App\Modules\HumanResource\HumanResource\Presentation\Requests\ListEmployeesApiRequest;
 use App\Modules\HumanResource\HumanResource\Presentation\Requests\StoreEmployeeApiRequest;
 use App\Modules\HumanResource\HumanResource\Presentation\Requests\UpdateEmployeeApiRequest;
@@ -24,6 +28,8 @@ final readonly class EmployeeApiController implements HasMiddleware
         private ListEmployees $listEmployees,
         private CreateEmployee $createEmployee,
         private UpdateEmployee $updateEmployee,
+        private ActivateEmployee $activateEmployee,
+        private DeactivateEmployee $deactivateEmployee,
         private ApiResponseFactory $responses,
     ) {}
 
@@ -31,7 +37,7 @@ final readonly class EmployeeApiController implements HasMiddleware
     {
         return [
             new Middleware('can:human_resource.view', only: ['index']),
-            new Middleware('can:human_resource.manage', only: ['store', 'update']),
+            new Middleware('can:human_resource.manage', only: ['store', 'update', 'activate', 'deactivate']),
         ];
     }
 
@@ -71,6 +77,32 @@ final readonly class EmployeeApiController implements HasMiddleware
         return $this->responses->success(
             $request,
             'Employee berhasil diperbarui.',
+            (new EmployeeResource($updated))->toArray($request),
+        );
+    }
+
+    public function activate(ActivateEmployeeApiRequest $request, string $employee): JsonResponse
+    {
+        $updated = $this->activateEmployee->execute($employee);
+
+        abort_if($updated === null, 404);
+
+        return $this->responses->success(
+            $request,
+            'Employee berhasil diaktifkan.',
+            (new EmployeeResource($updated))->toArray($request),
+        );
+    }
+
+    public function deactivate(DeactivateEmployeeApiRequest $request, string $employee): JsonResponse
+    {
+        $updated = $this->deactivateEmployee->execute($employee, $request->leftOn());
+
+        abort_if($updated === null, 404);
+
+        return $this->responses->success(
+            $request,
+            'Employee berhasil dinonaktifkan.',
             (new EmployeeResource($updated))->toArray($request),
         );
     }

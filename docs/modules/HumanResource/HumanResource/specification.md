@@ -2,8 +2,9 @@
 
 ## Status
 
-Increment 4 selesai: module memiliki backend API minimum untuk read/list,
-create, update, validasi payload, dan authorization backend.
+Increment 5 selesai: module memiliki backend API minimum untuk read/list,
+create, update, activate, deactivate, validasi payload, dan authorization
+backend.
 
 ## Tujuan dan Scope
 
@@ -212,13 +213,14 @@ Communication, atau Reporting pada slice awal.
 - [x] Duplicate `employee_no` ditolak.
 - [x] Assignment ke unit organisasi memiliki foundation schema dan relasi
   persistence minimum.
-- [ ] Activate/deactivate employee menjaga lifecycle dasar.
+- [x] Activate/deactivate employee menjaga lifecycle dasar.
 - [ ] Mutation employee mencatat audit/event aman.
 - [ ] Candidate lookup contract terdokumentasi tanpa mengekspos model
   Infrastructure.
 - [x] `php artisan module:validate --no-ansi` lulus.
 - [x] Focused tests data foundation HumanResource lulus.
 - [x] Focused feature tests backend HumanResource lulus.
+- [x] Focused lifecycle tests HumanResource lulus.
 
 ## Risiko Terbuka
 

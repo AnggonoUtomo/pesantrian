@@ -98,6 +98,9 @@ sensitif yang tidak relevan.
 - Seeder/factory dibuat hanya ketika ada kebutuhan test atau demo nyata.
 - Public contract lintas module belum dibuat di source sampai consumer pertama
   jelas.
+- API lifecycle minimum tersedia untuk activate/deactivate employee. Deactivate
+  wajib menerima `left_on` dan ditolak bila employee masih memiliki assignment
+  unit aktif.
 - Payroll tidak masuk release awal kecuali diputuskan melalui work item
   terpisah.
 

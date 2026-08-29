@@ -17,4 +17,12 @@ Route::middleware(['web', 'auth', 'verified', 'throttle:system-api'])
             ->whereUlid('employee')
             ->middleware('api.idempotency')
             ->name('update');
+        Route::patch('/{employee}/activate', [EmployeeApiController::class, 'activate'])
+            ->whereUlid('employee')
+            ->middleware('api.idempotency')
+            ->name('activate');
+        Route::patch('/{employee}/deactivate', [EmployeeApiController::class, 'deactivate'])
+            ->whereUlid('employee')
+            ->middleware('api.idempotency')
+            ->name('deactivate');
     });

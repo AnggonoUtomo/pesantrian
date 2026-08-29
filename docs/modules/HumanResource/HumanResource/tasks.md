@@ -58,15 +58,15 @@
 
 ## Increment 4: Backend read/list dan create/update minimum
 
-- [ ] Tambahkan read/list employee.
+- [x] Tambahkan read/list employee.
   - Acceptance: actor dengan `human_resource.view` dapat membaca daftar
     employee.
   - Verification: focused feature test.
-- [ ] Tambahkan create/update employee.
+- [x] Tambahkan create/update employee.
   - Acceptance: actor dengan `human_resource.manage` dapat membuat dan mengubah
     employee; duplicate `employee_no` ditolak.
   - Verification: focused feature test.
-- [ ] Tambahkan authorization failure coverage.
+- [x] Tambahkan authorization failure coverage.
   - Acceptance: actor tanpa permission mendapat response forbidden.
   - Verification: focused feature test.
 

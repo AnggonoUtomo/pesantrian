@@ -2,7 +2,8 @@
 
 ## Status
 
-Draft untuk review sebelum implementasi skeleton dan backend foundation.
+Increment 4 selesai: module memiliki backend API minimum untuk read/list,
+create, update, validasi payload, dan authorization backend.
 
 ## Tujuan dan Scope
 
@@ -206,17 +207,18 @@ Communication, atau Reporting pada slice awal.
   valid.
 - [x] Migration employee minimum memakai ULID.
 - [x] Permission `human_resource.view` dan `human_resource.manage` tersedia.
-- [ ] Actor dengan permission dapat list/create/update employee minimum.
-- [ ] Actor tanpa permission ditolak oleh backend.
-- [ ] Duplicate `employee_no` ditolak.
+- [x] Actor dengan permission dapat list/create/update employee minimum.
+- [x] Actor tanpa permission ditolak oleh backend.
+- [x] Duplicate `employee_no` ditolak.
 - [x] Assignment ke unit organisasi memiliki foundation schema dan relasi
   persistence minimum.
 - [ ] Activate/deactivate employee menjaga lifecycle dasar.
 - [ ] Mutation employee mencatat audit/event aman.
 - [ ] Candidate lookup contract terdokumentasi tanpa mengekspos model
   Infrastructure.
-- [ ] `php artisan module:validate --no-ansi` lulus.
+- [x] `php artisan module:validate --no-ansi` lulus.
 - [x] Focused tests data foundation HumanResource lulus.
+- [x] Focused feature tests backend HumanResource lulus.
 
 ## Risiko Terbuka
 

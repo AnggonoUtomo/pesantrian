@@ -70,7 +70,7 @@ export function AcademicPeriodStatusField({
         <div className="space-y-2">
             <Label>Status</Label>
             <Select value={value} onValueChange={onChange}>
-                <SelectTrigger className="w-full">
+                <SelectTrigger aria-label="Status" className="w-full">
                     <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -103,7 +103,7 @@ export function AcademicYearSelectField({
         <div className="space-y-2">
             <Label>Tahun akademik</Label>
             <Select value={value} onValueChange={onChange}>
-                <SelectTrigger className="w-full">
+                <SelectTrigger aria-label="Tahun akademik" className="w-full">
                     <SelectValue placeholder="Pilih tahun akademik" />
                 </SelectTrigger>
                 <SelectContent>

@@ -103,7 +103,10 @@ export function AcademicPeriodFilterBar({
                             onPerPageChange(Number(value))
                         }
                     >
-                        <SelectTrigger className="w-full">
+                        <SelectTrigger
+                            aria-label="Baris per daftar"
+                            className="w-full"
+                        >
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -136,7 +139,7 @@ function FilterSelect({
         <div className="space-y-2">
             <Label>{label}</Label>
             <Select value={value} onValueChange={onValueChange}>
-                <SelectTrigger className="w-full">
+                <SelectTrigger aria-label={label} className="w-full">
                     <SelectValue />
                 </SelectTrigger>
                 <SelectContent>

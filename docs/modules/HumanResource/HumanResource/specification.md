@@ -45,6 +45,10 @@ Scope slice awal:
   - `EmployeeLookupReader`;
   - `EmployeeLookupData`;
   - `TeacherLookupReader` bila `Academic/Academic` menjadi consumer nyata.
+
+Contract lookup belum dibuat di source sampai consumer runtime pertama
+disetujui. Dokumen ini menjadi pegangan agar consumer lintas module tidak
+membaca model Infrastructure `EmployeeRecord` secara langsung.
 - Outbound port:
   - repository employee bila query/mutation membutuhkan boundary eksplisit.
 - Outbound adapter:
@@ -131,6 +135,66 @@ Candidate lookup output untuk consumer:
 - `employment_type`;
 - `primary_unit_id`;
 - `is_active`.
+
+### Candidate Employee Lookup Contract
+
+Status: documented candidate, belum runtime contract.
+
+Tujuan:
+
+- menyediakan daftar employee aktif untuk consumer seperti Academic, Dormitory,
+  Communication, atau Reporting;
+- mencegah consumer lintas module membaca model Infrastructure
+  `EmployeeRecord`;
+- menjaga output ringkas agar tidak mengekspos catatan internal HR.
+
+Candidate contract:
+
+- Interface: `EmployeeLookupReader`;
+- DTO: `EmployeeLookupData`;
+- Method: `search(EmployeeLookupCriteria $criteria): EmployeeLookupPage`.
+
+Candidate input criteria:
+
+- `search`: string opsional, cocok ke `employee_no`, `name`, atau
+  `preferred_name`;
+- `employment_types`: list enum opsional dari
+  `teacher|ustadz|musyrif|finance_staff|administration_staff|unit_head|staff`;
+- `primary_unit_id`: ULID opsional;
+- `page`: integer minimal 1;
+- `per_page`: 10, 25, atau 50.
+
+Candidate output item:
+
+- `id`: ULID employee;
+- `employee_no`: business identifier;
+- `display_name`: `preferred_name` bila ada, fallback ke `name`;
+- `employment_type`: tipe/persona kerja;
+- `primary_unit_id`: ULID unit utama atau `null`;
+- `is_active`: boolean, hanya `true` untuk lookup aktif.
+
+Failure:
+
+- invalid criteria: `422` pada adapter HTTP atau validation exception pada
+  caller internal;
+- actor tanpa permission sesuai consumer: `403` pada adapter HTTP;
+- tidak ada hasil: page kosong, bukan `404`.
+
+Rule penting:
+
+- lookup aktif hanya mengembalikan employee dengan `status=active`;
+- `left_on` tidak diekspos ke consumer lookup;
+- `notes`, audit metadata, dan data sensitif tidak masuk DTO lookup;
+- implementation harus berada di public boundary
+  `Application/Contracts`/`Application/DTO`, bukan memakai
+  `Infrastructure/Models` lintas module.
+
+Candidate specialization:
+
+- `TeacherLookupReader` boleh dibuat bila `Academic/Academic` sudah menjadi
+  consumer nyata dan membutuhkan filter `teacher|ustadz`;
+- specialization tetap mengembalikan DTO ringkas dan tidak boleh menambah
+  dependency ke model Academic.
 
 ### Failure
 
@@ -228,7 +292,7 @@ Communication, atau Reporting pada slice awal.
   persistence minimum.
 - [x] Activate/deactivate employee menjaga lifecycle dasar.
 - [x] Mutation employee mencatat audit/event aman.
-- [ ] Candidate lookup contract terdokumentasi tanpa mengekspos model
+- [x] Candidate lookup contract terdokumentasi tanpa mengekspos model
   Infrastructure.
 - [x] `php artisan module:validate --no-ansi` lulus.
 - [x] Focused tests data foundation HumanResource lulus.
@@ -245,7 +309,7 @@ Communication, atau Reporting pada slice awal.
   table tergantung kebutuhan data nyata.
 - Rule deactivate employee dengan assignment aktif perlu diputuskan saat
   increment lifecycle.
-- Public employee lookup belum dibuat di source sampai consumer pertama
-  disetujui.
+- Public employee lookup baru documented candidate; source contract runtime
+  belum dibuat sampai consumer pertama disetujui.
 - Assignment update/close belum dibuat; saat ini baru create assignment dan
   guard deactivate terhadap assignment aktif.

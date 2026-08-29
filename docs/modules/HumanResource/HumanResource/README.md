@@ -60,6 +60,11 @@ Candidate public boundary:
 - event perubahan lifecycle employee bila AuditTrail, Reporting, atau module
   consumer perlu merespons perubahan.
 
+Candidate employee lookup sudah terdokumentasi di specification module, tetapi
+belum dibuat sebagai source contract runtime sampai consumer pertama disetujui.
+Consumer lintas module tidak boleh memakai `Infrastructure/Models/EmployeeRecord`
+secara langsung.
+
 ## Data dan Identifier
 
 - Table awal:

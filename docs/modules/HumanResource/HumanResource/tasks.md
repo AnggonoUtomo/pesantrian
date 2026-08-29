@@ -96,7 +96,7 @@
 
 ## Increment 7: Candidate employee lookup contract
 
-- [ ] Dokumentasikan query contract employee lookup.
+- [x] Dokumentasikan query contract employee lookup.
   - Acceptance: contract menjelaskan input/output/failure tanpa mengekspos model
     Infrastructure.
   - Verification: `git diff --check`.

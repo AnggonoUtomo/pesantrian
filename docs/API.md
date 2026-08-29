@@ -26,6 +26,12 @@ frontend memakai Laravel named routes melalui Ziggy untuk Inertia React.
 | GET | `/api/v1/academic/periods/years` | `api.v1.academic.periods.years.index` | `academic_period.view` | Tidak | Envelope sukses dengan daftar tahun akademik dan pagination meta |
 | POST | `/api/v1/academic/periods/years` | `api.v1.academic.periods.years.store` | `academic_period.manage` | Ya | Envelope sukses `201` dengan tahun akademik yang dibuat |
 | PATCH | `/api/v1/academic/periods/years/{year}` | `api.v1.academic.periods.years.update` | `academic_period.manage` | Ya | Envelope sukses dengan tahun akademik yang diperbarui |
+| GET | `/api/v1/human-resource/employees` | `api.v1.human-resource.employees.index` | `human_resource.view` | Tidak | Envelope sukses dengan daftar employee dan pagination meta |
+| POST | `/api/v1/human-resource/employees` | `api.v1.human-resource.employees.store` | `human_resource.manage` | Ya | Envelope sukses `201` dengan employee yang dibuat |
+| PATCH | `/api/v1/human-resource/employees/{employee}` | `api.v1.human-resource.employees.update` | `human_resource.manage` | Ya | Envelope sukses dengan employee yang diperbarui |
+| PATCH | `/api/v1/human-resource/employees/{employee}/activate` | `api.v1.human-resource.employees.activate` | `human_resource.manage` | Ya | Envelope sukses dengan employee aktif dan `left_on=null` |
+| PATCH | `/api/v1/human-resource/employees/{employee}/deactivate` | `api.v1.human-resource.employees.deactivate` | `human_resource.manage` | Ya | Envelope sukses dengan employee inactive; ditolak bila assignment aktif masih terbuka |
+| POST | `/api/v1/human-resource/employees/{employee}/unit-assignments` | `api.v1.human-resource.employees.unit-assignments.store` | `human_resource.manage` | Ya | Envelope sukses `201` dengan assignment unit employee yang dibuat |
 | DELETE | `/api/v1/impersonation` | `api.v1.impersonation.destroy` | Authenticated user | Ya | Envelope sukses tanpa data |
 | GET | `/api/v1/organization/units` | `api.v1.organization.units.index` | `organization.view` | Tidak | Envelope sukses dengan daftar unit dan pagination meta |
 | POST | `/api/v1/organization/units` | `api.v1.organization.units.store` | `organization.manage` | Ya | Envelope sukses `201` dengan unit yang dibuat |
@@ -72,3 +78,11 @@ catat contract berikut:
 
 Endpoint tidak boleh ditambahkan hanya karena UI membutuhkan data internal.
 Untuk Inertia, gunakan route dan controller Presentation module sesuai baseline.
+
+## Candidate Internal Lookup Contract
+
+`HumanResource/HumanResource` memiliki documented candidate contract untuk
+employee lookup aktif, tetapi belum memiliki runtime contract publik sampai
+consumer pertama disetujui. Consumer seperti Academic, Dormitory, Communication,
+atau Reporting harus memakai contract `Application/Contracts`/`Application/DTO`
+ketika tersedia, bukan model Infrastructure module HR.

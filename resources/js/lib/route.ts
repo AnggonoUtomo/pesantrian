@@ -16,4 +16,25 @@ export function route(
     return ziggyRoute(name, params, absolute, getZiggy());
 }
 
+export function hasRoute(name: string): boolean {
+    try {
+        return Object.prototype.hasOwnProperty.call(getZiggy().routes, name);
+    } catch {
+        return false;
+    }
+}
+
+export function routeOr(
+    fallback: string,
+    name: Exclude<RouteName, undefined>,
+    params?: RouteParams,
+    absolute?: RouteAbsolute,
+): RouteUrl | string {
+    if (!hasRoute(String(name))) {
+        return fallback;
+    }
+
+    return route(name, params, absolute);
+}
+
 export default route;

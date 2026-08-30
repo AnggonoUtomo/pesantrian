@@ -9,6 +9,7 @@ import {
     UsersRound,
 } from 'lucide-react';
 import route from '@/lib/route';
+import { routeOr } from '@/lib/route';
 import type { Auth, NavGroup, NavItem } from '@/types';
 
 export function buildNamespaceNavigation(auth: Auth): NavGroup[] {
@@ -159,7 +160,10 @@ function buildPesantrianNavigation(auth: Auth): NavItem[] {
     return [
         {
             title: 'PPDB / Penerimaan Santri',
-            href: route('pesantrian.admissions.index'),
+            href: routeOr(
+                '/pesantrian/admissions',
+                'pesantrian.admissions.index',
+            ),
             icon: NotebookTabs,
             iconClassName: 'text-teal-600 dark:text-teal-300',
         },

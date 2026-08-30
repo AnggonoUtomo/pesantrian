@@ -19,7 +19,7 @@ final class PenerimaanSantriPresentationTest extends TestCase
 
     public function test_menolak_actor_tanpa_permission_penerimaan_santri_view(): void
     {
-        $actor = User::factory()->create();
+        $actor = $this->createUser();
 
         $this->actingAs($actor)
             ->get(route('pesantrian.admissions.index'))
@@ -29,7 +29,7 @@ final class PenerimaanSantriPresentationTest extends TestCase
     public function test_menampilkan_halaman_inertia_daftar_penerimaan_santri(): void
     {
         $view = Permission::create(['name' => 'penerimaan_santri.view', 'guard_name' => 'web']);
-        $actor = User::factory()->create();
+        $actor = $this->createUser();
         $actor->givePermissionTo($view);
         $unitId = $this->createOrganizationUnit('MTS', 'Madrasah Tsanawiyah');
 
@@ -72,6 +72,7 @@ final class PenerimaanSantriPresentationTest extends TestCase
                 'sort' => 'registration_no',
             ]))
             ->assertOk()
+            ->assertSee('pesantrian.admissions.index', false)
             ->assertInertia(fn (Assert $page): Assert => $page
                 ->component('Pesantrian/PenerimaanSantri/pages/Index')
                 ->where('admissions.data.0.registration_no', 'SNTR-UI-001')
@@ -135,6 +136,15 @@ final class PenerimaanSantriPresentationTest extends TestCase
         ]);
 
         return $id;
+    }
+
+    private function createUser(): User
+    {
+        $user = User::factory()->create();
+
+        self::assertInstanceOf(User::class, $user);
+
+        return $user;
     }
 
     private function sourceFile(string $path): string

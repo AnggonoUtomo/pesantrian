@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react';
 import type { FormEvent } from 'react';
 import SystemDashboardLayout from '@/layouts/system-dashboard-layout';
 import { canAccess } from '@/lib/authorization';
-import route from '@/lib/route';
+import { routeOr } from '@/lib/route';
 import { AdmissionAccessDenied } from '../components/AdmissionAccessDenied';
 import { AdmissionEmptyState } from '../components/AdmissionEmptyState';
 import { AdmissionFilterForm } from '../components/AdmissionFilterForm';
@@ -40,13 +40,15 @@ export default function Index() {
         () => targetUnitNameMap(targetUnitOptions),
         [targetUnitOptions],
     );
+    const admissionIndexUrl = () =>
+        routeOr('/pesantrian/admissions', 'pesantrian.admissions.index');
 
     const visitAdmissions = (
         nextPage = 1,
         nextPerPage = Number(filters.per_page ?? pagination.defaultPerPage),
     ) => {
         router.get(
-            route('pesantrian.admissions.index'),
+            admissionIndexUrl(),
             {
                 search: search.trim() || undefined,
                 filter: {
@@ -85,7 +87,7 @@ export default function Index() {
         setRegistrationFeeStatus('all');
 
         router.get(
-            route('pesantrian.admissions.index'),
+            admissionIndexUrl(),
             {},
             {
                 preserveScroll: true,

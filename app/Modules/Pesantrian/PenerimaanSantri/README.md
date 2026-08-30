@@ -22,6 +22,9 @@ Penerimaan Santri Baru.
 - Menu sidebar namespace `Pesantrian` tersedia untuk actor berizin
   `penerimaan_santri.view`, `penerimaan_santri.manage`, atau
   `penerimaan_santri.decide`.
+- UI create/edit pendaftaran internal tersedia untuk actor berizin
+  `penerimaan_santri.manage` dan memakai API create/update dengan idempotency
+  key.
 
 ## Acuan
 

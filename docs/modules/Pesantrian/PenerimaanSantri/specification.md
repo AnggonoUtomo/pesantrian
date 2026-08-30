@@ -4,7 +4,7 @@
 
 Implementasi bertahap aktif. Skeleton module, data foundation, backend
 behavior, lifecycle, audit, candidate conversion contract, dan UI/Inertia read
-page sudah tersedia sesuai scope awal.
+page serta UI create/edit sudah tersedia sesuai scope awal.
 
 ## Tujuan dan Scope
 
@@ -273,6 +273,8 @@ Keputusan Increment 7:
   minimal dan komponen business-specific di folder `components`.
 - [x] Menu sidebar namespace `Pesantrian` tersedia untuk PPDB berdasarkan
   permission PenerimaanSantri.
+- [x] UI create/edit tersedia untuk actor berizin `penerimaan_santri.manage`
+  dan terhubung ke API create/update dengan idempotency key.
 - [x] `php artisan module:validate --no-ansi` lulus.
 - [x] Focused tests PenerimaanSantri lulus.
 

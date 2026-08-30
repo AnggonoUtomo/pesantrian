@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button';
 import type { AdmissionTargetUnitOption, StudentAdmission } from '../types';
 import { genderLabels, targetUnitLabel } from './admissionDisplay';
 import { AdmissionStatusBadge } from './AdmissionStatusBadge';
@@ -6,9 +7,16 @@ import { RegistrationFeeStatusBadge } from './RegistrationFeeStatusBadge';
 type Props = {
     admissions: StudentAdmission[];
     targetUnitNameById: Map<string, string>;
+    canManage: boolean;
+    onEdit: (admission: StudentAdmission) => void;
 };
 
-export function AdmissionList({ admissions, targetUnitNameById }: Props) {
+export function AdmissionList({
+    admissions,
+    targetUnitNameById,
+    canManage,
+    onEdit,
+}: Props) {
     return (
         <div className="overflow-hidden rounded-xl border">
             <div className="hidden overflow-x-auto md:block">
@@ -33,6 +41,11 @@ export function AdmissionList({ admissions, targetUnitNameById }: Props) {
                             <th scope="col" className="px-4 py-3">
                                 Status
                             </th>
+                            {canManage ? (
+                                <th scope="col" className="px-4 py-3">
+                                    Aksi
+                                </th>
+                            ) : null}
                         </tr>
                     </thead>
                     <tbody className="divide-y">
@@ -88,6 +101,19 @@ export function AdmissionList({ admissions, targetUnitNameById }: Props) {
                                         status={admission.status}
                                     />
                                 </td>
+                                {canManage ? (
+                                    <td className="px-4 py-3">
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => onEdit(admission)}
+                                            disabled={!canEdit(admission)}
+                                        >
+                                            Edit pendaftaran
+                                        </Button>
+                                    </td>
+                                ) : null}
                             </tr>
                         ))}
                     </tbody>
@@ -132,11 +158,26 @@ export function AdmissionList({ admissions, targetUnitNameById }: Props) {
                                 }
                             />
                         </dl>
+                        {canManage ? (
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => onEdit(admission)}
+                                disabled={!canEdit(admission)}
+                            >
+                                Edit pendaftaran
+                            </Button>
+                        ) : null}
                     </article>
                 ))}
             </div>
         </div>
     );
+}
+
+function canEdit(admission: StudentAdmission): boolean {
+    return ['draft', 'submitted', 'verified'].includes(admission.status);
 }
 
 function AdmissionField({ label, value }: { label: string; value: string }) {

@@ -11,9 +11,10 @@ import {
     AdmissionList,
     targetUnitNameMap,
 } from '../components/AdmissionList';
+import { AdmissionMutationDialog } from '../components/AdmissionMutationDialog';
 import { AdmissionPagination } from '../components/AdmissionPagination';
 import { AdmissionSummary } from '../components/AdmissionSummary';
-import type { AdmissionPageProps } from '../types';
+import type { AdmissionPageProps, StudentAdmission } from '../types';
 
 export default function Index() {
     const {
@@ -34,8 +35,12 @@ export default function Index() {
     const [registrationFeeStatus, setRegistrationFeeStatus] = useState<string>(
         filters.filter?.registration_fee_status ?? 'all',
     );
+    const [mutationDialogOpen, setMutationDialogOpen] = useState(false);
+    const [selectedAdmission, setSelectedAdmission] =
+        useState<StudentAdmission | null>(null);
 
     const canView = canAccess(auth, 'penerimaan_santri.view');
+    const canManage = canAccess(auth, 'penerimaan_santri.manage');
     const targetUnitNameById = useMemo(
         () => targetUnitNameMap(targetUnitOptions),
         [targetUnitOptions],
@@ -96,6 +101,16 @@ export default function Index() {
         );
     };
 
+    const createAdmission = () => {
+        setSelectedAdmission(null);
+        setMutationDialogOpen(true);
+    };
+
+    const editAdmission = (admission: StudentAdmission) => {
+        setSelectedAdmission(admission);
+        setMutationDialogOpen(true);
+    };
+
     if (!canView) {
         return (
             <>
@@ -114,6 +129,18 @@ export default function Index() {
                 description="Tinjau calon santri, wali, status administrasi biaya, checklist dokumen, dan keputusan awal penerimaan."
             >
                 <div className="space-y-5">
+                    {canManage ? (
+                        <div className="flex justify-end">
+                            <button
+                                type="button"
+                                className="inline-flex h-9 items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-xs transition-colors hover:bg-primary/90 focus-visible:ring-ring/50 focus-visible:ring-[3px] focus-visible:outline-none"
+                                onClick={createAdmission}
+                            >
+                                Tambah pendaftaran
+                            </button>
+                        </div>
+                    ) : null}
+
                     <AdmissionSummary
                         total={admissions.meta.total}
                         admissions={admissions.data}
@@ -152,6 +179,8 @@ export default function Index() {
                                 <AdmissionList
                                     admissions={admissions.data}
                                     targetUnitNameById={targetUnitNameById}
+                                    canManage={canManage}
+                                    onEdit={editAdmission}
                                 />
                                 <AdmissionPagination
                                     meta={admissions.meta}
@@ -172,6 +201,15 @@ export default function Index() {
                         )}
                     </section>
                 </div>
+                {canManage ? (
+                    <AdmissionMutationDialog
+                        key={`${selectedAdmission?.id ?? 'create'}-${mutationDialogOpen ? 'open' : 'closed'}`}
+                        open={mutationDialogOpen}
+                        admission={selectedAdmission}
+                        targetUnitOptions={targetUnitOptions}
+                        onOpenChange={setMutationDialogOpen}
+                    />
+                ) : null}
             </SystemDashboardLayout>
         </>
     );

@@ -100,12 +100,15 @@ final class PenerimaanSantriPresentationTest extends TestCase
         $page = $this->sourceFile('js/pages/Pesantrian/PenerimaanSantri/pages/Index.tsx');
         $filter = $this->sourceFile('js/pages/Pesantrian/PenerimaanSantri/components/AdmissionFilterForm.tsx');
         $list = $this->sourceFile('js/pages/Pesantrian/PenerimaanSantri/components/AdmissionList.tsx');
+        $mutationDialog = $this->sourceFile('js/pages/Pesantrian/PenerimaanSantri/components/AdmissionMutationDialog.tsx');
         $pagination = $this->sourceFile('js/pages/Pesantrian/PenerimaanSantri/components/AdmissionPagination.tsx');
         $summary = $this->sourceFile('js/pages/Pesantrian/PenerimaanSantri/components/AdmissionSummary.tsx');
         $empty = $this->sourceFile('js/pages/Pesantrian/PenerimaanSantri/components/AdmissionEmptyState.tsx');
 
         self::assertStringContainsString("canAccess(auth, 'penerimaan_santri.view')", $page);
+        self::assertStringContainsString("canAccess(auth, 'penerimaan_santri.manage')", $page);
         self::assertStringContainsString('AdmissionSummary', $page);
+        self::assertStringContainsString('AdmissionMutationDialog', $page);
         self::assertStringContainsString('AdmissionFilterForm', $page);
         self::assertStringContainsString('AdmissionList', $page);
         self::assertStringContainsString('AdmissionPagination', $page);
@@ -115,6 +118,14 @@ final class PenerimaanSantriPresentationTest extends TestCase
         self::assertStringContainsString('Status biaya', $filter);
         self::assertStringContainsString('Nomor pendaftaran', $list);
         self::assertStringContainsString('Wali', $list);
+        self::assertStringContainsString('Edit pendaftaran', $list);
+        self::assertStringContainsString('Tambah pendaftaran', $mutationDialog);
+        self::assertStringContainsString('api.v1.pesantrian.admissions.store', $mutationDialog);
+        self::assertStringContainsString('api.v1.pesantrian.admissions.update', $mutationDialog);
+        self::assertStringContainsString('Idempotency-Key', $mutationDialog);
+        self::assertStringContainsString('Nama calon santri', $mutationDialog);
+        self::assertStringContainsString('Nama wali', $mutationDialog);
+        self::assertStringContainsString('Checklist dokumen', $mutationDialog);
         self::assertStringContainsString('Sebelumnya', $pagination);
         self::assertStringContainsString('Berikutnya', $pagination);
         self::assertStringContainsString('Total pendaftaran', $summary);

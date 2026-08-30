@@ -22,6 +22,8 @@ export type AdmissionChecklistItem = {
     notes: string;
 };
 
+export type AdmissionChecklistStatus = AdmissionChecklistItem['status'];
+
 export type StudentAdmission = {
     id: string;
     registration_no: string;
@@ -46,6 +48,25 @@ export type StudentAdmission = {
     notes: string | null;
     created_at: string | null;
     updated_at: string | null;
+};
+
+export type AdmissionMutationPayload = {
+    registration_period: string | null;
+    candidate_name: string;
+    candidate_gender: CandidateGender | null;
+    candidate_birth_place: string | null;
+    candidate_birth_date: string | null;
+    previous_school: string | null;
+    target_unit_id: string | null;
+    guardian_name: string;
+    guardian_phone: string | null;
+    guardian_relation: string | null;
+    registration_fee_required: boolean;
+    registration_fee_amount: string | null;
+    registration_fee_status: RegistrationFeeStatus;
+    document_checklist: AdmissionChecklistItem[];
+    status: 'draft' | 'submitted' | 'verified';
+    notes: string | null;
 };
 
 export type AdmissionPage = {

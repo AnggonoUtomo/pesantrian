@@ -170,6 +170,26 @@ Increment berikutnya dimulai hanya setelah user menginstruksikan lanjut.
 - Sidebar memiliki namespace `Pesantrian` dengan menu
   `PPDB / Penerimaan Santri` untuk actor berizin view/manage/decide.
 
+## Increment 9: UI mutation create/edit
+
+- Perubahan:
+  - dialog create/edit pendaftaran internal/admin;
+  - tombol tambah dan edit pada read page;
+  - submit JSON ke API create/update dengan `Idempotency-Key`;
+  - route API store/update ditambahkan ke whitelist Ziggy;
+  - field error backend ditampilkan pada form.
+- Dependency: Increment 8 dan API create/update Increment 4.
+- Acceptance:
+  - actor dengan `penerimaan_santri.manage` melihat aksi mutation;
+  - actor tanpa manage hanya membaca daftar;
+  - `Index.tsx` tetap menjadi komposer dan form berada di folder `components`;
+  - mutation lifecycle accept/reject/cancel tidak masuk scope increment ini.
+- Verifikasi:
+  - focused presentation/Ziggy tests;
+  - `npm run types:check`;
+  - `npm run lint:check`;
+  - `npm run build`.
+
 ## Keputusan Awal
 
 - PPDB awal adalah flow internal/admin.

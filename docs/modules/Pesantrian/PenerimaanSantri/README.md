@@ -10,7 +10,7 @@ Source module mengikuti [`docs/ARCHITECTURE.md`](../../../ARCHITECTURE.md) dan
 - Nama tampil: `PPDB / Penerimaan Santri Baru`
 - Candidate source: `app/Modules/Pesantrian/PenerimaanSantri/`
 - Candidate frontend: `resources/js/pages/Pesantrian/PenerimaanSantri/`
-- Status: `Active - UI read page`
+- Status: `Active - UI create/edit`
 
 ## Tujuan
 
@@ -196,3 +196,9 @@ git diff --check
   - filter search/status/unit/status biaya, summary, empty state, pagination,
     dan UX unauthorized
   - menu sidebar namespace `Pesantrian` untuk PPDB
+- Increment 9 UI mutation create/edit selesai:
+  - dialog tambah/edit pendaftaran internal/admin
+  - submit ke API create/update dengan idempotency key
+  - route API store/update tersedia di whitelist Ziggy
+  - field error backend ditampilkan di form
+  - lifecycle action UI belum dibuat

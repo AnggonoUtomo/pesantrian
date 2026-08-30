@@ -16,7 +16,7 @@ it('mengelompokkan menu sidebar berdasarkan namespace module', function (): void
         ->and($registry)->toContain("route('organization.units.index')")
         ->and($registry)->toContain("route('academic.periods.index')")
         ->and($registry)->toContain("route('human-resource.employees.index')")
-        ->and($registry)->toContain("routeOr(")
+        ->and($registry)->toContain('routeOr(')
         ->and($registry)->toContain("'/pesantrian/admissions'")
         ->and($registry)->toContain("'pesantrian.admissions.index'")
         ->and($registry)->toContain("'organization.view'")

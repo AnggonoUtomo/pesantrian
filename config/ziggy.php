@@ -71,6 +71,8 @@ return [
         'organization.units.archive',
         'organization.units.restore',
         'pesantrian.admissions.index',
+        'api.v1.pesantrian.admissions.store',
+        'api.v1.pesantrian.admissions.update',
         'human-resource.employees.index',
         'academic.periods.index',
         'academic.periods.years.store',

@@ -145,4 +145,20 @@
     `penerimaan_santri.decide`.
   - Verification: focused sidebar/Ziggy tests.
 
+## Increment 9: UI mutation create/edit
+
+- [x] Tambahkan dialog create/edit pendaftaran internal.
+  - Acceptance: actor dengan `penerimaan_santri.manage` dapat membuka form
+    tambah/edit dari read page.
+  - Verification: focused presentation/source guard test.
+- [x] Hubungkan form ke API create/update.
+  - Acceptance: form memakai route API `api.v1.pesantrian.admissions.store`
+    dan `api.v1.pesantrian.admissions.update` dengan idempotency key.
+  - Verification: focused Ziggy route test, `npm run types:check`, dan
+    `npm run lint:check`.
+- [x] Tampilkan validasi error dan refresh daftar setelah sukses.
+  - Acceptance: error backend tampil di field terkait, sukses menutup dialog
+    dan me-refresh prop daftar pendaftaran.
+  - Verification: `npm run build`.
+
 Jangan menambahkan pekerjaan baru ke checklist ini tanpa persetujuan user.

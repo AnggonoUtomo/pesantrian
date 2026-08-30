@@ -127,11 +127,11 @@
 
 ## Increment 8: UI/Inertia read page
 
-- [ ] Tambahkan route web Inertia PenerimaanSantri.
+- [x] Tambahkan route web Inertia PenerimaanSantri.
   - Acceptance: actor dengan `penerimaan_santri.view` dapat membuka halaman
     pendaftaran; actor tanpa permission ditolak backend.
   - Verification: focused presentation test.
-- [ ] Tambahkan frontend module canonical.
+- [x] Tambahkan frontend module canonical.
   - Acceptance: page berada di
     `resources/js/pages/Pesantrian/PenerimaanSantri/pages/Index.tsx`, komponen
     business-specific berada di
@@ -139,7 +139,7 @@
     `Index.tsx` tetap minimal.
   - Verification: `npm run types:check`, `npm run lint:check`,
     dan `npm run build`.
-- [ ] Tambahkan menu sidebar namespace Pesantrian.
+- [x] Tambahkan menu sidebar namespace Pesantrian.
   - Acceptance: menu PPDB muncul untuk actor berizin
     `penerimaan_santri.view`, `penerimaan_santri.manage`, atau
     `penerimaan_santri.decide`.

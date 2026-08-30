@@ -22,6 +22,7 @@ it('membagikan route yang dibutuhkan frontend', function () {
         'organization.units.update',
         'organization.units.archive',
         'organization.units.restore',
+        'pesantrian.admissions.index',
         'academic.periods.index',
         'academic.periods.years.store',
         'academic.periods.years.update',

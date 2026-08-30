@@ -2,8 +2,9 @@
 
 ## Status
 
-Draft implementasi. Skeleton module dan data foundation minimum sudah dibuat di
-source runtime; behavior PPDB belum dibuat.
+Implementasi bertahap aktif. Skeleton module, data foundation, backend
+behavior, lifecycle, audit, candidate conversion contract, dan UI/Inertia read
+page sudah tersedia sesuai scope awal.
 
 ## Tujuan dan Scope
 
@@ -268,6 +269,10 @@ Keputusan Increment 7:
 - [x] Mutation mencatat audit/event aman.
 - [x] Candidate conversion contract ke Santri terdokumentasi tanpa direct access
   ke model Infrastructure.
+- [x] UI/Inertia read page tersedia di frontend canonical dengan `Index.tsx`
+  minimal dan komponen business-specific di folder `components`.
+- [x] Menu sidebar namespace `Pesantrian` tersedia untuk PPDB berdasarkan
+  permission PenerimaanSantri.
 - [x] `php artisan module:validate --no-ansi` lulus.
 - [x] Focused tests PenerimaanSantri lulus.
 

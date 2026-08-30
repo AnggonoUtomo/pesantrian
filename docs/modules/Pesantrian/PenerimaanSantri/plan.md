@@ -154,8 +154,21 @@ Catatan hasil:
 
 ## Batas Berhenti
 
-Pekerjaan berhenti ketika dokumen module siap review. Coding dimulai hanya
-setelah user menginstruksikan mulai coding lagi.
+Pekerjaan berhenti setelah Increment 8 selesai, terverifikasi, dan dilaporkan.
+Increment berikutnya dimulai hanya setelah user menginstruksikan lanjut.
+
+## Catatan Hasil Increment 8
+
+- Web route Inertia `pesantrian.admissions.index` tersedia untuk halaman
+  internal/admin PPDB.
+- Backend permission tetap menjadi authority melalui
+  `penerimaan_santri.view`.
+- Frontend canonical tersedia di
+  `resources/js/pages/Pesantrian/PenerimaanSantri/`.
+- `Index.tsx` dijaga sebagai komposer page/layout; komponen business-specific
+  ditempatkan di folder `components`.
+- Sidebar memiliki namespace `Pesantrian` dengan menu
+  `PPDB / Penerimaan Santri` untuk actor berizin view/manage/decide.
 
 ## Keputusan Awal
 

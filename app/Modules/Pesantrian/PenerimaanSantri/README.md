@@ -17,7 +17,11 @@ Penerimaan Santri Baru.
 - Audit mutation aman tersedia untuk create/update dan lifecycle decision.
 - Candidate conversion contract ke Santri terdokumentasi; runtime contract
   ditunda sampai `Pesantrian/Santri` tersedia sebagai consumer nyata.
-- UI belum dibuat.
+- UI/Inertia read page tersedia di route `pesantrian.admissions.index` dengan
+  frontend canonical `resources/js/pages/Pesantrian/PenerimaanSantri/`.
+- Menu sidebar namespace `Pesantrian` tersedia untuk actor berizin
+  `penerimaan_santri.view`, `penerimaan_santri.manage`, atau
+  `penerimaan_santri.decide`.
 
 ## Acuan
 

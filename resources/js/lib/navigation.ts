@@ -2,6 +2,7 @@ import {
     Building2,
     CalendarRange,
     LayoutGrid,
+    NotebookTabs,
     ScrollText,
     Settings2,
     ShieldCheck,
@@ -27,6 +28,10 @@ export function buildNamespaceNavigation(auth: Auth): NavGroup[] {
         {
             title: 'Academic',
             items: buildAcademicNavigation(auth),
+        },
+        {
+            title: 'Pesantrian',
+            items: buildPesantrianNavigation(auth),
         },
     ].filter((group) => group.items.length > 0);
 }
@@ -136,6 +141,27 @@ function buildHumanResourceNavigation(auth: Auth): NavItem[] {
             href: route('human-resource.employees.index'),
             icon: UsersRound,
             iconClassName: 'text-orange-600 dark:text-orange-300',
+        },
+    ];
+}
+
+function buildPesantrianNavigation(auth: Auth): NavItem[] {
+    if (
+        !hasAnyPermission(auth, [
+            'penerimaan_santri.view',
+            'penerimaan_santri.manage',
+            'penerimaan_santri.decide',
+        ])
+    ) {
+        return [];
+    }
+
+    return [
+        {
+            title: 'PPDB / Penerimaan Santri',
+            href: route('pesantrian.admissions.index'),
+            icon: NotebookTabs,
+            iconClassName: 'text-teal-600 dark:text-teal-300',
         },
     ];
 }

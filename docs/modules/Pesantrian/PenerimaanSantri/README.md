@@ -10,7 +10,7 @@ Source module mengikuti [`docs/ARCHITECTURE.md`](../../../ARCHITECTURE.md) dan
 - Nama tampil: `PPDB / Penerimaan Santri Baru`
 - Candidate source: `app/Modules/Pesantrian/PenerimaanSantri/`
 - Candidate frontend: `resources/js/pages/Pesantrian/PenerimaanSantri/`
-- Status: `Active - backend audit`
+- Status: `Active - UI read page`
 
 ## Tujuan
 
@@ -187,4 +187,12 @@ git diff --check
   - ownership, failure semantics, dan rule eligibility awal terdokumentasi
   - runtime implementation ditunda sampai `Pesantrian/Santri` tersedia sebagai
     consumer nyata
-- UI belum dibuat.
+- Increment 8 UI/Inertia read page selesai:
+  - web route Inertia `pesantrian.admissions.index`
+  - page canonical
+    `resources/js/pages/Pesantrian/PenerimaanSantri/pages/Index.tsx`
+  - komponen business-specific di
+    `resources/js/pages/Pesantrian/PenerimaanSantri/components/`
+  - filter search/status/unit/status biaya, summary, empty state, pagination,
+    dan UX unauthorized
+  - menu sidebar namespace `Pesantrian` untuk PPDB

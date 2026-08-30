@@ -61,8 +61,9 @@ ketat.
 - Data induk santri aktif final.
 - Master wali santri penuh.
 - Akun login wali/santri.
-- Pembayaran formulir, uang pangkal, invoice, VA, QRIS, dan payment gateway.
-- Upload dokumen lengkap.
+- Invoice resmi, kuitansi, VA, QRIS, payment gateway, rekonsiliasi pembayaran,
+  dan tunggakan.
+- Upload dan arsip file dokumen lengkap.
 - Seleksi kompleks multi-tahap.
 - Tes masuk, jadwal wawancara, dan scoring detail.
 - Alokasi kelas, rombel, asrama, atau tahfidz final.
@@ -86,6 +87,11 @@ ketat.
 - `guardian_name`: string wajib pada slice awal;
 - `guardian_phone`: string opsional;
 - `guardian_relation`: ayah/ibu/wali atau vocabulary final yang disetujui;
+- `registration_fee_required`: boolean opsional, mengikuti konfigurasi periode
+  PPDB;
+- `registration_fee_amount`: decimal opsional bila biaya pendaftaran wajib;
+- `registration_fee_status`: not_required/pending/verified/rejected;
+- `document_checklist`: daftar item dokumen dan status verifikasi minimum;
 - `status`: draft/submitted/verified/accepted/rejected/cancelled;
 - `notes`: string opsional dan tidak boleh memuat data sensitif berlebihan.
 
@@ -143,6 +149,11 @@ Rule awal:
   `Pesantrian/WaliSantri` tersedia;
 - PPDB awal bersifat internal/admin; public registration form tanpa login
   ditunda sampai flow internal dan security boundary stabil;
+- biaya pendaftaran bersifat opsional per periode PPDB. PPDB hanya menyimpan
+  status administrasi dan nominal sederhana; invoice resmi dan payment
+  lifecycle tetap menjadi ownership `Finance/StudentFinance`;
+- dokumen pendaftaran bersifat checklist verifikasi pada baseline awal. Upload
+  dan arsip file digital menunggu boundary `Support/Document`;
 - perubahan status wajib mencatat actor dan waktu keputusan;
 - status transition yang tidak valid ditolak oleh Application/Domain rule.
 
@@ -208,18 +219,16 @@ atau Keuangan pada slice awal.
 - [ ] Actor berizin dapat list/create/update pendaftaran minimum.
 - [ ] Actor tanpa permission ditolak backend.
 - [ ] Duplicate `registration_no` ditolak.
+- [ ] Biaya pendaftaran opsional dapat dicatat sebagai status administrasi
+  sederhana tanpa membuat invoice Finance.
+- [ ] Checklist dokumen pendaftaran minimum dapat dicatat dan diverifikasi
+  tanpa upload file.
 - [ ] Status transition minimum berjalan dan invalid transition ditolak.
 - [ ] Mutation mencatat audit/event aman.
 - [ ] Candidate conversion contract ke Santri terdokumentasi tanpa direct access
   ke model Infrastructure.
 - [ ] `php artisan module:validate --no-ansi` lulus.
 - [ ] Focused tests PenerimaanSantri lulus.
-
-## Risiko Terbuka
-
-- Apakah biaya pendaftaran masuk scope PPDB awal atau menunggu
-  `Finance/StudentFinance`?
-- Apakah dokumen pendaftaran wajib sejak awal atau cukup field data dulu?
 
 ## Keputusan Awal
 
@@ -232,3 +241,13 @@ atau Keuangan pada slice awal.
 - PPDB release awal adalah flow internal/admin. Public registration form tanpa
   login ditunda sampai validasi, rate limit, anti-spam, dan boundary keamanan
   siap.
+- Biaya pendaftaran bersifat opsional per periode PPDB. Pada baseline awal,
+  PPDB hanya menyimpan status administrasi dan nominal biaya pendaftaran
+  sederhana. Invoice resmi, pembayaran, kuitansi, tunggakan, payment gateway,
+  dan rekonsiliasi tetap menjadi ownership `Finance/StudentFinance`.
+- Dokumen pendaftaran pada baseline awal berupa checklist verifikasi. Upload
+  dan arsip file digital ditunda sampai boundary `Support/Document` atau
+  document storage siap.
+- Status accepted dapat mensyaratkan data calon lengkap, wali snapshot lengkap,
+  dokumen wajib verified, dan biaya pendaftaran verified bila periode PPDB
+  mewajibkan biaya.

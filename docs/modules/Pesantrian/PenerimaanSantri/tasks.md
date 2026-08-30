@@ -10,6 +10,9 @@
 - [x] Coding ditahan sampai user menginstruksikan mulai coding lagi.
 - [x] Keputusan awal ditentukan: nomor pendaftaran auto-generate, wali snapshot
   dulu, PPDB public form ditunda.
+- [x] Keputusan biaya dan dokumen ditentukan: biaya pendaftaran opsional
+  dicatat sederhana di PPDB; dokumen pendaftaran berupa checklist verifikasi
+  tanpa upload file pada baseline awal.
 
 ## Increment 1: Dokumentasi module
 
@@ -46,7 +49,8 @@
 
 - [ ] Tambahkan migration pendaftaran/calon santri.
   - Acceptance: ULID primary key, unique `registration_no`, candidate identity,
-    wali snapshot, target unit, status, dan timestamp tersedia.
+    wali snapshot, target unit, status, administrasi biaya sederhana, checklist
+    dokumen, dan timestamp tersedia.
   - Verification: focused migration/model tests.
 - [ ] Tambahkan persistence minimum.
   - Acceptance: model/repository hanya dibuat bila dipakai oleh use case.
@@ -65,6 +69,14 @@
 - [ ] Tambahkan create/update pendaftaran.
   - Acceptance: actor dengan `penerimaan_santri.manage` dapat membuat dan
     mengubah pendaftaran; `registration_no` dibuat otomatis dan tetap unik.
+  - Verification: focused feature test.
+- [ ] Tambahkan field administrasi biaya pendaftaran sederhana.
+  - Acceptance: PPDB dapat mencatat biaya tidak wajib/wajib, nominal, dan status
+    administrasi tanpa membuat invoice Finance.
+  - Verification: focused feature test.
+- [ ] Tambahkan checklist dokumen pendaftaran minimum.
+  - Acceptance: PPDB dapat mencatat status item dokumen dan verifikasi tanpa
+    upload file.
   - Verification: focused feature test.
 - [ ] Tambahkan authorization failure coverage.
   - Acceptance: actor tanpa permission mendapat response forbidden.

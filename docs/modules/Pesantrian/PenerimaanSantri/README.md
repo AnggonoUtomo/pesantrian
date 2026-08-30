@@ -30,14 +30,18 @@ dari lifecycle santri aktif.
   - data pendaftaran awal;
   - data wali minimum yang diperlukan untuk pendaftaran;
   - status pendaftaran;
+  - status administrasi biaya pendaftaran sederhana bila periode PPDB
+    mewajibkan biaya;
+  - checklist dokumen pendaftaran minimum;
   - proses verifikasi/seleksi minimum;
   - keputusan diterima/ditolak/batal;
   - jejak konversi calon santri menjadi santri aktif.
 - Tidak memiliki:
   - data induk santri aktif final;
   - lifecycle akademik santri;
-  - tagihan dan pembayaran PPDB;
-  - dokumen upload penuh;
+  - invoice resmi, kuitansi, payment gateway, VA, QRIS, dan rekonsiliasi
+    pembayaran;
+  - upload dan arsip file dokumen penuh;
   - akun login wali/santri;
   - alokasi kelas, rombel, asrama, atau tahfidz final;
   - workflow seleksi kompleks multi-tahap.
@@ -52,10 +56,10 @@ Candidate consumer awal:
   dibuat menjadi data induk santri;
 - `Pesantrian/WaliSantri` membutuhkan data wali dari pendaftaran bila wali akan
   dipromosikan menjadi master wali;
-- `Finance/StudentFinance` dapat membutuhkan pendaftaran bila biaya PPDB masuk
-  scope berikutnya;
-- `Support/Document` dapat dibutuhkan bila upload dokumen pendaftaran masuk
-  scope berikutnya.
+- `Finance/StudentFinance` dapat mengambil referensi pendaftaran bila biaya
+  PPDB perlu dibuat sebagai invoice resmi pada increment berikutnya;
+- `Support/Document` dapat mengambil referensi checklist dokumen bila upload
+  dan arsip file digital sudah masuk scope berikutnya.
 
 Candidate public boundary:
 
@@ -105,13 +109,21 @@ Metadata audit tidak boleh menyimpan data sensitif yang tidak diperlukan.
 
 - Module dibuat hanya setelah dokumen ini disetujui.
 - Generator memakai `php artisan module:make Pesantrian PenerimaanSantri`.
-- Slice awal fokus pada data pendaftaran dan status, bukan pembayaran,
-  dokumen upload, atau akun portal wali.
+- Slice awal fokus pada data pendaftaran, status, administrasi biaya sederhana,
+  dan checklist dokumen, bukan invoice resmi, payment gateway, upload file,
+  atau akun portal wali.
 - PPDB awal adalah flow internal/admin. Public registration form tanpa login
   ditunda sampai flow internal, validasi data, dan security boundary stabil.
 - Data wali pada PPDB disimpan sebagai snapshot pendaftaran dulu. Promosi ke
   master `Pesantrian/WaliSantri` dilakukan melalui contract/use case setelah
   module WaliSantri tersedia.
+- Biaya pendaftaran bersifat opsional per periode PPDB. Pada baseline awal,
+  PPDB hanya menyimpan status administrasi dan nominal biaya pendaftaran
+  sederhana. Invoice resmi, pembayaran, kuitansi, tunggakan, payment gateway,
+  dan rekonsiliasi tetap menjadi ownership `Finance/StudentFinance`.
+- Dokumen pendaftaran pada baseline awal berupa checklist verifikasi. Upload
+  dan arsip file digital ditunda sampai boundary `Support/Document` atau
+  document storage siap.
 - Konversi menjadi Santri boleh didokumentasikan dulu sebagai candidate
   contract sampai module `Pesantrian/Santri` dibuat.
 

@@ -51,6 +51,8 @@ coding lagi.
   - `registration_no` unik dan dibuat otomatis oleh sistem;
   - candidate identity, wali snapshot, target unit, status, registered/decided
     timestamp tersedia;
+  - status administrasi biaya pendaftaran sederhana tersedia;
+  - checklist dokumen pendaftaran minimum tersedia;
   - tidak ada dependency langsung ke model privat Organization.
 - Verifikasi:
   - focused migration/model tests;
@@ -68,6 +70,8 @@ coding lagi.
   - actor berizin dapat membaca/membuat/memperbarui pendaftaran;
   - actor tanpa izin ditolak;
   - duplicate `registration_no` ditolak;
+  - status biaya pendaftaran dan checklist dokumen dapat dicatat tanpa invoice
+    Finance atau upload file;
   - response tidak mengekspos field sensitif.
 - Verifikasi:
   - focused feature tests PenerimaanSantri;
@@ -151,6 +155,11 @@ setelah user menginstruksikan mulai coding lagi.
   untuk bagian `-xxxx`.
 - Data wali disimpan sebagai snapshot pendaftaran dulu, lalu dipromosikan
   melalui contract/use case setelah module `Pesantrian/WaliSantri` tersedia.
+- Biaya pendaftaran opsional per periode PPDB. PPDB menyimpan status
+  administrasi dan nominal sederhana; invoice/payment lifecycle tetap milik
+  `Finance/StudentFinance`.
+- Dokumen pendaftaran berupa checklist verifikasi; upload/arsip file digital
+  menunggu `Support/Document`.
 
 ## Rollback
 

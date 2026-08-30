@@ -1,0 +1,162 @@
+# Implementation Plan: Pesantrian/PenerimaanSantri
+
+## Scope
+
+Pekerjaan ini memulai module `Pesantrian/PenerimaanSantri` sebagai foundation
+PPDB / Penerimaan Santri Baru. Fokus awal adalah data calon santri, data wali
+minimum saat pendaftaran, status pendaftaran, permission, audit, dan read page.
+
+Tidak ada coding sampai user menyetujui dokumen dan menginstruksikan mulai
+coding lagi.
+
+## Increment 1: Dokumentasi module
+
+- Perubahan:
+  - `docs/modules/Pesantrian/PenerimaanSantri/README.md`
+  - `docs/modules/Pesantrian/PenerimaanSantri/specification.md`
+  - `docs/modules/Pesantrian/PenerimaanSantri/plan.md`
+  - `docs/modules/Pesantrian/PenerimaanSantri/tasks.md`
+- Dependency: baseline operasional pesantren dan module-roadmap disetujui.
+- Acceptance: scope, non-scope, acceptance criteria, dependency, risiko, dan
+  verifikasi tertulis.
+- Verifikasi: `git diff --check`.
+
+## Increment 2: Skeleton module
+
+- Perubahan:
+  - generate `app/Modules/Pesantrian/PenerimaanSantri/` dengan generator;
+  - review `module.json`, `module.php`, `permissions.php`,
+    `ServiceProvider.php`, `README.md`, dan `Routes/*`.
+- Dependency: Increment 1 direview.
+- Acceptance:
+  - target path `app/Modules/Pesantrian/PenerimaanSantri`;
+  - tidak ada folder kosong placeholder;
+  - manifest valid;
+  - permission identity awal tersedia.
+- Verifikasi:
+  - `php artisan module:make Pesantrian PenerimaanSantri --dry-run --json --no-ansi`
+  - `php artisan module:make Pesantrian PenerimaanSantri --force --yes --no-ansi`
+  - `php artisan module:validate --no-ansi`
+  - `git diff --check`
+
+## Increment 3: Data foundation
+
+- Perubahan:
+  - migration pendaftaran/calon santri;
+  - model/persistence minimum;
+  - validation rule status dan unique registration number.
+- Dependency: Increment 2.
+- Acceptance:
+  - table memakai ULID;
+  - `registration_no` unik dan dibuat otomatis oleh sistem;
+  - candidate identity, wali snapshot, target unit, status, registered/decided
+    timestamp tersedia;
+  - tidak ada dependency langsung ke model privat Organization.
+- Verifikasi:
+  - focused migration/model tests;
+  - `php artisan module:validate --no-ansi`.
+
+## Increment 4: Backend read/list dan create/update minimum
+
+- Perubahan:
+  - query/action minimum;
+  - controller/request/resource API;
+  - route backend minimum;
+  - authorization backend.
+- Dependency: Increment 3.
+- Acceptance:
+  - actor berizin dapat membaca/membuat/memperbarui pendaftaran;
+  - actor tanpa izin ditolak;
+  - duplicate `registration_no` ditolak;
+  - response tidak mengekspos field sensitif.
+- Verifikasi:
+  - focused feature tests PenerimaanSantri;
+  - `php artisan module:validate --no-ansi`;
+  - `php artisan starter:verify --no-ansi`.
+
+## Increment 5: Lifecycle status pendaftaran
+
+- Perubahan:
+  - action verify;
+  - action accept;
+  - action reject;
+  - action cancel;
+  - rule transition status.
+- Dependency: Increment 4.
+- Acceptance:
+  - transisi draft/submitted/verified/accepted/rejected/cancelled berjalan;
+  - terminal state tidak bisa dimutasi sembarangan;
+  - invalid transition menghasilkan validation error yang jelas.
+- Verifikasi:
+  - focused lifecycle tests PenerimaanSantri.
+
+## Increment 6: Audit mutation
+
+- Perubahan:
+  - audit create/update;
+  - audit verify/accept/reject/cancel;
+  - metadata audit aman.
+- Dependency: Increment 4-5 dan bridge audit existing.
+- Acceptance:
+  - mutation menghasilkan audit entry/event;
+  - metadata audit tidak memuat secret atau payload sensitif berlebihan.
+- Verifikasi:
+  - focused audit tests PenerimaanSantri.
+
+## Increment 7: Candidate conversion contract ke Santri
+
+- Perubahan:
+  - dokumentasikan candidate contract pendaftaran accepted yang siap dikonversi;
+  - implementasi source hanya bila `Pesantrian/Santri` menjadi consumer nyata.
+- Dependency: Increment 5-6.
+- Acceptance:
+  - contract tidak mengekspos model Infrastructure;
+  - DTO cukup ringkas untuk membuat data induk Santri;
+  - tidak ada direct dependency lintas module.
+- Verifikasi:
+  - focused contract/query tests bila diimplementasikan;
+  - `php artisan module:validate --no-ansi`.
+
+## Increment 8: UI/Inertia read page
+
+- Perubahan:
+  - route web Inertia PenerimaanSantri;
+  - controller presentation untuk props daftar pendaftaran;
+  - frontend canonical di
+    `resources/js/pages/Pesantrian/PenerimaanSantri/`;
+  - menu sidebar namespace Pesantrian.
+- Dependency: Increment 4-7.
+- Acceptance:
+  - page resolve dari canonical frontend module;
+  - `Index.tsx` hanya menjadi komposer layout;
+  - komponen business-specific berada di folder `components`;
+  - backend tetap authority untuk permission.
+- Verifikasi:
+  - focused presentation tests PenerimaanSantri;
+  - focused sidebar/Ziggy tests;
+  - `npm run types:check`;
+  - `npm run lint:check`;
+  - `npm run build`.
+
+## Batas Berhenti
+
+Pekerjaan berhenti ketika dokumen module siap review. Coding dimulai hanya
+setelah user menginstruksikan mulai coding lagi.
+
+## Keputusan Awal
+
+- PPDB awal adalah flow internal/admin.
+- Nomor pendaftaran dibuat otomatis oleh sistem memakai konfigurasi nomor di
+  `System/SystemSetting`, contoh prefix `SNTR` dengan sequence auto-generate
+  untuk bagian `-xxxx`.
+- Data wali disimpan sebagai snapshot pendaftaran dulu, lalu dipromosikan
+  melalui contract/use case setelah module `Pesantrian/WaliSantri` tersedia.
+
+## Rollback
+
+- Revert commit per increment.
+- Untuk migration yang sudah dijalankan lokal, gunakan rollback migration
+  module sesuai mekanisme Laravel sebelum menghapus source.
+- Jangan mengubah atau menghapus data/module `Organization/Organization`,
+  `Academic/AcademicPeriod`, atau `HumanResource/HumanResource` sebagai bagian
+  dari rollback PenerimaanSantri.

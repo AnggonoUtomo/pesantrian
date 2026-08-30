@@ -153,6 +153,7 @@ HumanResource tetap stabil.
 **Acceptance criteria:**
 
 - [x] HumanResource menyediakan employee/staff/teacher foundation dan read page.
+- [x] Dokumentasi awal `Pesantrian/PenerimaanSantri` tersedia untuk review.
 - [ ] PenerimaanSantri menyediakan calon santri, status pendaftaran, dan
   konversi awal.
 - [ ] WaliSantri menyediakan identity/contact dan relation contract.

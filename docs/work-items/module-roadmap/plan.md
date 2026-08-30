@@ -16,26 +16,30 @@ Architecture.
 | Validation | `php artisan module:validate --no-ansi` lulus. |
 | Foundation | `php artisan starter:verify --no-ansi` lulus. |
 | Identifier | Migration aplikasi sudah dominan memakai ULID; media table package masih memakai integer id karena mengikuti Spatie Media Library. |
-| Frontend | UI module berada di `resources/js/pages/<Namespace>/<Module>/*`; `System/*` masih implementation bridge menuju vocabulary `Console`. |
+| Frontend | UI module berada di `resources/js/pages/<Namespace>/<Module>/*`; `System/*` tetap source existing untuk area Sistem. |
 | Generator | `module:make <Namespace> <Module>` tersedia untuk baseline baru; `--domain` tetap alias kompatibilitas. |
+| Vocabulary produk | Nama tampil dan dokumentasi produk memakai Bahasa Indonesia; identifier teknis existing tidak di-rename tanpa work item migrasi. |
 
 ## Mapping Current ke Target
 
 | Current source | Target produk | Keputusan rencana |
 | --- | --- | --- |
-| `System/AccessControl` | `Console/AccessControl` | Baseline final memakai `Console`; pertahankan source dulu sebagai bridge sampai audit consumer selesai. |
-| `System/UserManagement` | bagian dari `Console/AccessControl` | Jangan merge fisik dulu. Buat compatibility plan karena route, permission, UI, tests, dan contract sudah banyak. |
-| `System/SystemSetting` | `Console/SystemSetting` | Baseline final memakai `Console`; pertahankan source dulu sebagai bridge sampai generator dan docs module siap. |
-| `System/AuditLog` | `Console/AuditTrail` | Baseline final memakai `Console/AuditTrail`; `AuditLog` hanya implementation bridge sampai rename disetujui. |
+| `System/AccessControl` | Sistem / Kontrol Akses | Pertahankan source; nama tampil memakai Bahasa Indonesia. |
+| `System/UserManagement` | Sistem / Pengguna | Pertahankan source; jangan merge fisik dulu karena route, permission, UI, tests, dan contract sudah banyak. |
+| `System/SystemSetting` | Sistem / Pengaturan Sistem | Pertahankan source; setting bukan dumping ground master data. |
+| `System/AuditLog` | Sistem / Audit Trail | Pertahankan source; nama produk Audit Trail, implementation tetap `AuditLog` sampai ada migrasi eksplisit. |
 
 ## Priority Scale
 
 - P0: Foundation blocker. Harus selesai sebelum module domain banyak dibuat.
 - P1: Core foundation bisnis. Menjadi dependency hampir semua module.
 - P2: People core. Mulai membentuk data operasional utama pesantren.
-- P3: Operational core. Workflow harian akademik/asrama.
-- P4: Finance, document, communication, reporting. Bergantung pada data core.
-- P5: Expansion. Ditunda dulu; tidak masuk release awal.
+- P3: Operational core. Workflow harian asrama, akademik, tahfidz, dan presensi.
+- P4: Pengasuhan dan rekam santri. Perizinan, kedisiplinan, prestasi,
+  kesehatan, pembinaan, dan alumni.
+- P5: Finance, document, communication, reporting, donation, asset. Bergantung
+  pada data core.
+- P6: Expansion. Ditunda dulu; tidak masuk release awal.
 
 ## Phase 0: Starterkit Alignment (P0)
 
@@ -46,8 +50,9 @@ permission, migration, UI, dan test map.
 
 Status: selesai melalui work item
 [`starterkit-alignment`](../starterkit-alignment/README.md). Source `System/*`
-tetap menjadi implementation bridge; rename fisik ke `Console/*` tidak dilakukan
-di Phase 0.
+tetap menjadi implementation namespace untuk area Sistem; rename fisik ke
+istilah teknis lain tidak dilakukan di Phase 0. `Console/*` adalah rencana lama
+yang tidak menjadi target langsung setelah revisi vocabulary ini.
 
 Acceptance:
 
@@ -88,20 +93,22 @@ Acceptance:
 - Ziggy route name, URL, permission key, dan Inertia component path tidak
   berubah tanpa compatibility plan.
 
-### 0.4 Tetapkan strategy compatibility `System` ke `Console`
+### 0.4 Tetapkan strategy vocabulary `System` sebagai Sistem
 
-Tujuan: mencegah rename besar yang mematahkan foundation.
+Tujuan: mencegah rename besar yang mematahkan foundation dan menyelaraskan nama
+tampil "Sistem" dengan source existing `System/*`.
 
 Status: keputusan sementara sudah tercatat: `System/*` tetap implementation
-bridge. Keputusan rename fisik final ditunda sampai ada work item migrasi
+namespace. Keputusan rename fisik final ditunda sampai ada work item migrasi
 khusus.
 
 Acceptance:
 
-- ADR atau work item menyatakan apakah `System/*` akan tetap menjadi implementation namespace, atau dipindah ke `Console/*`.
+- ADR atau work item menyatakan apakah `System/*` tetap menjadi namespace teknis
+  final, atau dipindah ke istilah teknis lain.
 - Jika dipindah, ada daftar alias/bridge dan regression suite.
-- Baseline final tetap `Console`; `System/*` hanya boleh dipertahankan sebagai
-  compatibility bridge sementara bila rename langsung berisiko.
+- Nama tampil final adalah "Sistem"; source existing tetap `System/*` sampai
+  migrasi teknis disetujui.
 
 Checkpoint P0:
 
@@ -114,9 +121,9 @@ Gate menuju `Organization/Organization`: Task 1 dan Task 2 roadmap selesai.
 Task 3 frontend path decision sudah selesai; UI baru setelah keputusan ini
 dibuat di `resources/js/pages/<Namespace>/<Module>/`.
 
-## Phase 1: Console, Organization, dan Academic Period (P1)
+## Phase 1: Sistem, Organisasi, dan Tahun Ajaran (P1)
 
-### 1.1 Console/AccessControl consolidation
+### 1.1 System/AccessControl consolidation
 
 Target capability: user account, auth integration, roles, permissions, policy,
 2FA integration, profile access.
@@ -130,7 +137,7 @@ Urutan:
 
 Dependencies: Phase 0.
 
-### 1.2 Console/SystemSetting product baseline
+### 1.2 System/SystemSetting product baseline
 
 Target capability: setting aplikasi yang dapat diubah runtime.
 
@@ -142,7 +149,7 @@ Urutan:
 
 Dependencies: AccessControl, AuditTrail.
 
-### 1.3 Console/AuditTrail
+### 1.3 System/AuditLog / AuditTrail vocabulary
 
 Target capability: audit trail untuk aktivitas auth, access control, setting,
 dan mutation module domain.
@@ -188,10 +195,11 @@ Checkpoint P1:
 - Admin dapat membuat unit organisasi dan periode akademik aktif.
 - Module baru lulus validation dan focused tests.
 
-## Phase 2: People Core / Pesantrian Awal (P2)
+## Phase 2: People Core / Data Orang (P2)
 
-Catatan istilah: area Pesantrian memakai namespace teknis `StudentLife` agar
-lebih mudah dicerna, dengan label Bahasa Indonesia "Pesantrian".
+Catatan istilah: nama tampil memakai Bahasa Indonesia. Source existing
+`HumanResource/HumanResource` tetap stabil; module pesantrian baru memakai
+candidate namespace teknis `Pesantrian` bila disetujui saat mulai module.
 
 ### 2.1 HumanResource/HumanResource
 
@@ -207,7 +215,22 @@ Vertical slice:
 - Public contract untuk teacher/staff lookup.
 - Permission `human_resource.*`.
 
-### 2.2 StudentLife/Guardian
+### 2.2 Pesantrian/PenerimaanSantri
+
+Target capability: PPDB, calon santri, status pendaftaran, verifikasi, dan
+konversi menjadi santri.
+
+Dependencies: Organization, WaliSantri bila data wali diminta saat pendaftaran,
+Document bila lampiran dibutuhkan.
+
+Vertical slice:
+
+- Candidate registration minimum.
+- Status pendaftaran.
+- Validasi data awal.
+- Event `PenerimaanSantriAccepted` atau vocabulary final yang disetujui.
+
+### 2.3 Pesantrian/WaliSantri
 
 Target capability: guardian identity, contact, relation ke santri, future access
 relation.
@@ -220,7 +243,7 @@ Vertical slice:
 - Contact dan family relation.
 - Query contract untuk Student/Finance.
 
-### 2.3 StudentLife/Student
+### 2.4 Pesantrian/Santri
 
 Target capability: student master, lifecycle, registration, transfer,
 graduation.
@@ -240,10 +263,12 @@ Checkpoint P2:
 - Data orang utama tersedia: employee, guardian, student.
 - Student dapat direlasikan ke unit dan wali.
 - Contract lookup siap untuk Dormitory, Academic, Finance.
+- Nama tampil memakai SDM Pesantren, Penerimaan Santri Baru, Wali Santri, dan
+  Data Induk Santri.
 
-## Phase 3: Residential dan Academic Core (P3)
+## Phase 3: Asrama, Akademik, Tahfidz, dan Presensi (P3)
 
-### 3.1 StudentLife/Dormitory
+### 3.1 Pesantrian/Asrama
 
 Target capability: dormitory, room, occupancy, placement, musyrif relation.
 
@@ -272,14 +297,77 @@ Vertical slice:
 - Teacher assignment.
 - Attendance recording minimum.
 
+### 3.3 Pesantrian/Tahfidz
+
+Target capability: target hafalan, setoran, murojaah, capaian, dan pembimbing
+tahfidz.
+
+Dependencies: Santri contract, HumanResource contract, AcademicPeriod bila
+dibutuhkan untuk periode target.
+
+### 3.4 Pesantrian/PresensiSantri
+
+Target capability: presensi kegiatan santri yang tidak sepenuhnya akademik
+formal, misalnya kegiatan pesantren/asrama.
+
+Dependencies: Santri contract, Academic atau Asrama bila sumber jadwal sudah
+tersedia.
+
 Checkpoint P3:
 
 - Santri punya konteks asrama dan akademik.
 - Reporting dasar dapat mulai membaca occupancy dan class roster.
 
-## Phase 4: Finance, Document, Communication, Reporting (P4)
+## Phase 4: Pengasuhan dan Rekam Santri (P4)
 
-### 4.1 Platform/Document
+### 4.1 Pesantrian/PerizinanSantri
+
+Target capability: izin keluar, izin pulang, izin sakit, approval ringan, status
+kembali, dan riwayat izin.
+
+Dependencies: Santri contract, WaliSantri contract bila notifikasi/approval wali
+dibutuhkan, HumanResource contract bila butuh pembina/approver.
+
+### 4.2 Pesantrian/KedisiplinanSantri
+
+Target capability: catatan pelanggaran, kategori, poin/tingkat bila dipakai,
+tindakan pembinaan, dan riwayat penyelesaian.
+
+Dependencies: Santri contract, WaliSantri contract, HumanResource contract.
+
+### 4.3 Pesantrian/PrestasiSantri
+
+Target capability: catatan prestasi, kategori, tingkat, tanggal/periode, dan
+lampiran bukti bila diperlukan.
+
+Dependencies: Santri contract, Document bila lampiran diperlukan.
+
+### 4.4 Pesantrian/KesehatanSantri
+
+Target capability: kunjungan klinik, keluhan, tindakan awal, rujukan, dan
+catatan kesehatan operasional.
+
+Dependencies: Santri contract, HumanResource contract bila ada petugas.
+Authorization lebih ketat karena data sensitif.
+
+### 4.5 Pesantrian/PembinaanSantri
+
+Target capability: catatan konseling/pembinaan, rencana tindak lanjut, status
+pendampingan, dan aktor pembina/konselor.
+
+Dependencies: Santri contract, HumanResource contract. Authorization lebih ketat
+karena data sensitif.
+
+### 4.6 Pesantrian/Alumni
+
+Target capability: profil alumni, tahun lulus, kontak, dan relasi historis ke
+data santri.
+
+Dependencies: Santri contract.
+
+## Phase 5: Keuangan, Dokumen, Komunikasi, Laporan, Donasi, dan Aset (P5)
+
+### 5.1 Support/Document
 
 Target capability: document metadata, attachment reference, document
 requirement, adapter Spatie Media Library.
@@ -289,7 +377,7 @@ Dependencies: AccessControl, AuditTrail.
 Catatan: walau baseline menaruh Document setelah Finance, module ini boleh
 diprioritaskan lebih awal bila Student registration membutuhkan dokumen.
 
-### 4.2 Finance/StudentFinance
+### 5.2 Finance/StudentFinance
 
 Target capability: fee definition, invoice, payment, outstanding balance.
 
@@ -303,43 +391,53 @@ Vertical slice:
 - Payment record.
 - Outstanding invoice query.
 
-### 4.3 Communication/Announcement
+### 5.3 Communication/Announcement
 
 Target capability: announcement publishing, audience, attachment, lifecycle.
 
 Dependencies: Organization, audience contracts, Document, Notification,
 AuditTrail.
 
-### 4.4 Platform/Notification
+### 5.4 Support/Notification
 
 Target capability: database/email notification, future WhatsApp/SMS adapter.
 
 Dependencies: events dari module lain, SystemSetting runtime settings.
 
-### 4.5 Platform/Reporting
+### 5.5 Support/Reporting
 
 Target capability: dashboard, export, read model/projection, management view.
 
 Dependencies: read/query contract atau projection dari module P1-P4.
 
-Checkpoint P4:
+### 5.6 Finance/DonationWaqf
+
+Target capability: donatur, akad/jenis donasi atau wakaf, penerimaan, alokasi
+tujuan, bukti penerimaan, dan laporan akuntabilitas.
+
+Dependencies: Organization, Document bila bukti/lampiran diperlukan.
+
+### 5.7 Support/Asset
+
+Target capability: inventaris/aset, kode inventaris, unit/lokasi, kondisi,
+mutasi, dan pemeliharaan minimum.
+
+Dependencies: Organization.
+
+Checkpoint P5:
 
 - Alur operasional utama terhubung: student data, asrama/akademik, tagihan,
-  dokumen, komunikasi, dan dashboard awal.
+  dokumen, komunikasi, dashboard awal, donasi/wakaf, dan inventaris/aset.
 
-## Phase 5: Expansion (P5) - Ditunda
+## Phase 6: Expansion - Ditunda Setelah Baseline Running
 
 Tidak dibuat pada release awal. Masuk backlog nanti setelah release awal stabil:
 
 - Payroll.
 - Procurement.
-- Inventory.
-- Asset.
 - POS/koperasi.
 - Laundry.
-- Klinik.
 - Perpustakaan.
-- Donasi/wakaf.
 - Payment gateway/VA/QRIS.
 - Public API penuh.
 - BI kompleks.
@@ -353,15 +451,26 @@ Phase 0 Starterkit alignment
       -> Organization
           -> AcademicPeriod
           -> HumanResource
-          -> Guardian
-              -> Student
-                  -> Dormitory
+          -> WaliSantri
+          -> PenerimaanSantri
+              -> Santri
+                  -> Asrama
                   -> Academic
+                  -> Tahfidz
+                  -> PresensiSantri
+                  -> PerizinanSantri
+                  -> KedisiplinanSantri
+                  -> PrestasiSantri
+                  -> KesehatanSantri
+                  -> PembinaanSantri
+                  -> Alumni
                   -> StudentFinance
+                      -> DonationWaqf
                       -> Reporting
           -> Document
               -> Announcement
               -> StudentFinance payment proof
+          -> Asset
       -> Notification
           -> Announcement
           -> Finance reminders
@@ -369,10 +478,10 @@ Phase 0 Starterkit alignment
 
 ## Open Questions
 
-- Kapan source `System/*` dipindah fisik ke `Console/*` setelah compatibility
-  audit selesai?
+- Apakah source `System/*` tetap menjadi namespace teknis final untuk Sistem,
+  menggantikan rencana lama `Console/*`?
 - Apakah `UserManagement` tetap module terpisah sebagai implementation detail,
   atau digabung bertahap ke `AccessControl`?
-- Apakah `Document` perlu naik ke Phase 2 karena registrasi santri hampir pasti
+- Apakah `Support/Document` perlu naik ke Phase 2 karena registrasi santri hampir pasti
   membutuhkan dokumen?
 - Payment gateway tetap expansion dan ditunda dulu.

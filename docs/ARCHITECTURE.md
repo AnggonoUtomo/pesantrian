@@ -11,6 +11,10 @@ Arsitektur ini mengikuti baseline lengkap di
   boundary.
 - Module adalah bounded capability dengan ownership, rule, data, dan lifecycle
   sendiri.
+- Nama tampil, menu, dan dokumentasi produk memakai Bahasa Indonesia yang
+  familiar untuk operator pesantren.
+- Identifier teknis source code memakai PascalCase ASCII yang stabil; source
+  existing tidak di-rename tanpa work item migrasi dan compatibility audit.
 - Unit seperti MI, MTs, MA, tahfidz, asrama putra, dan asrama putri adalah data
   organisasi kecuali ada bounded capability berbeda.
 - Shared Kernel harus kecil dan hanya memuat concern yang benar-benar universal.

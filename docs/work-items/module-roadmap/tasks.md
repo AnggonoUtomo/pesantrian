@@ -17,11 +17,10 @@ apapun.
 
 - [x] Daftar route name, permission key, Inertia component path, test, seeder,
   migration, dan public contract untuk `System/*` tersedia.
-- [x] Risiko rename `System -> Console` dan `AuditLog -> AuditTrail` tercatat.
-- [x] Baseline final `Console` disetujui, dengan `System/*` hanya sebagai bridge
-  sementara bila dibutuhkan.
-- [x] Keputusan sementara: `System/*` tetap implementation bridge; rename fisik
-  butuh work item migrasi terpisah.
+- [x] Risiko rename `System` dan `AuditLog` tercatat.
+- [x] Nama tampil final memakai Bahasa Indonesia: Sistem dan Audit Trail.
+- [x] Keputusan sementara: `System/*` tetap implementation namespace; rename
+  fisik butuh work item migrasi terpisah.
 
 **Verification:**
 
@@ -145,18 +144,21 @@ Academic, Finance, dan Reporting.
 
 **Estimated scope:** M.
 
-## Task 6: People Core / Pesantrian Slice
+## Task 6: People Core / Data Orang
 
-**Description:** Bangun urutan people core: HumanResource, Guardian, lalu
-Student. Area Pesantrian memakai namespace teknis `StudentLife`.
+**Description:** Bangun urutan people core: HumanResource, PPDB, WaliSantri,
+lalu Santri. Nama tampil memakai Bahasa Indonesia; source existing
+HumanResource tetap stabil.
 
 **Acceptance criteria:**
 
-- [ ] HumanResource menyediakan employee/staff/teacher lookup.
-- [ ] Guardian menyediakan identity/contact dan relation contract.
-- [ ] Student menyediakan master, guardian link, unit assignment, dan lifecycle
+- [x] HumanResource menyediakan employee/staff/teacher foundation dan read page.
+- [ ] PenerimaanSantri menyediakan calon santri, status pendaftaran, dan
+  konversi awal.
+- [ ] WaliSantri menyediakan identity/contact dan relation contract.
+- [ ] Santri menyediakan master, wali link, unit assignment, dan lifecycle
   awal.
-- [ ] Event `StudentRegistered` tersedia.
+- [ ] Event `SantriRegistered` atau vocabulary final yang disetujui tersedia.
 
 **Verification:**
 
@@ -167,29 +169,56 @@ Student. Area Pesantrian memakai namespace teknis `StudentLife`.
 
 **Estimated scope:** M per module slice.
 
-## Task 7: Residential and Academic Core
+## Task 7: Asrama, Akademik, Tahfidz, dan Presensi
 
-**Description:** Bangun Dormitory dan Academic setelah Student dan HR contract
-siap.
+**Description:** Bangun Asrama, Academic, Tahfidz, dan PresensiSantri setelah
+Santri dan HR contract siap.
 
 **Acceptance criteria:**
 
-- [ ] Dormitory room placement dan occupancy minimum berjalan.
-- [ ] Academic class/subject/assignment/attendance minimum berjalan.
+- [ ] Asrama room placement dan occupancy minimum berjalan.
+- [ ] Academic class/subject/assignment/attendance akademik minimum berjalan.
+- [ ] Tahfidz/hafalan minimum berjalan.
+- [ ] Presensi kegiatan santri minimum berjalan.
 - [ ] Tidak ada direct mutation lintas module.
 
 **Verification:**
 
-- [ ] Focused tests Dormitory dan Academic.
+- [ ] Focused tests Asrama, Academic, Tahfidz, dan PresensiSantri.
 - [ ] `php artisan module:validate --no-ansi`.
 
 **Dependencies:** Task 6.
 
 **Estimated scope:** M per vertical slice.
 
-## Task 8: Finance, Document, Communication, Notification, Reporting
+## Task 8: Pengasuhan dan Rekam Santri
 
-**Description:** Bangun capability P4 setelah data core tersedia.
+**Description:** Bangun Perizinan, Kedisiplinan, Prestasi, Kesehatan,
+Pembinaan, dan Alumni sebagai module operasional santri setelah data Santri
+stabil.
+
+**Acceptance criteria:**
+
+- [ ] PerizinanSantri memiliki lifecycle izin dan status kembali.
+- [ ] KedisiplinanSantri memiliki catatan pelanggaran dan tindak lanjut.
+- [ ] PrestasiSantri memiliki catatan prestasi.
+- [ ] KesehatanSantri dan PembinaanSantri memakai authorization lebih ketat.
+- [ ] Alumni berasal dari transisi lifecycle Santri.
+
+**Verification:**
+
+- [ ] Focused tests per module.
+- [ ] `php artisan module:validate --no-ansi`.
+- [ ] Build frontend bila UI ditambahkan.
+
+**Dependencies:** Task 6.
+
+**Estimated scope:** M per vertical slice.
+
+## Task 9: Finance, Document, Communication, Notification, Reporting, Donation, Asset
+
+**Description:** Bangun capability keuangan, dokumen, komunikasi, laporan,
+donasi/wakaf, dan inventaris/aset setelah data core tersedia.
 
 **Acceptance criteria:**
 
@@ -198,6 +227,8 @@ siap.
 - [ ] Announcement dapat publish ke audience dasar.
 - [ ] Notification menangani database/email event dasar.
 - [ ] Reporting membaca projection/query dari module core.
+- [ ] DonationWaqf mencatat donasi/wakaf terpisah dari tagihan santri.
+- [ ] Asset mencatat inventaris/aset dan lokasi/unit.
 
 **Verification:**
 
@@ -205,18 +236,21 @@ siap.
 - [ ] `php artisan module:validate --no-ansi`.
 - [ ] Build frontend bila UI ditambahkan.
 
-**Dependencies:** Tasks 4-7.
+**Dependencies:** Tasks 4-8.
 
 **Estimated scope:** M per vertical slice.
 
 ## Checkpoint
 
 - [x] Setelah Phase 0, user review dan setujui keputusan compatibility untuk
-  mulai `Organization/Organization` tanpa rename fisik `System -> Console`.
+  mulai `Organization/Organization` tanpa rename fisik `System/*`.
 - [ ] Setelah Phase 1, user review Organization dan AcademicPeriod sebagai
   foundation bisnis.
 - [ ] Setelah Phase 2, user review data orang utama sebelum Dormitory/Academic.
-- [ ] Setelah Phase 4, review release awal dan putuskan expansion.
-- [ ] Expansion/P5 tetap ditunda sampai ada keputusan baru.
+- [ ] Setelah Phase 3, user review asrama, akademik, tahfidz, dan presensi.
+- [ ] Setelah Phase 4, user review pengasuhan dan rekam santri.
+- [ ] Setelah Phase 5, review release awal dan putuskan expansion.
+- [ ] Koperasi dan Perpustakaan tetap ditunda sampai baseline aplikasi running.
+- [ ] Expansion tetap ditunda sampai ada keputusan baru.
 
 Jangan menambahkan pekerjaan baru ke checklist ini tanpa persetujuan user.

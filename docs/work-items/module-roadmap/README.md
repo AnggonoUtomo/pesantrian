@@ -3,7 +3,8 @@
 ## Status
 
 Active - Phase 1 foundation Organization dan AcademicPeriod selesai; Phase 2
-People Core dimulai dari dokumentasi HumanResource.
+People Core berjalan melalui HumanResource. Roadmap diselaraskan dengan baseline
+operasional pesantren berbahasa Indonesia.
 
 ## Owner dan Lokasi
 
@@ -17,10 +18,14 @@ Starterkit saat ini sudah memiliki foundation aktif:
 
 | Source sekarang | Target capability baseline | Catatan |
 | --- | --- | --- |
-| `System/AccessControl` | `Console/AccessControl` | Role, permission, authorization adapter, role catalog, dashboard system. Baseline final memakai `Console`. |
-| `System/UserManagement` | `Console/AccessControl` | User account lifecycle, invite, status, avatar, impersonation. Baseline memasukkan user account ke AccessControl. |
-| `System/SystemSetting` | `Console/SystemSetting` | Runtime setting, category update, idempotency repository, runtime policy. Baseline final memakai `Console`. |
-| `System/AuditLog` | `Console/AuditTrail` | Audit entry, authentication activity, system activity listener. Baseline final memakai `Console/AuditTrail`. |
+| `System/AccessControl` | Sistem / Kontrol Akses | Role, permission, authorization adapter, role catalog, dashboard system. Source existing dipertahankan. |
+| `System/UserManagement` | Sistem / Pengguna | User account lifecycle, invite, status, avatar, impersonation. Tetap module source terpisah sampai ada keputusan consolidation. |
+| `System/SystemSetting` | Sistem / Pengaturan Sistem | Runtime setting, category update, idempotency repository, runtime policy. |
+| `System/AuditLog` | Sistem / Audit Trail | Audit entry, authentication activity, system activity listener. Nama produk Audit Trail, source existing `AuditLog`. |
+
+Catatan revisi baseline: nama tampil dan dokumentasi produk memakai Bahasa
+Indonesia. Source existing `System/*`, `Academic/*`, dan `HumanResource/*`
+tetap menjadi identifier teknis stabil sampai ada work item migrasi khusus.
 
 Command dan runtime yang sudah terbukti:
 
@@ -33,8 +38,8 @@ Command dan runtime yang sudah terbukti:
 Work item [`starterkit-alignment`](../starterkit-alignment/README.md) sudah
 menutup gate awal sebelum module domain pertama:
 
-- Foundation `System/*` diaudit sebagai implementation bridge menuju baseline
-  `Console/*`.
+- Foundation `System/*` diaudit sebagai implementation namespace untuk area
+  Sistem.
 - Generator module sudah menerima pola baseline `module:make <Namespace>
   <Module>`.
 - `--domain` tetap tersedia sebagai alias kompatibilitas untuk source lama.
@@ -61,8 +66,8 @@ sudah menutup foundation module domain pertama:
 Public contract lintas module belum dibuat karena belum ada consumer nyata.
 Keputusan frontend canonical tersedia di
 [`frontend-module-path.md`](frontend-module-path.md): UI module memakai
-`resources/js/pages/<Namespace>/<Module>/`; `System/*` tetap bridge sampai work
-item consolidation.
+`resources/js/pages/<Namespace>/<Module>/`; `System/*` tetap source existing
+sampai ada work item consolidation.
 
 ## Update AcademicPeriod Foundation
 
@@ -88,6 +93,10 @@ sudah menutup foundation periode akademik:
 - Membuat mapping prioritas module SakaSantri berdasarkan baseline dan kode starterkit.
 - Menentukan urutan incremental agar tiap phase meninggalkan aplikasi tetap sehat.
 - Mencatat gap foundation yang harus ditutup sebelum module domain pesantren dibuat banyak.
+- Menambahkan peta kebutuhan operasional pesantren: PPDB, Data Induk
+  Santri/Wali, Akademik, Tahfidz, Presensi, Perizinan, Kedisiplinan, Prestasi,
+  Kesehatan, Pembinaan, Alumni, Keuangan Santri, Donasi/Wakaf, dan
+  Inventaris/Aset.
 
 ## Tidak Dikerjakan
 
@@ -109,13 +118,16 @@ sudah menutup foundation periode akademik:
 - Source UI existing masih berada di `resources/js/pages/System/*` dan
   `resources/js/pages/Organization/Organization/*`; ini diterima sebagai bridge
   sementara, bukan canonical untuk UI baru.
-- Baseline menyebut `Console/AuditTrail`, source sekarang memakai `System/AuditLog`.
+- Baseline operasional memakai nama tampil "Audit Trail", source sekarang tetap
+  `System/AuditLog`.
 - Baseline memasukkan user lifecycle ke `AccessControl`, source sekarang memisah `UserManagement`.
-- Namespace teknis area Pesantrian memakai `StudentLife`, dengan label baca
-  Bahasa Indonesia "Pesantrian".
+- Namespace teknis lama area Pesantrian memakai `StudentLife`; baseline
+  operasional baru memilih nama tampil "Pesantrian" dan candidate namespace
+  teknis `Pesantrian` untuk module baru.
+- Koperasi dan Perpustakaan ditunda sampai baseline aplikasi berjalan.
 
-Rename `System -> Console` tidak menghambat work item `Organization/Organization`
-atau `Academic/AcademicPeriod` untuk dokumentasi, skeleton, dan backend slice
-minimum. Pemindahan UI existing tetap harus memakai work item migrasi frontend
+Keputusan mempertahankan source `System/*` tidak menghambat work item
+`Organization/Organization`, `Academic/AcademicPeriod`, atau module pesantrian
+berikutnya. Pemindahan UI/source existing tetap harus memakai work item migrasi
 tersendiri agar Ziggy route name, URL, permission key, dan Inertia component
 path tidak patah diam-diam.

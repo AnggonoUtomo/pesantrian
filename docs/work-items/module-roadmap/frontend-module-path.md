@@ -22,11 +22,11 @@ Path aktif dan target canonical:
 
 | Capability | Current Inertia component path | Target canonical path |
 | --- | --- | --- |
-| System dashboard | `resources/js/pages/System/Dashboard.tsx` | tetap sampai consolidation Console diputuskan |
-| AccessControl | `resources/js/pages/System/AccessControl/pages/Index.tsx` | tetap sebagai implementation bridge |
-| UserManagement | `resources/js/pages/System/UserManagement/pages/Index.tsx` dan `Show.tsx` | tetap sebagai implementation bridge |
-| SystemSetting | `resources/js/pages/System/SystemSetting/pages/Index.tsx` | tetap sebagai implementation bridge |
-| AuditLog | `resources/js/pages/System/AuditLog/pages/Index.tsx` | tetap sebagai implementation bridge |
+| System dashboard | `resources/js/pages/System/Dashboard.tsx` | tetap sebagai source existing area Sistem |
+| AccessControl | `resources/js/pages/System/AccessControl/pages/Index.tsx` | tetap sebagai source existing |
+| UserManagement | `resources/js/pages/System/UserManagement/pages/Index.tsx` dan `Show.tsx` | tetap sebagai source existing |
+| SystemSetting | `resources/js/pages/System/SystemSetting/pages/Index.tsx` | tetap sebagai source existing |
+| AuditLog | `resources/js/pages/System/AuditLog/pages/Index.tsx` | tetap sebagai source existing dengan nama tampil Audit Trail |
 | Organization | `resources/js/pages/Organization/Organization/pages/Index.tsx` | tetap |
 | AcademicPeriod | `resources/js/pages/Academic/AcademicPeriod/pages/Index.tsx` | tetap |
 | Settings profile/security/appearance | `resources/js/pages/settings/*` | tetap di `resources/js/pages/settings/*` sampai ada keputusan product namespace khusus |
@@ -37,8 +37,8 @@ Path aktif dan target canonical:
 
 1. UI module baru memakai `resources/js/pages/<Namespace>/<Module>/` sebagai canonical
    path.
-2. UI existing di `resources/js/pages/System/*` tetap menjadi implementation
-   bridge sampai ada work item consolidation `System` ke `Console`.
+2. UI existing di `resources/js/pages/System/*` tetap menjadi source existing
+   area Sistem sampai ada work item migrasi eksplisit.
 3. Untuk module yang sudah memiliki UI di `resources/js/pages/*`, perubahan
    runtime Inertia tidak boleh dilakukan bersamaan dengan perubahan business
    behavior. Migration path UI harus menjadi increment tersendiri.
@@ -93,6 +93,6 @@ error console kritis.
   `resources/js/pages/Academic/AcademicPeriod/`.
 - UI `Organization/Organization` tetap di
   `resources/js/pages/Organization/Organization/`.
-- Migration `System -> Console` tetap terpisah dari keputusan ini karena rename
+- Migration source `System/*` tetap terpisah dari keputusan ini karena rename
   backend/source module memiliki risiko route, permission, seeder, audit, dan
   test yang lebih luas.

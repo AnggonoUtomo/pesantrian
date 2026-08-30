@@ -83,6 +83,7 @@ resources/js/
     |-- System/
     |-- Organization/
     |-- Academic/
+    |-- HumanResource/
     |-- auth/
     |-- settings/
     `-- errors/
@@ -140,7 +141,9 @@ Pekerjaan lintas module memakai `docs/work-items/<nama-pekerjaan>/`.
 - Inventarisasi module dan generator sebelum mengubah struktur.
 - Gunakan module generator project ketika tersedia.
 - Generator minimum harus menerima namespace dan module, misalnya
-  `php artisan make:module StudentLife Student`.
+  `php artisan module:make Pesantrian Santri` untuk module baru, atau nama
+  teknis existing seperti `php artisan module:make Academic AcademicPeriod`
+  ketika menjaga compatibility source.
 - Generator tidak membuat `Adapters`, `Integrations`, `Commands`, atau
   `Queries` secara default.
 - Migration module berada di `Database/Migrations`.

@@ -7,7 +7,8 @@
 **Database Utama:** MySQL  
 **Model Produk:** Non-SaaS, single yayasan, multi-unit  
 **Bahasa Dokumentasi:** Bahasa Indonesia  
-**Bahasa Identifier Teknis:** Bahasa Inggris
+**Bahasa Produk dan Menu:** Bahasa Indonesia yang familiar untuk operator pesantren
+**Bahasa Identifier Teknis:** PascalCase ASCII yang stabil; source existing tidak di-rename tanpa work item migrasi
 
 ---
 
@@ -19,15 +20,16 @@ Perubahan utama:
 
 ```text
 namespace                     -> dipertegas sebagai kategori/area module
-Console                       -> AccessControl, SystemSetting, AuditTrail
-StudentLife                   -> Student, Guardian, Dormitory
+System                        -> AccessControl, UserManagement, SystemSetting, AuditLog
+Pesantrian                    -> PenerimaanSantri, Santri, WaliSantri, Asrama, Tahfidz, PerizinanSantri, KedisiplinanSantri, PrestasiSantri, Alumni
 Academic                      -> AcademicPeriod, Academic
 Finance                       -> StudentFinance
 Communication                 -> Announcement
-Platform                      -> Document, Notification, Reporting
+Support                       -> Document, Notification, Reporting, Asset
 table primary identifier      -> ULID
 BIGINT id + public_id ULID    -> dihapus dari baseline
 module/work path              -> menggunakan namespace area aktual
+nama tampil                   -> memakai Bahasa Indonesia
 ```
 
 ---
@@ -57,7 +59,7 @@ Dokumen ini menjadi baseline arsitektur teknis untuk pengembangan **SakaSantri**
 
 1. digunakan oleh satu yayasan, bukan SaaS multi-tenant;
 2. mendukung banyak unit di bawah yayasan yang sama;
-3. mengelola pengguna, organisasi, santri, wali, SDM, akademik, asrama, keuangan, dokumen, notifikasi, laporan, dan audit;
+3. mengelola pengguna, organisasi, PPDB, santri, wali, SDM, akademik, tahfidz, asrama, presensi, perizinan, kedisiplinan, prestasi, kesehatan, konseling, keuangan, donasi/wakaf, inventaris/aset, dokumen, notifikasi, laporan, dan audit;
 4. menggunakan DDD-lite Modular Monolith;
 5. menerapkan prinsip Hexagonal Architecture secara pragmatis;
 6. memiliki Shared Kernel yang kecil dan terkontrol;
@@ -72,7 +74,7 @@ Aplikasi dirancang sebagai:
 
 > **Pesantren Operations & Management Platform**
 
-yang menghubungkan operasional yayasan, unit pendidikan, santri, wali, SDM, akademik, keuangan, asrama, komunikasi, dokumen, dan pelaporan dalam satu platform yang konsisten.
+yang menghubungkan operasional yayasan, unit pendidikan, penerimaan santri, santri, wali, SDM, akademik, tahfidz, asrama, kedisiplinan, kesehatan, konseling, keuangan, dokumen, dan pelaporan dalam satu platform yang konsisten.
 
 ---
 
@@ -136,7 +138,6 @@ Inventory
 Asset
 POS / Koperasi
 Laundry
-Klinik
 Perpustakaan
 Donasi / Wakaf
 Payment Gateway / VA / QRIS
@@ -144,6 +145,18 @@ Public API
 BI / Analytics
 AI Assistant
 ```
+
+Catatan prioritas:
+
+```text
+Kesehatan / Klinik
+Inventaris / Aset
+Donasi / Wakaf
+```
+
+masuk peta kebutuhan produk yang perlu disiapkan dalam roadmap modular.
+Koperasi dan Perpustakaan ditunda sampai baseline aplikasi berjalan dan
+kebutuhan module inti lain lebih jelas.
 
 ## 2.4 Namespace sebagai Area/Kategori Module
 
@@ -166,11 +179,11 @@ Module
 Contoh:
 
 ```text
-Console/AccessControl
-Console/SystemSetting
-Finance/StudentFinance
+System/AccessControl
+System/SystemSetting
+Keuangan/KeuanganSantri
 Academic/AcademicPeriod
-StudentLife/Student
+Pesantrian/Santri
 ```
 
 `Namespace` bukan:
@@ -184,6 +197,59 @@ alasan untuk membolehkan direct access lintas module
 ```
 
 Module berbeda dalam namespace yang sama tetap mengikuti aturan contract/event dan ownership module.
+
+## 2.5 Nama Tampil, Bahasa Produk, dan Identifier Teknis
+
+SakaSantri memakai Bahasa Indonesia untuk nama produk, menu, dan dokumentasi
+operasional agar mudah dipahami operator pesantren.
+
+Ada tiga jenis nama yang harus dibedakan:
+
+| Jenis nama | Contoh | Dipakai untuk |
+|---|---|---|
+| Nama tampil | SDM Pesantren, Data Santri, Tahun Ajaran & Semester | sidebar, halaman, user manual, training operator |
+| Nama domain bisnis | Kepegawaian, Pesantrian, Keuangan Santri | dokumen produk dan percakapan kebutuhan |
+| Identifier teknis | `HumanResource`, `Pesantrian`, `StudentFinance` | namespace PHP, folder module, route key, permission key |
+
+Aturan:
+
+1. nama tampil wajib ramah operator dan memakai Bahasa Indonesia;
+2. identifier teknis memakai PascalCase ASCII agar aman untuk PHP namespace,
+   autoload, route, generator, dan file system;
+3. source existing tidak di-rename hanya karena label produk berubah;
+4. rename namespace/module teknis harus melalui work item migrasi yang memeriksa
+   route name, permission key, Inertia component path, migration, seeder, test,
+   dan contract publik;
+5. module baru boleh memakai istilah Indonesia teknis yang stabil, misalnya
+   `Pesantrian/Santri`, selama tetap PascalCase ASCII.
+
+## 2.6 Peta Kebutuhan Sistem Pesantren
+
+Peta kebutuhan produk yang menjadi acuan roadmap:
+
+| Area kebutuhan | Nama tampil yang disarankan | Catatan boundary |
+|---|---|---|
+| PPDB / Penerimaan Santri Baru | Penerimaan Santri Baru | dapat menjadi module terpisah karena lifecycle calon santri berbeda dari santri aktif |
+| Data Induk Santri dan Wali | Data Santri & Wali | implementasi dapat dipisah menjadi Santri dan WaliSantri agar ownership jelas |
+| Kelas / Rombel / Kurikulum | Akademik | bergantung pada Tahun Ajaran & Semester, Santri, dan SDM pengajar |
+| Tahfidz / Hafalan | Tahfidz | bounded capability pesantren yang berbeda dari akademik umum |
+| Presensi Santri | Presensi Santri | dapat berada di Akademik atau Pesantrian sesuai jenis presensi yang dominan |
+| Perizinan Santri | Perizinan Santri | lifecycle izin keluar/sakit/pulang perlu audit dan approval ringan |
+| Pelanggaran / Kedisiplinan | Kedisiplinan Santri | perlu histori, kategori pelanggaran, tindakan, dan pembinaan |
+| Prestasi | Prestasi Santri | dapat mulai sederhana sebagai catatan achievement |
+| Kesehatan / Klinik | Kesehatan Santri | data sensitif, perlu authorization lebih ketat |
+| Konseling / Pembinaan | Pembinaan Santri | data sensitif, akses harus dibatasi |
+| Alumni | Alumni | transisi dari lifecycle santri lulus |
+| Tagihan / Pembayaran / Tunggakan | Keuangan Santri | invoice, payment, outstanding balance, dan histori transaksi |
+| Donasi / Wakaf | Donasi & Wakaf | jangan dicampur dengan tagihan santri karena sumber dana dan akuntabilitas berbeda |
+| Inventaris / Aset | Inventaris & Aset | dapat mendukung aset unit, asrama, kelas, dan kantor |
+
+Ditunda sampai baseline aplikasi berjalan:
+
+```text
+Koperasi
+Perpustakaan
+```
 
 
 ---
@@ -273,7 +339,7 @@ repository-defined scripts
 tests
 AGENTS.md
 docs/architecture/
-docs/work/
+docs/work-items/
 installed Codex skills yang relevan
 ```
 
@@ -344,18 +410,28 @@ Struktur root:
 ```text
 app/
 ├── Modules/
-│   ├── Console/
+│   ├── System/
 │   │   ├── AccessControl/
+│   │   ├── UserManagement/
 │   │   ├── SystemSetting/
-│   │   └── AuditTrail/
+│   │   └── AuditLog/
 │   │
 │   ├── Organization/
 │   │   └── Organization/
 │   │
-│   ├── StudentLife/
-│   │   ├── Student/
-│   │   ├── Guardian/
-│   │   └── Dormitory/
+│   ├── Pesantrian/
+│   │   ├── PenerimaanSantri/
+│   │   ├── Santri/
+│   │   ├── WaliSantri/
+│   │   ├── Asrama/
+│   │   ├── Tahfidz/
+│   │   ├── PresensiSantri/
+│   │   ├── PerizinanSantri/
+│   │   ├── KedisiplinanSantri/
+│   │   ├── PrestasiSantri/
+│   │   ├── KesehatanSantri/
+│   │   ├── PembinaanSantri/
+│   │   └── Alumni/
 │   │
 │   ├── Academic/
 │   │   ├── AcademicPeriod/
@@ -365,15 +441,17 @@ app/
 │   │   └── HumanResource/
 │   │
 │   ├── Finance/
-│   │   └── StudentFinance/
+│   │   ├── StudentFinance/
+│   │   └── DonationWaqf/
 │   │
 │   ├── Communication/
 │   │   └── Announcement/
 │   │
-│   └── Platform/
+│   └── Support/
 │       ├── Document/
 │       ├── Notification/
-│       └── Reporting/
+│       ├── Reporting/
+│       └── Asset/
 │
 └── Shared/
     └── Kernel/
@@ -391,16 +469,16 @@ Module / Bounded Capability
 
 Namespace baseline:
 
-| Namespace | Fungsi |
-|---|---|
-| `Console` | administrasi sistem tingkat tinggi |
-| `Organization` | struktur yayasan, unit, lokasi, dan organisasi |
-| `StudentLife` | area Pesantrian |
-| `Academic` | area akademik |
-| `HumanResource` | area SDM/personalia |
-| `Finance` | area keuangan |
-| `Communication` | komunikasi/publikasi |
-| `Platform` | capability lintas domain |
+| Namespace teknis | Nama tampil | Fungsi |
+|---|---|---|
+| `System` | Sistem | administrasi sistem, akun, akses, pengaturan, dan audit |
+| `Organization` | Organisasi | struktur yayasan, unit, lokasi, dan organisasi |
+| `Pesantrian` | Pesantrian | PPDB, santri, wali santri, asrama, tahfidz, perizinan, kedisiplinan, pembinaan, dan alumni |
+| `Academic` | Akademik | tahun ajaran, rombel, kurikulum, pembelajaran, dan presensi akademik |
+| `HumanResource` | SDM Pesantren | pegawai, guru, ustadz, musyrif, jabatan, dan assignment kerja |
+| `Finance` | Keuangan | tagihan santri, pembayaran, tunggakan, donasi, dan wakaf |
+| `Communication` | Komunikasi | pengumuman dan publikasi |
+| `Support` | Layanan Pendukung | dokumen, notifikasi, laporan, inventaris, dan aset |
 
 Catatan:
 
@@ -414,11 +492,11 @@ Catatan:
 Contoh namespace PHP:
 
 ```text
-App\Modules\Console\AccessControl
-App\Modules\StudentLife\Student
+App\Modules\System\AccessControl
+App\Modules\Pesantrian\Santri
 App\Modules\Academic\AcademicPeriod
 App\Modules\Finance\StudentFinance
-App\Modules\Platform\Notification
+App\Modules\Support\Notification
 ```
 
 ---
@@ -495,14 +573,14 @@ Contoh:
 
 ```json
 {
-    "name": "Student",
-    "namespace": "App\\Modules\\StudentLife\\Student",
+    "name": "Santri",
+    "namespace": "App\\Modules\\Pesantrian\\Santri",
     "enabled": true,
     "version": "0.1.0",
-    "description": "Student lifecycle and pesantren student administration",
+    "description": "Data induk, lifecycle, dan administrasi santri pesantren",
     "dependencies": [
         "Organization",
-        "Guardian"
+        "WaliSantri"
     ]
 }
 ```
@@ -710,7 +788,7 @@ Unit Head
 
 Payroll bukan bagian Release awal kecuali kemudian diputuskan.
 
-## 9.6 Student
+## 9.6 Santri
 
 Tanggung jawab:
 
@@ -736,9 +814,9 @@ Contoh:
 STD-2026-000001
 ```
 
-Student tidak mengelola data autentikasi secara langsung.
+Santri tidak mengelola data autentikasi secara langsung.
 
-## 9.7 Guardian
+## 9.7 WaliSantri
 
 Tanggung jawab:
 
@@ -752,11 +830,11 @@ emergency contact
 guardian-student relationship
 ```
 
-Satu guardian dapat berelasi ke banyak student.
+Satu wali dapat berelasi ke banyak santri.
 
-Satu student dapat memiliki lebih dari satu guardian.
+Satu santri dapat memiliki lebih dari satu wali.
 
-## 9.8 Dormitory
+## 9.8 Asrama
 
 Tanggung jawab:
 
@@ -780,7 +858,7 @@ Asrama Putra A
 └── Kamar A-03
 ```
 
-Dormitory tidak mengambil alih student lifecycle.
+Asrama tidak mengambil alih lifecycle santri.
 
 ## 9.9 Academic
 
@@ -820,7 +898,7 @@ Grade / Report Card
 
 Historical academic record harus mempertahankan konteks periode, kelas, subject, dan teacher assignment yang berlaku saat transaksi terjadi.
 
-## 9.10 Student Finance
+## 9.10 Keuangan Santri
 
 Tanggung jawab:
 
@@ -851,9 +929,9 @@ Balance
 
 Payment gateway/VA/QRIS dapat ditambahkan melalui Infrastructure/Integrations saat dibutuhkan.
 
-Finance tidak boleh mengubah Student model langsung.
+Keuangan tidak boleh mengubah model Santri langsung.
 
-## 9.11 Document
+## 9.11 Document / Dokumen
 
 Tanggung jawab:
 
@@ -873,7 +951,7 @@ Spatie Media Library digunakan sebagai adapter file.
 
 Domain tidak bergantung langsung pada implementasi Spatie untuk rule kritis.
 
-## 9.12 Announcement
+## 9.12 Announcement / Pengumuman
 
 Tanggung jawab:
 
@@ -897,7 +975,7 @@ guardian group
 employee group
 ```
 
-## 9.13 Notification
+## 9.13 Notification / Notifikasi
 
 Tanggung jawab:
 
@@ -912,7 +990,7 @@ notification preference where applicable
 
 Notification merupakan side effect, bukan source of truth domain utama.
 
-## 9.14 Reporting
+## 9.14 Reporting / Laporan
 
 Tanggung jawab:
 
@@ -927,7 +1005,7 @@ aggregated views
 
 Reporting diperbolehkan menggunakan optimized read model/query selama tidak melakukan business mutation lintas module.
 
-## 9.15 AuditTrail
+## 9.15 AuditLog / Audit Trail
 
 Tanggung jawab:
 
@@ -954,9 +1032,189 @@ Audit Trail
 = business traceability / accountability
 ```
 
+## 9.16 PenerimaanSantri
+
+Nama tampil: **PPDB / Penerimaan Santri Baru**.
+
+Tanggung jawab:
+
+```text
+calon santri
+formulir pendaftaran
+seleksi / verifikasi
+status pendaftaran
+kelengkapan dokumen awal
+konversi calon santri menjadi santri aktif
+```
+
+PenerimaanSantri berbeda dari Santri karena lifecycle calon santri belum sama
+dengan santri aktif. Setelah diterima, data yang menjadi identitas utama
+dipindahkan/ditautkan ke module Santri melalui use case eksplisit.
+
+## 9.17 Tahfidz
+
+Nama tampil: **Tahfidz / Hafalan**.
+
+Tanggung jawab:
+
+```text
+target hafalan
+setoran hafalan
+murojaah
+capaian juz/surat/ayat
+pembimbing tahfidz
+riwayat penilaian hafalan
+```
+
+Tahfidz tidak dicampur ke Academic umum karena bahasa domain, ritme evaluasi,
+dan target capaian pesantren berbeda dari mata pelajaran formal.
+
+## 9.18 PerizinanSantri
+
+Nama tampil: **Perizinan Santri**.
+
+Tanggung jawab:
+
+```text
+izin keluar
+izin pulang
+izin sakit
+periode izin
+approval ringan
+riwayat izin
+status kembali
+```
+
+Perizinan membutuhkan audit karena menyangkut keberadaan santri dan tanggung
+jawab pengasuhan.
+
+## 9.19 KedisiplinanSantri
+
+Nama tampil: **Pelanggaran / Kedisiplinan**.
+
+Tanggung jawab:
+
+```text
+catatan pelanggaran
+kategori pelanggaran
+poin atau tingkat pelanggaran bila dipakai
+tindakan pembinaan
+riwayat penyelesaian
+```
+
+Kedisiplinan tidak boleh menjadi catatan bebas tanpa struktur karena akan
+dipakai untuk pembinaan, komunikasi wali, dan laporan.
+
+## 9.20 PrestasiSantri
+
+Nama tampil: **Prestasi**.
+
+Tanggung jawab:
+
+```text
+catatan prestasi
+kategori prestasi
+tingkat prestasi
+tanggal/periode prestasi
+lampiran bukti bila diperlukan
+```
+
+Prestasi dapat dimulai sederhana sebagai record historis, lalu diperluas bila
+dibutuhkan untuk rapor, portofolio, atau alumni.
+
+## 9.21 KesehatanSantri
+
+Nama tampil: **Kesehatan / Klinik**.
+
+Tanggung jawab:
+
+```text
+kunjungan klinik
+keluhan
+tindakan awal
+rujukan
+catatan obat dasar
+status kesehatan yang relevan untuk operasional
+```
+
+Data kesehatan adalah data sensitif. Akses harus lebih ketat daripada data
+master santri biasa dan metadata audit tidak boleh membocorkan informasi medis
+yang tidak diperlukan.
+
+## 9.22 PembinaanSantri
+
+Nama tampil: **Konseling / Pembinaan**.
+
+Tanggung jawab:
+
+```text
+catatan pembinaan
+konseling
+rencana tindak lanjut
+status pendampingan
+aktor pembina/konselor
+```
+
+Data pembinaan juga sensitif. UI, permission, audit, dan export harus didesain
+dengan prinsip least privilege.
+
+## 9.23 Alumni
+
+Nama tampil: **Alumni**.
+
+Tanggung jawab:
+
+```text
+profil alumni
+tahun lulus
+riwayat kontak
+lanjutan pendidikan/pekerjaan bila dicatat
+relasi historis ke data santri
+```
+
+Alumni berasal dari transisi lifecycle Santri, bukan input data yang sepenuhnya
+terpisah tanpa jejak historis.
+
+## 9.24 DonationWaqf
+
+Nama tampil: **Donasi / Wakaf**.
+
+Tanggung jawab:
+
+```text
+donatur
+akad/jenis donasi atau wakaf
+penerimaan dana/barang
+alokasi tujuan
+bukti penerimaan
+laporan akuntabilitas
+```
+
+Donasi/Wakaf tidak dicampur dengan Tagihan Santri karena sumber dana, relasi
+pembayar, dan akuntabilitasnya berbeda.
+
+## 9.25 Asset
+
+Nama tampil: **Inventaris / Aset**.
+
+Tanggung jawab:
+
+```text
+data aset
+kode inventaris
+lokasi/unit pemilik
+kondisi
+mutasi aset
+riwayat pemeliharaan minimum
+```
+
+Asset mendukung operasional unit, asrama, kelas, kantor, dan fasilitas lain.
+Procurement detail dapat ditambahkan kemudian bila kebutuhan pembelian sudah
+jelas.
+
 ---
 
-# 10. User Management vs Human Resource
+# 10. User Management vs SDM Pesantren
 
 Pemisahan kritis:
 
@@ -967,10 +1225,10 @@ AccessControl
 HumanResource
 = employee/teacher/ustadz/staff identity and employment data
 
-Student
+Santri
 = student identity and lifecycle
 
-Guardian
+WaliSantri
 = guardian identity and relationship
 ```
 
@@ -979,15 +1237,15 @@ Seseorang dapat memiliki profile domain tanpa harus memiliki akun.
 Contoh:
 
 ```text
-Guardian
+WaliSantri
     -> belum memiliki User Account
-    -> tetap valid sebagai guardian record
+    -> tetap valid sebagai wali record
 ```
 
 Jika kemudian diberi akses portal:
 
 ```text
-Guardian
+WaliSantri
     -> linked User Account
 ```
 
@@ -995,7 +1253,7 @@ Relasi ini tidak menggabungkan bounded context.
 
 ---
 
-# 11. Workflow Student Lifecycle
+# 11. Workflow Lifecycle Santri
 
 Contoh:
 
@@ -1324,7 +1582,7 @@ Module tidak mengambil Eloquent Model module lain lalu melakukan business mutati
 Hindari:
 
 ```php
-use App\Modules\StudentLife\Student\Infrastructure\Models\StudentModel;
+use App\Modules\Pesantrian\Santri\Infrastructure\Models\SantriRecord;
 ```
 
 di Finance hanya untuk mengubah student.
@@ -1364,6 +1622,9 @@ Contoh arah dependensi:
 ```text
 AccessControl
 
+UserManagement
+    -> AccessControl
+
 Organization
 
 SystemSetting
@@ -1374,27 +1635,68 @@ AcademicPeriod
 HumanResource
     -> Organization
 
-Student
-    -> Organization
-    -> Guardian contract where required
+WaliSantri
 
-Guardian
-
-Dormitory
+PenerimaanSantri
     -> Organization
-    -> Student contract
+    -> WaliSantri contract where required
+    -> Document contract where required
+
+Santri
+    -> Organization
+    -> WaliSantri contract where required
+    -> PenerimaanSantri contract where required
+
+Asrama
+    -> Organization
+    -> Santri contract
     -> HumanResource contract
 
 Academic
     -> Organization
     -> AcademicPeriod
-    -> Student contract
+    -> Santri contract
     -> HumanResource contract
+
+Tahfidz
+    -> Santri contract
+    -> HumanResource contract
+    -> AcademicPeriod where required
+
+PerizinanSantri
+    -> Santri contract
+    -> WaliSantri contract where required
+    -> HumanResource contract where required
+
+KedisiplinanSantri
+    -> Santri contract
+    -> WaliSantri contract where required
+    -> HumanResource contract where required
+
+PrestasiSantri
+    -> Santri contract
+    -> Document contract where required
+
+KesehatanSantri
+    -> Santri contract
+    -> HumanResource contract where required
+
+PembinaanSantri
+    -> Santri contract
+    -> HumanResource contract where required
+
+Alumni
+    -> Santri contract
 
 StudentFinance
     -> Organization
-    -> Student contract
-    -> Guardian query/contract where required
+    -> AcademicPeriod
+    -> Santri contract
+    -> WaliSantri query/contract where required
+
+DonationWaqf
+    -> Organization
+    -> Document contract where required
 
 Document
     -> generic subject references
@@ -1409,7 +1711,10 @@ Notification
 Reporting
     -> read/query contracts or projections
 
-AuditTrail
+Asset
+    -> Organization
+
+AuditLog / AuditTrail
     -> listens to events / audit contract
 ```
 
@@ -1957,14 +2262,14 @@ Module Generator menjadi bagian Phase 0.
 Command utama harus menerima namespace dan module, misalnya:
 
 ```bash
-php artisan make:module StudentLife Student
-php artisan make:module Finance StudentFinance
+php artisan module:make Pesantrian Santri
+php artisan module:make Finance StudentFinance
 ```
 
 Jika implementasi command memakai format separator, format alternatif diperbolehkan selama hasil path dan namespace sama, misalnya:
 
 ```bash
-php artisan make:module StudentLife/Student
+php artisan module:make Pesantrian/Santri
 ```
 
 Output minimum harus mengikuti struktur standar module.
@@ -1983,13 +2288,13 @@ Child generator dapat digunakan ketika diperlukan.
 Contoh:
 
 ```bash
-php artisan module:make-action StudentLife Student RegisterStudent
-php artisan module:make-dto StudentLife Student StudentData
-php artisan module:make-contract StudentLife Student StudentRepository
-php artisan module:make-event StudentLife Student StudentRegistered
-php artisan module:make-model StudentLife Student Student
-php artisan module:make-repository StudentLife Student EloquentStudentRepository
-php artisan module:make-adapter Platform Document SpatieDocumentStorage
+php artisan module:make-action Pesantrian Santri RegisterSantri
+php artisan module:make-dto Pesantrian Santri SantriData
+php artisan module:make-contract Pesantrian Santri SantriRepository
+php artisan module:make-event Pesantrian Santri SantriRegistered
+php artisan module:make-model Pesantrian Santri Santri
+php artisan module:make-repository Pesantrian Santri EloquentSantriRepository
+php artisan module:make-adapter Support Document SpatieDocumentStorage
 php artisan module:make-integration Finance StudentFinance PaymentGateway
 ```
 
@@ -2014,21 +2319,29 @@ Generator juga harus menghasilkan migration/model convention yang konsisten deng
 Prioritas capability:
 
 ```text
-01 Access Control
-02 Organization
-03 System Setting
-04 Academic Period
-05 Human Resource
-06 Student
-07 Guardian
-08 Dormitory
-09 Academic
-10 Student Finance
-11 Document
-12 Announcement
-13 Notification
-14 Reporting
-15 Audit Trail
+01 Sistem: akses, user, setting, audit
+02 Organisasi: yayasan, unit, lokasi, hierarchy
+03 Tahun Ajaran & Semester
+04 SDM Pesantren
+05 PPDB / Penerimaan Santri Baru
+06 Data Induk Santri & Wali
+07 Asrama
+08 Kelas / Rombel / Kurikulum
+09 Tahfidz / Hafalan
+10 Presensi Santri
+11 Perizinan Santri
+12 Pelanggaran / Kedisiplinan
+13 Prestasi
+14 Kesehatan / Klinik
+15 Konseling / Pembinaan
+16 Alumni
+17 Tagihan / Pembayaran / Tunggakan
+18 Dokumen
+19 Pengumuman
+20 Notifikasi
+21 Laporan
+22 Donasi / Wakaf
+23 Inventaris / Aset
 ```
 
 Scope ini dapat diimplementasikan secara incremental.
@@ -2038,19 +2351,18 @@ Capability besar berikut tidak harus langsung dibuat pada Release awal:
 ```text
 Payroll
 Procurement
-Inventory
-Asset
 POS/Koperasi
 Laundry
-Klinik
 Perpustakaan
 Workflow Engine generik
 AI Assistant
-Donasi/Wakaf
 Payment Gateway/VA/QRIS
 Public API penuh
 BI kompleks
 ```
+
+Koperasi dan Perpustakaan ditunda sampai baseline aplikasi berjalan dan
+kebutuhan module inti lain sudah terbukti dari penggunaan.
 
 ---
 
@@ -2080,66 +2392,71 @@ testing conventions
 documentation structure
 ```
 
-## Phase 1 — Console, Organization & Period Foundation
+## Phase 1 — Sistem, Organisasi & Periode Foundation
 
 ```text
-Console/AccessControl
-Console/SystemSetting
+System/AccessControl
+System/UserManagement
+System/SystemSetting
+System/AuditLog
 Organization/Organization
 Academic/AcademicPeriod
 ```
 
-## Phase 2 — People Core
+## Phase 2 — People Core / Data Orang
 
 ```text
 HumanResource/HumanResource
-StudentLife/Student
-StudentLife/Guardian
+Pesantrian/PenerimaanSantri
+Pesantrian/WaliSantri
+Pesantrian/Santri
 ```
 
-## Phase 3 — Residential & Academic Core
+## Phase 3 — Asrama, Akademik, dan Tahfidz
 
 ```text
-StudentLife/Dormitory
+Pesantrian/Asrama
 Academic/Academic
+Pesantrian/Tahfidz
+Pesantrian/PresensiSantri
 ```
 
-## Phase 4 — Finance & Documents
+## Phase 4 — Finance, Documents, Communication, Reporting
 
 ```text
 Finance/StudentFinance
-Platform/Document
-```
-
-## Phase 5 — Communication & Governance
-
-```text
+Finance/DonationWaqf
+Support/Document
 Communication/Announcement
-Platform/Notification
-Console/AuditTrail
+Support/Notification
+Support/Reporting
 ```
 
-## Phase 6 — Reporting
+## Phase 5 — Pengasuhan dan Rekam Santri
 
 ```text
-Platform/Reporting
-dashboard
-exports
-management views
+Pesantrian/PerizinanSantri
+Pesantrian/KedisiplinanSantri
+Pesantrian/PrestasiSantri
+Pesantrian/KesehatanSantri
+Pesantrian/PembinaanSantri
+Pesantrian/Alumni
 ```
 
-## Phase 7 — Expansion / Ditunda
+## Phase 6 — Inventaris dan Aset
+
+```text
+Support/Asset
+```
+
+## Phase 7 — Expansion / Ditunda Setelah Baseline Running
 
 ```text
 Payroll
 Procurement
-Inventory
-Asset
 POS/Koperasi
 Laundry
-Klinik
 Perpustakaan
-Donasi/Wakaf
 Payment Gateway
 Government Reporting
 Public API
@@ -2208,10 +2525,10 @@ pseudo-microservice HTTP internal
 Task non-trivial menggunakan:
 
 ```text
-docs/work/<namespace>/<Module>/<work-id>/
-├── ADR.md
-├── PLAN.md
-└── TASKS.md
+docs/work-items/<nama-pekerjaan>/
+├── README.md
+├── plan.md
+└── tasks.md
 ```
 
 ADR hanya dibuat/diperbarui bila ada keputusan bermakna.
@@ -2226,26 +2543,21 @@ Jangan menggunakan ADR sebagai catatan harian.
 AGENTS.md
 = aturan repository-wide
 
-docs/architecture/
-= arsitektur jangka panjang
+docs/SakaSantri_Architecture_Baseline_v0.1-r1-ID.md
+= baseline arsitektur dan produk aktif
 
 app/Modules/<Namespace>/<Module>/README.md
 = kebenaran level module
 
-docs/work/
+docs/work-items/
 = keputusan dan eksekusi task
 ```
 
-Dokumen canonical baseline:
-
-```text
-docs/architecture/SakaSantri_Architecture_Baseline.md
-```
-
-Historical revisions jika diperlukan:
+Historical revisions atau baseline baru jika diperlukan:
 
 ```text
 docs/architecture/history/
+docs/SakaSantri_Architecture_Baseline_v0.1-r2-ID.md
 ```
 
 ---

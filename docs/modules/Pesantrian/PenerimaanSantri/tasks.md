@@ -47,18 +47,19 @@
 
 ## Increment 3: Data foundation
 
-- [ ] Tambahkan migration pendaftaran/calon santri.
+- [x] Tambahkan migration pendaftaran/calon santri.
   - Acceptance: ULID primary key, unique `registration_no`, candidate identity,
     wali snapshot, target unit, status, administrasi biaya sederhana, checklist
     dokumen, dan timestamp tersedia.
   - Verification: focused migration/model tests.
-- [ ] Tambahkan persistence minimum.
+- [x] Tambahkan persistence minimum.
   - Acceptance: model/repository hanya dibuat bila dipakai oleh use case.
   - Verification: focused unit/feature tests.
-- [ ] Tambahkan permission identity awal.
+- [x] Tambahkan permission identity awal.
   - Acceptance: `penerimaan_santri.view`, `penerimaan_santri.manage`, dan
     `penerimaan_santri.decide` valid.
   - Verification: focused permission identity test.
+  - Catatan: permission identity awal sudah diselesaikan pada Increment 2.
 
 ## Increment 4: Backend read/list dan create/update minimum
 

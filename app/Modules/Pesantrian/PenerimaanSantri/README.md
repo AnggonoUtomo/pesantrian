@@ -10,8 +10,9 @@ Penerimaan Santri Baru.
   - `penerimaan_santri.view`
   - `penerimaan_santri.manage`
   - `penerimaan_santri.decide`
-- Data foundation, controller, route behavior, UI, dan audit mutation belum
-  dibuat.
+- Data foundation minimum tersedia melalui table `student_admissions` dan model
+  `StudentAdmissionRecord`.
+- Controller, route behavior, UI, dan audit mutation belum dibuat.
 
 ## Acuan
 

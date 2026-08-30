@@ -82,10 +82,10 @@ Consumer lintas module tidak boleh membaca model Infrastructure
   - sebelum numbering runtime tersedia, generator nomor boleh memakai strategi
     sederhana yang tetap unik dan teruji.
 - Candidate table:
-  - `student_admissions` atau `calon_santri_registrations`.
+  - `student_admissions`.
 
-Nama table final diputuskan saat increment data foundation agar selaras dengan
-konvensi source dan bahasa teknis yang dipilih.
+Nama table memakai istilah teknis Bahasa Inggris agar selaras dengan pola
+source code, sedangkan nama tampil tetap PPDB / Penerimaan Santri Baru.
 
 ## Permission dan Audit
 
@@ -150,5 +150,9 @@ git diff --check
   - `app/Modules/Pesantrian/PenerimaanSantri/permissions.php`
   - `app/Modules/Pesantrian/PenerimaanSantri/ServiceProvider.php`
   - `app/Modules/Pesantrian/PenerimaanSantri/Routes/*`
-- Data foundation, route behavior, UI, audit mutation, dan conversion contract
-  belum dibuat.
+- Increment 3 data foundation selesai:
+  - table `student_admissions`
+  - model `StudentAdmissionRecord`
+  - schema minimum calon santri, wali snapshot, status, administrasi biaya, dan
+    checklist dokumen
+- Route behavior, UI, audit mutation, dan conversion contract belum dibuat.

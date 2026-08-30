@@ -14,7 +14,8 @@ Penerimaan Santri Baru.
   `StudentAdmissionRecord`.
 - API read/list dan create/update minimum tersedia untuk flow internal/admin.
 - API lifecycle decision tersedia untuk verify, accept, reject, dan cancel.
-- UI dan audit mutation belum dibuat.
+- Audit mutation aman tersedia untuk create/update dan lifecycle decision.
+- UI belum dibuat.
 
 ## Acuan
 

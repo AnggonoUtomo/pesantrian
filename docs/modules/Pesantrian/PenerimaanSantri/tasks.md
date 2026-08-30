@@ -103,10 +103,10 @@
 
 ## Increment 6: Audit mutation
 
-- [ ] Tambahkan audit create/update pendaftaran.
+- [x] Tambahkan audit create/update pendaftaran.
   - Acceptance: mutation menghasilkan audit entry/event yang aman.
   - Verification: focused audit test.
-- [ ] Tambahkan audit lifecycle pendaftaran.
+- [x] Tambahkan audit lifecycle pendaftaran.
   - Acceptance: verify/accept/reject/cancel menghasilkan audit entry/event yang
     aman.
   - Verification: focused audit test.

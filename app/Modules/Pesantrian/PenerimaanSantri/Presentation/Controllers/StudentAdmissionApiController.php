@@ -56,7 +56,11 @@ final readonly class StudentAdmissionApiController implements HasMiddleware
 
     public function store(StoreStudentAdmissionApiRequest $request): JsonResponse
     {
-        $admission = $this->createStudentAdmission->execute($request->toData());
+        $admission = $this->createStudentAdmission->execute(
+            $request->user(),
+            $request->toData(),
+            $this->responses->correlationId($request),
+        );
 
         return $this->responses->success(
             $request,
@@ -68,7 +72,12 @@ final readonly class StudentAdmissionApiController implements HasMiddleware
 
     public function update(UpdateStudentAdmissionApiRequest $request, string $admission): JsonResponse
     {
-        $updated = $this->updateStudentAdmission->execute($admission, $request->changes());
+        $updated = $this->updateStudentAdmission->execute(
+            $request->user(),
+            $admission,
+            $request->changes(),
+            $this->responses->correlationId($request),
+        );
 
         abort_if($updated === null, 404);
 
@@ -105,8 +114,12 @@ final readonly class StudentAdmissionApiController implements HasMiddleware
         string $targetStatus,
         string $message,
     ): JsonResponse {
-        $actorId = (string) $request->user()?->getAuthIdentifier();
-        $updated = $this->transitionStudentAdmission->execute($admission, $targetStatus, $actorId);
+        $updated = $this->transitionStudentAdmission->execute(
+            $request->user(),
+            $admission,
+            $targetStatus,
+            $this->responses->correlationId($request),
+        );
 
         abort_if($updated === null, 404);
 

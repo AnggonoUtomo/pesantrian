@@ -17,6 +17,7 @@ final readonly class RecordSystemActivity
         'AcademicPeriod' => 'academic-period.activity.occurred',
         'HumanResource' => 'human-resource.activity.occurred',
         'Organization' => 'organization.activity.occurred',
+        'PenerimaanSantri' => 'penerimaan-santri.activity.occurred',
         'UserManagement' => 'user-management.activity.occurred',
     ];
 

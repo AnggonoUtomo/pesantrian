@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\Pesantrian\PenerimaanSantri;
 
+use App\Modules\Pesantrian\PenerimaanSantri\Application\Contracts\StudentAdmissionActivityPublisher;
 use App\Modules\Pesantrian\PenerimaanSantri\Application\Contracts\StudentAdmissionRepository;
+use App\Modules\Pesantrian\PenerimaanSantri\Infrastructure\Events\LaravelStudentAdmissionActivityPublisher;
 use App\Modules\Pesantrian\PenerimaanSantri\Infrastructure\Repositories\EloquentStudentAdmissionRepository;
 use Illuminate\Support\ServiceProvider as FrameworkServiceProvider;
 
@@ -12,6 +14,7 @@ final class ServiceProvider extends FrameworkServiceProvider
 {
     public function register(): void
     {
+        $this->app->bind(StudentAdmissionActivityPublisher::class, LaravelStudentAdmissionActivityPublisher::class);
         $this->app->bind(StudentAdmissionRepository::class, EloquentStudentAdmissionRepository::class);
     }
 

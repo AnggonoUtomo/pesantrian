@@ -10,7 +10,7 @@ Source module mengikuti [`docs/ARCHITECTURE.md`](../../../ARCHITECTURE.md) dan
 - Nama tampil: `PPDB / Penerimaan Santri Baru`
 - Candidate source: `app/Modules/Pesantrian/PenerimaanSantri/`
 - Candidate frontend: `resources/js/pages/Pesantrian/PenerimaanSantri/`
-- Status: `Active - backend lifecycle`
+- Status: `Active - backend audit`
 
 ## Tujuan
 
@@ -104,6 +104,9 @@ source code, sedangkan nama tampil tetap PPDB / Penerimaan Santri Baru.
   - pendaftaran dibatalkan.
 
 Metadata audit tidak boleh menyimpan data sensitif yang tidak diperlukan.
+Metadata audit runtime dibuat ringkas: field yang berubah, target status, dan
+hasil inti pendaftaran. Nomor telepon wali, notes bebas, dan detail checklist
+dokumen tidak disimpan pada audit metadata baseline awal.
 
 ## Operasi
 
@@ -168,4 +171,9 @@ git diff --check
   - terminal state `accepted/rejected/cancelled` dikunci dari transisi dan
     update biasa
   - `decided_at` dan `decided_by` dicatat saat lifecycle decision
-- UI, audit mutation, dan conversion contract belum dibuat.
+- Increment 6 audit mutation selesai:
+  - create/update pendaftaran mencatat audit event aman
+  - verify/accept/reject/cancel mencatat audit event aman
+  - metadata audit tidak menyimpan nomor telepon wali, notes bebas, atau detail
+    checklist dokumen
+- UI dan conversion contract belum dibuat.

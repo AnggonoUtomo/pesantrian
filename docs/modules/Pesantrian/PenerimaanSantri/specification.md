@@ -187,6 +187,16 @@ Metadata audit tidak boleh memuat password, token, credential, atau payload
 sensitif. Nomor telepon wali boleh dicatat hanya bila relevan dan tidak
 dibocorkan ke log teknis.
 
+Baseline runtime memakai metadata audit ringkas:
+
+- `changed_fields`;
+- `to_status` untuk update/lifecycle;
+- `result` berisi `registration_no`, identitas inti calon santri, wali
+  non-kontak, status biaya, dan status pendaftaran.
+
+Nomor telepon wali, notes bebas, dan detail checklist dokumen tidak disimpan
+pada audit metadata baseline awal.
+
 ## UI
 
 UI awal dibuat setelah backend foundation valid:
@@ -236,7 +246,7 @@ atau Keuangan pada slice awal.
 - [x] Checklist dokumen pendaftaran minimum dapat dicatat dan diverifikasi
   tanpa upload file.
 - [x] Status transition minimum berjalan dan invalid transition ditolak.
-- [ ] Mutation mencatat audit/event aman.
+- [x] Mutation mencatat audit/event aman.
 - [ ] Candidate conversion contract ke Santri terdokumentasi tanpa direct access
   ke model Infrastructure.
 - [x] `php artisan module:validate --no-ansi` lulus.

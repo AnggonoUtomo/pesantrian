@@ -113,15 +113,17 @@
 
 ## Increment 7: Candidate conversion contract ke Santri
 
-- [ ] Dokumentasikan query/contract accepted admission.
+- [x] Dokumentasikan query/contract accepted admission.
   - Acceptance: contract menjelaskan input/output/failure tanpa mengekspos model
     Infrastructure.
   - Verification: `git diff --check`.
-- [ ] Implementasikan contract hanya jika consumer `Pesantrian/Santri`
+- [x] Implementasikan contract hanya jika consumer `Pesantrian/Santri`
   disetujui.
   - Acceptance: consumer memakai DTO/query public boundary, bukan Eloquent model
     PenerimaanSantri.
   - Verification: focused contract/query tests.
+  - Catatan: runtime contract belum diimplementasikan karena
+    `Pesantrian/Santri` belum tersedia sebagai consumer nyata.
 
 ## Increment 8: UI/Inertia read page
 

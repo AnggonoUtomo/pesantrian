@@ -121,6 +121,16 @@ coding lagi.
   - focused contract/query tests bila diimplementasikan;
   - `php artisan module:validate --no-ansi`.
 
+Catatan hasil:
+
+- Contract accepted admission didokumentasikan pada
+  `docs/modules/Pesantrian/PenerimaanSantri/contracts/accepted-admission.md`.
+- Runtime contract belum dibuat karena `app/Modules/Pesantrian/Santri` belum
+  tersedia, sehingga belum ada consumer nyata.
+- Saat `Pesantrian/Santri` dibuat, implementasi harus memakai public
+  `AcceptedAdmissionReader` dan DTO ringkas, bukan membaca
+  `StudentAdmissionRecord` secara langsung.
+
 ## Increment 8: UI/Inertia read page
 
 - Perubahan:

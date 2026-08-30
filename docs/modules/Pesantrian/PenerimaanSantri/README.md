@@ -70,6 +70,12 @@ Candidate public boundary:
 Consumer lintas module tidak boleh membaca model Infrastructure
 `CalonSantriRecord` secara langsung.
 
+Contract accepted admission untuk calon consumer `Pesantrian/Santri`
+didokumentasikan di
+[`contracts/accepted-admission.md`](contracts/accepted-admission.md). Runtime
+contract belum dibuat karena module `Pesantrian/Santri` belum tersedia sebagai
+consumer nyata.
+
 ## Data dan Identifier
 
 - Primary identifier: ULID.
@@ -176,4 +182,9 @@ git diff --check
   - verify/accept/reject/cancel mencatat audit event aman
   - metadata audit tidak menyimpan nomor telepon wali, notes bebas, atau detail
     checklist dokumen
-- UI dan conversion contract belum dibuat.
+- Increment 7 candidate conversion contract selesai sebagai dokumentasi:
+  - accepted admission reader dan DTO candidate terdokumentasi
+  - ownership, failure semantics, dan rule eligibility awal terdokumentasi
+  - runtime implementation ditunda sampai `Pesantrian/Santri` tersedia sebagai
+    consumer nyata
+- UI belum dibuat.

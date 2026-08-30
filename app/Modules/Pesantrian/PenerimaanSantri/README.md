@@ -15,6 +15,8 @@ Penerimaan Santri Baru.
 - API read/list dan create/update minimum tersedia untuk flow internal/admin.
 - API lifecycle decision tersedia untuk verify, accept, reject, dan cancel.
 - Audit mutation aman tersedia untuk create/update dan lifecycle decision.
+- Candidate conversion contract ke Santri terdokumentasi; runtime contract
+  ditunda sampai `Pesantrian/Santri` tersedia sebagai consumer nyata.
 - UI belum dibuat.
 
 ## Acuan

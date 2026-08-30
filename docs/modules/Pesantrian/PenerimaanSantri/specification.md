@@ -230,6 +230,25 @@ UI mutation penuh dapat dipisah menjadi increment setelah read page stabil.
 Tidak ada dependency ke Asrama, Academic, Tahfidz, Kedisiplinan, Kesehatan,
 atau Keuangan pada slice awal.
 
+## Candidate Conversion Contract
+
+Contract accepted admission untuk calon consumer `Pesantrian/Santri`
+didokumentasikan pada
+[`contracts/accepted-admission.md`](contracts/accepted-admission.md).
+
+Keputusan Increment 7:
+
+- contract runtime belum dibuat karena module `Pesantrian/Santri` belum tersedia
+  sebagai consumer nyata;
+- consumer nanti wajib memakai public contract/DTO, bukan model Infrastructure
+  `StudentAdmissionRecord`;
+- contract hanya mengembalikan pendaftaran berstatus `accepted` yang eligible
+  untuk konversi;
+- data yang diekspor dibatasi pada identitas inti calon santri, target unit,
+  snapshot wali minimum, dan metadata keputusan;
+- invoice, file dokumen, audit metadata, notes internal, dan detail checklist
+  tidak menjadi bagian dari contract konversi baseline.
+
 ## Acceptance Criteria
 
 - [x] Module `Pesantrian/PenerimaanSantri` dapat dibuat oleh generator dan
@@ -247,7 +266,7 @@ atau Keuangan pada slice awal.
   tanpa upload file.
 - [x] Status transition minimum berjalan dan invalid transition ditolak.
 - [x] Mutation mencatat audit/event aman.
-- [ ] Candidate conversion contract ke Santri terdokumentasi tanpa direct access
+- [x] Candidate conversion contract ke Santri terdokumentasi tanpa direct access
   ke model Infrastructure.
 - [x] `php artisan module:validate --no-ansi` lulus.
 - [x] Focused tests PenerimaanSantri lulus.

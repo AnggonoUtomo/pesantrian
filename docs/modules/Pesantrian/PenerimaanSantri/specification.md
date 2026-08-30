@@ -2,7 +2,8 @@
 
 ## Status
 
-Draft - dokumentasi awal sebelum coding. Module belum dibuat di source runtime.
+Draft implementasi. Skeleton module sudah dibuat di source runtime; data
+foundation dan behavior PPDB belum dibuat.
 
 ## Tujuan dan Scope
 
@@ -210,11 +211,11 @@ atau Keuangan pada slice awal.
 
 ## Acceptance Criteria
 
-- [ ] Module `Pesantrian/PenerimaanSantri` dapat dibuat oleh generator dan
+- [x] Module `Pesantrian/PenerimaanSantri` dapat dibuat oleh generator dan
   valid.
 - [ ] Migration pendaftaran minimum memakai ULID.
 - [ ] `registration_no` unik dan stabil sebagai business identifier.
-- [ ] Permission `penerimaan_santri.view`, `penerimaan_santri.manage`, dan
+- [x] Permission `penerimaan_santri.view`, `penerimaan_santri.manage`, dan
   `penerimaan_santri.decide` tersedia.
 - [ ] Actor berizin dapat list/create/update pendaftaran minimum.
 - [ ] Actor tanpa permission ditolak backend.

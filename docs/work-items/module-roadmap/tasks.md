@@ -154,6 +154,7 @@ HumanResource tetap stabil.
 
 - [x] HumanResource menyediakan employee/staff/teacher foundation dan read page.
 - [x] Dokumentasi awal `Pesantrian/PenerimaanSantri` tersedia untuk review.
+- [x] Skeleton module `Pesantrian/PenerimaanSantri` dibuat dan registry valid.
 - [ ] PenerimaanSantri menyediakan calon santri, status pendaftaran, dan
   konversi awal.
 - [ ] WaliSantri menyediakan identity/contact dan relation contract.

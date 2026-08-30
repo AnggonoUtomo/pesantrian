@@ -31,7 +31,7 @@ item migrasi.
 | 05 | `Organization/Organization` | Organisasi | Yayasan, pesantren, unit, lokasi, struktur organisasi, hierarchy, affiliation | Tidak ada pada baseline awal | Active |
 | 06 | `Academic/AcademicPeriod` | Tahun Ajaran & Semester | Academic year, semester/term, calendar, active period, opening/closing | Organization | Active |
 | 07 | `HumanResource/HumanResource` | SDM Pesantren | Employee, guru, ustadz, musyrif, staff, position, employment status, work assignment | Organization | Active |
-| 08 | `Pesantrian/PenerimaanSantri` | PPDB / Penerimaan Santri Baru | Calon santri, formulir, verifikasi, status pendaftaran, konversi menjadi santri | Organization, WaliSantri, Document bila diperlukan | Planned |
+| 08 | `Pesantrian/PenerimaanSantri` | PPDB / Penerimaan Santri Baru | Calon santri, formulir, verifikasi, status pendaftaran, konversi menjadi santri | Organization, WaliSantri, Document bila diperlukan | Active |
 | 09 | `Pesantrian/WaliSantri` | Wali Santri | Guardian identity, relasi ke santri, kontak, billing contact, emergency contact | Student/Santri contract bila diperlukan | Planned |
 | 10 | `Pesantrian/Santri` | Data Induk Santri | Student master, lifecycle, status, registration link, transfer, graduation | Organization, WaliSantri, PenerimaanSantri bila diperlukan | Planned |
 | 11 | `Pesantrian/Asrama` | Asrama | Dormitory, room, occupancy, placement, musyrif relation, placement history | Organization, Santri contract, HumanResource contract | Planned |

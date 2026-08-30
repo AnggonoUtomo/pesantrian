@@ -10,7 +10,7 @@ Source module mengikuti [`docs/ARCHITECTURE.md`](../../../ARCHITECTURE.md) dan
 - Nama tampil: `PPDB / Penerimaan Santri Baru`
 - Candidate source: `app/Modules/Pesantrian/PenerimaanSantri/`
 - Candidate frontend: `resources/js/pages/Pesantrian/PenerimaanSantri/`
-- Status: `Planned`
+- Status: `Active - skeleton module`
 
 ## Tujuan
 
@@ -140,3 +140,15 @@ npm run lint:check
 npm run build
 git diff --check
 ```
+
+## Status Implementasi
+
+- Increment 1 dokumentasi module selesai.
+- Increment 2 skeleton module selesai:
+  - `app/Modules/Pesantrian/PenerimaanSantri/module.json`
+  - `app/Modules/Pesantrian/PenerimaanSantri/module.php`
+  - `app/Modules/Pesantrian/PenerimaanSantri/permissions.php`
+  - `app/Modules/Pesantrian/PenerimaanSantri/ServiceProvider.php`
+  - `app/Modules/Pesantrian/PenerimaanSantri/Routes/*`
+- Data foundation, route behavior, UI, audit mutation, dan conversion contract
+  belum dibuat.

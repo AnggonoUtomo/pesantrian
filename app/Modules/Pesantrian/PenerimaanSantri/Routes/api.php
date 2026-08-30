@@ -17,4 +17,20 @@ Route::middleware(['web', 'auth', 'verified', 'throttle:system-api'])
             ->whereUlid('admission')
             ->middleware('api.idempotency')
             ->name('update');
+        Route::patch('/{admission}/verify', [StudentAdmissionApiController::class, 'verify'])
+            ->whereUlid('admission')
+            ->middleware('api.idempotency')
+            ->name('verify');
+        Route::patch('/{admission}/accept', [StudentAdmissionApiController::class, 'accept'])
+            ->whereUlid('admission')
+            ->middleware('api.idempotency')
+            ->name('accept');
+        Route::patch('/{admission}/reject', [StudentAdmissionApiController::class, 'reject'])
+            ->whereUlid('admission')
+            ->middleware('api.idempotency')
+            ->name('reject');
+        Route::patch('/{admission}/cancel', [StudentAdmissionApiController::class, 'cancel'])
+            ->whereUlid('admission')
+            ->middleware('api.idempotency')
+            ->name('cancel');
     });

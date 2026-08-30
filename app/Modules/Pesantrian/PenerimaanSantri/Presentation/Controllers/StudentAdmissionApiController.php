@@ -6,12 +6,14 @@ namespace App\Modules\Pesantrian\PenerimaanSantri\Presentation\Controllers;
 
 use App\Http\ApiResponseFactory;
 use App\Modules\Pesantrian\PenerimaanSantri\Application\Actions\CreateStudentAdmission;
+use App\Modules\Pesantrian\PenerimaanSantri\Application\Actions\TransitionStudentAdmission;
 use App\Modules\Pesantrian\PenerimaanSantri\Application\Actions\UpdateStudentAdmission;
 use App\Modules\Pesantrian\PenerimaanSantri\Application\DTO\PaginatedStudentAdmissionData;
 use App\Modules\Pesantrian\PenerimaanSantri\Application\DTO\StudentAdmissionData;
 use App\Modules\Pesantrian\PenerimaanSantri\Application\Queries\ListStudentAdmissions;
 use App\Modules\Pesantrian\PenerimaanSantri\Presentation\Requests\ListStudentAdmissionsApiRequest;
 use App\Modules\Pesantrian\PenerimaanSantri\Presentation\Requests\StoreStudentAdmissionApiRequest;
+use App\Modules\Pesantrian\PenerimaanSantri\Presentation\Requests\TransitionStudentAdmissionApiRequest;
 use App\Modules\Pesantrian\PenerimaanSantri\Presentation\Requests\UpdateStudentAdmissionApiRequest;
 use App\Modules\Pesantrian\PenerimaanSantri\Presentation\Resources\StudentAdmissionResource;
 use Illuminate\Http\JsonResponse;
@@ -24,6 +26,7 @@ final readonly class StudentAdmissionApiController implements HasMiddleware
         private ListStudentAdmissions $listStudentAdmissions,
         private CreateStudentAdmission $createStudentAdmission,
         private UpdateStudentAdmission $updateStudentAdmission,
+        private TransitionStudentAdmission $transitionStudentAdmission,
         private ApiResponseFactory $responses,
     ) {}
 
@@ -32,6 +35,7 @@ final readonly class StudentAdmissionApiController implements HasMiddleware
         return [
             new Middleware('can:penerimaan_santri.view', only: ['index']),
             new Middleware('can:penerimaan_santri.manage', only: ['store', 'update']),
+            new Middleware('can:penerimaan_santri.decide', only: ['verify', 'accept', 'reject', 'cancel']),
         ];
     }
 
@@ -71,6 +75,44 @@ final readonly class StudentAdmissionApiController implements HasMiddleware
         return $this->responses->success(
             $request,
             'Pendaftaran santri berhasil diperbarui.',
+            (new StudentAdmissionResource($updated))->toArray($request),
+        );
+    }
+
+    public function verify(TransitionStudentAdmissionApiRequest $request, string $admission): JsonResponse
+    {
+        return $this->transition($request, $admission, 'verified', 'Pendaftaran santri berhasil diverifikasi.');
+    }
+
+    public function accept(TransitionStudentAdmissionApiRequest $request, string $admission): JsonResponse
+    {
+        return $this->transition($request, $admission, 'accepted', 'Pendaftaran santri berhasil diterima.');
+    }
+
+    public function reject(TransitionStudentAdmissionApiRequest $request, string $admission): JsonResponse
+    {
+        return $this->transition($request, $admission, 'rejected', 'Pendaftaran santri berhasil ditolak.');
+    }
+
+    public function cancel(TransitionStudentAdmissionApiRequest $request, string $admission): JsonResponse
+    {
+        return $this->transition($request, $admission, 'cancelled', 'Pendaftaran santri berhasil dibatalkan.');
+    }
+
+    private function transition(
+        TransitionStudentAdmissionApiRequest $request,
+        string $admission,
+        string $targetStatus,
+        string $message,
+    ): JsonResponse {
+        $actorId = (string) $request->user()?->getAuthIdentifier();
+        $updated = $this->transitionStudentAdmission->execute($admission, $targetStatus, $actorId);
+
+        abort_if($updated === null, 404);
+
+        return $this->responses->success(
+            $request,
+            $message,
             (new StudentAdmissionResource($updated))->toArray($request),
         );
     }

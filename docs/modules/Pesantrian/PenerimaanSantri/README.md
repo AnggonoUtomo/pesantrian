@@ -10,7 +10,7 @@ Source module mengikuti [`docs/ARCHITECTURE.md`](../../../ARCHITECTURE.md) dan
 - Nama tampil: `PPDB / Penerimaan Santri Baru`
 - Candidate source: `app/Modules/Pesantrian/PenerimaanSantri/`
 - Candidate frontend: `resources/js/pages/Pesantrian/PenerimaanSantri/`
-- Status: `Active - skeleton module`
+- Status: `Active - backend lifecycle`
 
 ## Tujuan
 
@@ -161,4 +161,11 @@ git diff --check
   - `registration_no` auto-generate `SNTR-xxxx`
   - validasi administrasi biaya sederhana dan checklist dokumen
   - backend permission untuk view/manage
-- UI, lifecycle decision, audit mutation, dan conversion contract belum dibuat.
+- Increment 5 lifecycle status pendaftaran selesai:
+  - API verify `submitted -> verified`
+  - API accept/reject `verified -> accepted/rejected`
+  - API cancel `draft/submitted/verified -> cancelled`
+  - terminal state `accepted/rejected/cancelled` dikunci dari transisi dan
+    update biasa
+  - `decided_at` dan `decided_by` dicatat saat lifecycle decision
+- UI, audit mutation, dan conversion contract belum dibuat.

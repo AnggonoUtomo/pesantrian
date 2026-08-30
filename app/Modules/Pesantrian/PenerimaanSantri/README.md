@@ -13,7 +13,8 @@ Penerimaan Santri Baru.
 - Data foundation minimum tersedia melalui table `student_admissions` dan model
   `StudentAdmissionRecord`.
 - API read/list dan create/update minimum tersedia untuk flow internal/admin.
-- UI, lifecycle decision, dan audit mutation belum dibuat.
+- API lifecycle decision tersedia untuk verify, accept, reject, dan cancel.
+- UI dan audit mutation belum dibuat.
 
 ## Acuan
 

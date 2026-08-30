@@ -118,6 +118,16 @@ ketat.
 - Target unit tidak valid atau tidak aktif: `422`.
 - Status transition tidak valid: `422`.
 
+### Endpoint Lifecycle Minimum
+
+- `PATCH /api/v1/pesantrian/admissions/{admission}/verify`
+- `PATCH /api/v1/pesantrian/admissions/{admission}/accept`
+- `PATCH /api/v1/pesantrian/admissions/{admission}/reject`
+- `PATCH /api/v1/pesantrian/admissions/{admission}/cancel`
+
+Seluruh endpoint lifecycle memakai permission `penerimaan_santri.decide`,
+idempotency middleware, dan envelope API canonical.
+
 ## Lifecycle
 
 Status awal yang disarankan:
@@ -155,7 +165,8 @@ Rule awal:
   lifecycle tetap menjadi ownership `Finance/StudentFinance`;
 - dokumen pendaftaran bersifat checklist verifikasi pada baseline awal. Upload
   dan arsip file digital menunggu boundary `Support/Document`;
-- perubahan status wajib mencatat actor dan waktu keputusan;
+- perubahan status lifecycle mencatat actor dan waktu keputusan melalui
+  `decided_by` dan `decided_at`;
 - status transition yang tidak valid ditolak oleh Application/Domain rule.
 
 ## Authorization dan Audit
@@ -224,7 +235,7 @@ atau Keuangan pada slice awal.
   sederhana tanpa membuat invoice Finance.
 - [x] Checklist dokumen pendaftaran minimum dapat dicatat dan diverifikasi
   tanpa upload file.
-- [ ] Status transition minimum berjalan dan invalid transition ditolak.
+- [x] Status transition minimum berjalan dan invalid transition ditolak.
 - [ ] Mutation mencatat audit/event aman.
 - [ ] Candidate conversion contract ke Santri terdokumentasi tanpa direct access
   ke model Infrastructure.

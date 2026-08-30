@@ -85,18 +85,18 @@
 
 ## Increment 5: Lifecycle status pendaftaran
 
-- [ ] Tambahkan verify pendaftaran.
+- [x] Tambahkan verify pendaftaran.
   - Acceptance: actor dengan `penerimaan_santri.decide` dapat mengubah
     submitted menjadi verified.
   - Verification: focused lifecycle feature test.
-- [ ] Tambahkan accept/reject pendaftaran.
+- [x] Tambahkan accept/reject pendaftaran.
   - Acceptance: actor dengan `penerimaan_santri.decide` dapat menerima atau
     menolak pendaftaran verified.
   - Verification: focused lifecycle feature test.
-- [ ] Tambahkan cancel pendaftaran.
+- [x] Tambahkan cancel pendaftaran.
   - Acceptance: draft/submitted/verified dapat dibatalkan sesuai rule awal.
   - Verification: focused lifecycle feature test.
-- [ ] Jaga terminal state.
+- [x] Jaga terminal state.
   - Acceptance: accepted/rejected/cancelled tidak bisa dimutasi melalui
     transition yang tidak valid.
   - Verification: focused lifecycle feature test.

@@ -181,6 +181,160 @@ final class PenerimaanSantriApiTest extends TestCase
             ->exists());
     }
 
+    public function test_memproses_lifecycle_pendaftaran_santri_melalui_api_terotorisasi(): void
+    {
+        $decide = Permission::create(['name' => 'penerimaan_santri.decide', 'guard_name' => 'web']);
+        $actor = User::factory()->create();
+        $actor->givePermissionTo($decide);
+
+        $submitted = StudentAdmissionRecord::query()->create([
+            'registration_no' => 'SNTR-0101',
+            'candidate_name' => 'Nadia Salma',
+            'guardian_name' => 'Ahmad Salim',
+            'registration_fee_required' => false,
+            'registration_fee_status' => 'not_required',
+            'status' => 'submitted',
+            'registered_at' => now(),
+        ]);
+
+        $this->actingAs($actor)->patchJson(
+            route('api.v1.pesantrian.admissions.verify', $submitted->id),
+            [],
+            ['Idempotency-Key' => (string) Str::ulid()],
+        )
+            ->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('message', 'Pendaftaran santri berhasil diverifikasi.')
+            ->assertJsonPath('data.status', 'verified')
+            ->assertJsonPath('data.decided_by', $actor->id);
+
+        $this->actingAs($actor)->patchJson(
+            route('api.v1.pesantrian.admissions.accept', $submitted->id),
+            [],
+            ['Idempotency-Key' => (string) Str::ulid()],
+        )
+            ->assertOk()
+            ->assertJsonPath('message', 'Pendaftaran santri berhasil diterima.')
+            ->assertJsonPath('data.status', 'accepted')
+            ->assertJsonPath('data.decided_by', $actor->id);
+
+        self::assertTrue(DB::table('student_admissions')
+            ->where('id', $submitted->id)
+            ->where('status', 'accepted')
+            ->where('decided_by', $actor->id)
+            ->whereNotNull('decided_at')
+            ->exists());
+
+        $verified = StudentAdmissionRecord::query()->create([
+            'registration_no' => 'SNTR-0102',
+            'candidate_name' => 'Hasan Ridwan',
+            'guardian_name' => 'Rudi Hartono',
+            'registration_fee_required' => false,
+            'registration_fee_status' => 'not_required',
+            'status' => 'verified',
+            'registered_at' => now(),
+        ]);
+
+        $this->actingAs($actor)->patchJson(
+            route('api.v1.pesantrian.admissions.reject', $verified->id),
+            [],
+            ['Idempotency-Key' => (string) Str::ulid()],
+        )
+            ->assertOk()
+            ->assertJsonPath('message', 'Pendaftaran santri berhasil ditolak.')
+            ->assertJsonPath('data.status', 'rejected');
+
+        $draft = StudentAdmissionRecord::query()->create([
+            'registration_no' => 'SNTR-0103',
+            'candidate_name' => 'Alya Putri',
+            'guardian_name' => 'Siti Halimah',
+            'registration_fee_required' => false,
+            'registration_fee_status' => 'not_required',
+            'status' => 'draft',
+            'registered_at' => now(),
+        ]);
+
+        $this->actingAs($actor)->patchJson(
+            route('api.v1.pesantrian.admissions.cancel', $draft->id),
+            [],
+            ['Idempotency-Key' => (string) Str::ulid()],
+        )
+            ->assertOk()
+            ->assertJsonPath('message', 'Pendaftaran santri berhasil dibatalkan.')
+            ->assertJsonPath('data.status', 'cancelled');
+    }
+
+    public function test_menolak_lifecycle_tidak_valid_terminal_state_dan_actor_tanpa_permission(): void
+    {
+        $decide = Permission::create(['name' => 'penerimaan_santri.decide', 'guard_name' => 'web']);
+        $manage = Permission::create(['name' => 'penerimaan_santri.manage', 'guard_name' => 'web']);
+
+        $decider = User::factory()->create();
+        $decider->givePermissionTo($decide);
+
+        $manager = User::factory()->create();
+        $manager->givePermissionTo($manage);
+
+        $submitted = StudentAdmissionRecord::query()->create([
+            'registration_no' => 'SNTR-0201',
+            'candidate_name' => 'Fikri Rahman',
+            'guardian_name' => 'Rahman Hakim',
+            'registration_fee_required' => false,
+            'registration_fee_status' => 'not_required',
+            'status' => 'submitted',
+        ]);
+
+        $this->actingAs($manager)->patchJson(
+            route('api.v1.pesantrian.admissions.verify', $submitted->id),
+            [],
+            ['Idempotency-Key' => (string) Str::ulid()],
+        )->assertForbidden()->assertJsonPath('code', 'FORBIDDEN');
+
+        $this->actingAs($decider)->patchJson(
+            route('api.v1.pesantrian.admissions.accept', $submitted->id),
+            [],
+            ['Idempotency-Key' => (string) Str::ulid()],
+        )
+            ->assertUnprocessable()
+            ->assertJsonPath('code', 'VALIDATION_ERROR')
+            ->assertJsonStructure(['errors' => ['status']]);
+
+        $accepted = StudentAdmissionRecord::query()->create([
+            'registration_no' => 'SNTR-0202',
+            'candidate_name' => 'Dimas Putra',
+            'guardian_name' => 'Soleh Hidayat',
+            'registration_fee_required' => false,
+            'registration_fee_status' => 'not_required',
+            'status' => 'accepted',
+            'decided_at' => now(),
+            'decided_by' => $decider->id,
+        ]);
+
+        $this->actingAs($decider)->patchJson(
+            route('api.v1.pesantrian.admissions.cancel', $accepted->id),
+            [],
+            ['Idempotency-Key' => (string) Str::ulid()],
+        )
+            ->assertUnprocessable()
+            ->assertJsonPath('code', 'VALIDATION_ERROR')
+            ->assertJsonPath('errors.status.0', 'Status accepted bersifat terminal dan tidak dapat diproses lagi.');
+
+        $this->actingAs($manager)->patchJson(
+            route('api.v1.pesantrian.admissions.update', $accepted->id),
+            ['candidate_name' => 'Dimas Revisi'],
+            ['Idempotency-Key' => (string) Str::ulid()],
+        )
+            ->assertUnprocessable()
+            ->assertJsonPath('code', 'VALIDATION_ERROR')
+            ->assertJsonPath('errors.status.0', 'Status accepted bersifat terminal dan tidak dapat diperbarui.');
+
+        $this->actingAs($decider)->patchJson(
+            route('api.v1.pesantrian.admissions.verify', (string) Str::ulid()),
+            [],
+            ['Idempotency-Key' => (string) Str::ulid()],
+        )->assertNotFound()->assertJsonPath('code', 'RESOURCE_NOT_FOUND');
+    }
+
     public function test_menolak_guest_actor_tanpa_permission_payload_invalid_dan_resource_tidak_ditemukan(): void
     {
         $this->getJson(route('api.v1.pesantrian.admissions.index'))

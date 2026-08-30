@@ -12,7 +12,8 @@ Penerimaan Santri Baru.
   - `penerimaan_santri.decide`
 - Data foundation minimum tersedia melalui table `student_admissions` dan model
   `StudentAdmissionRecord`.
-- Controller, route behavior, UI, dan audit mutation belum dibuat.
+- API read/list dan create/update minimum tersedia untuk flow internal/admin.
+- UI, lifecycle decision, dan audit mutation belum dibuat.
 
 ## Acuan
 

@@ -63,23 +63,23 @@
 
 ## Increment 4: Backend read/list dan create/update minimum
 
-- [ ] Tambahkan read/list pendaftaran.
+- [x] Tambahkan read/list pendaftaran.
   - Acceptance: actor dengan `penerimaan_santri.view` dapat membaca daftar
     pendaftaran.
   - Verification: focused feature test.
-- [ ] Tambahkan create/update pendaftaran.
+- [x] Tambahkan create/update pendaftaran.
   - Acceptance: actor dengan `penerimaan_santri.manage` dapat membuat dan
     mengubah pendaftaran; `registration_no` dibuat otomatis dan tetap unik.
   - Verification: focused feature test.
-- [ ] Tambahkan field administrasi biaya pendaftaran sederhana.
+- [x] Tambahkan field administrasi biaya pendaftaran sederhana.
   - Acceptance: PPDB dapat mencatat biaya tidak wajib/wajib, nominal, dan status
     administrasi tanpa membuat invoice Finance.
   - Verification: focused feature test.
-- [ ] Tambahkan checklist dokumen pendaftaran minimum.
+- [x] Tambahkan checklist dokumen pendaftaran minimum.
   - Acceptance: PPDB dapat mencatat status item dokumen dan verifikasi tanpa
     upload file.
   - Verification: focused feature test.
-- [ ] Tambahkan authorization failure coverage.
+- [x] Tambahkan authorization failure coverage.
   - Acceptance: actor tanpa permission mendapat response forbidden.
   - Verification: focused feature test.
 

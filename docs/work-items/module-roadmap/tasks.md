@@ -158,6 +158,8 @@ HumanResource tetap stabil.
 - [x] Data foundation `Pesantrian/PenerimaanSantri` tersedia dengan schema
   calon santri, wali snapshot, status, administrasi biaya, dan checklist
   dokumen.
+- [x] API read/list dan create/update minimum `Pesantrian/PenerimaanSantri`
+  tersedia untuk flow internal/admin.
 - [ ] PenerimaanSantri menyediakan calon santri, status pendaftaran, dan
   konversi awal.
 - [ ] WaliSantri menyediakan identity/contact dan relation contract.

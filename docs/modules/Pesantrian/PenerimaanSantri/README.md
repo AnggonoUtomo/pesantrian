@@ -155,4 +155,10 @@ git diff --check
   - model `StudentAdmissionRecord`
   - schema minimum calon santri, wali snapshot, status, administrasi biaya, dan
     checklist dokumen
-- Route behavior, UI, audit mutation, dan conversion contract belum dibuat.
+- Increment 4 backend read/list dan create/update minimum selesai:
+  - API list pendaftaran dengan filter, sort, dan pagination
+  - API create/update pendaftaran internal/admin
+  - `registration_no` auto-generate `SNTR-xxxx`
+  - validasi administrasi biaya sederhana dan checklist dokumen
+  - backend permission untuk view/manage
+- UI, lifecycle decision, audit mutation, dan conversion contract belum dibuat.

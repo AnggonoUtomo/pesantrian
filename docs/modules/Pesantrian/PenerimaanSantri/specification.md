@@ -217,19 +217,19 @@ atau Keuangan pada slice awal.
 - [x] `registration_no` unik dan stabil sebagai business identifier.
 - [x] Permission `penerimaan_santri.view`, `penerimaan_santri.manage`, dan
   `penerimaan_santri.decide` tersedia.
-- [ ] Actor berizin dapat list/create/update pendaftaran minimum.
-- [ ] Actor tanpa permission ditolak backend.
-- [ ] Duplicate `registration_no` ditolak.
-- [ ] Biaya pendaftaran opsional dapat dicatat sebagai status administrasi
+- [x] Actor berizin dapat list/create/update pendaftaran minimum.
+- [x] Actor tanpa permission ditolak backend.
+- [x] Duplicate `registration_no` ditolak.
+- [x] Biaya pendaftaran opsional dapat dicatat sebagai status administrasi
   sederhana tanpa membuat invoice Finance.
-- [ ] Checklist dokumen pendaftaran minimum dapat dicatat dan diverifikasi
+- [x] Checklist dokumen pendaftaran minimum dapat dicatat dan diverifikasi
   tanpa upload file.
 - [ ] Status transition minimum berjalan dan invalid transition ditolak.
 - [ ] Mutation mencatat audit/event aman.
 - [ ] Candidate conversion contract ke Santri terdokumentasi tanpa direct access
   ke model Infrastructure.
-- [ ] `php artisan module:validate --no-ansi` lulus.
-- [ ] Focused tests PenerimaanSantri lulus.
+- [x] `php artisan module:validate --no-ansi` lulus.
+- [x] Focused tests PenerimaanSantri lulus.
 
 ## Keputusan Awal
 

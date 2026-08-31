@@ -6,6 +6,7 @@ import SystemDashboardLayout from '@/layouts/system-dashboard-layout';
 import { canAccess } from '@/lib/authorization';
 import { routeOr } from '@/lib/route';
 import { AdmissionAccessDenied } from '../components/AdmissionAccessDenied';
+import { AdmissionDetailDialog } from '../components/AdmissionDetailDialog';
 import { AdmissionEmptyState } from '../components/AdmissionEmptyState';
 import { AdmissionFilterForm } from '../components/AdmissionFilterForm';
 import {
@@ -37,7 +38,10 @@ export default function Index() {
         filters.filter?.registration_fee_status ?? 'all',
     );
     const [mutationDialogOpen, setMutationDialogOpen] = useState(false);
+    const [detailDialogOpen, setDetailDialogOpen] = useState(false);
     const [selectedAdmission, setSelectedAdmission] =
+        useState<StudentAdmission | null>(null);
+    const [selectedDetailAdmission, setSelectedDetailAdmission] =
         useState<StudentAdmission | null>(null);
 
     const canView = canAccess(auth, 'penerimaan_santri.view');
@@ -106,6 +110,11 @@ export default function Index() {
     const createAdmission = () => {
         setSelectedAdmission(null);
         setMutationDialogOpen(true);
+    };
+
+    const viewAdmission = (admission: StudentAdmission) => {
+        setSelectedDetailAdmission(admission);
+        setDetailDialogOpen(true);
     };
 
     const editAdmission = (admission: StudentAdmission) => {
@@ -182,6 +191,7 @@ export default function Index() {
                                     targetUnitNameById={targetUnitNameById}
                                     canManage={canManage}
                                     canDecide={canDecide}
+                                    onView={viewAdmission}
                                     onEdit={editAdmission}
                                 />
                                 <AdmissionPagination
@@ -212,6 +222,12 @@ export default function Index() {
                         onOpenChange={setMutationDialogOpen}
                     />
                 ) : null}
+                <AdmissionDetailDialog
+                    open={detailDialogOpen}
+                    admission={selectedDetailAdmission}
+                    targetUnitNameById={targetUnitNameById}
+                    onOpenChange={setDetailDialogOpen}
+                />
             </SystemDashboardLayout>
         </>
     );

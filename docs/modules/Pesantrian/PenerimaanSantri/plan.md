@@ -152,10 +152,11 @@ Catatan hasil:
   - `npm run lint:check`;
   - `npm run build`.
 
-## Batas Berhenti
+## Checkpoint UI
 
-Pekerjaan berhenti setelah Increment 8 selesai, terverifikasi, dan dilaporkan.
-Increment berikutnya dimulai hanya setelah user menginstruksikan lanjut.
+Increment UI setelah Increment 8 dimulai hanya setelah user menginstruksikan
+lanjut. Setiap increment wajib tetap kecil, terverifikasi, dan dilaporkan
+sebelum melanjutkan ke increment berikutnya.
 
 ## Catatan Hasil Increment 8
 
@@ -211,6 +212,57 @@ Increment berikutnya dimulai hanya setelah user menginstruksikan lanjut.
   - `npm run types:check`;
   - `npm run lint:check`;
   - `npm run build`.
+
+## Increment 11: Detail pendaftaran PPDB
+
+- Perubahan:
+  - tombol `Lihat detail` pada daftar pendaftaran;
+  - dialog detail pendaftaran;
+  - tampilan ringkasan status, data calon santri, data wali, administrasi
+    biaya, checklist dokumen, dan riwayat keputusan.
+- Dependency: Increment 8 read page dan data list yang sudah memuat field
+  detail minimum.
+- Acceptance:
+  - actor dengan `penerimaan_santri.view` dapat membuka detail dari daftar;
+  - detail tidak membutuhkan endpoint baru pada baseline awal;
+  - detail berada di folder `components`, bukan ditumpuk di `Index.tsx`;
+  - field kosong tampil dengan bahasa operator yang jelas.
+- Verifikasi:
+  - focused presentation/source guard test;
+  - `npm run types:check`;
+  - `npm run lint:check`;
+  - `npm run build`.
+
+## Increment 12: QA UI PPDB
+
+- Perubahan:
+  - review flow UI PPDB end-to-end;
+  - cek tambah/edit/detail/lifecycle/filter/pagination;
+  - catat gap yang perlu diputuskan sebelum module PPDB dianggap baseline
+    usable.
+- Dependency: Increment 9-11.
+- Acceptance:
+  - tidak ada console/runtime error yang diketahui pada flow utama;
+  - route Ziggy yang dipakai frontend tersedia;
+  - command artisan, focused tests, typecheck, lint, dan build lulus.
+- Verifikasi:
+  - focused feature tests PenerimaanSantri;
+  - `php artisan module:validate --no-ansi`;
+  - `php artisan optimize:clear --no-ansi`;
+  - `php artisan starter:verify --no-ansi`;
+  - `npm run types:check`;
+  - `npm run lint:check`;
+  - `npm run build`;
+  - manual/browser QA bila environment frontend aktif.
+
+Catatan hasil:
+
+- Automated gate PPDB lulus melalui focused feature tests, PHPStan, Pint,
+  Vitest, typecheck, lint, build, module validation, `optimize:clear`, dan
+  `starter:verify`.
+- Smoke browser login desktop/mobile lulus.
+- Authenticated browser QA khusus PPDB belum dibuat karena membutuhkan
+  credential/fixture E2E PPDB yang aman.
 
 ## Keputusan Awal
 

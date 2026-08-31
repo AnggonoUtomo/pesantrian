@@ -177,4 +177,40 @@
     setelah sukses.
   - Verification: `npm run build`.
 
+## Increment 11: Detail pendaftaran PPDB
+
+- [x] Tambahkan tombol lihat detail dari daftar.
+  - Acceptance: actor dengan `penerimaan_santri.view` dapat membuka detail
+    pendaftaran dari table desktop dan kartu mobile.
+  - Verification: focused presentation/source guard test.
+- [x] Tambahkan dialog detail pendaftaran.
+  - Acceptance: detail menampilkan data calon santri, wali, administrasi biaya,
+    checklist dokumen, lifecycle, dan riwayat keputusan.
+  - Verification: `npm run types:check` dan `npm run lint:check`.
+- [x] Jaga `Index.tsx` tetap minimal.
+  - Acceptance: detail UI berada di folder `components`.
+  - Verification: focused source guard test dan `npm run build`.
+
+## Increment 12: QA UI PPDB
+
+- [x] QA flow daftar dan filter.
+  - Acceptance: filter search/status/unit/status biaya dan pagination tetap
+    berjalan setelah mutation/lifecycle/detail.
+  - Verification: focused presentation test dan manual/browser QA bila
+    environment aktif.
+- [x] QA flow mutation dan lifecycle.
+  - Acceptance: tambah/edit/detail/verifikasi/terima/tolak/batal tidak memicu
+    route Ziggy hilang atau error runtime yang diketahui.
+  - Verification: focused API/Ziggy tests, `npm run types:check`,
+    `npm run lint:check`, dan `npm run build`.
+- [x] QA foundation command.
+  - Acceptance: artisan command utama tetap normal.
+  - Verification: `php artisan module:validate --no-ansi`,
+    `php artisan optimize:clear --no-ansi`, dan
+    `php artisan starter:verify --no-ansi`.
+- [ ] Tambahkan authenticated browser QA khusus PPDB.
+  - Acceptance: flow PPDB dijalankan di browser dengan user berizin dan fixture
+    data PPDB.
+  - Verification: Playwright spec PPDB dengan credential/fixture E2E yang aman.
+
 Jangan menambahkan pekerjaan baru ke checklist ini tanpa persetujuan user.

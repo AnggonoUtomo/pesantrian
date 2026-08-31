@@ -100,6 +100,7 @@ final class PenerimaanSantriPresentationTest extends TestCase
         $page = $this->sourceFile('js/pages/Pesantrian/PenerimaanSantri/pages/Index.tsx');
         $filter = $this->sourceFile('js/pages/Pesantrian/PenerimaanSantri/components/AdmissionFilterForm.tsx');
         $list = $this->sourceFile('js/pages/Pesantrian/PenerimaanSantri/components/AdmissionList.tsx');
+        $detailDialog = $this->sourceFile('js/pages/Pesantrian/PenerimaanSantri/components/AdmissionDetailDialog.tsx');
         $lifecycleActions = $this->sourceFile('js/pages/Pesantrian/PenerimaanSantri/components/AdmissionLifecycleActions.tsx');
         $mutationDialog = $this->sourceFile('js/pages/Pesantrian/PenerimaanSantri/components/AdmissionMutationDialog.tsx');
         $pagination = $this->sourceFile('js/pages/Pesantrian/PenerimaanSantri/components/AdmissionPagination.tsx');
@@ -110,6 +111,7 @@ final class PenerimaanSantriPresentationTest extends TestCase
         self::assertStringContainsString("canAccess(auth, 'penerimaan_santri.manage')", $page);
         self::assertStringContainsString("canAccess(auth, 'penerimaan_santri.decide')", $page);
         self::assertStringContainsString('AdmissionSummary', $page);
+        self::assertStringContainsString('AdmissionDetailDialog', $page);
         self::assertStringContainsString('AdmissionMutationDialog', $page);
         self::assertStringContainsString('AdmissionFilterForm', $page);
         self::assertStringContainsString('AdmissionList', $page);
@@ -121,7 +123,14 @@ final class PenerimaanSantriPresentationTest extends TestCase
         self::assertStringContainsString('Status biaya', $filter);
         self::assertStringContainsString('Nomor pendaftaran', $list);
         self::assertStringContainsString('Wali', $list);
+        self::assertStringContainsString('Lihat detail', $list);
         self::assertStringContainsString('Edit pendaftaran', $list);
+        self::assertStringContainsString('Detail pendaftaran', $detailDialog);
+        self::assertStringContainsString('Data calon santri', $detailDialog);
+        self::assertStringContainsString('Data wali', $detailDialog);
+        self::assertStringContainsString('Administrasi biaya', $detailDialog);
+        self::assertStringContainsString('Checklist dokumen', $detailDialog);
+        self::assertStringContainsString('Riwayat keputusan', $detailDialog);
         self::assertStringContainsString('Tambah pendaftaran', $mutationDialog);
         self::assertStringContainsString('api.v1.pesantrian.admissions.store', $mutationDialog);
         self::assertStringContainsString('api.v1.pesantrian.admissions.update', $mutationDialog);

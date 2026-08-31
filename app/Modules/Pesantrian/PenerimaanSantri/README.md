@@ -28,6 +28,9 @@ Penerimaan Santri Baru.
 - UI lifecycle pendaftaran tersedia untuk actor berizin
   `penerimaan_santri.decide` dan memakai API verify/accept/reject/cancel dengan
   idempotency key.
+- UI detail pendaftaran tersedia dari daftar PPDB untuk actor berizin view.
+- Automated QA UI PPDB sudah mencakup source guard, typecheck, lint, build,
+  focused backend tests, dan smoke browser login.
 
 ## Acuan
 

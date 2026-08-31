@@ -10,6 +10,7 @@ type Props = {
     targetUnitNameById: Map<string, string>;
     canManage: boolean;
     canDecide: boolean;
+    onView: (admission: StudentAdmission) => void;
     onEdit: (admission: StudentAdmission) => void;
 };
 
@@ -18,6 +19,7 @@ export function AdmissionList({
     targetUnitNameById,
     canManage,
     canDecide,
+    onView,
     onEdit,
 }: Props) {
     const hasActions = canManage || canDecide;
@@ -45,6 +47,9 @@ export function AdmissionList({
                             </th>
                             <th scope="col" className="px-4 py-3">
                                 Status
+                            </th>
+                            <th scope="col" className="px-4 py-3">
+                                Detail
                             </th>
                             {hasActions ? (
                                 <th scope="col" className="px-4 py-3">
@@ -105,6 +110,16 @@ export function AdmissionList({
                                     <AdmissionStatusBadge
                                         status={admission.status}
                                     />
+                                </td>
+                                <td className="px-4 py-3">
+                                    <Button
+                                        type="button"
+                                        variant="secondary"
+                                        size="sm"
+                                        onClick={() => onView(admission)}
+                                    >
+                                        Lihat detail
+                                    </Button>
                                 </td>
                                 {hasActions ? (
                                     <td className="space-y-2 px-4 py-3">
@@ -172,6 +187,14 @@ export function AdmissionList({
                                 }
                             />
                         </dl>
+                        <Button
+                            type="button"
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => onView(admission)}
+                        >
+                            Lihat detail
+                        </Button>
                         {hasActions ? (
                             <div className="space-y-2">
                                 {canManage ? (

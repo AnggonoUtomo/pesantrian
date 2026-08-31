@@ -4,8 +4,8 @@
 
 Implementasi bertahap aktif. Skeleton module, data foundation, backend
 behavior, lifecycle, audit, candidate conversion contract, dan UI/Inertia read
-page, UI create/edit, serta UI lifecycle action sudah tersedia sesuai scope
-awal.
+page, UI create/edit, UI lifecycle action, detail pendaftaran, dan automated
+QA UI tersedia sesuai scope awal.
 
 ## Tujuan dan Scope
 
@@ -216,6 +216,9 @@ UI awal dibuat setelah backend foundation valid:
 UI mutation penuh dapat dipisah menjadi increment setelah read page stabil.
 UI lifecycle action berada di komponen business-specific dan hanya menjadi UX;
 backend tetap menjadi authority permission dan rule transition.
+UI detail pendaftaran memakai data read page yang sudah tersedia pada baseline
+awal. Endpoint detail khusus ditunda sampai kebutuhan data yang tidak masuk
+list benar-benar muncul.
 
 ## Dependency
 
@@ -281,6 +284,12 @@ Keputusan Increment 7:
 - [x] UI lifecycle action tersedia untuk actor berizin
   `penerimaan_santri.decide` dan terhubung ke API verify/accept/reject/cancel
   dengan idempotency key.
+- [x] UI detail pendaftaran tersedia untuk actor berizin
+  `penerimaan_santri.view` tanpa menambah endpoint baru pada baseline awal.
+- [x] QA automated UI PPDB menutup flow tambah/edit/detail/lifecycle/filter
+  dan pagination pada source/test gate.
+- [ ] Authenticated browser QA khusus PPDB tersedia setelah credential/fixture
+  E2E PPDB disiapkan.
 - [x] `php artisan module:validate --no-ansi` lulus.
 - [x] Focused tests PenerimaanSantri lulus.
 

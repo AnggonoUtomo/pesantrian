@@ -10,7 +10,7 @@ Source module mengikuti [`docs/ARCHITECTURE.md`](../../../ARCHITECTURE.md) dan
 - Nama tampil: `PPDB / Penerimaan Santri Baru`
 - Candidate source: `app/Modules/Pesantrian/PenerimaanSantri/`
 - Candidate frontend: `resources/js/pages/Pesantrian/PenerimaanSantri/`
-- Status: `Active - UI lifecycle actions`
+- Status: `Active - QA UI PPDB`
 
 ## Tujuan
 
@@ -207,3 +207,12 @@ git diff --check
   - tombol batalkan untuk status `draft/submitted/verified`
   - dialog konfirmasi sebelum status lifecycle diproses
   - route API lifecycle tersedia di whitelist Ziggy
+- Increment 11 detail pendaftaran selesai:
+  - dialog detail pendaftaran dari daftar PPDB
+  - ringkasan status, data calon santri, wali snapshot, administrasi biaya,
+    checklist dokumen, dan riwayat keputusan
+- Increment 12 QA UI PPDB selesai untuk automated gate:
+  - focused feature tests, PHPStan, Pint, Vitest, typecheck, lint, build,
+    module validation, `optimize:clear`, dan `starter:verify` lulus
+  - smoke browser login desktop/mobile lulus
+  - authenticated browser QA khusus PPDB menunggu credential/fixture E2E PPDB

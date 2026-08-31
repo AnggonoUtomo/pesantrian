@@ -4,7 +4,8 @@
 
 Implementasi bertahap aktif. Skeleton module, data foundation, backend
 behavior, lifecycle, audit, candidate conversion contract, dan UI/Inertia read
-page serta UI create/edit sudah tersedia sesuai scope awal.
+page, UI create/edit, serta UI lifecycle action sudah tersedia sesuai scope
+awal.
 
 ## Tujuan dan Scope
 
@@ -213,6 +214,8 @@ UI awal dibuat setelah backend foundation valid:
   dan authorization UX.
 
 UI mutation penuh dapat dipisah menjadi increment setelah read page stabil.
+UI lifecycle action berada di komponen business-specific dan hanya menjadi UX;
+backend tetap menjadi authority permission dan rule transition.
 
 ## Dependency
 
@@ -275,6 +278,9 @@ Keputusan Increment 7:
   permission PenerimaanSantri.
 - [x] UI create/edit tersedia untuk actor berizin `penerimaan_santri.manage`
   dan terhubung ke API create/update dengan idempotency key.
+- [x] UI lifecycle action tersedia untuk actor berizin
+  `penerimaan_santri.decide` dan terhubung ke API verify/accept/reject/cancel
+  dengan idempotency key.
 - [x] `php artisan module:validate --no-ansi` lulus.
 - [x] Focused tests PenerimaanSantri lulus.
 

@@ -161,4 +161,20 @@
     dan me-refresh prop daftar pendaftaran.
   - Verification: `npm run build`.
 
+## Increment 10: UI lifecycle action
+
+- [x] Tambahkan aksi lifecycle pada daftar pendaftaran.
+  - Acceptance: actor dengan `penerimaan_santri.decide` melihat aksi sesuai
+    status pendaftaran.
+  - Verification: focused presentation/source guard test.
+- [x] Hubungkan aksi ke API lifecycle.
+  - Acceptance: verify/accept/reject/cancel memakai named route Ziggy dan
+    `Idempotency-Key`.
+  - Verification: focused Ziggy route test, `npm run types:check`, dan
+    `npm run lint:check`.
+- [x] Tambahkan dialog konfirmasi sebelum transition.
+  - Acceptance: aksi yang mengubah status perlu konfirmasi dan refresh daftar
+    setelah sukses.
+  - Verification: `npm run build`.
+
 Jangan menambahkan pekerjaan baru ke checklist ini tanpa persetujuan user.

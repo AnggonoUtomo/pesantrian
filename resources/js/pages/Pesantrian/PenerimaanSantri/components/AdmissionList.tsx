@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import type { AdmissionTargetUnitOption, StudentAdmission } from '../types';
 import { genderLabels, targetUnitLabel } from './admissionDisplay';
+import { AdmissionLifecycleActions } from './AdmissionLifecycleActions';
 import { AdmissionStatusBadge } from './AdmissionStatusBadge';
 import { RegistrationFeeStatusBadge } from './RegistrationFeeStatusBadge';
 
@@ -8,6 +9,7 @@ type Props = {
     admissions: StudentAdmission[];
     targetUnitNameById: Map<string, string>;
     canManage: boolean;
+    canDecide: boolean;
     onEdit: (admission: StudentAdmission) => void;
 };
 
@@ -15,8 +17,11 @@ export function AdmissionList({
     admissions,
     targetUnitNameById,
     canManage,
+    canDecide,
     onEdit,
 }: Props) {
+    const hasActions = canManage || canDecide;
+
     return (
         <div className="overflow-hidden rounded-xl border">
             <div className="hidden overflow-x-auto md:block">
@@ -41,7 +46,7 @@ export function AdmissionList({
                             <th scope="col" className="px-4 py-3">
                                 Status
                             </th>
-                            {canManage ? (
+                            {hasActions ? (
                                 <th scope="col" className="px-4 py-3">
                                     Aksi
                                 </th>
@@ -101,17 +106,26 @@ export function AdmissionList({
                                         status={admission.status}
                                     />
                                 </td>
-                                {canManage ? (
-                                    <td className="px-4 py-3">
-                                        <Button
-                                            type="button"
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => onEdit(admission)}
-                                            disabled={!canEdit(admission)}
-                                        >
-                                            Edit pendaftaran
-                                        </Button>
+                                {hasActions ? (
+                                    <td className="space-y-2 px-4 py-3">
+                                        {canManage ? (
+                                            <Button
+                                                type="button"
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() =>
+                                                    onEdit(admission)
+                                                }
+                                                disabled={!canEdit(admission)}
+                                            >
+                                                Edit pendaftaran
+                                            </Button>
+                                        ) : null}
+                                        {canDecide ? (
+                                            <AdmissionLifecycleActions
+                                                admission={admission}
+                                            />
+                                        ) : null}
                                     </td>
                                 ) : null}
                             </tr>
@@ -158,16 +172,25 @@ export function AdmissionList({
                                 }
                             />
                         </dl>
-                        {canManage ? (
-                            <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={() => onEdit(admission)}
-                                disabled={!canEdit(admission)}
-                            >
-                                Edit pendaftaran
-                            </Button>
+                        {hasActions ? (
+                            <div className="space-y-2">
+                                {canManage ? (
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => onEdit(admission)}
+                                        disabled={!canEdit(admission)}
+                                    >
+                                        Edit pendaftaran
+                                    </Button>
+                                ) : null}
+                                {canDecide ? (
+                                    <AdmissionLifecycleActions
+                                        admission={admission}
+                                    />
+                                ) : null}
+                            </div>
                         ) : null}
                     </article>
                 ))}

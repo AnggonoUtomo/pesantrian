@@ -25,6 +25,9 @@ Penerimaan Santri Baru.
 - UI create/edit pendaftaran internal tersedia untuk actor berizin
   `penerimaan_santri.manage` dan memakai API create/update dengan idempotency
   key.
+- UI lifecycle pendaftaran tersedia untuk actor berizin
+  `penerimaan_santri.decide` dan memakai API verify/accept/reject/cancel dengan
+  idempotency key.
 
 ## Acuan
 

@@ -10,7 +10,7 @@ Source module mengikuti [`docs/ARCHITECTURE.md`](../../../ARCHITECTURE.md) dan
 - Nama tampil: `PPDB / Penerimaan Santri Baru`
 - Candidate source: `app/Modules/Pesantrian/PenerimaanSantri/`
 - Candidate frontend: `resources/js/pages/Pesantrian/PenerimaanSantri/`
-- Status: `Active - UI create/edit`
+- Status: `Active - UI lifecycle actions`
 
 ## Tujuan
 
@@ -201,4 +201,9 @@ git diff --check
   - submit ke API create/update dengan idempotency key
   - route API store/update tersedia di whitelist Ziggy
   - field error backend ditampilkan di form
-  - lifecycle action UI belum dibuat
+- Increment 10 UI lifecycle action selesai:
+  - tombol verifikasi untuk status `submitted`
+  - tombol terima/tolak untuk status `verified`
+  - tombol batalkan untuk status `draft/submitted/verified`
+  - dialog konfirmasi sebelum status lifecycle diproses
+  - route API lifecycle tersedia di whitelist Ziggy

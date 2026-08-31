@@ -1,6 +1,7 @@
 import { Head, router, usePage } from '@inertiajs/react';
 import { useMemo, useState } from 'react';
 import type { FormEvent } from 'react';
+import { Button } from '@/components/ui/button';
 import SystemDashboardLayout from '@/layouts/system-dashboard-layout';
 import { canAccess } from '@/lib/authorization';
 import { routeOr } from '@/lib/route';
@@ -41,6 +42,7 @@ export default function Index() {
 
     const canView = canAccess(auth, 'penerimaan_santri.view');
     const canManage = canAccess(auth, 'penerimaan_santri.manage');
+    const canDecide = canAccess(auth, 'penerimaan_santri.decide');
     const targetUnitNameById = useMemo(
         () => targetUnitNameMap(targetUnitOptions),
         [targetUnitOptions],
@@ -131,13 +133,12 @@ export default function Index() {
                 <div className="space-y-5">
                     {canManage ? (
                         <div className="flex justify-end">
-                            <button
+                            <Button
                                 type="button"
-                                className="inline-flex h-9 items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-xs transition-colors hover:bg-primary/90 focus-visible:ring-ring/50 focus-visible:ring-[3px] focus-visible:outline-none"
                                 onClick={createAdmission}
                             >
                                 Tambah pendaftaran
-                            </button>
+                            </Button>
                         </div>
                     ) : null}
 
@@ -180,6 +181,7 @@ export default function Index() {
                                     admissions={admissions.data}
                                     targetUnitNameById={targetUnitNameById}
                                     canManage={canManage}
+                                    canDecide={canDecide}
                                     onEdit={editAdmission}
                                 />
                                 <AdmissionPagination

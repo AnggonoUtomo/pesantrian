@@ -190,6 +190,28 @@ Increment berikutnya dimulai hanya setelah user menginstruksikan lanjut.
   - `npm run lint:check`;
   - `npm run build`.
 
+## Increment 10: UI lifecycle action
+
+- Perubahan:
+  - tombol lifecycle pada daftar pendaftaran;
+  - dialog konfirmasi untuk verify/accept/reject/cancel;
+  - submit JSON ke API lifecycle dengan `Idempotency-Key`;
+  - route API lifecycle ditambahkan ke whitelist Ziggy.
+- Dependency: Increment 5 lifecycle backend dan Increment 8-9 UI page.
+- Acceptance:
+  - actor dengan `penerimaan_santri.decide` melihat aksi lifecycle sesuai
+    status pendaftaran;
+  - status `submitted` dapat diarahkan ke verifikasi;
+  - status `verified` dapat diarahkan ke terima/tolak/batal;
+  - status terminal tidak menampilkan aksi lifecycle;
+  - `Index.tsx` tetap menjadi komposer dan aksi berada di folder
+    `components`.
+- Verifikasi:
+  - focused presentation/Ziggy/API lifecycle tests;
+  - `npm run types:check`;
+  - `npm run lint:check`;
+  - `npm run build`.
+
 ## Keputusan Awal
 
 - PPDB awal adalah flow internal/admin.

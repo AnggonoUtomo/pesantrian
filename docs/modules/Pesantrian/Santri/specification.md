@@ -2,9 +2,9 @@
 
 ## Status
 
-Active - create/update manual. Schema, model Infrastructure, factory minimum,
-API list/detail, serta create/update manual sudah tersedia; conversion PPDB,
-lifecycle, dan UI dikerjakan pada increment berikutnya.
+Active - PPDB conversion. Schema, model Infrastructure, factory minimum, API
+list/detail, create/update manual, serta konversi PPDB accepted melalui public
+contract sudah tersedia; lifecycle dan UI dikerjakan pada increment berikutnya.
 
 ## Objective
 
@@ -190,14 +190,14 @@ resources/js/pages/Pesantrian/Santri/
 - [ ] Module skeleton `Pesantrian/Santri` valid menurut module registry.
 - [x] Nomor induk santri auto-generated dan unique.
 - [x] Santri dapat dibuat manual oleh admin berwenang.
-- [ ] Santri dapat dibuat dari PPDB accepted melalui public contract PPDB.
-- [ ] Admission yang sudah dikonversi tidak dapat dikonversi ulang.
+- [x] Santri dapat dibuat dari PPDB accepted melalui public contract PPDB.
+- [x] Admission yang sudah dikonversi tidak dapat dikonversi ulang.
 - [x] Snapshot wali minimum tersimpan.
 - [x] List/search/filter santri tersedia.
 - [x] Detail santri tersedia.
 - [ ] Lifecycle active/inactive/transferred/graduated tersedia dan diaudit.
 - [ ] Archive/restore aman dan diaudit.
-- [ ] Consumer tidak mengimpor Infrastructure Santri atau PPDB.
+- [x] Consumer tidak mengimpor Infrastructure Santri atau PPDB.
 - [ ] Focused tests, typecheck, lint, dan build lulus.
 
 ## Keputusan Baseline

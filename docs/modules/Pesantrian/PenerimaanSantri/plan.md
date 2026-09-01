@@ -111,7 +111,8 @@ coding lagi.
 
 - Perubahan:
   - dokumentasikan candidate contract pendaftaran accepted yang siap dikonversi;
-  - implementasi source hanya bila `Pesantrian/Santri` menjadi consumer nyata.
+  - implementasi source dilakukan saat `Pesantrian/Santri` menjadi consumer
+    nyata.
 - Dependency: Increment 5-6.
 - Acceptance:
   - contract tidak mengekspos model Infrastructure;
@@ -125,11 +126,10 @@ Catatan hasil:
 
 - Contract accepted admission didokumentasikan pada
   `docs/modules/Pesantrian/PenerimaanSantri/contracts/accepted-admission.md`.
-- Runtime contract belum dibuat karena `app/Modules/Pesantrian/Santri` belum
-  tersedia, sehingga belum ada consumer nyata.
-- Saat `Pesantrian/Santri` dibuat, implementasi harus memakai public
-  `AcceptedAdmissionReader` dan DTO ringkas, bukan membaca
-  `StudentAdmissionRecord` secara langsung.
+- Runtime contract sudah dibuat karena `app/Modules/Pesantrian/Santri` tersedia
+  sebagai consumer nyata.
+- Implementasi memakai public `AcceptedAdmissionReader` dan DTO ringkas, bukan
+  membaca `StudentAdmissionRecord` secara langsung dari consumer.
 
 ## Increment 8: UI/Inertia read page
 

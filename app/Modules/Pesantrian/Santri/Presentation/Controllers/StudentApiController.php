@@ -6,6 +6,7 @@ namespace App\Modules\Pesantrian\Santri\Presentation\Controllers;
 
 use App\Http\ApiResponseFactory;
 use App\Modules\Pesantrian\Santri\Application\Actions\CreateStudent;
+use App\Modules\Pesantrian\Santri\Application\Actions\CreateStudentFromAcceptedAdmission;
 use App\Modules\Pesantrian\Santri\Application\Actions\UpdateStudent;
 use App\Modules\Pesantrian\Santri\Application\DTO\PaginatedStudentData;
 use App\Modules\Pesantrian\Santri\Application\DTO\StudentData;
@@ -26,6 +27,7 @@ final readonly class StudentApiController implements HasMiddleware
         private ListStudents $listStudents,
         private ShowStudent $showStudent,
         private CreateStudent $createStudent,
+        private CreateStudentFromAcceptedAdmission $createStudentFromAcceptedAdmission,
         private UpdateStudent $updateStudent,
         private ApiResponseFactory $responses,
     ) {}
@@ -34,7 +36,7 @@ final readonly class StudentApiController implements HasMiddleware
     {
         return [
             new Middleware('can:santri.view', only: ['index', 'show']),
-            new Middleware('can:santri.manage', only: ['store', 'update']),
+            new Middleware('can:santri.manage', only: ['store', 'storeFromAdmission', 'update']),
         ];
     }
 
@@ -77,6 +79,22 @@ final readonly class StudentApiController implements HasMiddleware
         return $this->responses->success(
             $request,
             'Data santri berhasil dibuat.',
+            (new StudentResource($student))->toArray($request),
+            status: 201,
+        );
+    }
+
+    public function storeFromAdmission(Request $request, string $admission): JsonResponse
+    {
+        $student = $this->createStudentFromAcceptedAdmission->execute(
+            $request->user(),
+            $admission,
+            $this->responses->correlationId($request),
+        );
+
+        return $this->responses->success(
+            $request,
+            'Pendaftaran diterima berhasil dikonversi menjadi santri.',
             (new StudentResource($student))->toArray($request),
             status: 201,
         );

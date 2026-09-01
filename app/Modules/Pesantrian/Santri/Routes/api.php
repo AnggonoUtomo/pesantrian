@@ -13,6 +13,10 @@ Route::middleware(['web', 'auth', 'verified', 'throttle:system-api'])
         Route::post('/', [StudentApiController::class, 'store'])
             ->middleware('api.idempotency')
             ->name('store');
+        Route::post('/from-admission/{admission}', [StudentApiController::class, 'storeFromAdmission'])
+            ->whereUlid('admission')
+            ->middleware('api.idempotency')
+            ->name('from-admission');
         Route::get('/{student}', [StudentApiController::class, 'show'])
             ->whereUlid('student')
             ->name('show');

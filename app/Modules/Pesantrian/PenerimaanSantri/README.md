@@ -15,8 +15,8 @@ Penerimaan Santri Baru.
 - API read/list dan create/update minimum tersedia untuk flow internal/admin.
 - API lifecycle decision tersedia untuk verify, accept, reject, dan cancel.
 - Audit mutation aman tersedia untuk create/update dan lifecycle decision.
-- Candidate conversion contract ke Santri terdokumentasi; runtime contract
-  ditunda sampai `Pesantrian/Santri` tersedia sebagai consumer nyata.
+- Contract konversi accepted admission ke Santri sudah tersedia melalui
+  `AcceptedAdmissionReader` untuk consumer nyata `Pesantrian/Santri`.
 - UI/Inertia read page tersedia di route `pesantrian.admissions.index` dengan
   frontend canonical `resources/js/pages/Pesantrian/PenerimaanSantri/`.
 - Menu sidebar namespace `Pesantrian` tersedia untuk actor berizin

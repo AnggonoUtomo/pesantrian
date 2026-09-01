@@ -237,17 +237,17 @@ list benar-benar muncul.
 Tidak ada dependency ke Asrama, Academic, Tahfidz, Kedisiplinan, Kesehatan,
 atau Keuangan pada slice awal.
 
-## Candidate Conversion Contract
+## Conversion Contract ke Santri
 
-Contract accepted admission untuk calon consumer `Pesantrian/Santri`
-didokumentasikan pada
+Contract accepted admission untuk consumer `Pesantrian/Santri` didokumentasikan
+pada
 [`contracts/accepted-admission.md`](contracts/accepted-admission.md).
 
 Keputusan Increment 7:
 
-- contract runtime belum dibuat karena module `Pesantrian/Santri` belum tersedia
-  sebagai consumer nyata;
-- consumer nanti wajib memakai public contract/DTO, bukan model Infrastructure
+- contract runtime sudah tersedia karena module `Pesantrian/Santri` menjadi
+  consumer nyata;
+- consumer wajib memakai public contract/DTO, bukan model Infrastructure
   `StudentAdmissionRecord`;
 - contract hanya mengembalikan pendaftaran berstatus `accepted` yang eligible
   untuk konversi;
@@ -273,8 +273,8 @@ Keputusan Increment 7:
   tanpa upload file.
 - [x] Status transition minimum berjalan dan invalid transition ditolak.
 - [x] Mutation mencatat audit/event aman.
-- [x] Candidate conversion contract ke Santri terdokumentasi tanpa direct access
-  ke model Infrastructure.
+- [x] Conversion contract ke Santri tersedia tanpa direct access ke model
+  Infrastructure oleh consumer.
 - [x] UI/Inertia read page tersedia di frontend canonical dengan `Index.tsx`
   minimal dan komponen business-specific di folder `components`.
 - [x] Menu sidebar namespace `Pesantrian` tersedia untuk PPDB berdasarkan

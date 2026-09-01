@@ -2,11 +2,12 @@
 
 ## Status
 
-Documented, belum diimplementasikan di source runtime.
+Implemented untuk consumer `Pesantrian/Santri`.
 
-Contract ini menjadi pegangan saat module `Pesantrian/Santri` dibuat dan mulai
-membutuhkan data pendaftaran yang sudah diterima. Sampai consumer tersebut
-tersedia, `Pesantrian/PenerimaanSantri` tidak mengekspor adapter runtime baru.
+Contract ini menjadi pegangan runtime saat module `Pesantrian/Santri`
+membutuhkan data pendaftaran yang sudah diterima. Karena consumer nyata sudah
+tersedia, `Pesantrian/PenerimaanSantri` mengekspor reader melalui public
+Application contract dan binding Infrastructure internal.
 
 ## Tujuan
 
@@ -19,7 +20,7 @@ santri aktif, bukan untuk UI daftar PPDB atau laporan umum.
 
 ## Candidate Interface
 
-Nama teknis yang disarankan saat consumer nyata tersedia:
+Nama teknis runtime:
 
 ```php
 namespace App\Modules\Pesantrian\PenerimaanSantri\Application\Contracts;
@@ -42,7 +43,7 @@ Catatan:
 
 ## Candidate DTO
 
-Nama teknis yang disarankan:
+Nama teknis runtime:
 
 ```php
 namespace App\Modules\Pesantrian\PenerimaanSantri\Application\DTO;
@@ -102,7 +103,7 @@ yang dibutuhkan untuk membuat data induk awal.
 
 ## Failure Semantics
 
-Runtime contract nanti harus memakai semantik berikut:
+Runtime contract memakai semantik berikut:
 
 - `null`: pendaftaran tidak ditemukan atau belum eligible untuk konversi.
 - Exception validasi hanya dipakai bila input contract invalid secara teknis,
@@ -153,8 +154,7 @@ Consumer wajib:
 
 ## Verifikasi Saat Implementasi Nanti
 
-Ketika consumer `Pesantrian/Santri` sudah tersedia dan runtime contract
-diimplementasikan, minimal test yang wajib ada:
+Verifikasi runtime yang tersedia:
 
 - accepted admission dapat dibaca melalui `AcceptedAdmissionReader`;
 - submitted/verified/rejected/cancelled tidak dikembalikan;

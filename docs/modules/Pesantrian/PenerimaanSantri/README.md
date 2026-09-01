@@ -70,11 +70,10 @@ Candidate public boundary:
 Consumer lintas module tidak boleh membaca model Infrastructure
 `CalonSantriRecord` secara langsung.
 
-Contract accepted admission untuk calon consumer `Pesantrian/Santri`
-didokumentasikan di
-[`contracts/accepted-admission.md`](contracts/accepted-admission.md). Runtime
-contract belum dibuat karena module `Pesantrian/Santri` belum tersedia sebagai
-consumer nyata.
+Contract accepted admission untuk consumer `Pesantrian/Santri` didokumentasikan
+di [`contracts/accepted-admission.md`](contracts/accepted-admission.md). Runtime
+contract sudah tersedia melalui `AcceptedAdmissionReader` karena module Santri
+sudah menjadi consumer nyata.
 
 ## Data dan Identifier
 
@@ -182,11 +181,10 @@ git diff --check
   - verify/accept/reject/cancel mencatat audit event aman
   - metadata audit tidak menyimpan nomor telepon wali, notes bebas, atau detail
     checklist dokumen
-- Increment 7 candidate conversion contract selesai sebagai dokumentasi:
-  - accepted admission reader dan DTO candidate terdokumentasi
+- Increment 7 conversion contract ke Santri tersedia:
+  - accepted admission reader dan DTO runtime terdokumentasi
   - ownership, failure semantics, dan rule eligibility awal terdokumentasi
-  - runtime implementation ditunda sampai `Pesantrian/Santri` tersedia sebagai
-    consumer nyata
+  - runtime implementation dipakai oleh Increment 6 module Santri
 - Increment 8 UI/Inertia read page selesai:
   - web route Inertia `pesantrian.admissions.index`
   - page canonical

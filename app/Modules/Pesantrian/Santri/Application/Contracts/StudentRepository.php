@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Pesantrian\Santri\Application\Contracts;
 
+use App\Modules\Pesantrian\PenerimaanSantri\Application\DTO\AcceptedAdmissionData;
 use App\Modules\Pesantrian\Santri\Application\DTO\PaginatedStudentData;
 use App\Modules\Pesantrian\Santri\Application\DTO\StudentData;
 use App\Modules\Pesantrian\Santri\Application\DTO\StudentListFilter;
@@ -16,6 +17,10 @@ interface StudentRepository
     public function find(string $id): ?StudentData;
 
     public function create(UpsertStudentData $data): StudentData;
+
+    public function createFromAcceptedAdmission(AcceptedAdmissionData $data): StudentData;
+
+    public function existsForAdmission(string $admissionId): bool;
 
     /**
      * @param  array<string, mixed>  $studentChanges

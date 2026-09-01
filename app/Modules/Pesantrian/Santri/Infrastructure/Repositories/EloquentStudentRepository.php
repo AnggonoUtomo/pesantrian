@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Pesantrian\Santri\Infrastructure\Repositories;
 
+use App\Modules\Pesantrian\PenerimaanSantri\Application\DTO\AcceptedAdmissionData;
 use App\Modules\Pesantrian\Santri\Application\Contracts\StudentRepository;
 use App\Modules\Pesantrian\Santri\Application\DTO\PaginatedStudentData;
 use App\Modules\Pesantrian\Santri\Application\DTO\StudentData;
@@ -72,6 +73,43 @@ final class EloquentStudentRepository implements StudentRepository
         return $this->map($student->refresh()->load([
             'guardians' => fn ($query) => $query->orderByDesc('is_primary')->orderBy('created_at'),
         ]));
+    }
+
+    public function createFromAcceptedAdmission(AcceptedAdmissionData $data): StudentData
+    {
+        /** @var StudentRecord $student */
+        $student = StudentRecord::query()->create([
+            'student_no' => $this->nextStudentNo(),
+            'admission_id' => $data->admissionId,
+            'registration_no' => $data->registrationNo,
+            'full_name' => $data->candidateName,
+            'gender' => $data->candidateGender,
+            'birth_place' => $data->candidateBirthPlace,
+            'birth_date' => $data->candidateBirthDate,
+            'previous_school' => $data->previousSchool,
+            'primary_unit_id' => $data->targetUnitId,
+            'entry_date' => now()->toDateString(),
+            'status' => 'active',
+        ]);
+
+        $student->guardians()->create([
+            'guardian_name' => $data->guardianName,
+            'guardian_phone' => $data->guardianPhone,
+            'guardian_relation' => $data->guardianRelation,
+            'is_primary' => true,
+            'is_emergency_contact' => false,
+        ]);
+
+        return $this->map($student->refresh()->load([
+            'guardians' => fn ($query) => $query->orderByDesc('is_primary')->orderBy('created_at'),
+        ]));
+    }
+
+    public function existsForAdmission(string $admissionId): bool
+    {
+        return StudentRecord::query()
+            ->where('admission_id', $admissionId)
+            ->exists();
     }
 
     public function update(string $id, array $studentChanges, array $guardianChanges): ?StudentData

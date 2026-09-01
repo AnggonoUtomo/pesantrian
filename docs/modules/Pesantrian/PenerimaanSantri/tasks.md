@@ -117,13 +117,13 @@
   - Acceptance: contract menjelaskan input/output/failure tanpa mengekspos model
     Infrastructure.
   - Verification: `git diff --check`.
-- [x] Implementasikan contract hanya jika consumer `Pesantrian/Santri`
-  disetujui.
+- [x] Implementasikan contract karena consumer `Pesantrian/Santri` sudah
+  tersedia.
   - Acceptance: consumer memakai DTO/query public boundary, bukan Eloquent model
     PenerimaanSantri.
   - Verification: focused contract/query tests.
-  - Catatan: runtime contract belum diimplementasikan karena
-    `Pesantrian/Santri` belum tersedia sebagai consumer nyata.
+  - Catatan: runtime contract sudah diimplementasikan melalui
+    `AcceptedAdmissionReader` untuk Increment 6 Santri.
 
 ## Increment 8: UI/Inertia read page
 

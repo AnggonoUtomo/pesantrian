@@ -92,14 +92,26 @@ Hasil verifikasi:
 
 ## Increment 6: Konversi PPDB Accepted
 
-- [ ] Implementasikan atau gunakan `AcceptedAdmissionReader`.
-- [ ] Buat use case create from accepted admission.
-- [ ] Tambahkan idempotency check admission ke Santri.
-- [ ] Simpan trace `admission_id` dan `registration_no`.
-- [ ] Copy snapshot wali minimum.
-- [ ] Tambahkan audit `santri.created_from_admission`.
-- [ ] Tambahkan tests untuk accepted/non-accepted/duplicate conversion.
-- [ ] Pastikan Santri tidak mengimpor Infrastructure PenerimaanSantri.
+- [x] Implementasikan atau gunakan `AcceptedAdmissionReader`.
+- [x] Buat use case create from accepted admission.
+- [x] Tambahkan idempotency check admission ke Santri.
+- [x] Simpan trace `admission_id` dan `registration_no`.
+- [x] Copy snapshot wali minimum.
+- [x] Tambahkan audit `santri.student.created_from_admission`.
+- [x] Tambahkan tests untuk accepted/non-accepted/duplicate conversion.
+- [x] Pastikan Santri tidak mengimpor Infrastructure PenerimaanSantri.
+
+Hasil verifikasi:
+
+- [x] `php artisan test tests\Feature\SantriAdmissionConversionTest.php --no-ansi`
+- [x] `php artisan test tests\Feature\SantriAdmissionConversionTest.php tests\Feature\SantriApiTest.php tests\Feature\SantriAuditTest.php --no-ansi`
+- [x] `php artisan test --filter=PenerimaanSantri --no-ansi`
+- [x] `vendor\bin\pint --dirty --test`
+- [x] `php artisan module:validate --no-ansi`
+- [x] `php artisan optimize:clear --no-ansi`
+- [x] `php artisan route:list --path=api/v1/pesantrian/students --no-ansi`
+- [x] `php artisan test --filter=Santri --no-ansi`
+- [x] `git diff --check`
 
 ## Increment 7: Lifecycle dan Archive
 

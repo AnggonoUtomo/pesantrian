@@ -10,5 +10,6 @@ Status implementasi:
 - Permission identity baseline tersedia.
 - Data foundation tersedia.
 - API read/list dan detail tersedia untuk backend/admin internal.
-- UI, create/update, conversion PPDB, lifecycle, dan archive dikerjakan pada
-  increment berikutnya.
+- API create/update manual tersedia untuk backend/admin internal.
+- UI, conversion PPDB, lifecycle, dan archive dikerjakan pada increment
+  berikutnya.

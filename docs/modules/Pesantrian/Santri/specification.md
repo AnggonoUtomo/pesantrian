@@ -2,9 +2,9 @@
 
 ## Status
 
-Active - backend read/list. Schema, model Infrastructure, factory minimum, API
-list, dan API detail sudah tersedia; create/update, conversion PPDB, lifecycle,
-dan UI dikerjakan pada increment berikutnya.
+Active - create/update manual. Schema, model Infrastructure, factory minimum,
+API list/detail, serta create/update manual sudah tersedia; conversion PPDB,
+lifecycle, dan UI dikerjakan pada increment berikutnya.
 
 ## Objective
 
@@ -188,11 +188,11 @@ resources/js/pages/Pesantrian/Santri/
 ## Acceptance Criteria
 
 - [ ] Module skeleton `Pesantrian/Santri` valid menurut module registry.
-- [ ] Nomor induk santri auto-generated dan unique.
-- [ ] Santri dapat dibuat manual oleh admin berwenang.
+- [x] Nomor induk santri auto-generated dan unique.
+- [x] Santri dapat dibuat manual oleh admin berwenang.
 - [ ] Santri dapat dibuat dari PPDB accepted melalui public contract PPDB.
 - [ ] Admission yang sudah dikonversi tidak dapat dikonversi ulang.
-- [ ] Snapshot wali minimum tersimpan.
+- [x] Snapshot wali minimum tersimpan.
 - [x] List/search/filter santri tersedia.
 - [x] Detail santri tersedia.
 - [ ] Lifecycle active/inactive/transferred/graduated tersedia dan diaudit.

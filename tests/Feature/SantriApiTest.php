@@ -146,6 +146,125 @@ final class SantriApiTest extends TestCase
             ->assertJsonPath('data.guardians.0.is_emergency_contact', false);
     }
 
+    public function test_membuat_dan_memperbarui_santri_manual_melalui_api_terotorisasi(): void
+    {
+        $manage = Permission::create(['name' => 'santri.manage', 'guard_name' => 'web']);
+        $actor = User::factory()->create();
+        $actor->givePermissionTo($manage);
+        $unitId = $this->createOrganizationUnit('MA-S', 'Madrasah Aliyah');
+
+        $created = $this->actingAs($actor)->postJson(route('api.v1.pesantrian.students.store'), [
+            'full_name' => 'Aisyah Humaira',
+            'preferred_name' => 'Aisyah',
+            'gender' => 'female',
+            'birth_place' => 'Garut',
+            'birth_date' => '2013-04-12',
+            'previous_school' => 'SD Negeri 2',
+            'primary_unit_id' => $unitId,
+            'entry_date' => '2026-07-15',
+            'guardian_name' => 'Siti Aminah',
+            'guardian_phone' => '081298765432',
+            'guardian_relation' => 'ibu',
+            'is_emergency_contact' => true,
+        ], ['Idempotency-Key' => (string) Str::ulid()])
+            ->assertCreated()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('message', 'Data santri berhasil dibuat.')
+            ->assertJsonPath('data.student_no', 'NIS-0001')
+            ->assertJsonPath('data.full_name', 'Aisyah Humaira')
+            ->assertJsonPath('data.primary_guardian.guardian_name', 'Siti Aminah')
+            ->assertJsonPath('data.primary_guardian.is_primary', true)
+            ->assertJsonPath('data.primary_guardian.is_emergency_contact', true);
+
+        $studentId = (string) $created->json('data.id');
+
+        $this->actingAs($actor)->postJson(route('api.v1.pesantrian.students.store'), [
+            'full_name' => 'Hasan Basri',
+            'guardian_name' => 'Abdullah',
+        ], ['Idempotency-Key' => (string) Str::ulid()])
+            ->assertCreated()
+            ->assertJsonPath('data.student_no', 'NIS-0002');
+
+        $this->actingAs($actor)->patchJson(route('api.v1.pesantrian.students.update', $studentId), [
+            'full_name' => 'Aisyah Saka',
+            'preferred_name' => null,
+            'guardian_name' => 'Siti Aminah Baru',
+            'guardian_phone' => '089999999999',
+            'guardian_relation' => 'wali',
+            'is_emergency_contact' => false,
+        ], ['Idempotency-Key' => (string) Str::ulid()])
+            ->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('message', 'Data santri berhasil diperbarui.')
+            ->assertJsonPath('data.student_no', 'NIS-0001')
+            ->assertJsonPath('data.full_name', 'Aisyah Saka')
+            ->assertJsonPath('data.preferred_name', null)
+            ->assertJsonPath('data.primary_guardian.guardian_name', 'Siti Aminah Baru')
+            ->assertJsonPath('data.primary_guardian.guardian_phone', '089999999999')
+            ->assertJsonPath('data.primary_guardian.guardian_relation', 'wali')
+            ->assertJsonPath('data.primary_guardian.is_emergency_contact', false);
+
+        self::assertTrue(DB::table('students')
+            ->where('id', $studentId)
+            ->where('student_no', 'NIS-0001')
+            ->where('full_name', 'Aisyah Saka')
+            ->where('primary_unit_id', $unitId)
+            ->exists());
+
+        self::assertTrue(DB::table('student_guardians')
+            ->where('student_id', $studentId)
+            ->where('guardian_name', 'Siti Aminah Baru')
+            ->where('guardian_phone', '089999999999')
+            ->where('is_primary', true)
+            ->exists());
+    }
+
+    public function test_menolak_create_update_santri_tanpa_permission_payload_invalid_dan_resource_tidak_ditemukan(): void
+    {
+        $actor = User::factory()->create();
+
+        $this->actingAs($actor)
+            ->postJson(route('api.v1.pesantrian.students.store'), [
+                'full_name' => 'Aisyah',
+                'guardian_name' => 'Siti',
+            ], ['Idempotency-Key' => (string) Str::ulid()])
+            ->assertForbidden();
+
+        $manage = Permission::create(['name' => 'santri.manage', 'guard_name' => 'web']);
+        $manager = User::factory()->create();
+        $manager->givePermissionTo($manage);
+
+        $this->actingAs($manager)->postJson(route('api.v1.pesantrian.students.store'), [
+            'student_no' => 'MANUAL-001',
+            'full_name' => 'A',
+            'gender' => 'unknown',
+            'primary_unit_id' => (string) Str::ulid(),
+            'guardian_name' => '',
+            'guardian_relation' => 'saudara',
+            'status' => 'graduated',
+        ], ['Idempotency-Key' => (string) Str::ulid()])
+            ->assertUnprocessable()
+            ->assertJsonPath('success', false)
+            ->assertJsonPath('code', 'VALIDATION_ERROR')
+            ->assertJsonStructure([
+                'errors' => [
+                    'student_no',
+                    'full_name',
+                    'gender',
+                    'primary_unit_id',
+                    'guardian_name',
+                    'guardian_relation',
+                    'status',
+                ],
+            ]);
+
+        $this->actingAs($manager)->patchJson(
+            route('api.v1.pesantrian.students.update', (string) Str::ulid()),
+            ['full_name' => 'Missing'],
+            ['Idempotency-Key' => (string) Str::ulid()],
+        )->assertNotFound()->assertJsonPath('code', 'RESOURCE_NOT_FOUND');
+    }
+
     public function test_menolak_actor_tanpa_permission_santri_view(): void
     {
         $actor = User::factory()->create();

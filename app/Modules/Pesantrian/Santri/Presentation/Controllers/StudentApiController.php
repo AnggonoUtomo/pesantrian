@@ -5,11 +5,15 @@ declare(strict_types=1);
 namespace App\Modules\Pesantrian\Santri\Presentation\Controllers;
 
 use App\Http\ApiResponseFactory;
+use App\Modules\Pesantrian\Santri\Application\Actions\CreateStudent;
+use App\Modules\Pesantrian\Santri\Application\Actions\UpdateStudent;
 use App\Modules\Pesantrian\Santri\Application\DTO\PaginatedStudentData;
 use App\Modules\Pesantrian\Santri\Application\DTO\StudentData;
 use App\Modules\Pesantrian\Santri\Application\Queries\ListStudents;
 use App\Modules\Pesantrian\Santri\Application\Queries\ShowStudent;
 use App\Modules\Pesantrian\Santri\Presentation\Requests\ListStudentsApiRequest;
+use App\Modules\Pesantrian\Santri\Presentation\Requests\StoreStudentApiRequest;
+use App\Modules\Pesantrian\Santri\Presentation\Requests\UpdateStudentApiRequest;
 use App\Modules\Pesantrian\Santri\Presentation\Resources\StudentResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -21,6 +25,8 @@ final readonly class StudentApiController implements HasMiddleware
     public function __construct(
         private ListStudents $listStudents,
         private ShowStudent $showStudent,
+        private CreateStudent $createStudent,
+        private UpdateStudent $updateStudent,
         private ApiResponseFactory $responses,
     ) {}
 
@@ -28,6 +34,7 @@ final readonly class StudentApiController implements HasMiddleware
     {
         return [
             new Middleware('can:santri.view', only: ['index', 'show']),
+            new Middleware('can:santri.manage', only: ['store', 'update']),
         ];
     }
 
@@ -56,6 +63,41 @@ final readonly class StudentApiController implements HasMiddleware
             $request,
             'Detail santri berhasil dibaca.',
             (new StudentResource($data))->toArray($request),
+        );
+    }
+
+    public function store(StoreStudentApiRequest $request): JsonResponse
+    {
+        $student = $this->createStudent->execute(
+            $request->user(),
+            $request->toData(),
+            $this->responses->correlationId($request),
+        );
+
+        return $this->responses->success(
+            $request,
+            'Data santri berhasil dibuat.',
+            (new StudentResource($student))->toArray($request),
+            status: 201,
+        );
+    }
+
+    public function update(UpdateStudentApiRequest $request, string $student): JsonResponse
+    {
+        $updated = $this->updateStudent->execute(
+            $request->user(),
+            $student,
+            $request->studentChanges(),
+            $request->guardianChanges(),
+            $this->responses->correlationId($request),
+        );
+
+        abort_if($updated === null, 404);
+
+        return $this->responses->success(
+            $request,
+            'Data santri berhasil diperbarui.',
+            (new StudentResource($updated))->toArray($request),
         );
     }
 

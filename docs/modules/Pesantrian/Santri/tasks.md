@@ -70,14 +70,25 @@ Hasil verifikasi:
 
 ## Increment 5: Create/Update Manual
 
-- [ ] Buat request validation create/update.
-- [ ] Buat use case create manual.
-- [ ] Buat use case update data induk.
-- [ ] Buat use case update wali snapshot.
-- [ ] Implementasi auto-generate `student_no`.
-- [ ] Tambahkan permission enforcement.
-- [ ] Tambahkan audit create/update.
-- [ ] Tambahkan focused tests.
+- [x] Buat request validation create/update.
+- [x] Buat use case create manual.
+- [x] Buat use case update data induk.
+- [x] Buat use case update wali snapshot.
+- [x] Implementasi auto-generate `student_no`.
+- [x] Tambahkan permission enforcement.
+- [x] Tambahkan audit create/update.
+- [x] Tambahkan focused tests.
+
+Hasil verifikasi:
+
+- [x] `php artisan test tests\Feature\SantriApiTest.php tests\Feature\SantriAuditTest.php --no-ansi`
+- [x] `vendor\bin\pint --dirty --test`
+- [x] `php artisan module:validate --no-ansi`
+- [x] `php artisan test --filter=Santri --no-ansi`
+- [x] `php artisan test tests\Feature\SantriAuditTest.php tests\Feature\PenerimaanSantriAuditTest.php tests\Unit\AuditLogContractTest.php --no-ansi`
+- [x] `php artisan optimize:clear --no-ansi`
+- [x] `php artisan route:list --path=api/v1/pesantrian/students --no-ansi`
+- [x] `git diff --check`
 
 ## Increment 6: Konversi PPDB Accepted
 

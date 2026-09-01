@@ -18,6 +18,7 @@ final readonly class RecordSystemActivity
         'HumanResource' => 'human-resource.activity.occurred',
         'Organization' => 'organization.activity.occurred',
         'PenerimaanSantri' => 'penerimaan-santri.activity.occurred',
+        'Santri' => 'santri.activity.occurred',
         'UserManagement' => 'user-management.activity.occurred',
     ];
 

@@ -17,3 +17,5 @@ Status implementasi:
   internal.
 - UI Inertia list/detail tersedia untuk admin internal dengan permission
   `santri.view`.
+- UI Inertia create/update dan konversi PPDB accepted tersedia untuk admin
+  internal dengan permission `santri.manage`.

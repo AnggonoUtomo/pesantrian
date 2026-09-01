@@ -5,8 +5,11 @@ import SystemDashboardLayout from '@/layouts/system-dashboard-layout';
 import { canAccess } from '@/lib/authorization';
 import { routeOr } from '@/lib/route';
 import { SantriAccessDenied } from '../components/SantriAccessDenied';
+import { SantriActionBar } from '../components/SantriActionBar';
+import { SantriAdmissionConversionDialog } from '../components/SantriAdmissionConversionDialog';
 import { SantriEmptyState } from '../components/SantriEmptyState';
 import { SantriFilters } from '../components/SantriFilters';
+import { SantriMutationDialog } from '../components/SantriMutationDialog';
 import { SantriPagination } from '../components/SantriPagination';
 import { SantriSummaryCards } from '../components/SantriSummaryCards';
 import { SantriTable } from '../components/SantriTable';
@@ -22,7 +25,10 @@ export default function Index() {
     const [primaryUnitId, setPrimaryUnitId] = useState<string>(
         filters.filter?.primary_unit_id ?? 'all',
     );
+    const [mutationDialogOpen, setMutationDialogOpen] = useState(false);
+    const [conversionDialogOpen, setConversionDialogOpen] = useState(false);
     const canView = canAccess(auth, 'santri.view');
+    const canManage = canAccess(auth, 'santri.manage');
     const studentIndexUrl = () =>
         routeOr('/pesantrian/students', 'pesantrian.students.index');
 
@@ -92,6 +98,12 @@ export default function Index() {
                         students={students.data}
                     />
 
+                    <SantriActionBar
+                        canManage={canManage}
+                        onCreate={() => setMutationDialogOpen(true)}
+                        onConvert={() => setConversionDialogOpen(true)}
+                    />
+
                     {errors && Object.keys(errors).length > 0 ? (
                         <p
                             role="alert"
@@ -142,6 +154,17 @@ export default function Index() {
                     </section>
                 </div>
             </SystemDashboardLayout>
+
+            <SantriMutationDialog
+                open={mutationDialogOpen}
+                student={null}
+                primaryUnitOptions={primaryUnitOptions}
+                onOpenChange={setMutationDialogOpen}
+            />
+            <SantriAdmissionConversionDialog
+                open={conversionDialogOpen}
+                onOpenChange={setConversionDialogOpen}
+            />
         </>
     );
 }

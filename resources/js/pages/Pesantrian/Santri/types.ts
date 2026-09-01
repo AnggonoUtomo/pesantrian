@@ -95,3 +95,18 @@ export type StudentShowPageProps = {
     student: Student;
     primaryUnitOptions: PrimaryUnitOption[];
 };
+
+export type StudentMutationPayload = {
+    full_name: string;
+    preferred_name: string | null;
+    gender: StudentGender | null;
+    birth_place: string | null;
+    birth_date: string | null;
+    previous_school: string | null;
+    primary_unit_id: string | null;
+    entry_date: string | null;
+    guardian_name: string;
+    guardian_phone: string | null;
+    guardian_relation: 'ayah' | 'ibu' | 'wali' | null;
+    is_emergency_contact: boolean;
+};

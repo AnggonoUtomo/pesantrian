@@ -157,12 +157,23 @@ Hasil verifikasi:
 
 ## Increment 9: UI Create/Update dan Konversi
 
-- [ ] Buat form data induk.
-- [ ] Buat form wali snapshot.
-- [ ] Buat aksi create/update.
-- [ ] Buat aksi convert accepted admission.
-- [ ] Tambahkan feedback sukses/gagal.
-- [ ] Pastikan page tetap tipis dan komponen terpisah.
+- [x] Buat form data induk.
+- [x] Buat form wali snapshot.
+- [x] Buat aksi create/update.
+- [x] Buat aksi convert accepted admission.
+- [x] Tambahkan feedback sukses/gagal.
+- [x] Pastikan page tetap tipis dan komponen terpisah.
+
+Hasil verifikasi:
+
+- [x] `php artisan test tests\Feature\SantriPresentationTest.php --no-ansi`
+- [x] `php artisan test --filter=Santri --no-ansi`
+- [x] `vendor\bin\pint --dirty --test`
+- [x] `npm run types:check`
+- [x] `npm run lint:check`
+- [x] `npm run build`
+- [x] `php artisan module:validate --no-ansi`
+- [x] `php artisan route:list --path=pesantrian/students --no-ansi`
 
 ## Increment 10: UI Lifecycle, Archive, dan QA Browser
 

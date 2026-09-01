@@ -8,6 +8,7 @@ import type { StudentShowPageProps } from '../types';
 export default function Show() {
     const { auth, student, primaryUnitOptions } =
         usePage<StudentShowPageProps>().props;
+    const canManage = canAccess(auth, 'santri.manage');
 
     if (!canAccess(auth, 'santri.view')) {
         return <SantriAccessDenied />;
@@ -24,6 +25,7 @@ export default function Show() {
                 <SantriDetailPanel
                     student={student}
                     primaryUnitOptions={primaryUnitOptions}
+                    canManage={canManage}
                 />
             </SystemDashboardLayout>
         </>

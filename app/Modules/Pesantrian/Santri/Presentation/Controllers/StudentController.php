@@ -4,14 +4,23 @@ declare(strict_types=1);
 
 namespace App\Modules\Pesantrian\Santri\Presentation\Controllers;
 
+use App\Http\ApiResponseFactory;
+use App\Modules\Pesantrian\Santri\Application\Actions\CreateStudent;
+use App\Modules\Pesantrian\Santri\Application\Actions\CreateStudentFromAcceptedAdmission;
+use App\Modules\Pesantrian\Santri\Application\Actions\UpdateStudent;
 use App\Modules\Pesantrian\Santri\Application\DTO\PaginatedStudentData;
 use App\Modules\Pesantrian\Santri\Application\DTO\StudentData;
 use App\Modules\Pesantrian\Santri\Application\Queries\ListStudents;
 use App\Modules\Pesantrian\Santri\Application\Queries\ShowStudent;
 use App\Modules\Pesantrian\Santri\Presentation\Requests\ListStudentsApiRequest;
+use App\Modules\Pesantrian\Santri\Presentation\Requests\StoreStudentApiRequest;
+use App\Modules\Pesantrian\Santri\Presentation\Requests\UpdateStudentApiRequest;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -20,12 +29,17 @@ final readonly class StudentController implements HasMiddleware
     public function __construct(
         private ListStudents $listStudents,
         private ShowStudent $showStudent,
+        private CreateStudent $createStudent,
+        private CreateStudentFromAcceptedAdmission $createStudentFromAcceptedAdmission,
+        private UpdateStudent $updateStudent,
+        private ApiResponseFactory $responses,
     ) {}
 
     public static function middleware(): array
     {
         return [
             new Middleware('can:santri.view', only: ['index', 'show']),
+            new Middleware('can:santri.manage', only: ['store', 'storeFromAdmission', 'update']),
         ];
     }
 
@@ -60,6 +74,53 @@ final readonly class StudentController implements HasMiddleware
             'student' => $data->toArray(),
             'primaryUnitOptions' => $this->primaryUnitOptions(),
         ]);
+    }
+
+    public function store(StoreStudentApiRequest $request): RedirectResponse
+    {
+        $student = $this->createStudent->execute(
+            $request->user(),
+            $request->toData(),
+            $this->responses->correlationId($request),
+        );
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Data santri berhasil dibuat.']);
+
+        return redirect()->route('pesantrian.students.show', $student->id);
+    }
+
+    public function storeFromAdmission(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'admission_id' => ['required', 'ulid', Rule::exists('student_admissions', 'id')],
+        ]);
+
+        $student = $this->createStudentFromAcceptedAdmission->execute(
+            $request->user(),
+            (string) $validated['admission_id'],
+            $this->responses->correlationId($request),
+        );
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Pendaftaran diterima berhasil dikonversi menjadi santri.']);
+
+        return redirect()->route('pesantrian.students.show', $student->id);
+    }
+
+    public function update(UpdateStudentApiRequest $request, string $student): RedirectResponse
+    {
+        $updated = $this->updateStudent->execute(
+            $request->user(),
+            $student,
+            $request->studentChanges(),
+            $request->guardianChanges(),
+            $this->responses->correlationId($request),
+        );
+
+        abort_if($updated === null, 404);
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Data santri berhasil diperbarui.']);
+
+        return redirect()->route('pesantrian.students.show', $updated->id);
     }
 
     /** @return array{currentPage: int, perPage: int, total: int, lastPage: int} */

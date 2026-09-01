@@ -1,5 +1,6 @@
 import { Link } from '@inertiajs/react';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, PencilLine } from 'lucide-react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { routeOr } from '@/lib/route';
 import type { PrimaryUnitOption, Student } from '../types';
@@ -8,24 +9,48 @@ import {
     primaryUnitLabel,
     primaryUnitNameMap,
 } from './santriDisplay';
+import { SantriMutationDialog } from './SantriMutationDialog';
 import { SantriStatusBadge } from './SantriStatusBadge';
 
 type Props = {
     student: Student;
     primaryUnitOptions: PrimaryUnitOption[];
+    canManage: boolean;
 };
 
-export function SantriDetailPanel({ student, primaryUnitOptions }: Props) {
+export function SantriDetailPanel({
+    student,
+    primaryUnitOptions,
+    canManage,
+}: Props) {
     const primaryUnitNameById = primaryUnitNameMap(primaryUnitOptions);
+    const [mutationDialogOpen, setMutationDialogOpen] = useState(false);
 
     return (
         <div className="space-y-5">
-            <Button asChild variant="outline" size="sm">
-                <Link href={routeOr('/pesantrian/students', 'pesantrian.students.index')}>
-                    <ArrowLeft className="size-4" aria-hidden="true" />
-                    Kembali ke daftar
-                </Link>
-            </Button>
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <Button asChild variant="outline" size="sm">
+                    <Link
+                        href={routeOr(
+                            '/pesantrian/students',
+                            'pesantrian.students.index',
+                        )}
+                    >
+                        <ArrowLeft className="size-4" aria-hidden="true" />
+                        Kembali ke daftar
+                    </Link>
+                </Button>
+                {canManage ? (
+                    <Button
+                        type="button"
+                        size="sm"
+                        onClick={() => setMutationDialogOpen(true)}
+                    >
+                        <PencilLine className="size-4" aria-hidden="true" />
+                        Edit data santri
+                    </Button>
+                ) : null}
+            </div>
 
             <section className="dashboard-card dashboard-card--blue rounded-2xl border p-4 sm:p-5">
                 <div className="flex flex-col gap-3 border-b pb-4 sm:flex-row sm:items-start sm:justify-between">
@@ -129,6 +154,12 @@ export function SantriDetailPanel({ student, primaryUnitOptions }: Props) {
                     </DetailSection>
                 </div>
             </section>
+            <SantriMutationDialog
+                open={mutationDialogOpen}
+                student={student}
+                primaryUnitOptions={primaryUnitOptions}
+                onOpenChange={setMutationDialogOpen}
+            />
         </div>
     );
 }

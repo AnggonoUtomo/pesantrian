@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Models\User;
+use App\Modules\Pesantrian\PenerimaanSantri\Infrastructure\Models\StudentAdmissionRecord;
 use App\Modules\Pesantrian\Santri\Infrastructure\Models\StudentGuardianRecord;
 use App\Modules\Pesantrian\Santri\Infrastructure\Models\StudentRecord;
 use App\Modules\System\AccessControl\Infrastructure\Persistence\Models\Permission;
@@ -94,6 +95,128 @@ final class SantriPresentationTest extends TestCase
                 ->where('pagination.defaultPerPage', 25));
     }
 
+    public function test_membuat_memperbarui_dan_mengonversi_santri_melalui_web_inertia(): void
+    {
+        $view = Permission::create(['name' => 'santri.view', 'guard_name' => 'web']);
+        $manage = Permission::create(['name' => 'santri.manage', 'guard_name' => 'web']);
+        $actor = $this->createUser();
+        $actor->givePermissionTo([$view, $manage]);
+        $unitId = $this->createOrganizationUnit('MA-UI', 'Madrasah Aliyah');
+
+        $create = $this->actingAs($actor)->post(route('pesantrian.students.store'), [
+            'full_name' => 'Nadia UI Manual',
+            'preferred_name' => 'Nadia',
+            'gender' => 'female',
+            'birth_place' => 'Bandung',
+            'birth_date' => '2013-05-10',
+            'previous_school' => 'SD Negeri 1',
+            'primary_unit_id' => $unitId,
+            'entry_date' => '2026-07-15',
+            'guardian_name' => 'Siti UI Manual',
+            'guardian_phone' => '081234567890',
+            'guardian_relation' => 'ibu',
+            'is_emergency_contact' => '1',
+        ]);
+
+        $student = StudentRecord::query()->where('student_no', 'NIS-0001')->firstOrFail();
+
+        $create
+            ->assertRedirect(route('pesantrian.students.show', $student->id))
+            ->assertSessionHasNoErrors();
+
+        self::assertSame('Nadia UI Manual', $student->full_name);
+        self::assertSame($unitId, $student->primary_unit_id);
+        self::assertTrue(DB::table('student_guardians')
+            ->where('student_id', $student->id)
+            ->where('guardian_name', 'Siti UI Manual')
+            ->where('is_emergency_contact', true)
+            ->exists());
+
+        $this->actingAs($actor)->patch(route('pesantrian.students.update', $student->id), [
+            'full_name' => 'Nadia UI Updated',
+            'preferred_name' => null,
+            'gender' => 'female',
+            'birth_place' => 'Garut',
+            'birth_date' => '2013-05-11',
+            'previous_school' => 'SD Negeri 2',
+            'primary_unit_id' => $unitId,
+            'entry_date' => '2026-07-16',
+            'guardian_name' => 'Siti UI Updated',
+            'guardian_phone' => '089999999999',
+            'guardian_relation' => 'wali',
+            'is_emergency_contact' => '0',
+        ])
+            ->assertRedirect(route('pesantrian.students.show', $student->id))
+            ->assertSessionHasNoErrors();
+
+        self::assertTrue(DB::table('students')
+            ->where('id', $student->id)
+            ->where('full_name', 'Nadia UI Updated')
+            ->where('birth_place', 'Garut')
+            ->exists());
+        self::assertTrue(DB::table('student_guardians')
+            ->where('student_id', $student->id)
+            ->where('guardian_name', 'Siti UI Updated')
+            ->where('guardian_relation', 'wali')
+            ->where('is_emergency_contact', false)
+            ->exists());
+
+        $admission = StudentAdmissionRecord::query()->create([
+            'registration_no' => 'SNTR-UI-9001',
+            'candidate_name' => 'Hasan Konversi UI',
+            'candidate_gender' => 'male',
+            'target_unit_id' => $unitId,
+            'guardian_name' => 'Abdullah Konversi',
+            'guardian_relation' => 'ayah',
+            'registration_fee_required' => false,
+            'registration_fee_status' => 'not_required',
+            'status' => 'accepted',
+            'decided_at' => now(),
+            'decided_by' => $actor->id,
+        ]);
+
+        $convert = $this->actingAs($actor)->post(route('pesantrian.students.from-admission'), [
+            'admission_id' => $admission->id,
+        ]);
+
+        $convertedStudent = StudentRecord::query()
+            ->where('admission_id', $admission->id)
+            ->firstOrFail();
+
+        $convert
+            ->assertRedirect(route('pesantrian.students.show', $convertedStudent->id))
+            ->assertSessionHasNoErrors();
+
+        self::assertSame('NIS-0002', $convertedStudent->student_no);
+        self::assertSame('SNTR-UI-9001', $convertedStudent->registration_no);
+        self::assertSame('Hasan Konversi UI', $convertedStudent->full_name);
+    }
+
+    public function test_menolak_mutasi_web_santri_tanpa_permission_manage(): void
+    {
+        $view = Permission::create(['name' => 'santri.view', 'guard_name' => 'web']);
+        $actor = $this->createUser();
+        $actor->givePermissionTo($view);
+
+        $student = StudentRecord::factory()->create([
+            'student_no' => 'NIS-NO-MANAGE',
+            'full_name' => 'Tidak Boleh Edit',
+        ]);
+
+        $this->actingAs($actor)->post(route('pesantrian.students.store'), [
+            'full_name' => 'Santri Baru',
+            'guardian_name' => 'Wali Baru',
+        ])->assertForbidden();
+
+        $this->actingAs($actor)->patch(route('pesantrian.students.update', $student->id), [
+            'full_name' => 'Tetap Tidak Boleh',
+        ])->assertForbidden();
+
+        $this->actingAs($actor)->post(route('pesantrian.students.from-admission'), [
+            'admission_id' => (string) Str::ulid(),
+        ])->assertForbidden();
+    }
+
     public function test_menampilkan_halaman_inertia_detail_santri(): void
     {
         $view = Permission::create(['name' => 'santri.view', 'guard_name' => 'web']);
@@ -139,10 +262,15 @@ final class SantriPresentationTest extends TestCase
         $pagination = $this->sourceFile('js/pages/Pesantrian/Santri/components/SantriPagination.tsx');
         $empty = $this->sourceFile('js/pages/Pesantrian/Santri/components/SantriEmptyState.tsx');
         $detail = $this->sourceFile('js/pages/Pesantrian/Santri/components/SantriDetailPanel.tsx');
+        $mutation = $this->sourceFile('js/pages/Pesantrian/Santri/components/SantriMutationDialog.tsx');
+        $conversion = $this->sourceFile('js/pages/Pesantrian/Santri/components/SantriAdmissionConversionDialog.tsx');
         $navigation = $this->sourceFile('js/lib/navigation.ts');
 
         self::assertStringContainsString("canAccess(auth, 'santri.view')", $page);
         self::assertStringContainsString('SantriSummaryCards', $page);
+        self::assertStringContainsString('SantriActionBar', $page);
+        self::assertStringContainsString('SantriMutationDialog', $page);
+        self::assertStringContainsString('SantriAdmissionConversionDialog', $page);
         self::assertStringContainsString('SantriFilters', $page);
         self::assertStringContainsString('SantriTable', $page);
         self::assertStringContainsString('SantriPagination', $page);
@@ -159,6 +287,14 @@ final class SantriPresentationTest extends TestCase
         self::assertStringContainsString('Data induk santri', $detail);
         self::assertStringContainsString('Wali snapshot', $detail);
         self::assertStringContainsString('Riwayat lifecycle', $detail);
+        self::assertStringContainsString('Edit data santri', $detail);
+        self::assertStringContainsString('SantriMutationDialog', $detail);
+        self::assertStringContainsString('Tambah santri manual', $mutation);
+        self::assertStringContainsString('Wali snapshot', $mutation);
+        self::assertStringContainsString('pesantrian.students.store', $mutation);
+        self::assertStringContainsString('pesantrian.students.update', $mutation);
+        self::assertStringContainsString('Konversi dari PPDB', $conversion);
+        self::assertStringContainsString('pesantrian.students.from-admission', $conversion);
         self::assertStringContainsString('SantriDetailPanel', $show);
         self::assertStringContainsString('Data Induk Santri', $navigation);
         self::assertStringContainsString('pesantrian.students.index', $navigation);

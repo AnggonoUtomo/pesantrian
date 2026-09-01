@@ -7,7 +7,7 @@
 - Nama tampil: `Data Induk Santri dan Wali`
 - Candidate source: `app/Modules/Pesantrian/Santri/`
 - Candidate frontend: `resources/js/pages/Pesantrian/Santri/`
-- Status: Active - skeleton module
+- Status: Active - data foundation
 
 ## Tujuan
 

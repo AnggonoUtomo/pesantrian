@@ -2,7 +2,8 @@
 
 ## Status
 
-Active - dokumentasi module. Source runtime belum dibuat.
+Active - data foundation. Schema, model Infrastructure, dan factory minimum
+sudah tersedia; use case, API, dan UI dikerjakan pada increment berikutnya.
 
 ## Objective
 

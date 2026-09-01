@@ -30,11 +30,25 @@ Hasil verifikasi:
 
 ## Increment 3: Data Foundation
 
-- [ ] Buat migration `students`.
-- [ ] Buat migration `student_guardians`.
-- [ ] Buat Eloquent record Infrastructure.
-- [ ] Buat factory/test fixture minimum.
-- [ ] Tambahkan test schema dan constraint penting.
+- [x] Buat migration `students`.
+- [x] Buat migration `student_guardians`.
+- [x] Buat Eloquent record Infrastructure.
+- [x] Buat factory/test fixture minimum.
+- [x] Tambahkan test schema dan constraint penting.
+
+Hasil verifikasi:
+
+- [x] `php artisan test tests\Feature\SantriSchemaTest.php --no-ansi`
+- [x] `vendor\bin\pint --dirty --test`
+- [x] `php artisan module:validate --no-ansi`
+- [x] `php artisan test --filter=Santri --no-ansi`
+- [x] `php artisan optimize:clear --no-ansi`
+- [x] `php artisan module:inspect Pesantrian/Santri --json --no-ansi`
+- [x] `git diff --check`
+
+Catatan: `php artisan migrate:fresh --seed` tidak dijalankan pada database
+lokal karena command tersebut menghapus ulang seluruh schema. Verifikasi schema
+Increment 3 memakai test database melalui `RefreshDatabase`.
 
 ## Increment 4: Backend Read/List
 

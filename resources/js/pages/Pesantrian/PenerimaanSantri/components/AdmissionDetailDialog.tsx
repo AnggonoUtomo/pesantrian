@@ -279,7 +279,7 @@ function DetailItem({
 }) {
     return (
         <div>
-            <dt className="text-xs text-foreground/55">{label}</dt>
+            <dt className="text-xs text-foreground/65">{label}</dt>
             <dd className="mt-1 font-medium text-foreground">
                 {formatValue(value)}
             </dd>

@@ -208,9 +208,30 @@
   - Verification: `php artisan module:validate --no-ansi`,
     `php artisan optimize:clear --no-ansi`, dan
     `php artisan starter:verify --no-ansi`.
-- [ ] Tambahkan authenticated browser QA khusus PPDB.
+- [x] Tambahkan authenticated browser QA khusus PPDB.
   - Acceptance: flow PPDB dijalankan di browser dengan user berizin dan fixture
     data PPDB.
   - Verification: Playwright spec PPDB dengan credential/fixture E2E yang aman.
+  - Catatan: diselesaikan pada Increment 13.
+
+## Increment 13: Authenticated browser QA PPDB
+
+- [x] Dokumentasikan strategi browser QA PPDB.
+  - Acceptance: scope, fixture, cleanup, dan verification command tercatat.
+  - Verification: `git diff --check`.
+- [x] Tambahkan fixture runtime E2E PPDB.
+  - Acceptance: user test, permission PPDB, unit tujuan, dan data sementara
+    dibuat dengan prefix unik dan dibersihkan setelah test.
+  - Verification: Playwright setup/teardown berjalan tanpa credential manual.
+- [x] Tambahkan browser spec PPDB.
+  - Acceptance: flow tambah, edit, detail, verifikasi, terima, filter, dan
+    pagination dasar berjalan tanpa console error.
+  - Verification:
+    `npm run test:e2e -- tests/Browser/penerimaan-santri.spec.ts`.
+- [x] Jalankan QA final Increment 13.
+  - Acceptance: focused tests, typecheck, lint, build, dan browser spec lulus.
+  - Verification: command QA terkait lulus.
+  - Hasil: focused PenerimaanSantri/Ziggy tests, typecheck, lint, build, dan
+    Playwright PPDB desktop/mobile lulus.
 
 Jangan menambahkan pekerjaan baru ke checklist ini tanpa persetujuan user.

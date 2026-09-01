@@ -10,7 +10,7 @@ Source module mengikuti [`docs/ARCHITECTURE.md`](../../../ARCHITECTURE.md) dan
 - Nama tampil: `PPDB / Penerimaan Santri Baru`
 - Candidate source: `app/Modules/Pesantrian/PenerimaanSantri/`
 - Candidate frontend: `resources/js/pages/Pesantrian/PenerimaanSantri/`
-- Status: `Active - QA UI PPDB`
+- Status: `Active - browser QA PPDB selesai`
 
 ## Tujuan
 
@@ -215,4 +215,13 @@ git diff --check
   - focused feature tests, PHPStan, Pint, Vitest, typecheck, lint, build,
     module validation, `optimize:clear`, dan `starter:verify` lulus
   - smoke browser login desktop/mobile lulus
-  - authenticated browser QA khusus PPDB menunggu credential/fixture E2E PPDB
+  - authenticated browser QA khusus PPDB ditutup oleh Increment 13
+- Increment 13 authenticated browser QA PPDB selesai:
+  - fixture runtime membuat user E2E, permission dashboard minimum, permission
+    PPDB, unit tujuan, dan data sementara dengan prefix/periode `E2E-PPDB`
+  - flow browser mencakup tambah, edit, detail, verifikasi, terima, filter, dan
+    pagination dasar
+  - cleanup fixture dibatasi pada prefix/periode E2E, unit E2E, dan email E2E
+    PPDB
+  - aksesibilitas detail PPDB diperbaiki dari temuan contrast label dialog
+  - Playwright PPDB desktop/mobile lulus dengan server lokal otomatis.

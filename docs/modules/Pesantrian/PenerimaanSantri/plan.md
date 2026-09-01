@@ -261,8 +261,47 @@ Catatan hasil:
   Vitest, typecheck, lint, build, module validation, `optimize:clear`, dan
   `starter:verify`.
 - Smoke browser login desktop/mobile lulus.
-- Authenticated browser QA khusus PPDB belum dibuat karena membutuhkan
-  credential/fixture E2E PPDB yang aman.
+- Authenticated browser QA khusus PPDB ditutup oleh Increment 13 dengan fixture
+  E2E runtime yang aman.
+
+## Increment 13: Authenticated browser QA PPDB
+
+- Perubahan:
+  - Playwright spec khusus PPDB;
+  - fixture runtime untuk user E2E berizin PPDB, unit tujuan, dan data
+    pendaftaran sementara;
+  - cleanup fixture dengan scope prefix `E2E-PPDB`;
+  - coverage browser untuk create, edit, detail, verify, accept, filter, dan
+    pagination dasar.
+- Dependency: Increment 9-12 dan Playwright existing.
+- Acceptance:
+  - test tidak bergantung pada credential manual `E2E_EMAIL/E2E_PASSWORD`;
+  - user E2E dibuat dengan password acak runtime dan permission minimum
+    `penerimaan_santri.view/manage/decide`;
+  - data fixture diberi prefix unik dan dibersihkan setelah test;
+  - browser flow PPDB tidak menghasilkan console error;
+  - accessibility gate high-impact lulus pada halaman utama dan dialog detail.
+- Verifikasi:
+  - `npm run test:e2e -- tests/Browser/penerimaan-santri.spec.ts`;
+  - focused feature tests PenerimaanSantri/Ziggy;
+  - `npm run types:check`;
+  - `npm run lint:check`;
+  - `npm run build`.
+
+Catatan hasil:
+
+- Playwright spec PPDB tersedia di `tests/Browser/penerimaan-santri.spec.ts`.
+- Fixture runtime tersedia di
+  `tests/Browser/support/penerimaan-santri-fixture.ts` dan membuat user E2E
+  dengan password acak runtime, permission `system.dashboard.view`, permission
+  PPDB, serta unit tujuan E2E.
+- Cleanup fixture dibatasi pada email E2E PPDB, unit E2E, dan pendaftaran dengan
+  periode/nama `E2E-PPDB`.
+- Browser QA PPDB desktop dan mobile lulus untuk create, edit, detail, verify,
+  accept, filter, pagination dasar, console error guard, dan accessibility
+  high-impact.
+- Temuan accessibility pada label detail PPDB ditutup dengan menaikkan kontras
+  label dari `text-foreground/55` menjadi `text-foreground/65`.
 
 ## Keputusan Awal
 

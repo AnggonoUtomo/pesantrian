@@ -4,8 +4,8 @@
 
 Implementasi bertahap aktif. Skeleton module, data foundation, backend
 behavior, lifecycle, audit, candidate conversion contract, dan UI/Inertia read
-page, UI create/edit, UI lifecycle action, detail pendaftaran, dan automated
-QA UI tersedia sesuai scope awal.
+page, UI create/edit, UI lifecycle action, detail pendaftaran, automated QA UI,
+dan browser QA PPDB tersedia atau sedang diselesaikan sesuai scope awal.
 
 ## Tujuan dan Scope
 
@@ -288,8 +288,10 @@ Keputusan Increment 7:
   `penerimaan_santri.view` tanpa menambah endpoint baru pada baseline awal.
 - [x] QA automated UI PPDB menutup flow tambah/edit/detail/lifecycle/filter
   dan pagination pada source/test gate.
-- [ ] Authenticated browser QA khusus PPDB tersedia setelah credential/fixture
+- [x] Authenticated browser QA khusus PPDB tersedia setelah credential/fixture
   E2E PPDB disiapkan.
+- [x] Browser QA PPDB memakai fixture runtime aman tanpa credential manual dan
+  membersihkan data prefix E2E setelah test.
 - [x] `php artisan module:validate --no-ansi` lulus.
 - [x] Focused tests PenerimaanSantri lulus.
 

@@ -52,11 +52,21 @@ Increment 3 memakai test database melalui `RefreshDatabase`.
 
 ## Increment 4: Backend Read/List
 
-- [ ] Buat DTO/read model Santri ringkas.
-- [ ] Buat use case list/search/filter.
-- [ ] Buat use case detail.
-- [ ] Buat controller/route read.
-- [ ] Tambahkan focused feature tests.
+- [x] Buat DTO/read model Santri ringkas.
+- [x] Buat use case list/search/filter.
+- [x] Buat use case detail.
+- [x] Buat controller/route read.
+- [x] Tambahkan focused feature tests.
+
+Hasil verifikasi:
+
+- [x] `php artisan test tests\Feature\SantriApiTest.php --no-ansi`
+- [x] `vendor\bin\pint --dirty --test`
+- [x] `php artisan module:validate --no-ansi`
+- [x] `php artisan test --filter=Santri --no-ansi`
+- [x] `php artisan optimize:clear --no-ansi`
+- [x] `php artisan route:list --path=api/v1/pesantrian/students --no-ansi`
+- [x] `git diff --check`
 
 ## Increment 5: Create/Update Manual
 

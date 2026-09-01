@@ -8,6 +8,7 @@ Status implementasi:
 
 - Skeleton module aktif.
 - Permission identity baseline tersedia.
-- Route web/api baseline tersedia, tetapi belum memiliki endpoint/page runtime.
-- Data foundation, use case, migration, dan UI dikerjakan pada increment
-  berikutnya.
+- Data foundation tersedia.
+- API read/list dan detail tersedia untuk backend/admin internal.
+- UI, create/update, conversion PPDB, lifecycle, dan archive dikerjakan pada
+  increment berikutnya.

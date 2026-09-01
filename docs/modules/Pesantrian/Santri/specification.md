@@ -2,8 +2,9 @@
 
 ## Status
 
-Active - data foundation. Schema, model Infrastructure, dan factory minimum
-sudah tersedia; use case, API, dan UI dikerjakan pada increment berikutnya.
+Active - backend read/list. Schema, model Infrastructure, factory minimum, API
+list, dan API detail sudah tersedia; create/update, conversion PPDB, lifecycle,
+dan UI dikerjakan pada increment berikutnya.
 
 ## Objective
 
@@ -192,8 +193,8 @@ resources/js/pages/Pesantrian/Santri/
 - [ ] Santri dapat dibuat dari PPDB accepted melalui public contract PPDB.
 - [ ] Admission yang sudah dikonversi tidak dapat dikonversi ulang.
 - [ ] Snapshot wali minimum tersimpan.
-- [ ] List/search/filter santri tersedia.
-- [ ] Detail santri tersedia.
+- [x] List/search/filter santri tersedia.
+- [x] Detail santri tersedia.
 - [ ] Lifecycle active/inactive/transferred/graduated tersedia dan diaudit.
 - [ ] Archive/restore aman dan diaudit.
 - [ ] Consumer tidak mengimpor Infrastructure Santri atau PPDB.

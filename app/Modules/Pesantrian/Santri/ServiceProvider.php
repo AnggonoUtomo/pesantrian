@@ -4,10 +4,17 @@ declare(strict_types=1);
 
 namespace App\Modules\Pesantrian\Santri;
 
+use App\Modules\Pesantrian\Santri\Application\Contracts\StudentRepository;
+use App\Modules\Pesantrian\Santri\Infrastructure\Repositories\EloquentStudentRepository;
 use Illuminate\Support\ServiceProvider as FrameworkServiceProvider;
 
 final class ServiceProvider extends FrameworkServiceProvider
 {
+    public function register(): void
+    {
+        $this->app->bind(StudentRepository::class, EloquentStudentRepository::class);
+    }
+
     public function boot(): void
     {
         $this->loadMigrationsFrom(__DIR__.'/Database/Migrations');

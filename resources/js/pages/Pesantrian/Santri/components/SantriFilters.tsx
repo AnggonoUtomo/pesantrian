@@ -10,18 +10,20 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import type { PrimaryUnitOption } from '../types';
+import type { PrimaryUnitOption, StudentArchiveFilter } from '../types';
 import { studentStatusOptions } from './santriDisplay';
 
 type Props = {
     search: string;
     status: string;
     primaryUnitId: string;
+    archived: StudentArchiveFilter;
     perPage: number;
     primaryUnitOptions: PrimaryUnitOption[];
     onSearchChange: (value: string) => void;
     onStatusChange: (value: string) => void;
     onPrimaryUnitChange: (value: string) => void;
+    onArchivedChange: (value: StudentArchiveFilter) => void;
     onSubmit: (event: FormEvent<HTMLFormElement>) => void;
     onReset: () => void;
 };
@@ -30,11 +32,13 @@ export function SantriFilters({
     search,
     status,
     primaryUnitId,
+    archived,
     perPage,
     primaryUnitOptions,
     onSearchChange,
     onStatusChange,
     onPrimaryUnitChange,
+    onArchivedChange,
     onSubmit,
     onReset,
 }: Props) {
@@ -55,7 +59,7 @@ export function SantriFilters({
             </div>
 
             <form
-                className="grid gap-3 lg:grid-cols-[1fr_180px_240px_auto]"
+                className="grid gap-3 lg:grid-cols-[1fr_180px_220px_180px_auto]"
                 onSubmit={onSubmit}
             >
                 <label className="space-y-1.5">
@@ -108,6 +112,20 @@ export function SantriFilters({
                                     {unit.name} ({unit.code})
                                 </SelectItem>
                             ))}
+                        </SelectContent>
+                    </Select>
+                </label>
+                <label className="space-y-1.5">
+                    <span className="text-xs font-medium text-foreground/70">
+                        Status arsip
+                    </span>
+                    <Select value={archived} onValueChange={onArchivedChange}>
+                        <SelectTrigger>
+                            <SelectValue placeholder="Status arsip" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="active">Aktif</SelectItem>
+                            <SelectItem value="archived">Diarsipkan</SelectItem>
                         </SelectContent>
                     </Select>
                 </label>

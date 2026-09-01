@@ -7,13 +7,20 @@ import { routeOr } from '@/lib/route';
 import { SantriAccessDenied } from '../components/SantriAccessDenied';
 import { SantriActionBar } from '../components/SantriActionBar';
 import { SantriAdmissionConversionDialog } from '../components/SantriAdmissionConversionDialog';
+import { SantriArchiveDialog } from '../components/SantriArchiveDialog';
 import { SantriEmptyState } from '../components/SantriEmptyState';
 import { SantriFilters } from '../components/SantriFilters';
+import { SantriLifecycleDialog } from '../components/SantriLifecycleDialog';
 import { SantriMutationDialog } from '../components/SantriMutationDialog';
 import { SantriPagination } from '../components/SantriPagination';
+import { SantriRestoreDialog } from '../components/SantriRestoreDialog';
 import { SantriSummaryCards } from '../components/SantriSummaryCards';
 import { SantriTable } from '../components/SantriTable';
-import type { StudentIndexPageProps } from '../types';
+import type {
+    Student,
+    StudentArchiveFilter,
+    StudentIndexPageProps,
+} from '../types';
 
 export default function Index() {
     const { auth, students, filters, pagination, primaryUnitOptions, errors } =
@@ -25,10 +32,20 @@ export default function Index() {
     const [primaryUnitId, setPrimaryUnitId] = useState<string>(
         filters.filter?.primary_unit_id ?? 'all',
     );
+    const [archived, setArchived] = useState<StudentArchiveFilter>(
+        filters.filter?.archived ?? 'active',
+    );
     const [mutationDialogOpen, setMutationDialogOpen] = useState(false);
     const [conversionDialogOpen, setConversionDialogOpen] = useState(false);
+    const [lifecycleStudent, setLifecycleStudent] = useState<Student | null>(
+        null,
+    );
+    const [archiveStudent, setArchiveStudent] = useState<Student | null>(null);
+    const [restoreStudent, setRestoreStudent] = useState<Student | null>(null);
     const canView = canAccess(auth, 'santri.view');
     const canManage = canAccess(auth, 'santri.manage');
+    const canLifecycle = canAccess(auth, 'santri.lifecycle');
+    const canArchive = canAccess(auth, 'santri.archive');
     const studentIndexUrl = () =>
         routeOr('/pesantrian/students', 'pesantrian.students.index');
 
@@ -44,6 +61,7 @@ export default function Index() {
                     status: status === 'all' ? undefined : status,
                     primary_unit_id:
                         primaryUnitId === 'all' ? undefined : primaryUnitId,
+                    archived: archived === 'active' ? undefined : archived,
                 },
                 page: nextPage === 1 ? undefined : nextPage,
                 per_page:
@@ -69,6 +87,7 @@ export default function Index() {
         setSearch('');
         setStatus('all');
         setPrimaryUnitId('all');
+        setArchived('active');
 
         router.get(
             studentIndexUrl(),
@@ -119,11 +138,13 @@ export default function Index() {
                             search={search}
                             status={status}
                             primaryUnitId={primaryUnitId}
+                            archived={archived}
                             perPage={students.meta.perPage}
                             primaryUnitOptions={primaryUnitOptions}
                             onSearchChange={setSearch}
                             onStatusChange={setStatus}
                             onPrimaryUnitChange={setPrimaryUnitId}
+                            onArchivedChange={setArchived}
                             onSubmit={submitFilters}
                             onReset={resetFilters}
                         />
@@ -133,6 +154,12 @@ export default function Index() {
                                 <SantriTable
                                     students={students.data}
                                     primaryUnitOptions={primaryUnitOptions}
+                                    archivedView={archived === 'archived'}
+                                    canLifecycle={canLifecycle}
+                                    canArchive={canArchive}
+                                    onLifecycle={setLifecycleStudent}
+                                    onArchive={setArchiveStudent}
+                                    onRestore={setRestoreStudent}
                                 />
                                 <SantriPagination
                                     meta={students.meta}
@@ -164,6 +191,21 @@ export default function Index() {
             <SantriAdmissionConversionDialog
                 open={conversionDialogOpen}
                 onOpenChange={setConversionDialogOpen}
+            />
+            <SantriLifecycleDialog
+                open={lifecycleStudent !== null}
+                student={lifecycleStudent}
+                onOpenChange={(open) => !open && setLifecycleStudent(null)}
+            />
+            <SantriArchiveDialog
+                open={archiveStudent !== null}
+                student={archiveStudent}
+                onOpenChange={(open) => !open && setArchiveStudent(null)}
+            />
+            <SantriRestoreDialog
+                open={restoreStudent !== null}
+                student={restoreStudent}
+                onOpenChange={(open) => !open && setRestoreStudent(null)}
             />
         </>
     );

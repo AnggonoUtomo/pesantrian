@@ -10,6 +10,7 @@ final readonly class StudentListFilter
         public ?string $search,
         public ?string $status,
         public ?string $primaryUnitId,
+        public string $archived,
         public int $page,
         public int $perPage,
         public string $sortField,

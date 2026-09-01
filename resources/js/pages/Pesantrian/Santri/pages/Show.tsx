@@ -9,6 +9,8 @@ export default function Show() {
     const { auth, student, primaryUnitOptions } =
         usePage<StudentShowPageProps>().props;
     const canManage = canAccess(auth, 'santri.manage');
+    const canLifecycle = canAccess(auth, 'santri.lifecycle');
+    const canArchive = canAccess(auth, 'santri.archive');
 
     if (!canAccess(auth, 'santri.view')) {
         return <SantriAccessDenied />;
@@ -26,6 +28,8 @@ export default function Show() {
                     student={student}
                     primaryUnitOptions={primaryUnitOptions}
                     canManage={canManage}
+                    canLifecycle={canLifecycle}
+                    canArchive={canArchive}
                 />
             </SystemDashboardLayout>
         </>

@@ -8,6 +8,8 @@ export type StudentStatus =
 
 export type StudentGender = 'male' | 'female';
 
+export type StudentArchiveFilter = 'active' | 'archived';
+
 export type StudentGuardian = {
     id: string;
     student_id: string;
@@ -64,6 +66,7 @@ export type StudentFilters = {
     filter?: {
         status?: StudentStatus;
         primary_unit_id?: string;
+        archived?: StudentArchiveFilter;
     };
     page?: number | string;
     per_page?: number | string;
@@ -109,4 +112,13 @@ export type StudentMutationPayload = {
     guardian_phone: string | null;
     guardian_relation: 'ayah' | 'ibu' | 'wali' | null;
     is_emergency_contact: boolean;
+};
+
+export type StudentLifecyclePayload = {
+    status: StudentStatus;
+    reason: string | null;
+};
+
+export type StudentArchivePayload = {
+    reason: string | null;
 };

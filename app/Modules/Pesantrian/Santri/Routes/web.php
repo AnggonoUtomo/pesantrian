@@ -19,4 +19,13 @@ Route::middleware(['web', 'auth', 'verified'])
         Route::patch('/{student}', [StudentController::class, 'update'])
             ->whereUlid('student')
             ->name('update');
+        Route::patch('/{student}/lifecycle', [StudentController::class, 'lifecycle'])
+            ->whereUlid('student')
+            ->name('lifecycle');
+        Route::patch('/{student}/archive', [StudentController::class, 'archive'])
+            ->whereUlid('student')
+            ->name('archive');
+        Route::patch('/{student}/restore', [StudentController::class, 'restore'])
+            ->whereUlid('student')
+            ->name('restore');
     });

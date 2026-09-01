@@ -30,7 +30,11 @@ final class EloquentStudentRepository implements StudentRepository
             })
             ->when($filter->status !== null, fn ($query) => $query->where('status', $filter->status))
             ->when($filter->primaryUnitId !== null, fn ($query) => $query->where('primary_unit_id', $filter->primaryUnitId))
-            ->whereNull('archived_at')
+            ->when(
+                $filter->archived === 'archived',
+                fn ($query) => $query->whereNotNull('archived_at'),
+                fn ($query) => $query->whereNull('archived_at'),
+            )
             ->orderBy($filter->sortField, $filter->sortDirection === 'desc' ? 'desc' : 'asc');
 
         /** @var LengthAwarePaginator<int, StudentRecord> $page */

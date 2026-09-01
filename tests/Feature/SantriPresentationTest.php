@@ -217,6 +217,89 @@ final class SantriPresentationTest extends TestCase
         ])->assertForbidden();
     }
 
+    public function test_mengelola_lifecycle_archive_dan_restore_santri_melalui_web_inertia(): void
+    {
+        $view = Permission::create(['name' => 'santri.view', 'guard_name' => 'web']);
+        $lifecycle = Permission::create(['name' => 'santri.lifecycle', 'guard_name' => 'web']);
+        $archive = Permission::create(['name' => 'santri.archive', 'guard_name' => 'web']);
+        $actor = $this->createUser();
+        $actor->givePermissionTo([$view, $lifecycle, $archive]);
+
+        $student = StudentRecord::factory()->create([
+            'student_no' => 'NIS-LIFE-001',
+            'full_name' => 'Santri Lifecycle UI',
+            'status' => 'active',
+        ]);
+
+        $this->actingAs($actor)->patch(route('pesantrian.students.lifecycle', $student->id), [
+            'status' => 'transferred',
+            'reason' => 'Pindah ke pesantren lain.',
+        ])
+            ->assertRedirect(route('pesantrian.students.show', $student->id))
+            ->assertSessionHasNoErrors();
+
+        self::assertTrue(DB::table('students')
+            ->where('id', $student->id)
+            ->where('status', 'transferred')
+            ->where('status_reason', 'Pindah ke pesantren lain.')
+            ->exists());
+
+        $this->actingAs($actor)->patch(route('pesantrian.students.archive', $student->id), [
+            'reason' => 'Data perlu disembunyikan dari daftar aktif.',
+        ])
+            ->assertRedirect(route('pesantrian.students.index'))
+            ->assertSessionHasNoErrors();
+
+        self::assertNotNull(DB::table('students')->where('id', $student->id)->value('archived_at'));
+
+        $this->actingAs($actor)
+            ->get(route('pesantrian.students.index', ['filter' => ['archived' => 'archived']]))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page): Assert => $page
+                ->where('students.data.0.student_no', 'NIS-LIFE-001')
+                ->where('students.data.0.archived_at', fn (?string $archivedAt): bool => $archivedAt !== null)
+                ->where('filters.filter.archived', 'archived'));
+
+        $this->actingAs($actor)->patch(route('pesantrian.students.restore', $student->id), [
+            'reason' => 'Data kembali aktif digunakan.',
+        ])
+            ->assertRedirect(route('pesantrian.students.show', $student->id))
+            ->assertSessionHasNoErrors();
+
+        self::assertNull(DB::table('students')->where('id', $student->id)->value('archived_at'));
+    }
+
+    public function test_menolak_lifecycle_archive_restore_tanpa_permission_spesifik(): void
+    {
+        $view = Permission::create(['name' => 'santri.view', 'guard_name' => 'web']);
+        $actor = $this->createUser();
+        $actor->givePermissionTo($view);
+
+        $activeStudent = StudentRecord::factory()->create([
+            'student_no' => 'NIS-LIFE-DENIED',
+            'full_name' => 'Santri Lifecycle Ditolak',
+        ]);
+        $archivedStudent = StudentRecord::factory()->create([
+            'student_no' => 'NIS-RESTORE-DENIED',
+            'full_name' => 'Santri Restore Ditolak',
+            'archived_at' => now(),
+            'archived_by' => $actor->id,
+        ]);
+
+        $this->actingAs($actor)->patch(route('pesantrian.students.lifecycle', $activeStudent->id), [
+            'status' => 'inactive',
+            'reason' => 'Belum boleh.',
+        ])->assertForbidden();
+
+        $this->actingAs($actor)->patch(route('pesantrian.students.archive', $activeStudent->id), [
+            'reason' => 'Belum boleh.',
+        ])->assertForbidden();
+
+        $this->actingAs($actor)->patch(route('pesantrian.students.restore', $archivedStudent->id), [
+            'reason' => 'Belum boleh.',
+        ])->assertForbidden();
+    }
+
     public function test_menampilkan_halaman_inertia_detail_santri(): void
     {
         $view = Permission::create(['name' => 'santri.view', 'guard_name' => 'web']);
@@ -264,6 +347,9 @@ final class SantriPresentationTest extends TestCase
         $detail = $this->sourceFile('js/pages/Pesantrian/Santri/components/SantriDetailPanel.tsx');
         $mutation = $this->sourceFile('js/pages/Pesantrian/Santri/components/SantriMutationDialog.tsx');
         $conversion = $this->sourceFile('js/pages/Pesantrian/Santri/components/SantriAdmissionConversionDialog.tsx');
+        $lifecycle = $this->sourceFile('js/pages/Pesantrian/Santri/components/SantriLifecycleDialog.tsx');
+        $archive = $this->sourceFile('js/pages/Pesantrian/Santri/components/SantriArchiveDialog.tsx');
+        $restore = $this->sourceFile('js/pages/Pesantrian/Santri/components/SantriRestoreDialog.tsx');
         $navigation = $this->sourceFile('js/lib/navigation.ts');
 
         self::assertStringContainsString("canAccess(auth, 'santri.view')", $page);
@@ -276,10 +362,14 @@ final class SantriPresentationTest extends TestCase
         self::assertStringContainsString('SantriPagination', $page);
         self::assertStringContainsString('Cari santri', $filter);
         self::assertStringContainsString('Status santri', $filter);
+        self::assertStringContainsString('Status arsip', $filter);
         self::assertStringContainsString('Unit utama', $filter);
         self::assertStringContainsString('NIS', $list);
         self::assertStringContainsString('Wali utama', $list);
         self::assertStringContainsString('Lihat detail', $list);
+        self::assertStringContainsString('Ubah status', $list);
+        self::assertStringContainsString('Arsipkan', $list);
+        self::assertStringContainsString('Pulihkan', $list);
         self::assertStringContainsString('Total santri', $summary);
         self::assertStringContainsString('Sebelumnya', $pagination);
         self::assertStringContainsString('Berikutnya', $pagination);
@@ -295,6 +385,12 @@ final class SantriPresentationTest extends TestCase
         self::assertStringContainsString('pesantrian.students.update', $mutation);
         self::assertStringContainsString('Konversi dari PPDB', $conversion);
         self::assertStringContainsString('pesantrian.students.from-admission', $conversion);
+        self::assertStringContainsString('Ubah status santri', $lifecycle);
+        self::assertStringContainsString('pesantrian.students.lifecycle', $lifecycle);
+        self::assertStringContainsString('Arsipkan santri', $archive);
+        self::assertStringContainsString('pesantrian.students.archive', $archive);
+        self::assertStringContainsString('Pulihkan santri', $restore);
+        self::assertStringContainsString('pesantrian.students.restore', $restore);
         self::assertStringContainsString('SantriDetailPanel', $show);
         self::assertStringContainsString('Data Induk Santri', $navigation);
         self::assertStringContainsString('pesantrian.students.index', $navigation);

@@ -1,14 +1,16 @@
 import { Link } from '@inertiajs/react';
-import { ArrowLeft, PencilLine } from 'lucide-react';
+import { Archive, ArrowLeft, PencilLine, RefreshCcw } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { routeOr } from '@/lib/route';
 import type { PrimaryUnitOption, Student } from '../types';
+import { SantriArchiveDialog } from './SantriArchiveDialog';
 import {
     genderLabels,
     primaryUnitLabel,
     primaryUnitNameMap,
 } from './santriDisplay';
+import { SantriLifecycleDialog } from './SantriLifecycleDialog';
 import { SantriMutationDialog } from './SantriMutationDialog';
 import { SantriStatusBadge } from './SantriStatusBadge';
 
@@ -16,15 +18,21 @@ type Props = {
     student: Student;
     primaryUnitOptions: PrimaryUnitOption[];
     canManage: boolean;
+    canLifecycle: boolean;
+    canArchive: boolean;
 };
 
 export function SantriDetailPanel({
     student,
     primaryUnitOptions,
     canManage,
+    canLifecycle,
+    canArchive,
 }: Props) {
     const primaryUnitNameById = primaryUnitNameMap(primaryUnitOptions);
     const [mutationDialogOpen, setMutationDialogOpen] = useState(false);
+    const [lifecycleDialogOpen, setLifecycleDialogOpen] = useState(false);
+    const [archiveDialogOpen, setArchiveDialogOpen] = useState(false);
 
     return (
         <div className="space-y-5">
@@ -40,16 +48,43 @@ export function SantriDetailPanel({
                         Kembali ke daftar
                     </Link>
                 </Button>
-                {canManage ? (
-                    <Button
-                        type="button"
-                        size="sm"
-                        onClick={() => setMutationDialogOpen(true)}
-                    >
-                        <PencilLine className="size-4" aria-hidden="true" />
-                        Edit data santri
-                    </Button>
-                ) : null}
+                <div className="flex flex-wrap gap-2">
+                    {canManage ? (
+                        <Button
+                            type="button"
+                            size="sm"
+                            onClick={() => setMutationDialogOpen(true)}
+                        >
+                            <PencilLine className="size-4" aria-hidden="true" />
+                            Edit data santri
+                        </Button>
+                    ) : null}
+                    {canLifecycle ? (
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setLifecycleDialogOpen(true)}
+                        >
+                            <RefreshCcw
+                                className="size-4"
+                                aria-hidden="true"
+                            />
+                            Ubah status
+                        </Button>
+                    ) : null}
+                    {canArchive ? (
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setArchiveDialogOpen(true)}
+                        >
+                            <Archive className="size-4" aria-hidden="true" />
+                            Arsipkan
+                        </Button>
+                    ) : null}
+                </div>
             </div>
 
             <section className="dashboard-card dashboard-card--blue rounded-2xl border p-4 sm:p-5">
@@ -159,6 +194,16 @@ export function SantriDetailPanel({
                 student={student}
                 primaryUnitOptions={primaryUnitOptions}
                 onOpenChange={setMutationDialogOpen}
+            />
+            <SantriLifecycleDialog
+                open={lifecycleDialogOpen}
+                student={student}
+                onOpenChange={setLifecycleDialogOpen}
+            />
+            <SantriArchiveDialog
+                open={archiveDialogOpen}
+                student={student}
+                onOpenChange={setArchiveDialogOpen}
             />
         </div>
     );

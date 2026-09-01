@@ -177,11 +177,27 @@ Hasil verifikasi:
 
 ## Increment 10: UI Lifecycle, Archive, dan QA Browser
 
-- [ ] Buat lifecycle panel.
-- [ ] Buat archive/restore confirmation.
+- [x] Buat lifecycle panel.
+- [x] Buat archive/restore confirmation.
 - [ ] Jalankan browser QA desktop.
 - [ ] Jalankan browser QA mobile/responsive.
-- [ ] Dokumentasikan hasil QA.
+- [x] Dokumentasikan hasil QA.
+
+Hasil verifikasi:
+
+- [x] `php artisan test tests\Feature\SantriPresentationTest.php --no-ansi`
+- [x] `php artisan test --filter=Santri --no-ansi`
+- [x] `vendor\bin\pint --dirty --test`
+- [x] `npm run types:check`
+- [x] `npm run lint:check`
+- [x] `npm run build`
+- [x] `php artisan module:validate --no-ansi`
+- [x] `php artisan route:list --path=pesantrian/students --no-ansi`
+- [ ] Browser QA authenticated desktop/mobile belum selesai karena database
+  lokal Laragon `pesantrian` belum memiliki table `students` dan
+  `student_guardians`. Fixture QA sementara `codex-santri-qa@example.test` dan
+  unit `QA-SANTRI` sudah dibersihkan. Jalankan browser QA setelah database lokal
+  dimigrasi atau user memberi izin eksplisit untuk menjalankan migration lokal.
 
 ## Keputusan Baseline
 

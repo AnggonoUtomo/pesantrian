@@ -12,9 +12,24 @@ import { SantriStatusBadge } from './SantriStatusBadge';
 type Props = {
     students: Student[];
     primaryUnitOptions: PrimaryUnitOption[];
+    archivedView: boolean;
+    canLifecycle: boolean;
+    canArchive: boolean;
+    onLifecycle: (student: Student) => void;
+    onArchive: (student: Student) => void;
+    onRestore: (student: Student) => void;
 };
 
-export function SantriTable({ students, primaryUnitOptions }: Props) {
+export function SantriTable({
+    students,
+    primaryUnitOptions,
+    archivedView,
+    canLifecycle,
+    canArchive,
+    onLifecycle,
+    onArchive,
+    onRestore,
+}: Props) {
     const primaryUnitNameById = primaryUnitNameMap(primaryUnitOptions);
 
     return (
@@ -39,7 +54,7 @@ export function SantriTable({ students, primaryUnitOptions }: Props) {
                                 Status
                             </th>
                             <th scope="col" className="px-4 py-3">
-                                Detail
+                                Aksi
                             </th>
                         </tr>
                     </thead>
@@ -89,14 +104,15 @@ export function SantriTable({ students, primaryUnitOptions }: Props) {
                                     />
                                 </td>
                                 <td className="px-4 py-3">
-                                    <Button asChild variant="secondary" size="sm">
-                                        <Link
-                                            href={studentShowUrl(student)}
-                                            prefetch
-                                        >
-                                            Lihat detail
-                                        </Link>
-                                    </Button>
+                                    <StudentActions
+                                        student={student}
+                                        archivedView={archivedView}
+                                        canLifecycle={canLifecycle}
+                                        canArchive={canArchive}
+                                        onLifecycle={onLifecycle}
+                                        onArchive={onArchive}
+                                        onRestore={onRestore}
+                                    />
                                 </td>
                             </tr>
                         ))}
@@ -142,14 +158,83 @@ export function SantriTable({ students, primaryUnitOptions }: Props) {
                                 value={student.entry_date ?? 'Belum diisi'}
                             />
                         </dl>
-                        <Button asChild variant="secondary" size="sm">
-                            <Link href={studentShowUrl(student)} prefetch>
-                                Lihat detail
-                            </Link>
-                        </Button>
+                        <StudentActions
+                            student={student}
+                            archivedView={archivedView}
+                            canLifecycle={canLifecycle}
+                            canArchive={canArchive}
+                            onLifecycle={onLifecycle}
+                            onArchive={onArchive}
+                            onRestore={onRestore}
+                        />
                     </article>
                 ))}
             </div>
+        </div>
+    );
+}
+
+function StudentActions({
+    student,
+    archivedView,
+    canLifecycle,
+    canArchive,
+    onLifecycle,
+    onArchive,
+    onRestore,
+}: {
+    student: Student;
+    archivedView: boolean;
+    canLifecycle: boolean;
+    canArchive: boolean;
+    onLifecycle: (student: Student) => void;
+    onArchive: (student: Student) => void;
+    onRestore: (student: Student) => void;
+}) {
+    if (archivedView) {
+        return canArchive ? (
+            <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                onClick={() => onRestore(student)}
+            >
+                Pulihkan
+            </Button>
+        ) : (
+            <span className="text-xs text-foreground/55">
+                Tidak ada aksi tersedia
+            </span>
+        );
+    }
+
+    return (
+        <div className="flex flex-wrap gap-2">
+            <Button asChild variant="secondary" size="sm">
+                <Link href={studentShowUrl(student)} prefetch>
+                    Lihat detail
+                </Link>
+            </Button>
+            {canLifecycle ? (
+                <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => onLifecycle(student)}
+                >
+                    Ubah status
+                </Button>
+            ) : null}
+            {canArchive ? (
+                <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => onArchive(student)}
+                >
+                    Arsipkan
+                </Button>
+            ) : null}
         </div>
     );
 }

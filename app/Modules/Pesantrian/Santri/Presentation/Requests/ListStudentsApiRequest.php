@@ -20,9 +20,10 @@ final class ListStudentsApiRequest extends FormRequest
     {
         return [
             'search' => ['nullable', 'string', 'max:100'],
-            'filter' => ['nullable', 'array:status,primary_unit_id'],
+            'filter' => ['nullable', 'array:status,primary_unit_id,archived'],
             'filter.status' => ['nullable', 'string', Rule::in($this->statuses())],
             'filter.primary_unit_id' => ['nullable', 'ulid', Rule::exists('organization_units', 'id')],
+            'filter.archived' => ['nullable', 'string', Rule::in(['active', 'archived'])],
             'page' => ['nullable', 'integer', 'min:1'],
             'per_page' => ['nullable', 'integer', Rule::in([10, 25, 50, 100])],
             'sort' => ['nullable', 'string', Rule::in(['created_at', '-created_at', 'student_no', '-student_no', 'full_name', '-full_name', 'entry_date', '-entry_date'])],
@@ -39,6 +40,7 @@ final class ListStudentsApiRequest extends FormRequest
             search: isset($data['search']) ? (string) $data['search'] : null,
             status: isset($filters['status']) ? (string) $filters['status'] : null,
             primaryUnitId: isset($filters['primary_unit_id']) ? (string) $filters['primary_unit_id'] : null,
+            archived: isset($filters['archived']) ? (string) $filters['archived'] : 'active',
             page: isset($data['page']) ? (int) $data['page'] : 1,
             perPage: isset($data['per_page']) ? (int) $data['per_page'] : 25,
             sortField: ltrim($sort, '-'),

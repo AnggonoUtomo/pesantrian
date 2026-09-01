@@ -5,13 +5,18 @@ declare(strict_types=1);
 namespace App\Modules\Pesantrian\Santri\Presentation\Controllers;
 
 use App\Http\ApiResponseFactory;
+use App\Modules\Pesantrian\Santri\Application\Actions\ArchiveStudent;
+use App\Modules\Pesantrian\Santri\Application\Actions\ChangeStudentLifecycle;
 use App\Modules\Pesantrian\Santri\Application\Actions\CreateStudent;
 use App\Modules\Pesantrian\Santri\Application\Actions\CreateStudentFromAcceptedAdmission;
+use App\Modules\Pesantrian\Santri\Application\Actions\RestoreStudent;
 use App\Modules\Pesantrian\Santri\Application\Actions\UpdateStudent;
 use App\Modules\Pesantrian\Santri\Application\DTO\PaginatedStudentData;
 use App\Modules\Pesantrian\Santri\Application\DTO\StudentData;
 use App\Modules\Pesantrian\Santri\Application\Queries\ListStudents;
 use App\Modules\Pesantrian\Santri\Application\Queries\ShowStudent;
+use App\Modules\Pesantrian\Santri\Presentation\Requests\ArchiveStudentApiRequest;
+use App\Modules\Pesantrian\Santri\Presentation\Requests\ChangeStudentLifecycleApiRequest;
 use App\Modules\Pesantrian\Santri\Presentation\Requests\ListStudentsApiRequest;
 use App\Modules\Pesantrian\Santri\Presentation\Requests\StoreStudentApiRequest;
 use App\Modules\Pesantrian\Santri\Presentation\Requests\UpdateStudentApiRequest;
@@ -32,6 +37,9 @@ final readonly class StudentController implements HasMiddleware
         private CreateStudent $createStudent,
         private CreateStudentFromAcceptedAdmission $createStudentFromAcceptedAdmission,
         private UpdateStudent $updateStudent,
+        private ChangeStudentLifecycle $changeStudentLifecycle,
+        private ArchiveStudent $archiveStudent,
+        private RestoreStudent $restoreStudent,
         private ApiResponseFactory $responses,
     ) {}
 
@@ -40,6 +48,8 @@ final readonly class StudentController implements HasMiddleware
         return [
             new Middleware('can:santri.view', only: ['index', 'show']),
             new Middleware('can:santri.manage', only: ['store', 'storeFromAdmission', 'update']),
+            new Middleware('can:santri.lifecycle', only: ['lifecycle']),
+            new Middleware('can:santri.archive', only: ['archive', 'restore']),
         ];
     }
 
@@ -121,6 +131,55 @@ final readonly class StudentController implements HasMiddleware
         Inertia::flash('toast', ['type' => 'success', 'message' => 'Data santri berhasil diperbarui.']);
 
         return redirect()->route('pesantrian.students.show', $updated->id);
+    }
+
+    public function lifecycle(ChangeStudentLifecycleApiRequest $request, string $student): RedirectResponse
+    {
+        $updated = $this->changeStudentLifecycle->execute(
+            $request->user(),
+            $student,
+            $request->status(),
+            $request->reason(),
+            $this->responses->correlationId($request),
+        );
+
+        abort_if($updated === null, 404);
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Status santri berhasil diperbarui.']);
+
+        return redirect()->route('pesantrian.students.show', $updated->id);
+    }
+
+    public function archive(ArchiveStudentApiRequest $request, string $student): RedirectResponse
+    {
+        $archived = $this->archiveStudent->execute(
+            $request->user(),
+            $student,
+            $request->reason(),
+            $this->responses->correlationId($request),
+        );
+
+        abort_if($archived === null, 404);
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Data santri berhasil diarsipkan.']);
+
+        return redirect()->route('pesantrian.students.index');
+    }
+
+    public function restore(ArchiveStudentApiRequest $request, string $student): RedirectResponse
+    {
+        $restored = $this->restoreStudent->execute(
+            $request->user(),
+            $student,
+            $request->reason(),
+            $this->responses->correlationId($request),
+        );
+
+        abort_if($restored === null, 404);
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Data santri berhasil dipulihkan.']);
+
+        return redirect()->route('pesantrian.students.show', $restored->id);
     }
 
     /** @return array{currentPage: int, perPage: int, total: int, lastPage: int} */

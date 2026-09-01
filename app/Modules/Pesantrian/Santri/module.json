@@ -1,0 +1,13 @@
+{
+    "name": "Santri",
+    "namespace": "App\\Modules\\Pesantrian\\Santri",
+    "version": "1.0.0",
+    "schema_version": 1,
+    "status": "enabled",
+    "domain": "Pesantrian",
+    "path": "app/Modules/Pesantrian/Santri",
+    "provider": "App\\Modules\\Pesantrian\\Santri\\ServiceProvider",
+    "dependencies": [],
+    "permission_source": "permissions.php",
+    "config_source": "module.php"
+}

@@ -11,12 +11,22 @@
 
 ## Increment 2: Skeleton Module
 
-- [ ] Jalankan dry-run generator module.
-- [ ] Buat skeleton `app/Modules/Pesantrian/Santri`.
-- [ ] Tambahkan metadata module.
-- [ ] Tambahkan permissions candidate.
-- [ ] Pastikan module registry valid.
-- [ ] Pastikan semua command artisan baseline normal.
+- [x] Jalankan dry-run generator module.
+- [x] Buat skeleton `app/Modules/Pesantrian/Santri`.
+- [x] Tambahkan metadata module.
+- [x] Tambahkan permissions candidate.
+- [x] Pastikan module registry valid.
+- [x] Pastikan semua command artisan baseline normal.
+
+Hasil verifikasi:
+
+- [x] `php artisan module:make Pesantrian Santri --dry-run --json --no-ansi`
+- [x] `php artisan module:make Pesantrian Santri --force --yes --json --no-ansi`
+- [x] `php artisan module:validate --no-ansi`
+- [x] `php artisan optimize:clear --no-ansi`
+- [x] `php artisan module:inspect Pesantrian/Santri --json --no-ansi`
+- [x] `php artisan test tests\Unit\SantriPermissionIdentityTest.php --no-ansi`
+- [x] `php artisan test --filter=Santri --no-ansi`
 
 ## Increment 3: Data Foundation
 

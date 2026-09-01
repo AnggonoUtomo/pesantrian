@@ -5,13 +5,18 @@ declare(strict_types=1);
 namespace App\Modules\Pesantrian\Santri\Presentation\Controllers;
 
 use App\Http\ApiResponseFactory;
+use App\Modules\Pesantrian\Santri\Application\Actions\ArchiveStudent;
+use App\Modules\Pesantrian\Santri\Application\Actions\ChangeStudentLifecycle;
 use App\Modules\Pesantrian\Santri\Application\Actions\CreateStudent;
 use App\Modules\Pesantrian\Santri\Application\Actions\CreateStudentFromAcceptedAdmission;
+use App\Modules\Pesantrian\Santri\Application\Actions\RestoreStudent;
 use App\Modules\Pesantrian\Santri\Application\Actions\UpdateStudent;
 use App\Modules\Pesantrian\Santri\Application\DTO\PaginatedStudentData;
 use App\Modules\Pesantrian\Santri\Application\DTO\StudentData;
 use App\Modules\Pesantrian\Santri\Application\Queries\ListStudents;
 use App\Modules\Pesantrian\Santri\Application\Queries\ShowStudent;
+use App\Modules\Pesantrian\Santri\Presentation\Requests\ArchiveStudentApiRequest;
+use App\Modules\Pesantrian\Santri\Presentation\Requests\ChangeStudentLifecycleApiRequest;
 use App\Modules\Pesantrian\Santri\Presentation\Requests\ListStudentsApiRequest;
 use App\Modules\Pesantrian\Santri\Presentation\Requests\StoreStudentApiRequest;
 use App\Modules\Pesantrian\Santri\Presentation\Requests\UpdateStudentApiRequest;
@@ -28,6 +33,9 @@ final readonly class StudentApiController implements HasMiddleware
         private ShowStudent $showStudent,
         private CreateStudent $createStudent,
         private CreateStudentFromAcceptedAdmission $createStudentFromAcceptedAdmission,
+        private ChangeStudentLifecycle $changeStudentLifecycle,
+        private ArchiveStudent $archiveStudent,
+        private RestoreStudent $restoreStudent,
         private UpdateStudent $updateStudent,
         private ApiResponseFactory $responses,
     ) {}
@@ -37,6 +45,8 @@ final readonly class StudentApiController implements HasMiddleware
         return [
             new Middleware('can:santri.view', only: ['index', 'show']),
             new Middleware('can:santri.manage', only: ['store', 'storeFromAdmission', 'update']),
+            new Middleware('can:santri.lifecycle', only: ['lifecycle']),
+            new Middleware('can:santri.archive', only: ['archive', 'restore']),
         ];
     }
 
@@ -97,6 +107,61 @@ final readonly class StudentApiController implements HasMiddleware
             'Pendaftaran diterima berhasil dikonversi menjadi santri.',
             (new StudentResource($student))->toArray($request),
             status: 201,
+        );
+    }
+
+    public function lifecycle(ChangeStudentLifecycleApiRequest $request, string $student): JsonResponse
+    {
+        $updated = $this->changeStudentLifecycle->execute(
+            $request->user(),
+            $student,
+            $request->status(),
+            $request->reason(),
+            $this->responses->correlationId($request),
+        );
+
+        abort_if($updated === null, 404);
+
+        return $this->responses->success(
+            $request,
+            'Status santri berhasil diperbarui.',
+            (new StudentResource($updated))->toArray($request),
+        );
+    }
+
+    public function archive(ArchiveStudentApiRequest $request, string $student): JsonResponse
+    {
+        $archived = $this->archiveStudent->execute(
+            $request->user(),
+            $student,
+            $request->reason(),
+            $this->responses->correlationId($request),
+        );
+
+        abort_if($archived === null, 404);
+
+        return $this->responses->success(
+            $request,
+            'Data santri berhasil diarsipkan.',
+            (new StudentResource($archived))->toArray($request),
+        );
+    }
+
+    public function restore(ArchiveStudentApiRequest $request, string $student): JsonResponse
+    {
+        $restored = $this->restoreStudent->execute(
+            $request->user(),
+            $student,
+            $request->reason(),
+            $this->responses->correlationId($request),
+        );
+
+        abort_if($restored === null, 404);
+
+        return $this->responses->success(
+            $request,
+            'Data santri berhasil dipulihkan.',
+            (new StudentResource($restored))->toArray($request),
         );
     }
 

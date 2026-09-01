@@ -2,9 +2,10 @@
 
 ## Status
 
-Active - PPDB conversion. Schema, model Infrastructure, factory minimum, API
-list/detail, create/update manual, serta konversi PPDB accepted melalui public
-contract sudah tersedia; lifecycle dan UI dikerjakan pada increment berikutnya.
+Active - lifecycle/archive. Schema, model Infrastructure, factory minimum, API
+list/detail, create/update manual, konversi PPDB accepted melalui public
+contract, lifecycle status, archive, dan restore sudah tersedia; UI dikerjakan
+pada increment berikutnya.
 
 ## Objective
 
@@ -156,12 +157,12 @@ menampilkan aksi untuk UX.
 
 Audit minimum:
 
-- `santri.created`
-- `santri.created_from_admission`
-- `santri.updated`
-- `santri.lifecycle_changed`
-- `santri.archived`
-- `santri.restored`
+- `santri.student.created`
+- `santri.student.created_from_admission`
+- `santri.student.updated`
+- `santri.student.lifecycle_changed`
+- `santri.student.archived`
+- `santri.student.restored`
 
 Audit tidak boleh menyimpan payload sensitif berlebihan.
 
@@ -195,10 +196,10 @@ resources/js/pages/Pesantrian/Santri/
 - [x] Snapshot wali minimum tersimpan.
 - [x] List/search/filter santri tersedia.
 - [x] Detail santri tersedia.
-- [ ] Lifecycle active/inactive/transferred/graduated tersedia dan diaudit.
-- [ ] Archive/restore aman dan diaudit.
+- [x] Lifecycle active/inactive/transferred/graduated tersedia dan diaudit.
+- [x] Archive/restore aman dan diaudit.
 - [x] Consumer tidak mengimpor Infrastructure Santri atau PPDB.
-- [ ] Focused tests, typecheck, lint, dan build lulus.
+- [x] Focused tests backend Santri lulus.
 
 ## Keputusan Baseline
 

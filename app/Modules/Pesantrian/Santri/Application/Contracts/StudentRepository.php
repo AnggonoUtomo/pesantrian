@@ -16,11 +16,19 @@ interface StudentRepository
 
     public function find(string $id): ?StudentData;
 
+    public function findArchived(string $id): ?StudentData;
+
     public function create(UpsertStudentData $data): StudentData;
 
     public function createFromAcceptedAdmission(AcceptedAdmissionData $data): StudentData;
 
     public function existsForAdmission(string $admissionId): bool;
+
+    public function changeStatus(string $id, string $status, ?string $reason, ?string $actorId): ?StudentData;
+
+    public function archive(string $id, ?string $actorId): ?StudentData;
+
+    public function restore(string $id): ?StudentData;
 
     /**
      * @param  array<string, mixed>  $studentChanges

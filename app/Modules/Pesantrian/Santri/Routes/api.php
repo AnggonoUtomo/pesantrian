@@ -17,6 +17,18 @@ Route::middleware(['web', 'auth', 'verified', 'throttle:system-api'])
             ->whereUlid('admission')
             ->middleware('api.idempotency')
             ->name('from-admission');
+        Route::patch('/{student}/lifecycle', [StudentApiController::class, 'lifecycle'])
+            ->whereUlid('student')
+            ->middleware('api.idempotency')
+            ->name('lifecycle');
+        Route::patch('/{student}/archive', [StudentApiController::class, 'archive'])
+            ->whereUlid('student')
+            ->middleware('api.idempotency')
+            ->name('archive');
+        Route::patch('/{student}/restore', [StudentApiController::class, 'restore'])
+            ->whereUlid('student')
+            ->middleware('api.idempotency')
+            ->name('restore');
         Route::get('/{student}', [StudentApiController::class, 'show'])
             ->whereUlid('student')
             ->name('show');

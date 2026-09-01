@@ -58,6 +58,16 @@ final class EloquentStudentRepository implements StudentRepository
         return $record instanceof StudentRecord ? $this->map($record) : null;
     }
 
+    public function findArchived(string $id): ?StudentData
+    {
+        $record = StudentRecord::query()
+            ->with(['guardians' => fn ($query) => $query->orderByDesc('is_primary')->orderBy('created_at')])
+            ->whereNotNull('archived_at')
+            ->find($id);
+
+        return $record instanceof StudentRecord ? $this->map($record) : null;
+    }
+
     public function create(UpsertStudentData $data): StudentData
     {
         /** @var StudentRecord $student */
@@ -110,6 +120,68 @@ final class EloquentStudentRepository implements StudentRepository
         return StudentRecord::query()
             ->where('admission_id', $admissionId)
             ->exists();
+    }
+
+    public function changeStatus(string $id, string $status, ?string $reason, ?string $actorId): ?StudentData
+    {
+        $student = StudentRecord::query()
+            ->whereNull('archived_at')
+            ->find($id);
+
+        if (! $student instanceof StudentRecord) {
+            return null;
+        }
+
+        $student->forceFill([
+            'status' => $status,
+            'status_reason' => $status === 'active' ? null : $reason,
+            'status_changed_at' => now(),
+            'status_changed_by' => $actorId,
+        ])->save();
+
+        return $this->map($student->refresh()->load([
+            'guardians' => fn ($query) => $query->orderByDesc('is_primary')->orderBy('created_at'),
+        ]));
+    }
+
+    public function archive(string $id, ?string $actorId): ?StudentData
+    {
+        $student = StudentRecord::query()
+            ->whereNull('archived_at')
+            ->find($id);
+
+        if (! $student instanceof StudentRecord) {
+            return null;
+        }
+
+        $student->forceFill([
+            'archived_at' => now(),
+            'archived_by' => $actorId,
+        ])->save();
+
+        return $this->map($student->refresh()->load([
+            'guardians' => fn ($query) => $query->orderByDesc('is_primary')->orderBy('created_at'),
+        ]));
+    }
+
+    public function restore(string $id): ?StudentData
+    {
+        $student = StudentRecord::query()
+            ->whereNotNull('archived_at')
+            ->find($id);
+
+        if (! $student instanceof StudentRecord) {
+            return null;
+        }
+
+        $student->forceFill([
+            'archived_at' => null,
+            'archived_by' => null,
+        ])->save();
+
+        return $this->map($student->refresh()->load([
+            'guardians' => fn ($query) => $query->orderByDesc('is_primary')->orderBy('created_at'),
+        ]));
     }
 
     public function update(string $id, array $studentChanges, array $guardianChanges): ?StudentData
@@ -191,6 +263,11 @@ final class EloquentStudentRepository implements StudentRepository
             primaryUnitId: $record->primary_unit_id === null ? null : (string) $record->primary_unit_id,
             entryDate: $record->entry_date?->toDateString(),
             status: (string) $record->status,
+            statusReason: $record->status_reason === null ? null : (string) $record->status_reason,
+            statusChangedAt: $record->status_changed_at?->toJSON(),
+            statusChangedBy: $record->status_changed_by === null ? null : (string) $record->status_changed_by,
+            archivedAt: $record->archived_at?->toJSON(),
+            archivedBy: $record->archived_by === null ? null : (string) $record->archived_by,
             primaryGuardian: $primaryGuardian instanceof StudentGuardianRecord ? $this->mapGuardian($primaryGuardian) : null,
             guardians: $guardians,
             createdAt: $record->created_at->toJSON(),

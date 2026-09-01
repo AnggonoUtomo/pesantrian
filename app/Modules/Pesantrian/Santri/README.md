@@ -13,4 +13,6 @@ Status implementasi:
 - API create/update manual tersedia untuk backend/admin internal.
 - API konversi PPDB accepted tersedia melalui public contract
   `AcceptedAdmissionReader`.
-- UI, lifecycle, dan archive dikerjakan pada increment berikutnya.
+- API lifecycle status, archive, dan restore tersedia untuk backend/admin
+  internal.
+- UI dikerjakan pada increment berikutnya.

@@ -115,12 +115,23 @@ Hasil verifikasi:
 
 ## Increment 7: Lifecycle dan Archive
 
-- [ ] Buat use case lifecycle status.
-- [ ] Buat validasi alasan status.
-- [ ] Buat use case archive.
-- [ ] Buat use case restore.
-- [ ] Tambahkan audit lifecycle/archive/restore.
-- [ ] Tambahkan focused tests.
+- [x] Buat use case lifecycle status.
+- [x] Buat validasi alasan status.
+- [x] Buat use case archive.
+- [x] Buat use case restore.
+- [x] Tambahkan audit lifecycle/archive/restore.
+- [x] Tambahkan focused tests.
+
+Hasil verifikasi:
+
+- [x] `php artisan test tests\Feature\SantriLifecycleTest.php --no-ansi`
+- [x] `php artisan test tests\Feature\SantriApiTest.php tests\Feature\SantriAuditTest.php tests\Feature\SantriAdmissionConversionTest.php tests\Feature\SantriLifecycleTest.php --no-ansi`
+- [x] `vendor\bin\pint --dirty --test`
+- [x] `php artisan module:validate --no-ansi`
+- [x] `php artisan optimize:clear --no-ansi`
+- [x] `php artisan test --filter=Santri --no-ansi`
+- [x] `php artisan route:list --path=api/v1/pesantrian/students --no-ansi`
+- [x] `git diff --check`
 
 ## Increment 8: UI/Inertia List dan Detail
 

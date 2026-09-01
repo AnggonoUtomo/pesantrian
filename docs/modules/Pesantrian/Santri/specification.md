@@ -2,10 +2,10 @@
 
 ## Status
 
-Active - lifecycle/archive. Schema, model Infrastructure, factory minimum, API
-list/detail, create/update manual, konversi PPDB accepted melalui public
-contract, lifecycle status, archive, dan restore sudah tersedia; UI dikerjakan
-pada increment berikutnya.
+Active - UI read/list/detail. Schema, model Infrastructure, factory minimum,
+API list/detail, create/update manual, konversi PPDB accepted melalui public
+contract, lifecycle status, archive, restore, dan UI Inertia baca daftar/detail
+sudah tersedia.
 
 ## Objective
 
@@ -198,8 +198,12 @@ resources/js/pages/Pesantrian/Santri/
 - [x] Detail santri tersedia.
 - [x] Lifecycle active/inactive/transferred/graduated tersedia dan diaudit.
 - [x] Archive/restore aman dan diaudit.
+- [x] UI Inertia list/detail tersedia dengan filter, pagination, empty state,
+  dan sidebar namespace Pesantrian.
 - [x] Consumer tidak mengimpor Infrastructure Santri atau PPDB.
 - [x] Focused tests backend Santri lulus.
+- [x] Focused tests presentasi Santri, typecheck, lint, dan build frontend
+  lulus.
 
 ## Keputusan Baseline
 

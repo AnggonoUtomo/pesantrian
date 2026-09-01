@@ -15,4 +15,5 @@ Status implementasi:
   `AcceptedAdmissionReader`.
 - API lifecycle status, archive, dan restore tersedia untuk backend/admin
   internal.
-- UI dikerjakan pada increment berikutnya.
+- UI Inertia list/detail tersedia untuk admin internal dengan permission
+  `santri.view`.

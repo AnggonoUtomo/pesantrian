@@ -135,13 +135,25 @@ Hasil verifikasi:
 
 ## Increment 8: UI/Inertia List dan Detail
 
-- [ ] Buat page `resources/js/pages/Pesantrian/Santri/pages/Index.tsx`.
-- [ ] Buat page `resources/js/pages/Pesantrian/Santri/pages/Show.tsx`.
-- [ ] Buat komponen table/filter/summary/detail di folder `components`.
-- [ ] Tambahkan pagination.
-- [ ] Tambahkan menu sidebar namespace Pesantrian.
-- [ ] Tambahkan presentation tests/Ziggy route test bila relevan.
-- [ ] Jalankan typecheck, lint, dan build.
+- [x] Buat page `resources/js/pages/Pesantrian/Santri/pages/Index.tsx`.
+- [x] Buat page `resources/js/pages/Pesantrian/Santri/pages/Show.tsx`.
+- [x] Buat komponen table/filter/summary/detail di folder `components`.
+- [x] Tambahkan pagination.
+- [x] Tambahkan menu sidebar namespace Pesantrian.
+- [x] Tambahkan presentation tests/Ziggy route test bila relevan.
+- [x] Jalankan typecheck, lint, dan build.
+
+Hasil verifikasi:
+
+- [x] `php artisan test tests\Feature\SantriPresentationTest.php --no-ansi`
+- [x] `php artisan test --filter=Santri --no-ansi`
+- [x] `vendor\bin\pint --dirty --test`
+- [x] `npm run types:check`
+- [x] `npm run lint:check`
+- [x] `npm run build`
+- [x] `php artisan module:validate --no-ansi`
+- [x] `php artisan optimize:clear --no-ansi`
+- [x] `php artisan route:list --path=pesantrian/students --no-ansi`
 
 ## Increment 9: UI Create/Update dan Konversi
 

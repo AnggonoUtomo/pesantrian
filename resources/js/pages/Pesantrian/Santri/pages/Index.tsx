@@ -1,0 +1,147 @@
+import { Head, router, usePage } from '@inertiajs/react';
+import { useState } from 'react';
+import type { FormEvent } from 'react';
+import SystemDashboardLayout from '@/layouts/system-dashboard-layout';
+import { canAccess } from '@/lib/authorization';
+import { routeOr } from '@/lib/route';
+import { SantriAccessDenied } from '../components/SantriAccessDenied';
+import { SantriEmptyState } from '../components/SantriEmptyState';
+import { SantriFilters } from '../components/SantriFilters';
+import { SantriPagination } from '../components/SantriPagination';
+import { SantriSummaryCards } from '../components/SantriSummaryCards';
+import { SantriTable } from '../components/SantriTable';
+import type { StudentIndexPageProps } from '../types';
+
+export default function Index() {
+    const { auth, students, filters, pagination, primaryUnitOptions, errors } =
+        usePage<StudentIndexPageProps>().props;
+    const [search, setSearch] = useState(filters.search ?? '');
+    const [status, setStatus] = useState<string>(
+        filters.filter?.status ?? 'all',
+    );
+    const [primaryUnitId, setPrimaryUnitId] = useState<string>(
+        filters.filter?.primary_unit_id ?? 'all',
+    );
+    const canView = canAccess(auth, 'santri.view');
+    const studentIndexUrl = () =>
+        routeOr('/pesantrian/students', 'pesantrian.students.index');
+
+    const visitStudents = (
+        nextPage = 1,
+        nextPerPage = Number(filters.per_page ?? pagination.defaultPerPage),
+    ) => {
+        router.get(
+            studentIndexUrl(),
+            {
+                search: search.trim() || undefined,
+                filter: {
+                    status: status === 'all' ? undefined : status,
+                    primary_unit_id:
+                        primaryUnitId === 'all' ? undefined : primaryUnitId,
+                },
+                page: nextPage === 1 ? undefined : nextPage,
+                per_page:
+                    nextPerPage === pagination.defaultPerPage
+                        ? undefined
+                        : nextPerPage,
+                sort: filters.sort ?? '-created_at',
+            },
+            {
+                preserveScroll: true,
+                preserveState: true,
+                replace: true,
+            },
+        );
+    };
+
+    const submitFilters = (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        visitStudents();
+    };
+
+    const resetFilters = () => {
+        setSearch('');
+        setStatus('all');
+        setPrimaryUnitId('all');
+
+        router.get(
+            studentIndexUrl(),
+            {},
+            {
+                preserveScroll: true,
+                replace: true,
+            },
+        );
+    };
+
+    if (!canView) {
+        return <SantriAccessDenied />;
+    }
+
+    return (
+        <>
+            <Head title="Data Induk Santri" />
+            <SystemDashboardLayout
+                eyebrow="Pesantrian"
+                title="Data Induk Santri"
+                description="Tinjau data induk santri, asal PPDB, unit utama, status lifecycle, dan wali snapshot minimum."
+            >
+                <div className="space-y-5">
+                    <SantriSummaryCards
+                        total={students.meta.total}
+                        students={students.data}
+                    />
+
+                    {errors && Object.keys(errors).length > 0 ? (
+                        <p
+                            role="alert"
+                            className="dashboard-message--error text-sm"
+                        >
+                            Filter data santri tidak valid. Periksa input dan
+                            coba kembali.
+                        </p>
+                    ) : null}
+
+                    <section className="dashboard-card dashboard-card--blue space-y-4 rounded-2xl border p-4 sm:p-5">
+                        <SantriFilters
+                            search={search}
+                            status={status}
+                            primaryUnitId={primaryUnitId}
+                            perPage={students.meta.perPage}
+                            primaryUnitOptions={primaryUnitOptions}
+                            onSearchChange={setSearch}
+                            onStatusChange={setStatus}
+                            onPrimaryUnitChange={setPrimaryUnitId}
+                            onSubmit={submitFilters}
+                            onReset={resetFilters}
+                        />
+
+                        {students.data.length > 0 ? (
+                            <>
+                                <SantriTable
+                                    students={students.data}
+                                    primaryUnitOptions={primaryUnitOptions}
+                                />
+                                <SantriPagination
+                                    meta={students.meta}
+                                    pagination={pagination}
+                                    onPageChange={(page) =>
+                                        visitStudents(
+                                            page,
+                                            students.meta.perPage,
+                                        )
+                                    }
+                                    onPerPageChange={(perPage) =>
+                                        visitStudents(1, perPage)
+                                    }
+                                />
+                            </>
+                        ) : (
+                            <SantriEmptyState />
+                        )}
+                    </section>
+                </div>
+            </SystemDashboardLayout>
+        </>
+    );
+}

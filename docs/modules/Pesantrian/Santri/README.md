@@ -7,7 +7,7 @@
 - Nama tampil: `Data Induk Santri dan Wali`
 - Candidate source: `app/Modules/Pesantrian/Santri/`
 - Candidate frontend: `resources/js/pages/Pesantrian/Santri/`
-- Status: Active - create/update manual
+- Status: Active - UI read/list/detail
 
 ## Tujuan
 
@@ -98,6 +98,16 @@ Public boundary dibuat hanya saat consumer nyata tersedia. Candidate awal:
 - konversi dari accepted admission PPDB menjadi data induk santri.
 
 Consumer dilarang bergantung pada model Eloquent Infrastructure Santri.
+
+## UI Baseline
+
+UI baca data Santri tersedia di `resources/js/pages/Pesantrian/Santri/`.
+Halaman `pages/Index.tsx` dan `pages/Show.tsx` dijaga tetap tipis; komponen
+filter, table, summary, pagination, empty state, akses ditolak, badge status,
+dan panel detail berada di folder `components/`.
+
+Menu sidebar berada di namespace Pesantrian dengan nama tampil `Data Induk
+Santri` dan mengarah ke route `pesantrian.students.index`.
 
 ## Dokumentasi Terkait
 

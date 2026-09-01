@@ -1,6 +1,7 @@
 import {
     Building2,
     CalendarRange,
+    GraduationCap,
     LayoutGrid,
     NotebookTabs,
     ScrollText,
@@ -152,13 +153,25 @@ function buildPesantrianNavigation(auth: Auth): NavItem[] {
             'penerimaan_santri.view',
             'penerimaan_santri.manage',
             'penerimaan_santri.decide',
+            'santri.view',
+            'santri.manage',
+            'santri.lifecycle',
+            'santri.archive',
         ])
     ) {
         return [];
     }
 
-    return [
-        {
+    const items: NavItem[] = [];
+
+    if (
+        hasAnyPermission(auth, [
+            'penerimaan_santri.view',
+            'penerimaan_santri.manage',
+            'penerimaan_santri.decide',
+        ])
+    ) {
+        items.push({
             title: 'PPDB / Penerimaan Santri',
             href: routeOr(
                 '/pesantrian/admissions',
@@ -166,8 +179,26 @@ function buildPesantrianNavigation(auth: Auth): NavItem[] {
             ),
             icon: NotebookTabs,
             iconClassName: 'text-teal-600 dark:text-teal-300',
-        },
-    ];
+        });
+    }
+
+    if (
+        hasAnyPermission(auth, [
+            'santri.view',
+            'santri.manage',
+            'santri.lifecycle',
+            'santri.archive',
+        ])
+    ) {
+        items.push({
+            title: 'Data Induk Santri',
+            href: routeOr('/pesantrian/students', 'pesantrian.students.index'),
+            icon: GraduationCap,
+            iconClassName: 'text-blue-600 dark:text-blue-300',
+        });
+    }
+
+    return items;
 }
 
 function hasAnyPermission(auth: Auth, permissions: string[]): boolean {

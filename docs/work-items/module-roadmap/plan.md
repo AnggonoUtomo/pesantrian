@@ -230,33 +230,45 @@ Vertical slice:
 - Validasi data awal.
 - Event `PenerimaanSantriAccepted` atau vocabulary final yang disetujui.
 
-### 2.3 Pesantrian/WaliSantri
+### 2.3 Pesantrian/Santri
+
+Target capability: data induk santri, lifecycle, link asal PPDB, unit utama,
+dan snapshot wali minimum.
+
+Dependencies: Organization, PenerimaanSantri, AccessControl, AuditTrail,
+SystemSetting bila format nomor induk dibuat configurable.
+
+Vertical slice:
+
+- Student master dengan `student_no` sebagai business identifier dan ULID `id`.
+- Snapshot wali minimum untuk kontak awal.
+- Assign organization unit.
+- Lifecycle status minimum: active, inactive, transferred, graduated.
+- Konversi dari PPDB accepted melalui public contract PenerimaanSantri.
+- Public read contract ringkas untuk Academic, Tahfidz, Finance, dan module
+  santri lain saat consumer nyata tersedia.
+
+Catatan baseline:
+
+- `Pesantrian/Santri` berjalan dulu dengan snapshot wali minimum agar data induk
+  santri bisa menjadi poros modul berikutnya.
+- `Pesantrian/WaliSantri` dipromosikan setelah kebutuhan master wali reusable
+  jelas.
+- Nama tampil: Data Induk Santri dan Wali.
+
+### 2.4 Pesantrian/WaliSantri
 
 Target capability: guardian identity, contact, relation ke santri, future access
 relation.
 
-Dependencies: Organization, AccessControl, AuditTrail.
+Dependencies: Santri contract, Organization, AccessControl, AuditTrail.
 
 Vertical slice:
 
 - Guardian master minimum.
 - Contact dan family relation.
 - Query contract untuk Student/Finance.
-
-### 2.4 Pesantrian/Santri
-
-Target capability: student master, lifecycle, registration, transfer,
-graduation.
-
-Dependencies: Organization, Guardian contract, AccessControl, AuditTrail.
-
-Vertical slice:
-
-- Student master dengan `student_no` sebagai business identifier dan ULID `id`.
-- Link guardian.
-- Assign organization unit.
-- Lifecycle status minimum: active, inactive, transferred, graduated.
-- Event `StudentRegistered`.
+- Promosi snapshot wali Santri menjadi master wali bila dibutuhkan.
 
 Checkpoint P2:
 

@@ -146,9 +146,9 @@ Academic, Finance, dan Reporting.
 
 ## Task 6: People Core / Data Orang
 
-**Description:** Bangun urutan people core: HumanResource, PPDB, WaliSantri,
-lalu Santri. Nama tampil memakai Bahasa Indonesia; source existing
-HumanResource tetap stabil.
+**Description:** Bangun urutan people core: HumanResource, PPDB, Santri, lalu
+WaliSantri bila kebutuhan master wali reusable sudah jelas. Nama tampil memakai
+Bahasa Indonesia; source existing HumanResource tetap stabil.
 
 **Acceptance criteria:**
 
@@ -160,12 +160,15 @@ HumanResource tetap stabil.
   dokumen.
 - [x] API read/list dan create/update minimum `Pesantrian/PenerimaanSantri`
   tersedia untuk flow internal/admin.
-- [ ] PenerimaanSantri menyediakan calon santri, status pendaftaran, dan
-  konversi awal.
-- [ ] WaliSantri menyediakan identity/contact dan relation contract.
-- [ ] Santri menyediakan master, wali link, unit assignment, dan lifecycle
-  awal.
-- [ ] Event `SantriRegistered` atau vocabulary final yang disetujui tersedia.
+- [x] PenerimaanSantri menyediakan calon santri, status pendaftaran, dan
+  contract accepted admission untuk konversi awal.
+- [x] Dokumentasi awal `Pesantrian/Santri` tersedia untuk review.
+- [ ] Santri menyediakan master, snapshot wali minimum, unit assignment, dan
+  lifecycle awal.
+- [ ] WaliSantri menyediakan identity/contact dan relation contract setelah
+  Santri baseline berjalan.
+- [ ] Event `SantriRegistered` atau vocabulary final yang disetujui tersedia
+  bila consumer nyata tersedia.
 
 **Verification:**
 

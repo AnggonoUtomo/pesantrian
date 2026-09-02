@@ -1,0 +1,13 @@
+{
+    "name": "KelasRombel",
+    "namespace": "App\\Modules\\Academic\\KelasRombel",
+    "version": "1.0.0",
+    "schema_version": 1,
+    "status": "enabled",
+    "domain": "Academic",
+    "path": "app/Modules/Academic/KelasRombel",
+    "provider": "App\\Modules\\Academic\\KelasRombel\\ServiceProvider",
+    "dependencies": [],
+    "permission_source": "permissions.php",
+    "config_source": "module.php"
+}

@@ -15,30 +15,39 @@
 - [x] Buat `specification.md`.
 - [x] Buat `plan.md`.
 - [x] Buat `tasks.md`.
-- [ ] Review dan setujui open questions sebelum coding.
+- [x] Review dan setujui open questions sebelum coding.
 
 ## Increment 2: Skeleton Module
 
-- [ ] Jalankan dry-run generator module.
+- [x] Jalankan dry-run generator module.
   - Acceptance: target `app/Modules/Academic/KelasRombel`, diagnostics kosong,
     dan tidak ada folder optional placeholder.
   - Verification:
     `php artisan module:make Academic KelasRombel --dry-run --json --no-ansi`.
-- [ ] Generate skeleton module.
+- [x] Generate skeleton module.
   - Acceptance: file awal module dibuat tanpa folder kosong placeholder.
   - Verification:
     `php artisan module:make Academic KelasRombel --force --yes --json --no-ansi`.
-- [ ] Tambahkan metadata module.
+- [x] Tambahkan metadata module.
   - Acceptance: manifest dan runtime config sesuai baseline.
   - Verification: `php artisan module:inspect Academic/KelasRombel --json --no-ansi`.
-- [ ] Tambahkan permission candidate.
+- [x] Tambahkan permission candidate.
   - Acceptance: `kelas_rombel.view`, `kelas_rombel.manage`,
     `kelas_rombel.placement`, dan `kelas_rombel.archive` tersedia.
   - Verification: focused permission identity test.
-- [ ] Pastikan module registry valid.
+- [x] Pastikan module registry valid.
   - Verification: `php artisan module:validate --no-ansi`.
-- [ ] Pastikan command artisan baseline normal.
+- [x] Pastikan command artisan baseline normal.
   - Verification: `php artisan optimize:clear --no-ansi`.
+
+Hasil verifikasi:
+
+- [x] `php artisan module:make Academic KelasRombel --dry-run --json --no-ansi`
+- [x] `php artisan module:make Academic KelasRombel --force --yes --json --no-ansi`
+- [x] `php artisan module:inspect Academic/KelasRombel --json --no-ansi`
+- [x] `php artisan test tests\Unit\KelasRombelPermissionIdentityTest.php --no-ansi`
+- [x] `php artisan module:validate --no-ansi`
+- [x] `php artisan optimize:clear --no-ansi`
 
 ## Increment 3: Contract Readiness
 

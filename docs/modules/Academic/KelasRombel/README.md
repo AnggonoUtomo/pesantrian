@@ -8,9 +8,9 @@ Source module mengikuti [`docs/ARCHITECTURE.md`](../../../ARCHITECTURE.md) dan
 - Namespace teknis: `Academic`
 - Module teknis: `KelasRombel`
 - Nama tampil: `Kelas / Rombel / Kurikulum`
-- Candidate source: `app/Modules/Academic/KelasRombel/`
+- Source: `app/Modules/Academic/KelasRombel/`
 - Candidate frontend: `resources/js/pages/Academic/KelasRombel/`
-- Status: Draft dokumentasi sebelum coding
+- Status: Active - skeleton module
 
 ## Tujuan
 

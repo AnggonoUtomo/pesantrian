@@ -2,7 +2,8 @@
 
 ## Status
 
-Draft untuk review sebelum implementasi skeleton dan backend foundation.
+Active - skeleton module. Dokumentasi awal dan skeleton runtime sudah tersedia;
+backend foundation menunggu Increment 3-4.
 
 ## Objective
 
@@ -216,7 +217,7 @@ Acceptance UI:
 
 ## Acceptance Criteria
 
-- [ ] Module skeleton `Academic/KelasRombel` valid menurut module registry.
+- [x] Module skeleton `Academic/KelasRombel` valid menurut module registry.
 - [ ] Schema inti memakai ULID.
 - [ ] Kurikulum, kelas, rombel, placement santri, dan wali kelas tersedia.
 - [ ] Satu santri tidak bisa punya dua placement aktif pada periode yang sama.

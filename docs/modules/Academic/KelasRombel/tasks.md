@@ -208,13 +208,27 @@ Hasil verifikasi:
 
 ## Increment 9: Demo Seeder
 
-- [ ] Tambahkan seeder demo KelasRombel idempotent.
+- [x] Tambahkan seeder demo KelasRombel idempotent.
   - Acceptance: data demo mencakup kurikulum, kelas, rombel, placement santri,
     dan wali kelas.
   - Verification: `php artisan db:seed --no-ansi`.
-- [ ] Tambahkan seeder test.
+- [x] Tambahkan seeder test.
   - Acceptance: seeder aman diulang dan tidak berjalan di production.
   - Verification: focused seeder test.
+
+Hasil:
+
+- Seeder `KelasRombelDemoSeeder` membuat data demo kurikulum, tingkat kelas,
+  rombel aktif/draft/closed/archived, placement aktif/pindah/keluar, dan wali
+  kelas aktif/ended.
+- Seeder memakai data demo yang sudah dibuat oleh Organization, AcademicPeriod,
+  HumanResource, dan Santri.
+- Seeder tidak berjalan pada environment `production`.
+
+Verifikasi:
+
+- [x] `php artisan test --filter=BusinessDemoSeeder --no-ansi`
+- [x] `php artisan db:seed --no-ansi`
 
 ## Increment 10: UI/Inertia List dan Detail
 

@@ -10,7 +10,7 @@ Source module mengikuti [`docs/ARCHITECTURE.md`](../../../ARCHITECTURE.md) dan
 - Nama tampil: `Kelas / Rombel / Kurikulum`
 - Source: `app/Modules/Academic/KelasRombel/`
 - Candidate frontend: `resources/js/pages/Academic/KelasRombel/`
-- Status: Active - backend homeroom/archive API
+- Status: Active - demo seeder
 
 ## Tujuan
 
@@ -114,6 +114,23 @@ Endpoint wali kelas memakai permission `kelas_rombel.manage`, public contract
 `ActiveEmployeeReader`, dan menolak wali kelas aktif ganda pada rombel yang
 sama. Endpoint archive/restore memakai permission `kelas_rombel.archive`.
 
+## Demo Seeder
+
+Seeder demo berada di
+`app/Modules/Academic/KelasRombel/Database/Seeders/KelasRombelDemoSeeder.php`
+dan dipanggil dari `database/seeders/DatabaseSeeder.php` setelah demo
+Organization, AcademicPeriod, HumanResource, PenerimaanSantri, dan Santri.
+
+Data demo mencakup:
+
+- kurikulum aktif dan arsip;
+- tingkat kelas MTs/MA;
+- rombel aktif, draft, closed, dan archived;
+- placement santri aktif, pindah, dan keluar;
+- wali kelas aktif dan riwayat wali kelas selesai.
+
+Seeder bersifat idempotent dan tidak berjalan pada environment `production`.
+
 ## Identifier
 
 - Primary key teknis memakai ULID.
@@ -183,6 +200,8 @@ php artisan module:make Academic KelasRombel --dry-run --json --no-ansi
 php artisan module:make Academic KelasRombel --force --yes --json --no-ansi
 php artisan module:validate --no-ansi
 php artisan test --filter=KelasRombel --no-ansi
+php artisan test --filter=BusinessDemoSeeder --no-ansi
+php artisan db:seed --no-ansi
 npm run types:check
 npm run lint:check
 npm run build

@@ -28,12 +28,12 @@ final class HumanResourceDemoSeeder extends Seeder
         }
 
         $employees = [
-            ['PEG-DEMO-001', 'KH Ahmad Fikri', 'Kiai', 'permanent', 'Pengasuh Pesantren', 'active', '2020-07-01', null, $pesantren->id, 'demo_pengasuh'],
-            ['PEG-DEMO-002', 'Ustazah Nur Aini', 'Bu Nur', 'permanent', 'Kepala Asrama Putri', 'active', '2021-07-01', null, $asramaPutri->id, 'demo_pembina_asrama'],
-            ['PEG-DEMO-003', 'Ustaz Budi Santoso', 'Pak Budi', 'contract', 'Guru Tahfidz', 'active', '2022-07-01', null, $mts->id, 'demo_guru'],
-            ['PEG-DEMO-004', 'Ustazah Salma Zahra', 'Bu Salma', 'contract', 'Guru Bahasa Arab', 'active', '2023-07-01', null, $ma->id, 'demo_guru'],
-            ['PEG-DEMO-005', 'Pak Rahmat Hidayat', 'Pak Rahmat', 'honorary', 'Petugas Administrasi', 'inactive', '2021-01-01', '2026-06-30', $pesantren->id, 'demo_administrasi'],
-            ['PEG-DEMO-006', 'Bu Lilis Kurnia', 'Bu Lilis', 'honorary', 'Pembina Asrama Putra', 'inactive', '2021-07-01', '2026-06-30', $asramaPutra->id, 'demo_pembina_asrama'],
+            ['PEG-DEMO-001', 'KH Ahmad Fikri', 'Kiai', 'unit_head', 'Pengasuh Pesantren', 'active', '2020-07-01', null, $pesantren->id, 'demo_pengasuh'],
+            ['PEG-DEMO-002', 'Ustazah Nur Aini', 'Bu Nur', 'musyrif', 'Kepala Asrama Putri', 'active', '2021-07-01', null, $asramaPutri->id, 'demo_pembina_asrama'],
+            ['PEG-DEMO-003', 'Ustaz Budi Santoso', 'Pak Budi', 'teacher', 'Guru Tahfidz Demo', 'active', '2022-07-01', null, $mts->id, 'demo_guru'],
+            ['PEG-DEMO-004', 'Ustazah Salma Zahra', 'Bu Salma', 'ustadz', 'Guru Bahasa Arab Demo', 'active', '2023-07-01', null, $ma->id, 'demo_guru'],
+            ['PEG-DEMO-005', 'Pak Rahmat Hidayat', 'Pak Rahmat', 'administration_staff', 'Petugas Administrasi', 'inactive', '2021-01-01', '2026-06-30', $pesantren->id, 'demo_administrasi'],
+            ['PEG-DEMO-006', 'Bu Lilis Kurnia', 'Bu Lilis', 'musyrif', 'Pembina Asrama Putra', 'inactive', '2021-07-01', '2026-06-30', $asramaPutra->id, 'demo_pembina_asrama'],
         ];
 
         foreach ($employees as [$employeeNo, $name, $preferredName, $employmentType, $position, $status, $joinedOn, $leftOn, $unitId, $role]) {

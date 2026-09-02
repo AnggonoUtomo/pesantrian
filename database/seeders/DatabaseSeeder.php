@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Modules\Academic\AcademicPeriod\Database\Seeders\AcademicPeriodDemoSeeder;
+use App\Modules\Academic\KelasRombel\Database\Seeders\KelasRombelDemoSeeder;
 use App\Modules\HumanResource\HumanResource\Database\Seeders\HumanResourceDemoSeeder;
 use App\Modules\Organization\Organization\Database\Seeders\OrganizationDemoSeeder;
 use App\Modules\Pesantrian\PenerimaanSantri\Database\Seeders\PenerimaanSantriDemoSeeder;
@@ -36,6 +37,7 @@ class DatabaseSeeder extends Seeder
             HumanResourceDemoSeeder::class,
             PenerimaanSantriDemoSeeder::class,
             SantriDemoSeeder::class,
+            KelasRombelDemoSeeder::class,
         ]);
     }
 }

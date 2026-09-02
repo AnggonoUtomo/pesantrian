@@ -60,10 +60,10 @@ Candidate public boundary:
 - event perubahan lifecycle employee bila AuditTrail, Reporting, atau module
   consumer perlu merespons perubahan.
 
-Candidate employee lookup sudah terdokumentasi di specification module, tetapi
-belum dibuat sebagai source contract runtime sampai consumer pertama disetujui.
-Consumer lintas module tidak boleh memakai `Infrastructure/Models/EmployeeRecord`
-secara langsung.
+Employee lookup sudah menjadi source contract runtime karena
+`Academic/KelasRombel` memakai `ActiveEmployeeReader` sebagai consumer nyata
+untuk validasi wali kelas. Contract menyediakan opsi pegawai aktif dan lookup
+pegawai aktif by-id tanpa mengekspos `Infrastructure/Models/EmployeeRecord`.
 
 ## Data dan Identifier
 
@@ -104,8 +104,8 @@ assignment employee melalui event `human-resource.activity.occurred`.
 - `ServiceProvider.php` menjadi composition root dan tidak berisi business
   logic.
 - Seeder/factory dibuat hanya ketika ada kebutuhan test atau demo nyata.
-- Public contract lintas module belum dibuat di source sampai consumer pertama
-  jelas.
+- Public contract `ActiveEmployeeReader` tersedia untuk lookup pegawai/guru
+  aktif oleh module consumer nyata.
 - Web route Inertia read page tersedia di `human-resource/employees` dengan
   named route `human-resource.employees.index`.
 - Frontend read page tersedia di

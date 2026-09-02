@@ -8,6 +8,8 @@ use App\Modules\HumanResource\HumanResource\Application\DTO\ActiveEmployeeOption
 
 interface ActiveEmployeeReader
 {
+    public function findActive(string $employeeId, ?string $primaryUnitId = null, ?string $employmentType = null): ?ActiveEmployeeOptionData;
+
     /** @return list<ActiveEmployeeOptionData> */
     public function options(?string $primaryUnitId = null, ?string $employmentType = null, ?string $search = null, int $limit = 50): array;
 }

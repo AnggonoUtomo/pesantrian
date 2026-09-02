@@ -10,7 +10,7 @@ Source module mengikuti [`docs/ARCHITECTURE.md`](../../../ARCHITECTURE.md) dan
 - Nama tampil: `Kelas / Rombel / Kurikulum`
 - Source: `app/Modules/Academic/KelasRombel/`
 - Candidate frontend: `resources/js/pages/Academic/KelasRombel/`
-- Status: Active - backend placement API
+- Status: Active - backend homeroom/archive API
 
 ## Tujuan
 
@@ -98,6 +98,21 @@ Endpoint mutation memakai permission `kelas_rombel.manage`,
 Endpoint penempatan memakai permission `kelas_rombel.placement`,
 `api.idempotency`, public contract `ActiveStudentReader`, dan audit module
 `KelasRombel`.
+
+## API Wali Kelas dan Archive
+
+- `POST /api/v1/academic/class-groups/{classGroup}/homerooms`: menetapkan wali
+  kelas aktif dari guru aktif.
+- `PATCH /api/v1/academic/class-groups/{classGroup}/homerooms/{homeroom}/end`:
+  mengakhiri wali kelas aktif dengan alasan.
+- `PATCH /api/v1/academic/class-groups/{classGroup}/archive`: mengarsipkan
+  rombel.
+- `PATCH /api/v1/academic/class-groups/{classGroup}/restore`: memulihkan
+  rombel terarsip.
+
+Endpoint wali kelas memakai permission `kelas_rombel.manage`, public contract
+`ActiveEmployeeReader`, dan menolak wali kelas aktif ganda pada rombel yang
+sama. Endpoint archive/restore memakai permission `kelas_rombel.archive`.
 
 ## Identifier
 

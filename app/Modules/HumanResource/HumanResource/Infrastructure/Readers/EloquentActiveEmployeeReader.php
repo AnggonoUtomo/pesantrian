@@ -10,6 +10,18 @@ use App\Modules\HumanResource\HumanResource\Infrastructure\Models\EmployeeRecord
 
 final class EloquentActiveEmployeeReader implements ActiveEmployeeReader
 {
+    public function findActive(string $employeeId, ?string $primaryUnitId = null, ?string $employmentType = null): ?ActiveEmployeeOptionData
+    {
+        $record = EmployeeRecord::query()
+            ->whereKey($employeeId)
+            ->where('status', 'active')
+            ->when($primaryUnitId !== null, fn ($query) => $query->where('primary_unit_id', $primaryUnitId))
+            ->when($employmentType !== null, fn ($query) => $query->where('employment_type', $employmentType))
+            ->first(['id', 'employee_no', 'name', 'primary_unit_id', 'employment_type', 'position']);
+
+        return $record instanceof EmployeeRecord ? $this->map($record) : null;
+    }
+
     public function options(?string $primaryUnitId = null, ?string $employmentType = null, ?string $search = null, int $limit = 50): array
     {
         $safeLimit = max(1, min($limit, 100));
@@ -29,15 +41,20 @@ final class EloquentActiveEmployeeReader implements ActiveEmployeeReader
             ->orderBy('name')
             ->limit($safeLimit)
             ->get(['id', 'employee_no', 'name', 'primary_unit_id', 'employment_type', 'position'])
-            ->map(static fn (EmployeeRecord $record): ActiveEmployeeOptionData => new ActiveEmployeeOptionData(
-                id: (string) $record->getKey(),
-                employeeNo: (string) $record->employee_no,
-                name: (string) $record->name,
-                primaryUnitId: $record->primary_unit_id === null ? null : (string) $record->primary_unit_id,
-                employmentType: (string) $record->employment_type,
-                position: $record->position === null ? null : (string) $record->position,
-            ))
+            ->map(fn (EmployeeRecord $record): ActiveEmployeeOptionData => $this->map($record))
             ->values()
             ->all();
+    }
+
+    private function map(EmployeeRecord $record): ActiveEmployeeOptionData
+    {
+        return new ActiveEmployeeOptionData(
+            id: (string) $record->getKey(),
+            employeeNo: (string) $record->employee_no,
+            name: (string) $record->name,
+            primaryUnitId: $record->primary_unit_id === null ? null : (string) $record->primary_unit_id,
+            employmentType: (string) $record->employment_type,
+            position: $record->position === null ? null : (string) $record->position,
+        );
     }
 }

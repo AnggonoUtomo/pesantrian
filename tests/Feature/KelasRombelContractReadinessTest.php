@@ -158,4 +158,13 @@ it('exposes active employee options through the HumanResource public contract', 
         ->and($options[0]->id)->toBe('01K41KRG60H6GTYB56B6T31AD1')
         ->and($options[0]->employeeNo)->toBe('PEG-0001')
         ->and($options[0]->name)->toBe('Ustadz Hasan');
+
+    $activeEmployee = app(ActiveEmployeeReader::class)->findActive(
+        employeeId: '01K41KRG60H6GTYB56B6T31AD1',
+        employmentType: 'teacher',
+    );
+
+    expect($activeEmployee)->not->toBeNull()
+        ->and($activeEmployee?->employeeNo)->toBe('PEG-0001')
+        ->and(app(ActiveEmployeeReader::class)->findActive('01K41KRG60H6GTYB56B6T31AD2'))->toBeNull();
 });

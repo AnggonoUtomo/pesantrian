@@ -6,12 +6,14 @@ namespace App\Modules\Academic\KelasRombel\Infrastructure\Repositories;
 
 use App\Modules\Academic\KelasRombel\Application\Contracts\KelasRombelMutationRepository;
 use App\Modules\Academic\KelasRombel\Application\Contracts\KelasRombelReadRepository;
+use App\Modules\Academic\KelasRombel\Application\DTO\AssignHomeroomData;
 use App\Modules\Academic\KelasRombel\Application\DTO\ClassGroupData;
 use App\Modules\Academic\KelasRombel\Application\DTO\ClassGroupHomeroomData;
 use App\Modules\Academic\KelasRombel\Application\DTO\ClassGroupListFilter;
 use App\Modules\Academic\KelasRombel\Application\DTO\ClassGroupStudentData;
 use App\Modules\Academic\KelasRombel\Application\DTO\ClassLevelData;
 use App\Modules\Academic\KelasRombel\Application\DTO\CurriculumData;
+use App\Modules\Academic\KelasRombel\Application\DTO\HomeroomAssignmentData;
 use App\Modules\Academic\KelasRombel\Application\DTO\PaginatedClassGroupData;
 use App\Modules\Academic\KelasRombel\Application\DTO\PlaceStudentData;
 use App\Modules\Academic\KelasRombel\Application\DTO\ReferenceData;
@@ -217,6 +219,90 @@ final class EloquentKelasRombelReadRepository implements KelasRombelMutationRepo
         return $this->mapPlacement($record->refresh());
     }
 
+    public function findHomeroom(string $id): ?HomeroomAssignmentData
+    {
+        $record = ClassGroupHomeroomRecord::query()->find($id);
+
+        return $record instanceof ClassGroupHomeroomRecord ? $this->mapHomeroom($record) : null;
+    }
+
+    public function findActiveHomeroomForClassGroup(string $classGroupId): ?HomeroomAssignmentData
+    {
+        $record = ClassGroupHomeroomRecord::query()
+            ->where('class_group_id', $classGroupId)
+            ->where('status', 'active')
+            ->whereNotNull('active_class_group_key')
+            ->first();
+
+        return $record instanceof ClassGroupHomeroomRecord ? $this->mapHomeroom($record) : null;
+    }
+
+    public function assignHomeroom(AssignHomeroomData $data): HomeroomAssignmentData
+    {
+        /** @var ClassGroupHomeroomRecord $record */
+        $record = ClassGroupHomeroomRecord::query()->create($data->toArray());
+
+        return $this->mapHomeroom($record);
+    }
+
+    public function endHomeroom(string $homeroomId, string $endedOn, string $reason): ?HomeroomAssignmentData
+    {
+        $record = ClassGroupHomeroomRecord::query()->find($homeroomId);
+
+        if (! $record instanceof ClassGroupHomeroomRecord || $record->status !== 'active') {
+            return null;
+        }
+
+        $record->forceFill([
+            'ended_on' => $endedOn,
+            'status' => 'ended',
+            'reason' => $reason,
+            'active_class_group_key' => null,
+        ])->save();
+
+        return $this->mapHomeroom($record->refresh());
+    }
+
+    public function archiveClassGroup(string $id, ?string $actorId): ?ClassGroupData
+    {
+        $record = ClassGroupRecord::query()
+            ->whereKey($id)
+            ->whereNull('archived_at')
+            ->first();
+
+        if (! $record instanceof ClassGroupRecord) {
+            return null;
+        }
+
+        $record->forceFill([
+            'status' => 'archived',
+            'archived_at' => now(),
+            'archived_by' => $actorId,
+        ])->save();
+
+        return $this->freshClassGroupData($record);
+    }
+
+    public function restoreClassGroup(string $id): ?ClassGroupData
+    {
+        $record = ClassGroupRecord::query()
+            ->whereKey($id)
+            ->whereNotNull('archived_at')
+            ->first();
+
+        if (! $record instanceof ClassGroupRecord) {
+            return null;
+        }
+
+        $record->forceFill([
+            'status' => 'active',
+            'archived_at' => null,
+            'archived_by' => null,
+        ])->save();
+
+        return $this->freshClassGroupData($record);
+    }
+
     /** @return Builder<ClassGroupRecord> */
     private function baseQuery(): Builder
     {
@@ -320,6 +406,22 @@ final class EloquentKelasRombelReadRepository implements KelasRombelMutationRepo
             studentNo: (string) $record->student_no,
             joinedOn: $record->joined_on->toDateString(),
             leftOn: $record->left_on?->toDateString(),
+            status: (string) $record->status,
+            reason: $record->reason === null ? null : (string) $record->reason,
+            createdAt: $record->created_at?->toJSON(),
+            updatedAt: $record->updated_at?->toJSON(),
+        );
+    }
+
+    private function mapHomeroom(ClassGroupHomeroomRecord $record): HomeroomAssignmentData
+    {
+        return new HomeroomAssignmentData(
+            id: (string) $record->getKey(),
+            classGroupId: (string) $record->class_group_id,
+            employeeId: (string) $record->employee_id,
+            employeeName: (string) $record->employee_name,
+            assignedOn: $record->assigned_on->toDateString(),
+            endedOn: $record->ended_on?->toDateString(),
             status: (string) $record->status,
             reason: $record->reason === null ? null : (string) $record->reason,
             createdAt: $record->created_at?->toJSON(),

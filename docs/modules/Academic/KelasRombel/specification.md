@@ -2,9 +2,10 @@
 
 ## Status
 
-Active - backend placement API. Dokumentasi awal, skeleton runtime, public read
-contract minimum dari module referensi, schema inti, API read/list, API
-create/update master, dan API penempatan santri Kelas/Rombel sudah tersedia.
+Active - backend homeroom/archive API. Dokumentasi awal, skeleton runtime,
+public read contract minimum dari module referensi, schema inti, API read/list,
+API create/update master, API penempatan santri, API wali kelas, dan
+archive/restore Kelas/Rombel sudah tersedia.
 
 ## Objective
 
@@ -181,8 +182,8 @@ Public contract minimum yang sudah tersedia:
   `ActiveStudentOptionData` untuk santri aktif, dengan lookup by-id, filter
   unit, dan search.
 - `HumanResource/HumanResource\Application\Contracts\ActiveEmployeeReader`
-  mengembalikan `ActiveEmployeeOptionData` untuk pegawai aktif, dengan filter
-  unit, jenis pegawai, dan search.
+  mengembalikan `ActiveEmployeeOptionData` untuk pegawai aktif, dengan lookup
+  by-id, filter unit, jenis pegawai, dan search.
 
 Contract di atas dibuat karena `Academic/KelasRombel` adalah consumer nyata
 untuk selector dan validasi awal. KelasRombel tetap tidak boleh mengimpor model
@@ -240,7 +241,7 @@ Acceptance UI:
 - [x] Closed/archived rombel tidak menerima placement baru.
 - [x] Actor tanpa permission ditolak backend untuk API read/list.
 - [x] Mutation signifikan tercatat audit untuk create/update kurikulum, tingkat
-  kelas, rombel, dan penempatan santri.
+  kelas, rombel, penempatan santri, wali kelas, dan archive/restore.
 - [ ] Seeder demo idempotent tersedia setelah schema/runtime dibuat.
 - [ ] UI Inertia list/detail tersedia dengan page tipis dan komponen terpisah.
 - [ ] Browser QA desktop/mobile lulus sebelum module dianggap baseline complete.

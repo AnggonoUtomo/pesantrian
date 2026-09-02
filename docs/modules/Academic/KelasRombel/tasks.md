@@ -185,16 +185,26 @@ Hasil verifikasi:
 
 ## Increment 8: Wali Kelas dan Archive
 
-- [ ] Buat action assign/end homeroom.
+- [x] Buat action assign/end homeroom.
   - Acceptance: satu rombel hanya punya satu wali kelas aktif.
   - Verification: focused homeroom test.
-- [ ] Buat use case archive/restore rombel.
+- [x] Buat use case archive/restore rombel.
   - Acceptance: archived rombel tidak tampil di list aktif default dan bisa
     dipulihkan.
   - Verification: focused archive test.
-- [ ] Tambahkan audit homeroom dan archive.
+- [x] Tambahkan audit homeroom dan archive.
   - Acceptance: mutation menghasilkan audit aman.
   - Verification: focused audit test.
+
+Hasil verifikasi:
+
+- [x] `POST /api/v1/academic/class-groups/{classGroup}/homerooms`
+- [x] `PATCH /api/v1/academic/class-groups/{classGroup}/homerooms/{homeroom}/end`
+- [x] `PATCH /api/v1/academic/class-groups/{classGroup}/archive`
+- [x] `PATCH /api/v1/academic/class-groups/{classGroup}/restore`
+- [x] `php artisan test --filter=KelasRombelHomeroomArchiveApi --no-ansi`
+- [x] `php artisan test --filter=KelasRombel --no-ansi`
+- [x] `php artisan route:list --path=academic/class-groups --no-ansi`
 
 ## Increment 9: Demo Seeder
 

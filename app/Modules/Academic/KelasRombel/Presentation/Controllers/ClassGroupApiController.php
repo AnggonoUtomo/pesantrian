@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace App\Modules\Academic\KelasRombel\Presentation\Controllers;
 
 use App\Http\ApiResponseFactory;
+use App\Modules\Academic\KelasRombel\Application\Actions\ArchiveClassGroup;
 use App\Modules\Academic\KelasRombel\Application\Actions\CreateClassGroup;
+use App\Modules\Academic\KelasRombel\Application\Actions\RestoreClassGroup;
 use App\Modules\Academic\KelasRombel\Application\Actions\UpdateClassGroup;
 use App\Modules\Academic\KelasRombel\Application\DTO\ClassGroupData;
 use App\Modules\Academic\KelasRombel\Application\DTO\PaginatedClassGroupData;
 use App\Modules\Academic\KelasRombel\Application\Queries\ListClassGroups;
 use App\Modules\Academic\KelasRombel\Application\Queries\ShowClassGroup;
+use App\Modules\Academic\KelasRombel\Presentation\Requests\ArchiveClassGroupApiRequest;
 use App\Modules\Academic\KelasRombel\Presentation\Requests\ListClassGroupsApiRequest;
 use App\Modules\Academic\KelasRombel\Presentation\Requests\StoreClassGroupApiRequest;
 use App\Modules\Academic\KelasRombel\Presentation\Requests\UpdateClassGroupApiRequest;
@@ -27,6 +30,8 @@ final readonly class ClassGroupApiController implements HasMiddleware
         private ShowClassGroup $showClassGroup,
         private CreateClassGroup $createClassGroup,
         private UpdateClassGroup $updateClassGroup,
+        private ArchiveClassGroup $archiveClassGroup,
+        private RestoreClassGroup $restoreClassGroup,
         private ApiResponseFactory $responses,
     ) {}
 
@@ -35,6 +40,7 @@ final readonly class ClassGroupApiController implements HasMiddleware
         return [
             new Middleware('can:kelas_rombel.view', only: ['index', 'show']),
             new Middleware('can:kelas_rombel.manage', only: ['store', 'update']),
+            new Middleware('can:kelas_rombel.archive', only: ['archive', 'restore']),
         ];
     }
 
@@ -97,6 +103,41 @@ final readonly class ClassGroupApiController implements HasMiddleware
             $request,
             'Rombel berhasil diperbarui.',
             (new ClassGroupResource($updated))->toArray($request),
+        );
+    }
+
+    public function archive(ArchiveClassGroupApiRequest $request, string $classGroup): JsonResponse
+    {
+        $archived = $this->archiveClassGroup->execute(
+            $request->user(),
+            $classGroup,
+            (string) $request->validated('reason'),
+            $this->responses->correlationId($request),
+        );
+
+        abort_if($archived === null, 404);
+
+        return $this->responses->success(
+            $request,
+            'Rombel berhasil diarsipkan.',
+            (new ClassGroupResource($archived))->toArray($request),
+        );
+    }
+
+    public function restore(Request $request, string $classGroup): JsonResponse
+    {
+        $restored = $this->restoreClassGroup->execute(
+            $request->user(),
+            $classGroup,
+            $this->responses->correlationId($request),
+        );
+
+        abort_if($restored === null, 404);
+
+        return $this->responses->success(
+            $request,
+            'Rombel berhasil dipulihkan.',
+            (new ClassGroupResource($restored))->toArray($request),
         );
     }
 

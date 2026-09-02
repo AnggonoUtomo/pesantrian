@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Modules\Academic\KelasRombel\Presentation\Controllers\ClassGroupApiController;
 use App\Modules\Academic\KelasRombel\Presentation\Controllers\ClassLevelApiController;
 use App\Modules\Academic\KelasRombel\Presentation\Controllers\CurriculumApiController;
+use App\Modules\Academic\KelasRombel\Presentation\Controllers\HomeroomAssignmentApiController;
 use App\Modules\Academic\KelasRombel\Presentation\Controllers\StudentPlacementApiController;
 use Illuminate\Support\Facades\Route;
 
@@ -44,6 +45,14 @@ Route::middleware(['web', 'auth', 'verified', 'throttle:system-api'])
             ->whereUlid('classGroup')
             ->middleware('api.idempotency')
             ->name('update');
+        Route::patch('/{classGroup}/archive', [ClassGroupApiController::class, 'archive'])
+            ->whereUlid('classGroup')
+            ->middleware('api.idempotency')
+            ->name('archive');
+        Route::patch('/{classGroup}/restore', [ClassGroupApiController::class, 'restore'])
+            ->whereUlid('classGroup')
+            ->middleware('api.idempotency')
+            ->name('restore');
         Route::post('/{classGroup}/students', [StudentPlacementApiController::class, 'store'])
             ->whereUlid('classGroup')
             ->middleware('api.idempotency')
@@ -58,6 +67,15 @@ Route::middleware(['web', 'auth', 'verified', 'throttle:system-api'])
             ->whereUlid('placement')
             ->middleware('api.idempotency')
             ->name('students.remove');
+        Route::post('/{classGroup}/homerooms', [HomeroomAssignmentApiController::class, 'store'])
+            ->whereUlid('classGroup')
+            ->middleware('api.idempotency')
+            ->name('homerooms.store');
+        Route::patch('/{classGroup}/homerooms/{homeroom}/end', [HomeroomAssignmentApiController::class, 'end'])
+            ->whereUlid('classGroup')
+            ->whereUlid('homeroom')
+            ->middleware('api.idempotency')
+            ->name('homerooms.end');
         Route::get('/{classGroup}', [ClassGroupApiController::class, 'show'])
             ->whereUlid('classGroup')
             ->name('show');

@@ -134,18 +134,30 @@ Hasil verifikasi:
 
 ## Increment 6: Create/Update Kurikulum, Kelas, dan Rombel
 
-- [ ] Buat request validation create/update.
+- [x] Buat request validation create/update.
   - Acceptance: duplicate code dan payload invalid ditolak jelas.
   - Verification: focused feature test.
-- [ ] Buat action create/update kurikulum.
+- [x] Buat action create/update kurikulum.
   - Acceptance: mutation tercatat audit.
   - Verification: focused feature/audit test.
-- [ ] Buat action create/update kelas.
+- [x] Buat action create/update kelas.
   - Acceptance: kelas scoped ke unit dan urutan tampilan valid.
   - Verification: focused feature/audit test.
-- [ ] Buat action create/update rombel.
+- [x] Buat action create/update rombel.
   - Acceptance: rombel scoped ke periode dan unit, capacity valid.
   - Verification: focused feature/audit test.
+
+Hasil verifikasi:
+
+- [x] `POST /api/v1/academic/class-groups/curricula`
+- [x] `PATCH /api/v1/academic/class-groups/curricula/{curriculum}`
+- [x] `POST /api/v1/academic/class-groups/levels`
+- [x] `PATCH /api/v1/academic/class-groups/levels/{level}`
+- [x] `POST /api/v1/academic/class-groups`
+- [x] `PATCH /api/v1/academic/class-groups/{classGroup}`
+- [x] `php artisan test --filter=KelasRombelMutationApi --no-ansi`
+- [x] `php artisan test --filter=KelasRombel --no-ansi`
+- [x] `php artisan route:list --path=academic/class-groups --no-ansi`
 
 ## Increment 7: Penempatan Santri
 

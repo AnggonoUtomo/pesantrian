@@ -238,13 +238,14 @@ Acceptance UI:
   melalui guard unique nullable.
 - [ ] Closed/archived rombel tidak menerima placement baru.
 - [x] Actor tanpa permission ditolak backend untuk API read/list.
-- [ ] Mutation signifikan tercatat audit.
+- [x] Mutation signifikan tercatat audit untuk create/update kurikulum, tingkat
+  kelas, dan rombel.
 - [ ] Seeder demo idempotent tersedia setelah schema/runtime dibuat.
 - [ ] UI Inertia list/detail tersedia dengan page tipis dan komponen terpisah.
 - [ ] Browser QA desktop/mobile lulus sebelum module dianggap baseline complete.
 - [x] Focused tests contract readiness `KelasRombel` lulus.
 - [x] Focused tests backend data/read `KelasRombel` lulus.
-- [ ] `php artisan module:validate --no-ansi` lulus.
+- [x] `php artisan module:validate --no-ansi` lulus.
 
 ## Open Questions
 

@@ -4,21 +4,30 @@ declare(strict_types=1);
 
 namespace App\Modules\Academic\KelasRombel\Infrastructure\Repositories;
 
+use App\Modules\Academic\KelasRombel\Application\Contracts\KelasRombelMutationRepository;
 use App\Modules\Academic\KelasRombel\Application\Contracts\KelasRombelReadRepository;
 use App\Modules\Academic\KelasRombel\Application\DTO\ClassGroupData;
 use App\Modules\Academic\KelasRombel\Application\DTO\ClassGroupHomeroomData;
 use App\Modules\Academic\KelasRombel\Application\DTO\ClassGroupListFilter;
 use App\Modules\Academic\KelasRombel\Application\DTO\ClassGroupStudentData;
+use App\Modules\Academic\KelasRombel\Application\DTO\ClassLevelData;
+use App\Modules\Academic\KelasRombel\Application\DTO\CurriculumData;
 use App\Modules\Academic\KelasRombel\Application\DTO\PaginatedClassGroupData;
 use App\Modules\Academic\KelasRombel\Application\DTO\ReferenceData;
+use App\Modules\Academic\KelasRombel\Application\DTO\UpsertClassGroupData;
+use App\Modules\Academic\KelasRombel\Application\DTO\UpsertClassLevelData;
+use App\Modules\Academic\KelasRombel\Application\DTO\UpsertCurriculumData;
+use App\Modules\Academic\KelasRombel\Infrastructure\Models\AcademicCurriculumRecord;
 use App\Modules\Academic\KelasRombel\Infrastructure\Models\ClassGroupHomeroomRecord;
 use App\Modules\Academic\KelasRombel\Infrastructure\Models\ClassGroupRecord;
 use App\Modules\Academic\KelasRombel\Infrastructure\Models\ClassGroupStudentRecord;
+use App\Modules\Academic\KelasRombel\Infrastructure\Models\ClassLevelRecord;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
+use RuntimeException;
 
-final class EloquentKelasRombelReadRepository implements KelasRombelReadRepository
+final class EloquentKelasRombelReadRepository implements KelasRombelMutationRepository, KelasRombelReadRepository
 {
     public function paginateClassGroups(ClassGroupListFilter $filter): PaginatedClassGroupData
     {
@@ -66,6 +75,72 @@ final class EloquentKelasRombelReadRepository implements KelasRombelReadReposito
         }
 
         return $this->map($record, includeDetails: true);
+    }
+
+    public function createCurriculum(UpsertCurriculumData $data): CurriculumData
+    {
+        /** @var AcademicCurriculumRecord $record */
+        $record = AcademicCurriculumRecord::query()->create($data->toArray());
+
+        return $this->mapCurriculum($record);
+    }
+
+    public function updateCurriculum(string $id, array $changes): ?CurriculumData
+    {
+        $record = AcademicCurriculumRecord::query()->find($id);
+
+        if (! $record instanceof AcademicCurriculumRecord) {
+            return null;
+        }
+
+        $record->fill($changes);
+        $record->save();
+
+        return $this->mapCurriculum($record->refresh());
+    }
+
+    public function createClassLevel(UpsertClassLevelData $data): ClassLevelData
+    {
+        /** @var ClassLevelRecord $record */
+        $record = ClassLevelRecord::query()->create($data->toArray());
+
+        return $this->mapClassLevel($record);
+    }
+
+    public function updateClassLevel(string $id, array $changes): ?ClassLevelData
+    {
+        $record = ClassLevelRecord::query()->find($id);
+
+        if (! $record instanceof ClassLevelRecord) {
+            return null;
+        }
+
+        $record->fill($changes);
+        $record->save();
+
+        return $this->mapClassLevel($record->refresh());
+    }
+
+    public function createClassGroup(UpsertClassGroupData $data): ClassGroupData
+    {
+        /** @var ClassGroupRecord $record */
+        $record = ClassGroupRecord::query()->create($data->toArray());
+
+        return $this->freshClassGroupData($record);
+    }
+
+    public function updateClassGroup(string $id, array $changes): ?ClassGroupData
+    {
+        $record = ClassGroupRecord::query()->find($id);
+
+        if (! $record instanceof ClassGroupRecord) {
+            return null;
+        }
+
+        $record->fill($changes);
+        $record->save();
+
+        return $this->freshClassGroupData($record);
     }
 
     /** @return Builder<ClassGroupRecord> */
@@ -132,6 +207,44 @@ final class EloquentKelasRombelReadRepository implements KelasRombelReadReposito
             students: $includeDetails ? $this->studentsFor($record) : [],
             homerooms: $includeDetails ? $this->homeroomsFor($record) : [],
         );
+    }
+
+    private function mapCurriculum(AcademicCurriculumRecord $record): CurriculumData
+    {
+        return new CurriculumData(
+            id: (string) $record->getKey(),
+            code: (string) $record->code,
+            name: (string) $record->name,
+            description: $record->description === null ? null : (string) $record->description,
+            status: (string) $record->status,
+            createdAt: $record->created_at?->toJSON(),
+            updatedAt: $record->updated_at?->toJSON(),
+        );
+    }
+
+    private function mapClassLevel(ClassLevelRecord $record): ClassLevelData
+    {
+        return new ClassLevelData(
+            id: (string) $record->getKey(),
+            unitId: (string) $record->unit_id,
+            code: (string) $record->code,
+            name: (string) $record->name,
+            sequence: (int) $record->sequence,
+            status: (string) $record->status,
+            createdAt: $record->created_at?->toJSON(),
+            updatedAt: $record->updated_at?->toJSON(),
+        );
+    }
+
+    private function freshClassGroupData(ClassGroupRecord $record): ClassGroupData
+    {
+        $fresh = $this->findClassGroup((string) $record->getKey());
+
+        if (! $fresh instanceof ClassGroupData) {
+            throw new RuntimeException('Rombel gagal dibaca ulang setelah mutation.');
+        }
+
+        return $fresh;
     }
 
     /** @return list<ClassGroupStudentData> */

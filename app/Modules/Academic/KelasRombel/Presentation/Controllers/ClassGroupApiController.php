@@ -5,11 +5,15 @@ declare(strict_types=1);
 namespace App\Modules\Academic\KelasRombel\Presentation\Controllers;
 
 use App\Http\ApiResponseFactory;
+use App\Modules\Academic\KelasRombel\Application\Actions\CreateClassGroup;
+use App\Modules\Academic\KelasRombel\Application\Actions\UpdateClassGroup;
 use App\Modules\Academic\KelasRombel\Application\DTO\ClassGroupData;
 use App\Modules\Academic\KelasRombel\Application\DTO\PaginatedClassGroupData;
 use App\Modules\Academic\KelasRombel\Application\Queries\ListClassGroups;
 use App\Modules\Academic\KelasRombel\Application\Queries\ShowClassGroup;
 use App\Modules\Academic\KelasRombel\Presentation\Requests\ListClassGroupsApiRequest;
+use App\Modules\Academic\KelasRombel\Presentation\Requests\StoreClassGroupApiRequest;
+use App\Modules\Academic\KelasRombel\Presentation\Requests\UpdateClassGroupApiRequest;
 use App\Modules\Academic\KelasRombel\Presentation\Resources\ClassGroupResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -21,6 +25,8 @@ final readonly class ClassGroupApiController implements HasMiddleware
     public function __construct(
         private ListClassGroups $listClassGroups,
         private ShowClassGroup $showClassGroup,
+        private CreateClassGroup $createClassGroup,
+        private UpdateClassGroup $updateClassGroup,
         private ApiResponseFactory $responses,
     ) {}
 
@@ -28,6 +34,7 @@ final readonly class ClassGroupApiController implements HasMiddleware
     {
         return [
             new Middleware('can:kelas_rombel.view', only: ['index', 'show']),
+            new Middleware('can:kelas_rombel.manage', only: ['store', 'update']),
         ];
     }
 
@@ -56,6 +63,40 @@ final readonly class ClassGroupApiController implements HasMiddleware
             $request,
             'Detail rombel berhasil dibaca.',
             (new ClassGroupResource($data, includeDetails: true))->toArray($request),
+        );
+    }
+
+    public function store(StoreClassGroupApiRequest $request): JsonResponse
+    {
+        $classGroup = $this->createClassGroup->execute(
+            $request->user(),
+            $request->toData(),
+            $this->responses->correlationId($request),
+        );
+
+        return $this->responses->success(
+            $request,
+            'Rombel berhasil dibuat.',
+            (new ClassGroupResource($classGroup))->toArray($request),
+            status: 201,
+        );
+    }
+
+    public function update(UpdateClassGroupApiRequest $request, string $classGroup): JsonResponse
+    {
+        $updated = $this->updateClassGroup->execute(
+            $request->user(),
+            $classGroup,
+            $request->changes(),
+            $this->responses->correlationId($request),
+        );
+
+        abort_if($updated === null, 404);
+
+        return $this->responses->success(
+            $request,
+            'Rombel berhasil diperbarui.',
+            (new ClassGroupResource($updated))->toArray($request),
         );
     }
 

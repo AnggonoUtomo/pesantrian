@@ -16,6 +16,7 @@ final readonly class RecordSystemActivity
         'AccessControl' => 'access-control.activity.occurred',
         'AcademicPeriod' => 'academic-period.activity.occurred',
         'HumanResource' => 'human-resource.activity.occurred',
+        'KelasRombel' => 'kelas-rombel.activity.occurred',
         'Organization' => 'organization.activity.occurred',
         'PenerimaanSantri' => 'penerimaan-santri.activity.occurred',
         'Santri' => 'santri.activity.occurred',

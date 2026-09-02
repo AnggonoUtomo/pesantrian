@@ -10,7 +10,7 @@ Source module mengikuti [`docs/ARCHITECTURE.md`](../../../ARCHITECTURE.md) dan
 - Nama tampil: `Kelas / Rombel / Kurikulum`
 - Source: `app/Modules/Academic/KelasRombel/`
 - Candidate frontend: `resources/js/pages/Academic/KelasRombel/`
-- Status: Active - backend read/list
+- Status: Active - backend create/update API
 
 ## Tujuan
 
@@ -70,6 +70,21 @@ tidak boleh mengimpor model Infrastructure module lain.
   santri dan wali kelas.
 
 Kedua endpoint memakai permission `kelas_rombel.view`.
+
+## API Mutation
+
+- `POST /api/v1/academic/class-groups/curricula`: membuat kurikulum.
+- `PATCH /api/v1/academic/class-groups/curricula/{curriculum}`:
+  memperbarui kurikulum.
+- `POST /api/v1/academic/class-groups/levels`: membuat tingkat kelas.
+- `PATCH /api/v1/academic/class-groups/levels/{level}`: memperbarui tingkat
+  kelas.
+- `POST /api/v1/academic/class-groups`: membuat rombel.
+- `PATCH /api/v1/academic/class-groups/{classGroup}`: memperbarui rombel.
+
+Endpoint mutation memakai permission `kelas_rombel.manage`,
+`api.idempotency`, validasi duplicate code sesuai scope data, dan audit module
+`KelasRombel`.
 
 ## Identifier
 

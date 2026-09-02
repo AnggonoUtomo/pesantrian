@@ -13,7 +13,10 @@ use App\Modules\Academic\KelasRombel\Application\DTO\ClassGroupStudentData;
 use App\Modules\Academic\KelasRombel\Application\DTO\ClassLevelData;
 use App\Modules\Academic\KelasRombel\Application\DTO\CurriculumData;
 use App\Modules\Academic\KelasRombel\Application\DTO\PaginatedClassGroupData;
+use App\Modules\Academic\KelasRombel\Application\DTO\PlaceStudentData;
 use App\Modules\Academic\KelasRombel\Application\DTO\ReferenceData;
+use App\Modules\Academic\KelasRombel\Application\DTO\StudentPlacementData;
+use App\Modules\Academic\KelasRombel\Application\DTO\StudentTransferData;
 use App\Modules\Academic\KelasRombel\Application\DTO\UpsertClassGroupData;
 use App\Modules\Academic\KelasRombel\Application\DTO\UpsertClassLevelData;
 use App\Modules\Academic\KelasRombel\Application\DTO\UpsertCurriculumData;
@@ -24,6 +27,7 @@ use App\Modules\Academic\KelasRombel\Infrastructure\Models\ClassGroupStudentReco
 use App\Modules\Academic\KelasRombel\Infrastructure\Models\ClassLevelRecord;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
@@ -143,6 +147,76 @@ final class EloquentKelasRombelReadRepository implements KelasRombelMutationRepo
         return $this->freshClassGroupData($record);
     }
 
+    public function findPlacement(string $id): ?StudentPlacementData
+    {
+        $record = ClassGroupStudentRecord::query()->find($id);
+
+        return $record instanceof ClassGroupStudentRecord ? $this->mapPlacement($record) : null;
+    }
+
+    public function findActivePlacementForStudentInTerm(string $studentId, string $academicTermId): ?StudentPlacementData
+    {
+        $record = ClassGroupStudentRecord::query()
+            ->where('student_id', $studentId)
+            ->where('academic_term_id', $academicTermId)
+            ->where('status', 'active')
+            ->whereNotNull('active_period_student_key')
+            ->first();
+
+        return $record instanceof ClassGroupStudentRecord ? $this->mapPlacement($record) : null;
+    }
+
+    public function placeStudent(PlaceStudentData $data): StudentPlacementData
+    {
+        /** @var ClassGroupStudentRecord $record */
+        $record = ClassGroupStudentRecord::query()->create($data->toArray());
+
+        return $this->mapPlacement($record);
+    }
+
+    public function transferStudent(string $placementId, PlaceStudentData $target, string $reason): ?StudentTransferData
+    {
+        $previous = ClassGroupStudentRecord::query()->find($placementId);
+
+        if (! $previous instanceof ClassGroupStudentRecord || $previous->status !== 'active') {
+            return null;
+        }
+
+        $joinedOn = Carbon::parse($target->joinedOn)->toImmutable();
+        $previous->forceFill([
+            'left_on' => $joinedOn->subDay()->toDateString(),
+            'status' => 'transferred',
+            'reason' => $reason,
+            'active_period_student_key' => null,
+        ])->save();
+
+        /** @var ClassGroupStudentRecord $current */
+        $current = ClassGroupStudentRecord::query()->create($target->toArray());
+
+        return new StudentTransferData(
+            previous: $this->mapPlacement($previous->refresh()),
+            current: $this->mapPlacement($current),
+        );
+    }
+
+    public function removeStudent(string $placementId, string $leftOn, string $reason): ?StudentPlacementData
+    {
+        $record = ClassGroupStudentRecord::query()->find($placementId);
+
+        if (! $record instanceof ClassGroupStudentRecord || $record->status !== 'active') {
+            return null;
+        }
+
+        $record->forceFill([
+            'left_on' => $leftOn,
+            'status' => 'removed',
+            'reason' => $reason,
+            'active_period_student_key' => null,
+        ])->save();
+
+        return $this->mapPlacement($record->refresh());
+    }
+
     /** @return Builder<ClassGroupRecord> */
     private function baseQuery(): Builder
     {
@@ -231,6 +305,23 @@ final class EloquentKelasRombelReadRepository implements KelasRombelMutationRepo
             name: (string) $record->name,
             sequence: (int) $record->sequence,
             status: (string) $record->status,
+            createdAt: $record->created_at?->toJSON(),
+            updatedAt: $record->updated_at?->toJSON(),
+        );
+    }
+
+    private function mapPlacement(ClassGroupStudentRecord $record): StudentPlacementData
+    {
+        return new StudentPlacementData(
+            id: (string) $record->getKey(),
+            classGroupId: (string) $record->class_group_id,
+            academicTermId: (string) $record->academic_term_id,
+            studentId: (string) $record->student_id,
+            studentNo: (string) $record->student_no,
+            joinedOn: $record->joined_on->toDateString(),
+            leftOn: $record->left_on?->toDateString(),
+            status: (string) $record->status,
+            reason: $record->reason === null ? null : (string) $record->reason,
             createdAt: $record->created_at?->toJSON(),
             updatedAt: $record->updated_at?->toJSON(),
         );

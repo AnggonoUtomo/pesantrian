@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Modules\Academic\KelasRombel\Presentation\Controllers\ClassGroupApiController;
 use App\Modules\Academic\KelasRombel\Presentation\Controllers\ClassLevelApiController;
 use App\Modules\Academic\KelasRombel\Presentation\Controllers\CurriculumApiController;
+use App\Modules\Academic\KelasRombel\Presentation\Controllers\StudentPlacementApiController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['web', 'auth', 'verified', 'throttle:system-api'])
@@ -43,6 +44,20 @@ Route::middleware(['web', 'auth', 'verified', 'throttle:system-api'])
             ->whereUlid('classGroup')
             ->middleware('api.idempotency')
             ->name('update');
+        Route::post('/{classGroup}/students', [StudentPlacementApiController::class, 'store'])
+            ->whereUlid('classGroup')
+            ->middleware('api.idempotency')
+            ->name('students.store');
+        Route::patch('/{classGroup}/students/{placement}/transfer', [StudentPlacementApiController::class, 'transfer'])
+            ->whereUlid('classGroup')
+            ->whereUlid('placement')
+            ->middleware('api.idempotency')
+            ->name('students.transfer');
+        Route::patch('/{classGroup}/students/{placement}/remove', [StudentPlacementApiController::class, 'remove'])
+            ->whereUlid('classGroup')
+            ->whereUlid('placement')
+            ->middleware('api.idempotency')
+            ->name('students.remove');
         Route::get('/{classGroup}', [ClassGroupApiController::class, 'show'])
             ->whereUlid('classGroup')
             ->name('show');

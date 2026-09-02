@@ -34,7 +34,8 @@ source code konsisten dengan struktur DDD-lite modular monolith.
   `Pesantrian/PenerimaanSantri`.
 - Snapshot wali minimum untuk kebutuhan kontak awal.
 - Audit mutasi data induk dan perubahan status.
-- Public read contract ringkas untuk modul consumer.
+- Public read contract ringkas untuk modul consumer, termasuk lookup santri
+  aktif by-id untuk validasi penempatan rombel.
 
 ### Tidak Dimiliki Santri
 

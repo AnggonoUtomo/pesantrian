@@ -114,6 +114,15 @@ it('exposes active student options through the Santri public contract', function
         ->and($options[0]->id)->toBe('01K41KRG60H6GTYB56B6T31AC2')
         ->and($options[0]->studentNo)->toBe('NIS-0001')
         ->and($options[0]->fullName)->toBe('Ahmad Fikri');
+
+    $activeStudent = app(ActiveStudentReader::class)->findActive(
+        studentId: '01K41KRG60H6GTYB56B6T31AC2',
+        primaryUnitId: '01K41KRG60H6GTYB56B6T31AC1',
+    );
+
+    expect($activeStudent)->not->toBeNull()
+        ->and($activeStudent?->studentNo)->toBe('NIS-0001')
+        ->and(app(ActiveStudentReader::class)->findActive('01K41KRG60H6GTYB56B6T31AC3'))->toBeNull();
 });
 
 it('exposes active employee options through the HumanResource public contract', function (): void {

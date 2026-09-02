@@ -10,7 +10,7 @@ Source module mengikuti [`docs/ARCHITECTURE.md`](../../../ARCHITECTURE.md) dan
 - Nama tampil: `Kelas / Rombel / Kurikulum`
 - Source: `app/Modules/Academic/KelasRombel/`
 - Candidate frontend: `resources/js/pages/Academic/KelasRombel/`
-- Status: Active - backend create/update API
+- Status: Active - backend placement API
 
 ## Tujuan
 
@@ -84,6 +84,19 @@ Kedua endpoint memakai permission `kelas_rombel.view`.
 
 Endpoint mutation memakai permission `kelas_rombel.manage`,
 `api.idempotency`, validasi duplicate code sesuai scope data, dan audit module
+`KelasRombel`.
+
+## API Penempatan Santri
+
+- `POST /api/v1/academic/class-groups/{classGroup}/students`: menempatkan
+  santri aktif ke rombel aktif.
+- `PATCH /api/v1/academic/class-groups/{classGroup}/students/{placement}/transfer`:
+  memindahkan santri ke rombel aktif lain pada semester yang sama.
+- `PATCH /api/v1/academic/class-groups/{classGroup}/students/{placement}/remove`:
+  mengeluarkan santri dari rombel aktif dengan alasan.
+
+Endpoint penempatan memakai permission `kelas_rombel.placement`,
+`api.idempotency`, public contract `ActiveStudentReader`, dan audit module
 `KelasRombel`.
 
 ## Identifier

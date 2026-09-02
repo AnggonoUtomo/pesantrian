@@ -161,18 +161,27 @@ Hasil verifikasi:
 
 ## Increment 7: Penempatan Santri
 
-- [ ] Buat action place student.
+- [x] Buat action place student.
   - Acceptance: hanya santri aktif yang dapat ditempatkan ke rombel aktif.
   - Verification: focused placement test.
-- [ ] Buat action transfer student.
+- [x] Buat action transfer student.
   - Acceptance: placement lama ditutup, placement baru aktif, alasan tercatat.
   - Verification: focused placement test.
-- [ ] Buat action remove student.
+- [x] Buat action remove student.
   - Acceptance: placement aktif ditutup dengan alasan.
   - Verification: focused placement test.
-- [ ] Tambahkan audit placement.
+- [x] Tambahkan audit placement.
   - Acceptance: place/transfer/remove menghasilkan audit aman.
   - Verification: focused audit test.
+
+Hasil verifikasi:
+
+- [x] `POST /api/v1/academic/class-groups/{classGroup}/students`
+- [x] `PATCH /api/v1/academic/class-groups/{classGroup}/students/{placement}/transfer`
+- [x] `PATCH /api/v1/academic/class-groups/{classGroup}/students/{placement}/remove`
+- [x] `php artisan test --filter=KelasRombelPlacementApi --no-ansi`
+- [x] `php artisan test --filter=KelasRombel --no-ansi`
+- [x] `php artisan route:list --path=academic/class-groups --no-ansi`
 
 ## Increment 8: Wali Kelas dan Archive
 

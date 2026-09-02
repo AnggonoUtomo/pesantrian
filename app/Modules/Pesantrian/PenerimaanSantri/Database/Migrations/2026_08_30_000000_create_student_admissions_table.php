@@ -36,7 +36,7 @@ return new class extends Migration
 
             $table->index(['target_unit_id', 'status']);
             $table->index(['registration_period', 'status']);
-            $table->index(['registration_fee_required', 'registration_fee_status']);
+            $table->index(['registration_fee_required', 'registration_fee_status'], 'student_admissions_fee_status_idx');
             $table->index(['registered_at', 'decided_at']);
         });
     }

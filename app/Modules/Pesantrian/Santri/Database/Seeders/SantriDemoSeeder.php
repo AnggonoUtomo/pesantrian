@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace App\Modules\Pesantrian\Santri\Database\Seeders;
 
 use App\Models\User;
-use App\Modules\Organization\Organization\Infrastructure\Models\OrganizationUnitRecord;
-use App\Modules\Pesantrian\PenerimaanSantri\Infrastructure\Models\StudentAdmissionRecord;
 use App\Modules\Pesantrian\Santri\Infrastructure\Models\StudentGuardianRecord;
 use App\Modules\Pesantrian\Santri\Infrastructure\Models\StudentRecord;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 final class SantriDemoSeeder extends Seeder
 {
@@ -20,9 +19,11 @@ final class SantriDemoSeeder extends Seeder
         }
 
         $actor = User::where('email', 'super-system@example.test')->first();
-        $mts = OrganizationUnitRecord::where('code', 'DEMO-MTS')->first();
-        $ma = OrganizationUnitRecord::where('code', 'DEMO-MA')->first();
-        $acceptedAdmission = StudentAdmissionRecord::where('registration_no', 'PPDB-DEMO-ACCEPTED')->first();
+        $mts = DB::table('organization_units')->where('code', 'DEMO-MTS')->first();
+        $ma = DB::table('organization_units')->where('code', 'DEMO-MA')->first();
+        $acceptedAdmission = DB::table('student_admissions')
+            ->where('registration_no', 'PPDB-DEMO-ACCEPTED')
+            ->first();
 
         if (! $mts || ! $ma) {
             return;

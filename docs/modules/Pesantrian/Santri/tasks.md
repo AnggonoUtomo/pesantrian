@@ -179,8 +179,8 @@ Hasil verifikasi:
 
 - [x] Buat lifecycle panel.
 - [x] Buat archive/restore confirmation.
-- [ ] Jalankan browser QA desktop.
-- [ ] Jalankan browser QA mobile/responsive.
+- [x] Jalankan browser QA desktop.
+- [x] Jalankan browser QA mobile/responsive.
 - [x] Dokumentasikan hasil QA.
 
 Hasil verifikasi:
@@ -193,11 +193,19 @@ Hasil verifikasi:
 - [x] `npm run build`
 - [x] `php artisan module:validate --no-ansi`
 - [x] `php artisan route:list --path=pesantrian/students --no-ansi`
-- [ ] Browser QA authenticated desktop/mobile belum selesai karena database
-  lokal Laragon `pesantrian` belum memiliki table `students` dan
-  `student_guardians`. Fixture QA sementara `codex-santri-qa@example.test` dan
-  unit `QA-SANTRI` sudah dibersihkan. Jalankan browser QA setelah database lokal
-  dimigrasi atau user memberi izin eksplisit untuk menjalankan migration lokal.
+- [x] Browser QA authenticated desktop 1440x900 pada
+  `http://pesantrian.test/pesantrian/students`: page list aktif tampil,
+  sidebar namespace Pesantrian tampil, summary/filter/pagination tampil,
+  dialog `Ubah status` dan `Arsipkan` terbuka tanpa error, console error/warn
+  kosong, semua request halaman/assets HTTP 200.
+- [x] Browser QA authenticated arsip pada
+  `http://pesantrian.test/pesantrian/students?filter%5Barchived%5D=archived`:
+  data `NIS-DEMO-ARSIP` tampil, tombol/dialog `Pulihkan` tampil, console
+  error/warn kosong, semua request halaman/assets HTTP 200.
+- [x] Browser QA authenticated mobile 390x844 touch viewport pada
+  `http://pesantrian.test/pesantrian/students`: list berubah menjadi card
+  layout, data demo dan aksi lifecycle/archive tetap tampil, console error/warn
+  kosong, semua request halaman/assets HTTP 200.
 
 ## Keputusan Baseline
 

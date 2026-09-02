@@ -2,11 +2,11 @@
 
 ## Status
 
-Active - UI create/update/convert. Schema, model Infrastructure, factory
-minimum, API list/detail, create/update manual, konversi PPDB accepted melalui
-public contract, lifecycle status, archive, restore, UI Inertia baca
-daftar/detail, form create/update, dan aksi konversi PPDB accepted sudah
-tersedia.
+Active - baseline complete sampai UI lifecycle/archive dan QA desktop/mobile.
+Schema, model Infrastructure, factory minimum, API list/detail, create/update
+manual, konversi PPDB accepted melalui public contract, lifecycle status,
+archive, restore, UI Inertia baca daftar/detail, form create/update, aksi
+konversi PPDB accepted, dan UI lifecycle/archive/restore sudah tersedia.
 
 ## Objective
 
@@ -189,7 +189,7 @@ resources/js/pages/Pesantrian/Santri/
 
 ## Acceptance Criteria
 
-- [ ] Module skeleton `Pesantrian/Santri` valid menurut module registry.
+- [x] Module skeleton `Pesantrian/Santri` valid menurut module registry.
 - [x] Nomor induk santri auto-generated dan unique.
 - [x] Santri dapat dibuat manual oleh admin berwenang.
 - [x] Santri dapat dibuat dari PPDB accepted melalui public contract PPDB.
@@ -203,6 +203,9 @@ resources/js/pages/Pesantrian/Santri/
   dan sidebar namespace Pesantrian.
 - [x] UI create/update manual tersedia dengan form data induk dan wali snapshot.
 - [x] UI konversi accepted admission tersedia tanpa membaca Infrastructure PPDB.
+- [x] UI lifecycle/archive/restore tersedia dengan konfirmasi aman.
+- [x] Browser QA desktop/mobile authenticated lulus tanpa console error/warn
+  dan tanpa failed request halaman/assets.
 - [x] Consumer tidak mengimpor Infrastructure Santri atau PPDB.
 - [x] Focused tests backend Santri lulus.
 - [x] Focused tests presentasi Santri, typecheck, lint, dan build frontend

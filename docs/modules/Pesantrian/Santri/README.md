@@ -5,9 +5,10 @@
 - Namespace teknis: `Pesantrian`
 - Module teknis: `Santri`
 - Nama tampil: `Data Induk Santri dan Wali`
-- Candidate source: `app/Modules/Pesantrian/Santri/`
-- Candidate frontend: `resources/js/pages/Pesantrian/Santri/`
-- Status: Active - UI create/update/convert
+- Source: `app/Modules/Pesantrian/Santri/`
+- Frontend: `resources/js/pages/Pesantrian/Santri/`
+- Status: Active - baseline complete sampai UI lifecycle/archive dan QA
+  desktop/mobile
 
 ## Tujuan
 
@@ -115,6 +116,13 @@ Mutation UI memakai route web Inertia agar mendapatkan redirect dan flash toast:
 - `pesantrian.students.store`
 - `pesantrian.students.update`
 - `pesantrian.students.from-admission`
+- `pesantrian.students.lifecycle`
+- `pesantrian.students.archive`
+- `pesantrian.students.restore`
+
+QA browser authenticated sudah memverifikasi list aktif, filter arsip, dialog
+lifecycle/archive/restore, layout mobile card, console error/warn kosong, dan
+request halaman/assets HTTP 200.
 
 ## Dokumentasi Terkait
 

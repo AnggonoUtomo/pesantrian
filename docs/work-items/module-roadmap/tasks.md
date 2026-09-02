@@ -163,38 +163,43 @@ Bahasa Indonesia; source existing HumanResource tetap stabil.
 - [x] PenerimaanSantri menyediakan calon santri, status pendaftaran, dan
   contract accepted admission untuk konversi awal.
 - [x] Dokumentasi awal `Pesantrian/Santri` tersedia untuk review.
-- [ ] Santri menyediakan master, snapshot wali minimum, unit assignment, dan
+- [x] Santri menyediakan master, snapshot wali minimum, unit assignment, dan
   lifecycle awal.
 - [ ] WaliSantri menyediakan identity/contact dan relation contract setelah
   Santri baseline berjalan.
-- [ ] Event `SantriRegistered` atau vocabulary final yang disetujui tersedia
-  bila consumer nyata tersedia.
+- [ ] Public read/event contract Santri dibuat hanya saat consumer runtime nyata
+  tersedia, dimulai dari `Academic/KelasRombel` bila membutuhkan lookup Santri.
 
 **Verification:**
 
-- [ ] Focused tests per module.
-- [ ] `php artisan module:validate --no-ansi`.
+- [x] Focused tests per module untuk HumanResource, PenerimaanSantri, dan
+  Santri baseline.
+- [x] `php artisan module:validate --no-ansi`.
 
 **Dependencies:** Tasks 4-5.
 
 **Estimated scope:** M per module slice.
 
-## Task 7: Asrama, Akademik, Tahfidz, dan Presensi
+## Task 7: Kelas/Rombel, Asrama, Tahfidz, dan Presensi
 
-**Description:** Bangun Asrama, Academic, Tahfidz, dan PresensiSantri setelah
-Santri dan HR contract siap.
+**Description:** Bangun KelasRombel terlebih dahulu sebagai konteks akademik
+santri, lalu Asrama, Tahfidz, dan PresensiSantri setelah Santri dan HR contract
+siap.
 
 **Acceptance criteria:**
 
 - [ ] Asrama room placement dan occupancy minimum berjalan.
-- [ ] Academic class/subject/assignment/attendance akademik minimum berjalan.
+- [ ] Academic/KelasRombel memiliki kelas, rombel, kurikulum minimum, dan
+  penempatan santri.
+- [ ] Academic class/subject/assignment/attendance akademik lanjutan berjalan
+  setelah KelasRombel stabil.
 - [ ] Tahfidz/hafalan minimum berjalan.
 - [ ] Presensi kegiatan santri minimum berjalan.
 - [ ] Tidak ada direct mutation lintas module.
 
 **Verification:**
 
-- [ ] Focused tests Asrama, Academic, Tahfidz, dan PresensiSantri.
+- [ ] Focused tests KelasRombel, Asrama, Tahfidz, dan PresensiSantri.
 - [ ] `php artisan module:validate --no-ansi`.
 
 **Dependencies:** Task 6.

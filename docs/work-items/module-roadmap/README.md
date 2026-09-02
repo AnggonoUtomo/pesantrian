@@ -3,8 +3,8 @@
 ## Status
 
 Active - Phase 1 foundation Organization dan AcademicPeriod selesai; Phase 2
-People Core berjalan melalui HumanResource. Roadmap diselaraskan dengan baseline
-operasional pesantren berbahasa Indonesia.
+People Core selesai untuk HumanResource, PenerimaanSantri, dan Santri baseline.
+Roadmap diselaraskan dengan baseline operasional pesantren berbahasa Indonesia.
 
 ## Owner dan Lokasi
 
@@ -88,6 +88,27 @@ sudah menutup foundation periode akademik:
 - QA UI desktop/mobile sudah memverifikasi flow mutation, lifecycle, filter,
   aksesibilitas axe, console error, dan failed network response.
 
+## Update Santri Baseline
+
+Work item [`Pesantrian/Santri`](../../modules/Pesantrian/Santri/) sudah
+menutup baseline data induk santri:
+
+- module `Pesantrian/Santri` valid;
+- table `students` dan `student_guardians` memakai ULID;
+- read/list/detail, create/update manual, konversi PPDB accepted, lifecycle
+  status, archive, dan restore tersedia;
+- snapshot wali minimum dipertahankan di boundary Santri sampai kebutuhan
+  master `Pesantrian/WaliSantri` nyata;
+- UI Inertia tersedia di `resources/js/pages/Pesantrian/Santri/` dengan page
+  tipis dan komponen business-specific di folder `components`;
+- menu `Data Induk Santri` muncul pada namespace Pesantrian;
+- permission `santri.view`, `santri.manage`, `santri.lifecycle`, dan
+  `santri.archive` menjadi authority backend;
+- audit mutation Santri tercatat melalui bridge AuditLog/AuditTrail existing;
+- QA browser desktop/mobile sudah memverifikasi list aktif, filter arsip,
+  dialog lifecycle/archive/restore, console error/warn kosong, dan request
+  halaman/assets HTTP 200.
+
 ## Scope
 
 - Membuat mapping prioritas module SakaSantri berdasarkan baseline dan kode starterkit.
@@ -127,7 +148,7 @@ sudah menutup foundation periode akademik:
 - Koperasi dan Perpustakaan ditunda sampai baseline aplikasi berjalan.
 
 Keputusan mempertahankan source `System/*` tidak menghambat work item
-`Organization/Organization`, `Academic/AcademicPeriod`, atau module pesantrian
-berikutnya. Pemindahan UI/source existing tetap harus memakai work item migrasi
-tersendiri agar Ziggy route name, URL, permission key, dan Inertia component
-path tidak patah diam-diam.
+`Organization/Organization`, `Academic/AcademicPeriod`, `Pesantrian/Santri`,
+atau module berikutnya. Pemindahan UI/source existing tetap harus memakai work
+item migrasi tersendiri agar Ziggy route name, URL, permission key, dan Inertia
+component path tidak patah diam-diam.

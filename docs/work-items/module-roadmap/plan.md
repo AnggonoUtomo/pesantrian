@@ -280,7 +280,22 @@ Checkpoint P2:
 
 ## Phase 3: Asrama, Akademik, Tahfidz, dan Presensi (P3)
 
-### 3.1 Pesantrian/Asrama
+### 3.1 Academic/KelasRombel
+
+Target capability: kelas, rombel, kurikulum minimum, penempatan santri, dan
+wali kelas.
+
+Dependencies: Organization, AcademicPeriod, Santri contract, HumanResource
+contract, AuditTrail.
+
+Vertical slice:
+
+- Master kelas dan rombel minimum per tahun/term akademik.
+- Penempatan santri aktif ke rombel.
+- Assignment wali kelas dari SDM/guru.
+- Kurikulum minimum sebagai label/struktur awal tanpa subject detail kompleks.
+
+### 3.2 Pesantrian/Asrama
 
 Target capability: dormitory, room, occupancy, placement, musyrif relation.
 
@@ -292,9 +307,9 @@ Vertical slice:
 - Dormitory dan room master.
 - Placement santri ke kamar.
 - Occupancy rule minimum.
-- Event `StudentPlacedInDormitory`.
+- Event `StudentPlacedInDormitory` bila consumer nyata tersedia.
 
-### 3.2 Academic/Academic
+### 3.3 Academic/Academic
 
 Target capability: class, subject, teaching assignment, attendance, academic
 workflow dasar.
@@ -304,12 +319,11 @@ contract, AuditTrail.
 
 Vertical slice:
 
-- Class/rombel dan subject master minimum.
-- Student class assignment.
+- Subject master dan teaching assignment lanjutan.
+- Attendance akademik formal berbasis rombel/jadwal.
 - Teacher assignment.
-- Attendance recording minimum.
 
-### 3.3 Pesantrian/Tahfidz
+### 3.4 Pesantrian/Tahfidz
 
 Target capability: target hafalan, setoran, murojaah, capaian, dan pembimbing
 tahfidz.
@@ -317,7 +331,7 @@ tahfidz.
 Dependencies: Santri contract, HumanResource contract, AcademicPeriod bila
 dibutuhkan untuk periode target.
 
-### 3.4 Pesantrian/PresensiSantri
+### 3.5 Pesantrian/PresensiSantri
 
 Target capability: presensi kegiatan santri yang tidak sepenuhnya akademik
 formal, misalnya kegiatan pesantren/asrama.

@@ -7,7 +7,16 @@
 - [x] Buat `specification.md`.
 - [x] Buat `plan.md`.
 - [x] Buat `tasks.md`.
-- [ ] Review dan setujui open questions sebelum coding.
+- [x] Review dan setujui open questions sebelum coding.
+
+Catatan keputusan:
+
+- Format nomor induk memakai prefix `NIS`.
+- Santri manual dibuka untuk admin/internal.
+- Wali tetap snapshot dulu; module `Pesantrian/WaliSantri` dipromosikan setelah
+  kebutuhan master wali reusable nyata.
+- PPDB accepted dikonversi melalui public contract, bukan direct Infrastructure
+  dependency.
 
 ## Increment 2: Skeleton Module
 

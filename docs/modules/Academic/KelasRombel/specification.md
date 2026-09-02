@@ -2,9 +2,9 @@
 
 ## Status
 
-Active - data foundation. Dokumentasi awal, skeleton runtime, public read
-contract minimum dari module referensi, dan schema inti Kelas/Rombel sudah
-tersedia.
+Active - backend read/list. Dokumentasi awal, skeleton runtime, public read
+contract minimum dari module referensi, schema inti, dan API read/list
+Kelas/Rombel sudah tersedia.
 
 ## Objective
 
@@ -53,6 +53,11 @@ kurikulum, status, dan kata kunci.
 
 Operator dapat membuka detail rombel, melihat unit, periode, wali kelas, daftar
 santri, kapasitas, dan status.
+
+Endpoint backend:
+
+- `GET /api/v1/academic/class-groups`
+- `GET /api/v1/academic/class-groups/{classGroup}`
 
 ### Kelola Kurikulum Minimum
 
@@ -227,16 +232,18 @@ Acceptance UI:
 
 - [x] Module skeleton `Academic/KelasRombel` valid menurut module registry.
 - [x] Schema inti memakai ULID.
-- [ ] Kurikulum, kelas, rombel, placement santri, dan wali kelas tersedia.
-- [ ] Satu santri tidak bisa punya dua placement aktif pada periode yang sama.
+- [x] Kurikulum, kelas, rombel, placement santri, dan wali kelas tersedia pada
+  schema/read model awal.
+- [x] Satu santri tidak bisa punya dua placement aktif pada periode yang sama
+  melalui guard unique nullable.
 - [ ] Closed/archived rombel tidak menerima placement baru.
-- [ ] Actor tanpa permission ditolak backend.
+- [x] Actor tanpa permission ditolak backend untuk API read/list.
 - [ ] Mutation signifikan tercatat audit.
 - [ ] Seeder demo idempotent tersedia setelah schema/runtime dibuat.
 - [ ] UI Inertia list/detail tersedia dengan page tipis dan komponen terpisah.
 - [ ] Browser QA desktop/mobile lulus sebelum module dianggap baseline complete.
 - [x] Focused tests contract readiness `KelasRombel` lulus.
-- [ ] Focused tests backend data/runtime `KelasRombel` lulus.
+- [x] Focused tests backend data/read `KelasRombel` lulus.
 - [ ] `php artisan module:validate --no-ansi` lulus.
 
 ## Open Questions

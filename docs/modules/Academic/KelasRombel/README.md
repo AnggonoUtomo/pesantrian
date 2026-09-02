@@ -10,7 +10,7 @@ Source module mengikuti [`docs/ARCHITECTURE.md`](../../../ARCHITECTURE.md) dan
 - Nama tampil: `Kelas / Rombel / Kurikulum`
 - Source: `app/Modules/Academic/KelasRombel/`
 - Candidate frontend: `resources/js/pages/Academic/KelasRombel/`
-- Status: Active - data foundation
+- Status: Active - backend read/list
 
 ## Tujuan
 
@@ -62,6 +62,14 @@ menu: `Kelas / Rombel / Kurikulum`.
 Public read contract minimum dibuat pada Increment 3 karena
 `Academic/KelasRombel` menjadi consumer nyata untuk selector/validasi. Consumer
 tidak boleh mengimpor model Infrastructure module lain.
+
+## API Read
+
+- `GET /api/v1/academic/class-groups`: list/search/filter rombel.
+- `GET /api/v1/academic/class-groups/{classGroup}`: detail rombel dengan daftar
+  santri dan wali kelas.
+
+Kedua endpoint memakai permission `kelas_rombel.view`.
 
 ## Identifier
 

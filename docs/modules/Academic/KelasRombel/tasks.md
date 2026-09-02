@@ -107,18 +107,30 @@ Hasil verifikasi:
 
 ## Increment 5: Backend Read/List
 
-- [ ] Buat DTO/read model KelasRombel ringkas.
+- [x] Buat DTO/read model KelasRombel ringkas.
   - Acceptance: tidak mengekspos model Infrastructure.
   - Verification: focused unit/feature test.
-- [ ] Buat use case list/search/filter.
+- [x] Buat use case list/search/filter.
   - Acceptance: filter periode, unit, kurikulum, status, dan search tersedia.
   - Verification: focused feature test.
-- [ ] Buat use case detail.
+- [x] Buat use case detail.
   - Acceptance: detail memuat data rombel, santri placement, dan wali kelas.
   - Verification: focused feature test.
-- [ ] Buat controller/route read.
-  - Acceptance: route API/web read tersedia dan actor tanpa permission ditolak.
+- [x] Buat controller/route API read.
+  - Acceptance: route API read tersedia dan actor tanpa permission ditolak.
   - Verification: `php artisan route:list --path=academic/class-groups --no-ansi`.
+
+Catatan:
+
+- Web/Inertia read tetap dikerjakan pada Increment 10 agar page dan komponen UI
+  tidak dicampur ke backend read/list.
+
+Hasil verifikasi:
+
+- [x] `GET /api/v1/academic/class-groups`
+- [x] `GET /api/v1/academic/class-groups/{classGroup}`
+- [x] `php artisan test --filter=KelasRombelApi --no-ansi`
+- [x] `php artisan route:list --path=academic/class-groups --no-ansi`
 
 ## Increment 6: Create/Update Kurikulum, Kelas, dan Rombel
 

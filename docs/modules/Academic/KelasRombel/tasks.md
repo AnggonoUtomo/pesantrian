@@ -74,24 +74,36 @@ Hasil verifikasi:
 
 ## Increment 4: Data Foundation
 
-- [ ] Buat migration `academic_curricula`.
+- [x] Buat migration `academic_curricula`.
   - Acceptance: ULID primary key, unique `code`, `name`, `description`,
     `status`, dan timestamp tersedia.
   - Verification: focused schema test.
-- [ ] Buat migration `class_levels`.
+- [x] Buat migration `class_levels`.
   - Acceptance: ULID primary key, `unit_id`, unique code per unit, sequence,
     status, dan timestamp tersedia.
   - Verification: focused schema test.
-- [ ] Buat migration `class_groups`.
+- [x] Buat migration `class_groups`.
   - Acceptance: ULID primary key, period/unit/curriculum/class level reference,
     unique code per unit/periode, capacity, status, dan timestamp tersedia.
   - Verification: focused schema test.
-- [ ] Buat migration `class_group_students`.
+- [x] Buat migration `class_group_students`.
   - Acceptance: placement santri aktif dapat dijaga unique per periode.
   - Verification: focused placement invariant test.
-- [ ] Buat migration `class_group_homerooms`.
+- [x] Buat migration `class_group_homerooms`.
   - Acceptance: satu wali kelas aktif per rombel dapat dijaga.
   - Verification: focused homeroom invariant test.
+
+Hasil verifikasi:
+
+- [x] Migration `2026_09_02_000000_create_kelas_rombel_tables.php` tersedia di
+  module `Academic/KelasRombel`.
+- [x] Infrastructure model tersedia untuk curriculum, class level, class group,
+  placement santri, dan wali kelas.
+- [x] `class_group_students.active_period_student_key` menjadi unique nullable
+  guard untuk satu placement aktif per santri per semester.
+- [x] `class_group_homerooms.active_class_group_key` menjadi unique nullable
+  guard untuk satu wali kelas aktif per rombel.
+- [x] `php artisan test --filter=KelasRombelDataFoundation --no-ansi`
 
 ## Increment 5: Backend Read/List
 

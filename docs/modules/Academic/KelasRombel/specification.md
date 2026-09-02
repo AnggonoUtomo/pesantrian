@@ -2,9 +2,9 @@
 
 ## Status
 
-Active - contract readiness. Dokumentasi awal, skeleton runtime, dan public
-read contract minimum dari module referensi sudah tersedia; backend data
-foundation menunggu Increment 4.
+Active - data foundation. Dokumentasi awal, skeleton runtime, public read
+contract minimum dari module referensi, dan schema inti Kelas/Rombel sudah
+tersedia.
 
 ## Objective
 
@@ -131,6 +131,7 @@ Operator dapat menetapkan atau mengganti wali kelas dari data SDM/guru aktif.
 | `left_on` | Nullable |
 | `status` | active/transferred/removed |
 | `reason` | Nullable, wajib untuk transfer/remove |
+| `active_period_student_key` | Unique nullable guard untuk placement aktif per santri per semester |
 | `created_at`, `updated_at` | Timestamp standar |
 
 ### `class_group_homerooms`
@@ -145,6 +146,7 @@ Operator dapat menetapkan atau mengganti wali kelas dari data SDM/guru aktif.
 | `ended_on` | Nullable |
 | `status` | active/ended |
 | `reason` | Nullable |
+| `active_class_group_key` | Unique nullable guard untuk satu wali kelas aktif per rombel |
 | `created_at`, `updated_at` | Timestamp standar |
 
 ## Invariant
@@ -224,7 +226,7 @@ Acceptance UI:
 ## Acceptance Criteria
 
 - [x] Module skeleton `Academic/KelasRombel` valid menurut module registry.
-- [ ] Schema inti memakai ULID.
+- [x] Schema inti memakai ULID.
 - [ ] Kurikulum, kelas, rombel, placement santri, dan wali kelas tersedia.
 - [ ] Satu santri tidak bisa punya dua placement aktif pada periode yang sama.
 - [ ] Closed/archived rombel tidak menerima placement baru.

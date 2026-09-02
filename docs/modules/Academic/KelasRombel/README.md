@@ -10,7 +10,7 @@ Source module mengikuti [`docs/ARCHITECTURE.md`](../../../ARCHITECTURE.md) dan
 - Nama tampil: `Kelas / Rombel / Kurikulum`
 - Source: `app/Modules/Academic/KelasRombel/`
 - Candidate frontend: `resources/js/pages/Academic/KelasRombel/`
-- Status: Active - skeleton module
+- Status: Active - contract readiness
 
 ## Tujuan
 
@@ -48,16 +48,20 @@ menu: `Kelas / Rombel / Kurikulum`.
 
 ## Dependency
 
-- `Organization/Organization`: rujukan unit pendidikan pemilik kelas/rombel.
-- `Academic/AcademicPeriod`: rujukan tahun ajaran/semester aktif.
-- `Pesantrian/Santri`: rujukan santri aktif untuk penempatan.
-- `HumanResource/HumanResource`: rujukan guru/staf sebagai wali kelas.
+- `Organization/Organization`: rujukan unit pendidikan pemilik kelas/rombel
+  melalui `EducationUnitReader`.
+- `Academic/AcademicPeriod`: rujukan tahun ajaran/semester aktif melalui
+  `ActiveAcademicPeriodReader`.
+- `Pesantrian/Santri`: rujukan santri aktif untuk penempatan melalui
+  `ActiveStudentReader`.
+- `HumanResource/HumanResource`: rujukan guru/staf sebagai wali kelas melalui
+  `ActiveEmployeeReader`.
 - `System/AccessControl`: otorisasi backend.
 - `System/AuditLog`: audit perubahan data dan lifecycle.
 
-Public read contract untuk Santri, AcademicPeriod, dan HumanResource dibuat
-hanya saat implementasi runtime membutuhkan consumer nyata. Consumer tidak boleh
-mengimpor model Infrastructure module lain.
+Public read contract minimum dibuat pada Increment 3 karena
+`Academic/KelasRombel` menjadi consumer nyata untuk selector/validasi. Consumer
+tidak boleh mengimpor model Infrastructure module lain.
 
 ## Identifier
 

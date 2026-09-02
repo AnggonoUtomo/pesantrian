@@ -6,7 +6,9 @@ namespace App\Modules\Academic\AcademicPeriod;
 
 use App\Modules\Academic\AcademicPeriod\Application\Contracts\AcademicPeriodActivityPublisher;
 use App\Modules\Academic\AcademicPeriod\Application\Contracts\AcademicPeriodRepository;
+use App\Modules\Academic\AcademicPeriod\Application\Contracts\ActiveAcademicPeriodReader;
 use App\Modules\Academic\AcademicPeriod\Infrastructure\Events\LaravelAcademicPeriodActivityPublisher;
+use App\Modules\Academic\AcademicPeriod\Infrastructure\Readers\EloquentActiveAcademicPeriodReader;
 use App\Modules\Academic\AcademicPeriod\Infrastructure\Repositories\EloquentAcademicPeriodRepository;
 use Illuminate\Support\ServiceProvider as FrameworkServiceProvider;
 
@@ -16,6 +18,7 @@ final class ServiceProvider extends FrameworkServiceProvider
     {
         $this->app->bind(AcademicPeriodActivityPublisher::class, LaravelAcademicPeriodActivityPublisher::class);
         $this->app->bind(AcademicPeriodRepository::class, EloquentAcademicPeriodRepository::class);
+        $this->app->bind(ActiveAcademicPeriodReader::class, EloquentActiveAcademicPeriodReader::class);
     }
 
     public function boot(): void

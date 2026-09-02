@@ -21,7 +21,7 @@ item migrasi.
 | `HumanResource/HumanResource` | SDM Pesantren | Active | Employee, guru, ustadz, staff, assignment unit, lifecycle, audit, dan read page. |
 | `Pesantrian/PenerimaanSantri` | PPDB / Penerimaan Santri Baru | Active | Calon santri, status pendaftaran, checklist dokumen, biaya pendaftaran, dan contract accepted admission. |
 | `Pesantrian/Santri` | Data Induk Santri dan Wali | Active | Master santri, snapshot wali minimum, konversi PPDB accepted, lifecycle, archive/restore, dan UI. |
-| `Academic/KelasRombel` | Kelas / Rombel / Kurikulum | Active | Skeleton module untuk kelas, rombel, kurikulum minimum, penempatan santri, dan wali kelas. |
+| `Academic/KelasRombel` | Kelas / Rombel / Kurikulum | Active | Contract readiness untuk kelas, rombel, kurikulum minimum, penempatan santri, dan wali kelas. |
 
 ## Target Module Baseline
 
@@ -37,7 +37,7 @@ item migrasi.
 | 08 | `Pesantrian/PenerimaanSantri` | PPDB / Penerimaan Santri Baru | Calon santri, formulir, verifikasi, status pendaftaran, konversi menjadi santri | Organization, WaliSantri, Document bila diperlukan | Active |
 | 09 | `Pesantrian/WaliSantri` | Wali Santri | Guardian identity, relasi ke santri, kontak, billing contact, emergency contact | Santri contract bila diperlukan | Planned setelah Santri baseline |
 | 10 | `Pesantrian/Santri` | Data Induk Santri dan Wali | Student master, lifecycle, status, registration link, transfer, graduation, snapshot wali minimum | Organization, PenerimaanSantri, WaliSantri bila dipromosikan | Active - baseline complete sampai QA UI desktop/mobile |
-| 11 | `Academic/KelasRombel` | Kelas / Rombel / Kurikulum | Kelas, rombel, kurikulum minimum, penempatan santri, dan wali kelas | Organization, AcademicPeriod, Santri contract, HumanResource contract | Active - skeleton module |
+| 11 | `Academic/KelasRombel` | Kelas / Rombel / Kurikulum | Kelas, rombel, kurikulum minimum, penempatan santri, dan wali kelas | Organization, AcademicPeriod, Santri contract, HumanResource contract | Active - contract readiness |
 | 12 | `Pesantrian/Asrama` | Asrama | Dormitory, room, occupancy, placement, musyrif relation, placement history | Organization, Santri contract, HumanResource contract | Planned |
 | 13 | `Pesantrian/Tahfidz` | Tahfidz / Hafalan | Target hafalan, setoran, murojaah, capaian, pembimbing tahfidz | Santri contract, HumanResource contract, AcademicPeriod bila diperlukan | Planned |
 | 14 | `Pesantrian/PresensiSantri` | Presensi Santri | Presensi kegiatan santri di luar/bersama akademik formal | Santri contract, Academic/Asrama bila diperlukan | Planned |

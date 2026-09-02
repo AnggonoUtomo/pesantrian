@@ -2,8 +2,9 @@
 
 ## Status
 
-Active - skeleton module. Dokumentasi awal dan skeleton runtime sudah tersedia;
-backend foundation menunggu Increment 3-4.
+Active - contract readiness. Dokumentasi awal, skeleton runtime, dan public
+read contract minimum dari module referensi sudah tersedia; backend data
+foundation menunggu Increment 4.
 
 ## Objective
 
@@ -163,16 +164,21 @@ Operator dapat menetapkan atau mengganti wali kelas dari data SDM/guru aktif.
 awal, dependency lintas module wajib memakai public contract/DTO/query yang
 disetujui, bukan model Infrastructure.
 
-Candidate contract yang mungkin dipakai:
+Public contract minimum yang sudah tersedia:
 
-- `Academic/AcademicPeriod`: active/current period reader.
-- `Pesantrian/Santri`: active student lookup/selector.
-- `HumanResource/HumanResource`: active teacher/employee lookup.
-- `Organization/Organization`: active education unit lookup.
+- `Organization/Organization\Application\Contracts\EducationUnitReader`
+  mengembalikan `EducationUnitOptionData` untuk unit pendidikan aktif.
+- `Academic/AcademicPeriod\Application\Contracts\ActiveAcademicPeriodReader`
+  mengembalikan `ActiveAcademicPeriodData` untuk tahun ajaran/semester aktif.
+- `Pesantrian/Santri\Application\Contracts\ActiveStudentReader` mengembalikan
+  `ActiveStudentOptionData` untuk santri aktif, dengan filter unit dan search.
+- `HumanResource/HumanResource\Application\Contracts\ActiveEmployeeReader`
+  mengembalikan `ActiveEmployeeOptionData` untuk pegawai aktif, dengan filter
+  unit, jenis pegawai, dan search.
 
-Jika contract belum tersedia saat implementasi, increment pertama coding wajib
-menambahkan contract minimum pada module pemilik data dengan consumer nyata
-`Academic/KelasRombel`.
+Contract di atas dibuat karena `Academic/KelasRombel` adalah consumer nyata
+untuk selector dan validasi awal. KelasRombel tetap tidak boleh mengimpor model
+Infrastructure module referensi.
 
 ## Permission Candidate
 
@@ -227,7 +233,8 @@ Acceptance UI:
 - [ ] Seeder demo idempotent tersedia setelah schema/runtime dibuat.
 - [ ] UI Inertia list/detail tersedia dengan page tipis dan komponen terpisah.
 - [ ] Browser QA desktop/mobile lulus sebelum module dianggap baseline complete.
-- [ ] Focused tests `KelasRombel` lulus.
+- [x] Focused tests contract readiness `KelasRombel` lulus.
+- [ ] Focused tests backend data/runtime `KelasRombel` lulus.
 - [ ] `php artisan module:validate --no-ansi` lulus.
 
 ## Open Questions

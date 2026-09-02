@@ -51,14 +51,26 @@ Hasil verifikasi:
 
 ## Increment 3: Contract Readiness
 
-- [ ] Review kebutuhan public contract lintas module.
+- [x] Review kebutuhan public contract lintas module.
   - Acceptance: field minimum untuk Organization, AcademicPeriod, Santri, dan
     HumanResource jelas.
   - Verification: review manual spec dan source contract existing.
-- [ ] Implementasikan contract minimum hanya bila consumer nyata disetujui.
+- [x] Implementasikan contract minimum hanya bila consumer nyata disetujui.
   - Acceptance: consumer memakai DTO/query public boundary, bukan Eloquent model
     Infrastructure module lain.
   - Verification: focused contract/query tests.
+
+Hasil verifikasi:
+
+- [x] Public contract `EducationUnitReader` tersedia di
+  `Organization/Organization` untuk selector unit pendidikan aktif.
+- [x] Public contract `ActiveAcademicPeriodReader` tersedia di
+  `Academic/AcademicPeriod` untuk periode akademik aktif.
+- [x] Public contract `ActiveStudentReader` tersedia di `Pesantrian/Santri`
+  untuk selector santri aktif.
+- [x] Public contract `ActiveEmployeeReader` tersedia di
+  `HumanResource/HumanResource` untuk selector pegawai/guru aktif.
+- [x] `php artisan test --filter=KelasRombelContractReadiness --no-ansi`
 
 ## Increment 4: Data Foundation
 

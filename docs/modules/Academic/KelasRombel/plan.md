@@ -80,6 +80,13 @@ Acceptance:
 - tidak ada import Infrastructure lintas module;
 - contract dibuat hanya untuk kebutuhan UI/use case KelasRombel yang nyata.
 
+Status:
+
+- selesai pada Increment 3 dengan focused test
+  `KelasRombelContractReadinessTest`;
+- contract dibuat di module pemilik data agar KelasRombel tidak bergantung pada
+  Eloquent model Infrastructure lintas module.
+
 ## Increment 4: Data Foundation
 
 Tujuan:

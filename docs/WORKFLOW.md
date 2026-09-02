@@ -39,6 +39,9 @@ read-only, catat keterbatasannya, dan jangan mengarang hasil validasi.
 - Gunakan module generator project untuk module baru bila tersedia.
 - Ikuti `app/Modules/<Namespace>/<Module>/`.
 - Jangan membuat folder optional tanpa isi dan concern nyata.
+- Module baru yang memiliki table/data operasional wajib menyertakan seeder demo
+  idempotent di `Database/Seeders` dan dipanggil dari `DatabaseSeeder` sesuai
+  urutan dependency.
 - Jangan melakukan direct mutation lintas module.
 - Tambahkan test bila behavior berubah atau bug diperbaiki.
 - Untuk alur pengguna, verifikasi permission backend, loading/error state,

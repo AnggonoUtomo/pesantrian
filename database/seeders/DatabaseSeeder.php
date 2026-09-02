@@ -2,6 +2,11 @@
 
 namespace Database\Seeders;
 
+use App\Modules\Academic\AcademicPeriod\Database\Seeders\AcademicPeriodDemoSeeder;
+use App\Modules\HumanResource\HumanResource\Database\Seeders\HumanResourceDemoSeeder;
+use App\Modules\Organization\Organization\Database\Seeders\OrganizationDemoSeeder;
+use App\Modules\Pesantrian\PenerimaanSantri\Database\Seeders\PenerimaanSantriDemoSeeder;
+use App\Modules\Pesantrian\Santri\Database\Seeders\SantriDemoSeeder;
 use App\Modules\System\AccessControl\Database\Seeders\AccessControlSeeder;
 use App\Modules\System\AuditLog\Database\Seeders\AuditLogSeeder;
 use App\Modules\System\SystemSetting\Database\Seeders\SystemSettingSeeder;
@@ -26,6 +31,11 @@ class DatabaseSeeder extends Seeder
             UserManagementSeeder::class,
             AuditLogSeeder::class,
             SystemSettingSeeder::class,
+            OrganizationDemoSeeder::class,
+            AcademicPeriodDemoSeeder::class,
+            HumanResourceDemoSeeder::class,
+            PenerimaanSantriDemoSeeder::class,
+            SantriDemoSeeder::class,
         ]);
     }
 }

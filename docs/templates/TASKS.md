@@ -12,6 +12,8 @@
 - [ ] {Task kecil dengan satu hasil yang jelas.}
   - Acceptance: {kondisi lulus}.
   - Verification: `{command}`.
+- [ ] Jika module memiliki table/data operasional, tambahkan seeder demo
+  idempotent dan verifikasi `php artisan db:seed --no-ansi`.
 
 ## Hasil
 

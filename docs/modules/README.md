@@ -18,7 +18,7 @@ docs/modules/<Namespace>/<Module>/
 ```
 
 Nama `Namespace` dan `Module` mengikuti source code, misalnya
-`StudentLife/Student` untuk area Pesantrian atau `Finance/StudentFinance`.
+`Pesantrian/Santri`, `Academic/KelasRombel`, atau `Finance/StudentFinance`.
 Folder work item memakai
 `kebab-case`, misalnya `work-items/register-new-student/`.
 

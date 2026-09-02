@@ -36,7 +36,7 @@ item migrasi.
 | 08 | `Pesantrian/PenerimaanSantri` | PPDB / Penerimaan Santri Baru | Calon santri, formulir, verifikasi, status pendaftaran, konversi menjadi santri | Organization, WaliSantri, Document bila diperlukan | Active |
 | 09 | `Pesantrian/WaliSantri` | Wali Santri | Guardian identity, relasi ke santri, kontak, billing contact, emergency contact | Santri contract bila diperlukan | Planned setelah Santri baseline |
 | 10 | `Pesantrian/Santri` | Data Induk Santri dan Wali | Student master, lifecycle, status, registration link, transfer, graduation, snapshot wali minimum | Organization, PenerimaanSantri, WaliSantri bila dipromosikan | Active - baseline complete sampai QA UI desktop/mobile |
-| 11 | `Academic/KelasRombel` | Kelas / Rombel / Kurikulum | Kelas, rombel, kurikulum minimum, penempatan santri, dan wali kelas | Organization, AcademicPeriod, Santri contract, HumanResource contract | Next - dokumentasi |
+| 11 | `Academic/KelasRombel` | Kelas / Rombel / Kurikulum | Kelas, rombel, kurikulum minimum, penempatan santri, dan wali kelas | Organization, AcademicPeriod, Santri contract, HumanResource contract | Active - dokumentasi awal |
 | 12 | `Pesantrian/Asrama` | Asrama | Dormitory, room, occupancy, placement, musyrif relation, placement history | Organization, Santri contract, HumanResource contract | Planned |
 | 13 | `Pesantrian/Tahfidz` | Tahfidz / Hafalan | Target hafalan, setoran, murojaah, capaian, pembimbing tahfidz | Santri contract, HumanResource contract, AcademicPeriod bila diperlukan | Planned |
 | 14 | `Pesantrian/PresensiSantri` | Presensi Santri | Presensi kegiatan santri di luar/bersama akademik formal | Santri contract, Academic/Asrama bila diperlukan | Planned |

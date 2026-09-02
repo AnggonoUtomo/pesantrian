@@ -480,8 +480,8 @@ Phase 0 Starterkit alignment
           -> WaliSantri
           -> PenerimaanSantri
               -> Santri
+                  -> KelasRombel
                   -> Asrama
-                  -> Academic
                   -> Tahfidz
                   -> PresensiSantri
                   -> PerizinanSantri

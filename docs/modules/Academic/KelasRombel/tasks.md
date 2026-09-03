@@ -260,13 +260,39 @@ Verifikasi:
 
 ## Increment 11: UI Mutation dan QA Browser
 
-- [ ] Buat form kurikulum/kelas/rombel.
-- [ ] Buat form placement santri.
-- [ ] Buat form wali kelas.
-- [ ] Buat archive/restore confirmation.
-- [ ] Jalankan browser QA desktop.
-- [ ] Jalankan browser QA mobile/responsive.
-- [ ] Dokumentasikan hasil QA.
+- [x] Buat form kurikulum/kelas/rombel.
+- [x] Buat form placement santri.
+- [x] Buat form wali kelas.
+- [x] Buat archive/restore confirmation.
+- [ ] Jalankan browser QA desktop. **Blocked:** credential pengujian belum ada
+      pada database lokal.
+- [ ] Jalankan browser QA mobile/responsive. **Blocked:** credential pengujian
+      belum ada pada database lokal.
+- [x] Dokumentasikan hasil QA.
+
+Hasil:
+
+- Route web mutation ditambahkan untuk kurikulum, tingkat kelas, rombel,
+  placement santri, wali kelas, archive, dan restore.
+- UI daftar dipindahkan ke `KelasRombelDashboard` agar `pages/Index.tsx`
+  tetap minimal.
+- Form business-specific ditempatkan di
+  `resources/js/pages/Academic/KelasRombel/components/`.
+- Browser smoke memakai Playwright dapat membuka `/login`, tetapi belum bisa
+  memverifikasi halaman `/academic/class-groups` karena credential supersystem
+  pengujian belum ada pada database lokal. Tidak dibuat user baru.
+- Smoke yang sempat berjalan tidak menemukan error console/Ziggy sebelum
+  redirect kembali ke login.
+
+Verifikasi:
+
+- [x] `php artisan route:list --path=academic/class-groups --no-ansi`
+- [x] `php artisan test --filter=KelasRombelPresentation --no-ansi`
+- [x] `php artisan test --filter=KelasRombel --no-ansi`
+- [x] `npm run types:check`
+- [x] `npm run lint:check`
+- [x] `vendor\bin\pint --dirty --test`
+- [x] `npm run build`
 
 ## Keputusan Baseline
 

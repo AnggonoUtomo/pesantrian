@@ -6,7 +6,8 @@ import { KelasRombelDetailPanel } from '../components/KelasRombelDetailPanel';
 import type { ClassGroupShowPageProps } from '../types';
 
 export default function Show() {
-    const { auth, classGroup } = usePage<ClassGroupShowPageProps>().props;
+    const { auth, classGroup, options, canManage, canPlacement, canArchive } =
+        usePage<ClassGroupShowPageProps>().props;
 
     if (!canAccess(auth, 'kelas_rombel.view')) {
         return <KelasRombelAccessDenied />;
@@ -20,7 +21,13 @@ export default function Show() {
                 title={classGroup.name}
                 description="Detail kelas, rombongan belajar, kurikulum, daftar santri, dan riwayat wali kelas."
             >
-                <KelasRombelDetailPanel classGroup={classGroup} />
+                <KelasRombelDetailPanel
+                    classGroup={classGroup}
+                    options={options}
+                    canManage={canManage}
+                    canPlacement={canPlacement}
+                    canArchive={canArchive}
+                />
             </SystemDashboardLayout>
         </>
     );

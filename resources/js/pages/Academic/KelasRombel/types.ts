@@ -97,11 +97,22 @@ export type ClassGroupIndexPageProps = {
         academicTerms: ReferenceOption[];
         units: ReferenceOption[];
         curricula: ReferenceOption[];
+        classLevels: ReferenceOption[];
     };
+    canManage: boolean;
+    canPlacement: boolean;
+    canArchive: boolean;
     errors?: Record<string, string>;
 };
 
 export type ClassGroupShowPageProps = {
     auth: Auth;
     classGroup: ClassGroup;
+    options: {
+        students: ReferenceOption[];
+        employees: ReferenceOption[];
+    };
+    canManage: boolean;
+    canPlacement: boolean;
+    canArchive: boolean;
 };

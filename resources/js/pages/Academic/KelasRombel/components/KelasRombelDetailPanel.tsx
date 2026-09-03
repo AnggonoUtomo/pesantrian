@@ -1,18 +1,36 @@
 import { Link } from '@inertiajs/react';
-import { ArrowLeft, UsersRound } from 'lucide-react';
+import { Archive, ArrowLeft, RotateCcw, UserPlus, UserRoundCheck, UsersRound } from 'lucide-react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { routeOr } from '@/lib/route';
-import type { ClassGroup, ClassGroupHomeroom, ClassGroupStudent } from '../types';
+import type { ClassGroup, ClassGroupHomeroom, ClassGroupShowPageProps, ClassGroupStudent } from '../types';
+import { ClassGroupArchiveDialog } from './ClassGroupArchiveDialog';
+import { HomeroomAssignmentDialog } from './HomeroomAssignmentDialog';
 import { referenceLabel } from './kelasRombelDisplay';
 import { KelasRombelStatusBadge } from './KelasRombelStatusBadge';
+import { StudentPlacementDialog } from './StudentPlacementDialog';
 
 type Props = {
     classGroup: ClassGroup;
+    options: ClassGroupShowPageProps['options'];
+    canManage: boolean;
+    canPlacement: boolean;
+    canArchive: boolean;
 };
 
-export function KelasRombelDetailPanel({ classGroup }: Props) {
+export function KelasRombelDetailPanel({
+    classGroup,
+    options,
+    canManage,
+    canPlacement,
+    canArchive,
+}: Props) {
     const students = classGroup.students ?? [];
     const homerooms = classGroup.homerooms ?? [];
+    const [placementOpen, setPlacementOpen] = useState(false);
+    const [homeroomOpen, setHomeroomOpen] = useState(false);
+    const [archiveOpen, setArchiveOpen] = useState(false);
+    const [restoreOpen, setRestoreOpen] = useState(false);
 
     return (
         <div className="space-y-5">
@@ -43,7 +61,55 @@ export function KelasRombelDetailPanel({ classGroup }: Props) {
                             {classGroup.class_level.name}
                         </p>
                     </div>
-                    <KelasRombelStatusBadge status={classGroup.status} />
+                    <div className="flex flex-col gap-2 sm:items-end">
+                        <KelasRombelStatusBadge status={classGroup.status} />
+                        <div className="flex flex-wrap gap-2">
+                            {canPlacement && classGroup.archived_at === null ? (
+                                <Button
+                                    type="button"
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => setPlacementOpen(true)}
+                                >
+                                    <UserPlus className="size-4" aria-hidden="true" />
+                                    Tempatkan santri
+                                </Button>
+                            ) : null}
+                            {canManage && classGroup.archived_at === null ? (
+                                <Button
+                                    type="button"
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => setHomeroomOpen(true)}
+                                >
+                                    <UserRoundCheck className="size-4" aria-hidden="true" />
+                                    Tetapkan wali
+                                </Button>
+                            ) : null}
+                            {canArchive ? (
+                                classGroup.archived_at === null ? (
+                                    <Button
+                                        type="button"
+                                        size="sm"
+                                        variant="destructive"
+                                        onClick={() => setArchiveOpen(true)}
+                                    >
+                                        <Archive className="size-4" aria-hidden="true" />
+                                        Arsipkan
+                                    </Button>
+                                ) : (
+                                    <Button
+                                        type="button"
+                                        size="sm"
+                                        onClick={() => setRestoreOpen(true)}
+                                    >
+                                        <RotateCcw className="size-4" aria-hidden="true" />
+                                        Pulihkan
+                                    </Button>
+                                )
+                            ) : null}
+                        </div>
+                    </div>
                 </div>
 
                 <dl className="mt-5 grid gap-3 text-sm md:grid-cols-2">
@@ -70,6 +136,31 @@ export function KelasRombelDetailPanel({ classGroup }: Props) {
                 <StudentList students={students} />
                 <HomeroomList homerooms={homerooms} />
             </section>
+
+            <StudentPlacementDialog
+                open={placementOpen}
+                classGroup={classGroup}
+                students={options.students}
+                onOpenChange={setPlacementOpen}
+            />
+            <HomeroomAssignmentDialog
+                open={homeroomOpen}
+                classGroup={classGroup}
+                employees={options.employees}
+                onOpenChange={setHomeroomOpen}
+            />
+            <ClassGroupArchiveDialog
+                open={archiveOpen}
+                classGroup={classGroup}
+                mode="archive"
+                onOpenChange={setArchiveOpen}
+            />
+            <ClassGroupArchiveDialog
+                open={restoreOpen}
+                classGroup={classGroup}
+                mode="restore"
+                onOpenChange={setRestoreOpen}
+            />
         </div>
     );
 }

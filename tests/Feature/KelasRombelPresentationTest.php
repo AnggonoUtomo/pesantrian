@@ -69,7 +69,11 @@ final class KelasRombelPresentationTest extends TestCase
                 ->where('options.academicYears.0.id', $fixture['academicYearId'])
                 ->where('options.academicTerms.0.id', $fixture['academicTermId'])
                 ->where('options.units.0.id', $fixture['unitId'])
-                ->where('options.curricula.0.id', $fixture['curriculumId']));
+                ->where('options.curricula.0.id', $fixture['curriculumId'])
+                ->where('options.classLevels.0.id', $fixture['classLevelId'])
+                ->where('canManage', false)
+                ->where('canPlacement', false)
+                ->where('canArchive', false));
     }
 
     public function test_menampilkan_halaman_inertia_detail_kelas_rombel(): void
@@ -88,12 +92,132 @@ final class KelasRombelPresentationTest extends TestCase
                 ->where('classGroup.name', 'Kelas VII A')
                 ->where('classGroup.students.0.student_no', 'NIS-UI-ROMBEL')
                 ->where('classGroup.students.0.student_name', 'Santri Rombel UI')
-                ->where('classGroup.homerooms.0.employee_name', 'Ustaz UI Rombel'));
+                ->where('classGroup.homerooms.0.employee_name', 'Ustaz UI Rombel')
+                ->where('options.students.0.code', 'NIS-UI-ROMBEL')
+                ->where('options.employees.0.code', 'PEG-UI-ROMBEL'));
+    }
+
+    public function test_web_mutation_ui_kelas_rombel_memakai_action_application(): void
+    {
+        $permissions = collect([
+            'kelas_rombel.view',
+            'kelas_rombel.manage',
+            'kelas_rombel.placement',
+            'kelas_rombel.archive',
+        ])->map(fn (string $name): Permission => Permission::create(['name' => $name, 'guard_name' => 'web']));
+        $actor = $this->createUser();
+        $actor->givePermissionTo($permissions);
+        $fixture = $this->createClassGroupFixture();
+
+        $this->actingAs($actor)
+            ->post(route('academic.class-groups.curricula.store'), [
+                'code' => 'KUR-WEB',
+                'name' => 'Kurikulum Web',
+                'description' => 'Kurikulum dibuat dari UI.',
+                'status' => 'active',
+            ])
+            ->assertRedirect()
+            ->assertSessionHasNoErrors();
+
+        $curriculumId = (string) DB::table('academic_curricula')->where('code', 'KUR-WEB')->value('id');
+
+        $this->actingAs($actor)
+            ->post(route('academic.class-groups.levels.store'), [
+                'unit_id' => $fixture['unitId'],
+                'code' => 'VIII',
+                'name' => 'Kelas VIII',
+                'sequence' => 8,
+                'status' => 'active',
+            ])
+            ->assertRedirect()
+            ->assertSessionHasNoErrors();
+
+        $levelId = (string) DB::table('class_levels')->where('code', 'VIII')->value('id');
+
+        $this->actingAs($actor)
+            ->post(route('academic.class-groups.store'), [
+                'academic_year_id' => $fixture['academicYearId'],
+                'academic_term_id' => $fixture['academicTermId'],
+                'unit_id' => $fixture['unitId'],
+                'curriculum_id' => $curriculumId,
+                'class_level_id' => $levelId,
+                'code' => 'VIII-A',
+                'name' => 'Kelas VIII A',
+                'capacity' => 30,
+                'status' => 'active',
+            ])
+            ->assertRedirect()
+            ->assertSessionHasNoErrors();
+
+        $classGroupId = (string) DB::table('class_groups')->where('code', 'VIII-A')->value('id');
+        $student = StudentRecord::factory()->create([
+            'student_no' => 'NIS-WEB-ROMBEL',
+            'full_name' => 'Santri Web Rombel',
+            'primary_unit_id' => $fixture['unitId'],
+            'status' => 'active',
+        ]);
+        $employee = EmployeeRecord::query()->create([
+            'employee_no' => 'PEG-WEB-ROMBEL',
+            'name' => 'Ustaz Web Rombel',
+            'preferred_name' => 'Ustaz Web',
+            'employment_type' => 'teacher',
+            'primary_unit_id' => $fixture['unitId'],
+            'position' => 'Guru Web',
+            'status' => 'active',
+            'joined_on' => '2026-07-01',
+            'left_on' => null,
+            'notes' => null,
+        ]);
+
+        $this->actingAs($actor)
+            ->post(route('academic.class-groups.students.store', $classGroupId), [
+                'student_id' => $student->id,
+                'joined_on' => '2026-07-15',
+            ])
+            ->assertRedirect()
+            ->assertSessionHasNoErrors();
+
+        $this->actingAs($actor)
+            ->post(route('academic.class-groups.homerooms.store', $classGroupId), [
+                'employee_id' => $employee->id,
+                'assigned_on' => '2026-07-01',
+            ])
+            ->assertRedirect()
+            ->assertSessionHasNoErrors();
+
+        $this->actingAs($actor)
+            ->patch(route('academic.class-groups.archive', $classGroupId), [
+                'reason' => 'Rombel web selesai dipakai.',
+            ])
+            ->assertRedirect()
+            ->assertSessionHasNoErrors();
+
+        $this->actingAs($actor)
+            ->patch(route('academic.class-groups.restore', $classGroupId))
+            ->assertRedirect()
+            ->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas('class_group_students', [
+            'class_group_id' => $classGroupId,
+            'student_id' => $student->id,
+            'status' => 'active',
+        ]);
+        $this->assertDatabaseHas('class_group_homerooms', [
+            'class_group_id' => $classGroupId,
+            'employee_id' => $employee->id,
+            'status' => 'active',
+        ]);
+        $this->assertDatabaseHas('class_groups', [
+            'id' => $classGroupId,
+            'status' => 'active',
+            'archived_at' => null,
+        ]);
     }
 
     public function test_menghubungkan_ui_kelas_rombel_ke_komponen_canonical_dan_sidebar(): void
     {
         $index = $this->sourceFile('js/pages/Academic/KelasRombel/pages/Index.tsx');
+        $dashboard = $this->sourceFile('js/pages/Academic/KelasRombel/components/KelasRombelDashboard.tsx');
         $show = $this->sourceFile('js/pages/Academic/KelasRombel/pages/Show.tsx');
         $filters = $this->sourceFile('js/pages/Academic/KelasRombel/components/KelasRombelFilters.tsx');
         $table = $this->sourceFile('js/pages/Academic/KelasRombel/components/KelasRombelTable.tsx');
@@ -102,11 +226,13 @@ final class KelasRombelPresentationTest extends TestCase
         $detail = $this->sourceFile('js/pages/Academic/KelasRombel/components/KelasRombelDetailPanel.tsx');
         $navigation = $this->sourceFile('js/lib/navigation.ts');
 
-        self::assertStringContainsString("canAccess(auth, 'kelas_rombel.view')", $index);
-        self::assertStringContainsString('KelasRombelSummaryCards', $index);
-        self::assertStringContainsString('KelasRombelFilters', $index);
-        self::assertStringContainsString('KelasRombelTable', $index);
-        self::assertStringContainsString('KelasRombelPagination', $index);
+        self::assertStringContainsString('KelasRombelDashboard', $index);
+        self::assertStringContainsString("canAccess(auth, 'kelas_rombel.view')", $dashboard);
+        self::assertStringContainsString('KelasRombelSummaryCards', $dashboard);
+        self::assertStringContainsString('KelasRombelFilters', $dashboard);
+        self::assertStringContainsString('KelasRombelTable', $dashboard);
+        self::assertStringContainsString('KelasRombelPagination', $dashboard);
+        self::assertStringContainsString('KelasRombelMutationDialogs', $dashboard);
         self::assertStringContainsString('Cari rombel', $filters);
         self::assertStringContainsString('Status rombel', $filters);
         self::assertStringContainsString('Status arsip', $filters);
@@ -120,6 +246,12 @@ final class KelasRombelPresentationTest extends TestCase
         self::assertStringContainsString('Berikutnya', $pagination);
         self::assertStringContainsString('Daftar santri', $detail);
         self::assertStringContainsString('Riwayat wali kelas', $detail);
+        self::assertStringContainsString('Tempatkan santri', $detail);
+        self::assertStringContainsString('Tetapkan wali', $detail);
+        self::assertStringContainsString('Arsipkan', $detail);
+        self::assertStringContainsString('Tambah kurikulum', $this->sourceFile('js/pages/Academic/KelasRombel/components/CurriculumFormDialog.tsx'));
+        self::assertStringContainsString('Tambah tingkat kelas', $this->sourceFile('js/pages/Academic/KelasRombel/components/ClassLevelFormDialog.tsx'));
+        self::assertStringContainsString('Tambah rombel', $this->sourceFile('js/pages/Academic/KelasRombel/components/ClassGroupFormDialog.tsx'));
         self::assertStringContainsString('Kelas / Rombel / Kurikulum', $show);
         self::assertStringContainsString('Kelas / Rombel / Kurikulum', $navigation);
         self::assertStringContainsString('academic.class-groups.index', $navigation);
@@ -211,6 +343,7 @@ final class KelasRombelPresentationTest extends TestCase
             $student = StudentRecord::factory()->create([
                 'student_no' => 'NIS-UI-ROMBEL',
                 'full_name' => 'Santri Rombel UI',
+                'primary_unit_id' => $unitId,
                 'status' => 'active',
             ]);
             $employee = EmployeeRecord::query()->create([
@@ -218,6 +351,7 @@ final class KelasRombelPresentationTest extends TestCase
                 'name' => 'Ustaz UI Rombel',
                 'preferred_name' => 'Ustaz UI',
                 'employment_type' => 'teacher',
+                'primary_unit_id' => $unitId,
                 'position' => 'Guru UI',
                 'status' => 'active',
                 'joined_on' => '2026-07-01',
@@ -259,6 +393,7 @@ final class KelasRombelPresentationTest extends TestCase
             'academicTermId' => $academicTermId,
             'unitId' => $unitId,
             'curriculumId' => $curriculumId,
+            'classLevelId' => $classLevelId,
             'classGroupId' => $classGroupId,
         ];
     }

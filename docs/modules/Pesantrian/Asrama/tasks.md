@@ -1,0 +1,142 @@
+# Tasks: Pesantrian/Asrama
+
+## Sebelum Mulai
+
+- [x] Scope dan non-scope awal ditentukan.
+- [x] Dependency dan keputusan terbuka diketahui.
+- [x] Cara verifikasi awal ditentukan.
+- [x] `AGENTS.md`, `docs/README.md`, `docs/ARCHITECTURE.md`,
+  `docs/FOLDER-STRUCTURE.md`, `docs/MODULES.md`, dan baseline Asrama dibaca.
+
+## Increment 1: Dokumentasi Module
+
+- [x] Buat folder dokumentasi `docs/modules/Pesantrian/Asrama/`.
+- [x] Buat `README.md`.
+- [x] Buat `specification.md`.
+- [x] Buat `plan.md`.
+- [x] Buat `tasks.md`.
+- [ ] Review dan setujui open questions sebelum coding.
+
+Hasil:
+
+- Dokumentasi awal menetapkan nama tampil `Asrama`.
+- Boundary awal memisahkan Asrama dari Santri, Presensi, Perizinan,
+  Kedisiplinan, Kesehatan, Pembinaan, dan Asset.
+- Dependency awal memakai Organization, Santri contract, HumanResource contract,
+  AccessControl, dan AuditLog.
+
+Verifikasi:
+
+- [ ] Review manual isi dokumen.
+- [ ] `git diff --check`
+
+## Increment 2: Skeleton Module
+
+- [ ] Jalankan dry-run generator module.
+  - Acceptance: target `app/Modules/Pesantrian/Asrama`, diagnostics kosong,
+    dan tidak ada folder optional placeholder.
+  - Verification:
+    `php artisan module:make Pesantrian Asrama --dry-run --json --no-ansi`.
+- [ ] Generate skeleton module.
+  - Acceptance: file awal module dibuat tanpa folder kosong placeholder.
+  - Verification:
+    `php artisan module:make Pesantrian Asrama --force --yes --json --no-ansi`.
+- [ ] Tambahkan metadata module.
+  - Acceptance: manifest dan runtime config sesuai baseline.
+  - Verification: `php artisan module:inspect Pesantrian/Asrama --json --no-ansi`.
+- [ ] Tambahkan permission candidate.
+  - Acceptance: `asrama.view`, `asrama.manage`, `asrama.placement`,
+    `asrama.supervisor`, dan `asrama.archive` tersedia.
+  - Verification: focused permission identity test.
+- [ ] Pastikan module registry valid.
+  - Verification: `php artisan module:validate --no-ansi`.
+- [ ] Pastikan command artisan baseline normal.
+  - Verification: `php artisan optimize:clear --no-ansi`.
+
+## Increment 3: Contract Readiness
+
+- [ ] Review kebutuhan public contract lintas module.
+  - Acceptance: field minimum Organization, Santri, dan HumanResource jelas.
+  - Verification: review manual spec dan source contract existing.
+- [ ] Implementasikan contract minimum hanya bila consumer nyata disetujui.
+  - Acceptance: consumer memakai DTO/query public boundary, bukan Eloquent model
+    Infrastructure module lain.
+  - Verification: focused contract/query tests.
+
+## Increment 4: Data Foundation
+
+- [ ] Buat migration `dormitories`.
+- [ ] Buat migration `dormitory_rooms`.
+- [ ] Buat migration `student_room_placements`.
+- [ ] Buat migration `dormitory_supervisor_assignments`.
+- [ ] Buat Infrastructure model/factory minimum.
+- [ ] Tambahkan focused schema/invariant tests.
+
+## Increment 5: Backend Read/List
+
+- [ ] Buat DTO/read model Asrama.
+- [ ] Buat use case list/search/filter.
+- [ ] Buat use case detail.
+- [ ] Buat controller/route API read.
+- [ ] Jalankan focused API tests.
+
+## Increment 6: Create/Update Asrama dan Kamar
+
+- [ ] Buat request validation create/update.
+- [ ] Buat action create/update asrama.
+- [ ] Buat action create/update kamar.
+- [ ] Tambahkan audit mutation.
+- [ ] Jalankan focused mutation tests.
+
+## Increment 7: Penempatan dan Transfer Santri
+
+- [ ] Buat action place student.
+- [ ] Buat action transfer room.
+- [ ] Buat action remove student.
+- [ ] Tambahkan audit placement/transfer/remove.
+- [ ] Jalankan focused placement tests.
+
+## Increment 8: Penugasan Musyrif dan Archive
+
+- [ ] Buat action assign/end supervisor.
+- [ ] Buat use case archive/restore asrama.
+- [ ] Buat use case archive/restore kamar.
+- [ ] Tambahkan audit supervisor/archive/restore.
+- [ ] Jalankan focused tests.
+
+## Increment 9: Demo Seeder
+
+- [ ] Tambahkan seeder demo Asrama idempotent.
+- [ ] Update business demo seeder.
+- [ ] Tambahkan seeder test.
+- [ ] Dokumentasikan data demo di README/user manual bila diperlukan.
+
+## Increment 10: UI/Inertia List dan Detail
+
+- [ ] Buat page `resources/js/pages/Pesantrian/Asrama/pages/Index.tsx`.
+- [ ] Buat page `resources/js/pages/Pesantrian/Asrama/pages/Show.tsx`.
+- [ ] Buat komponen table/filter/summary/detail di folder `components`.
+- [ ] Tambahkan pagination.
+- [ ] Tambahkan menu sidebar namespace Pesantrian.
+- [ ] Tambahkan presentation tests/Ziggy route test bila relevan.
+- [ ] Jalankan typecheck, lint, dan build.
+
+## Increment 11: UI Mutation dan QA Browser
+
+- [ ] Buat form asrama.
+- [ ] Buat form kamar.
+- [ ] Buat form placement/transfer/remove.
+- [ ] Buat form musyrif.
+- [ ] Buat archive/restore confirmation.
+- [ ] Jalankan browser QA desktop.
+- [ ] Jalankan browser QA mobile/responsive.
+- [ ] Dokumentasikan hasil QA.
+
+## Keputusan Baseline
+
+- [x] Module teknis memakai `Pesantrian/Asrama`.
+- [x] Nama tampil memakai `Asrama`.
+- [x] Asrama putra/putri dimodelkan sebagai data, bukan module terpisah.
+- [x] Inventaris kamar ditunda ke `Support/Asset`.
+- [x] Presensi asrama ditunda sampai work item presensi disepakati.
+- [x] Penempatan santri aktif dijaga satu kamar aktif pada satu waktu.

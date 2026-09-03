@@ -264,10 +264,8 @@ Verifikasi:
 - [x] Buat form placement santri.
 - [x] Buat form wali kelas.
 - [x] Buat archive/restore confirmation.
-- [ ] Jalankan browser QA desktop. **Blocked:** credential pengujian belum ada
-      pada database lokal.
-- [ ] Jalankan browser QA mobile/responsive. **Blocked:** credential pengujian
-      belum ada pada database lokal.
+- [x] Jalankan browser QA desktop.
+- [x] Jalankan browser QA mobile/responsive.
 - [x] Dokumentasikan hasil QA.
 
 Hasil:
@@ -278,11 +276,16 @@ Hasil:
   tetap minimal.
 - Form business-specific ditempatkan di
   `resources/js/pages/Academic/KelasRombel/components/`.
-- Browser smoke memakai Playwright dapat membuka `/login`, tetapi belum bisa
-  memverifikasi halaman `/academic/class-groups` karena credential supersystem
-  pengujian belum ada pada database lokal. Tidak dibuat user baru.
-- Smoke yang sempat berjalan tidak menemukan error console/Ziggy sebelum
-  redirect kembali ke login.
+- Browser QA authenticated memakai user demo hasil seeder AccessControl.
+- QA desktop membuka `/academic/class-groups`, memverifikasi judul, sidebar
+  namespace Academic, pagination, tombol mutation utama, teks penempatan
+  santri, teks wali kelas, dan detail rombel.
+- QA mobile/responsive membuka halaman yang sama pada viewport kecil dan
+  memverifikasi elemen utama tetap tersedia.
+- Console browser bersih dari error/warning, tidak ada failed request, dan
+  tidak ada response HTTP 4xx/5xx pada halaman yang diuji.
+- Screenshot QA lokal tersimpan di `storage/app/qa-kelas-rombel-desktop.png`
+  dan `storage/app/qa-kelas-rombel-mobile.png`.
 
 Verifikasi:
 
@@ -293,6 +296,8 @@ Verifikasi:
 - [x] `npm run lint:check`
 - [x] `vendor\bin\pint --dirty --test`
 - [x] `npm run build`
+- [x] Browser QA Playwright desktop `1366x900`
+- [x] Browser QA Playwright mobile `390x844`
 
 ## Keputusan Baseline
 

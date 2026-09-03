@@ -5,10 +5,10 @@ Module `Academic/KelasRombel` adalah capability `Kelas / Rombel / Kurikulum`.
 Scope runtime sudah memiliki schema inti, model Infrastructure, API read untuk
 list/detail rombel, API mutation awal untuk kurikulum, tingkat kelas, rombel,
 API penempatan/pindah/keluar santri, API wali kelas, archive/restore rombel,
-serta demo seeder lifecycle. Public contract readiness sudah disiapkan pada
-module pemilik data agar module ini tidak mengambil model Infrastructure dari
-`Organization`, `AcademicPeriod`, `Pesantrian/Santri`, atau `HumanResource`
-secara langsung pada runtime use case.
+demo seeder lifecycle, serta UI Inertia list/detail. Public contract readiness
+sudah disiapkan pada module pemilik data agar module ini tidak mengambil model
+Infrastructure dari `Organization`, `AcademicPeriod`, `Pesantrian/Santri`, atau
+`HumanResource` secara langsung pada runtime use case.
 
 Seeder demo tersedia di
 `app/Modules/Academic/KelasRombel/Database/Seeders/KelasRombelDemoSeeder.php`
@@ -18,6 +18,8 @@ Endpoint awal:
 
 - `GET /api/v1/academic/class-groups`
 - `GET /api/v1/academic/class-groups/{classGroup}`
+- `GET /academic/class-groups`
+- `GET /academic/class-groups/{classGroup}`
 - `POST /api/v1/academic/class-groups/curricula`
 - `PATCH /api/v1/academic/class-groups/curricula/{curriculum}`
 - `POST /api/v1/academic/class-groups/levels`

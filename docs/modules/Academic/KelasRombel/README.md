@@ -10,7 +10,7 @@ Source module mengikuti [`docs/ARCHITECTURE.md`](../../../ARCHITECTURE.md) dan
 - Nama tampil: `Kelas / Rombel / Kurikulum`
 - Source: `app/Modules/Academic/KelasRombel/`
 - Candidate frontend: `resources/js/pages/Academic/KelasRombel/`
-- Status: Active - demo seeder
+- Status: Active - UI list/detail
 
 ## Tujuan
 
@@ -184,6 +184,13 @@ resources/js/pages/Academic/KelasRombel/
 
 Menu sidebar berada di namespace Academic dengan nama tampil
 `Kelas / Rombel / Kurikulum`.
+
+UI list/detail awal sudah tersedia:
+
+- `GET /academic/class-groups` menampilkan daftar rombel dengan search, filter,
+  status arsip, summary, table desktop, card mobile, dan pagination.
+- `GET /academic/class-groups/{classGroup}` menampilkan detail rombel, periode,
+  kurikulum, daftar santri, dan riwayat wali kelas.
 
 ## Dokumentasi Terkait
 

@@ -232,13 +232,31 @@ Verifikasi:
 
 ## Increment 10: UI/Inertia List dan Detail
 
-- [ ] Buat page `resources/js/pages/Academic/KelasRombel/pages/Index.tsx`.
-- [ ] Buat page `resources/js/pages/Academic/KelasRombel/pages/Show.tsx`.
-- [ ] Buat komponen table/filter/summary/detail di folder `components`.
-- [ ] Tambahkan pagination.
-- [ ] Tambahkan menu sidebar namespace Academic.
-- [ ] Tambahkan presentation tests/Ziggy route test bila relevan.
-- [ ] Jalankan typecheck, lint, dan build.
+- [x] Buat page `resources/js/pages/Academic/KelasRombel/pages/Index.tsx`.
+- [x] Buat page `resources/js/pages/Academic/KelasRombel/pages/Show.tsx`.
+- [x] Buat komponen table/filter/summary/detail di folder `components`.
+- [x] Tambahkan pagination.
+- [x] Tambahkan menu sidebar namespace Academic.
+- [x] Tambahkan presentation tests/Ziggy route test bila relevan.
+- [x] Jalankan typecheck, lint, dan build.
+
+Hasil:
+
+- UI read-only Kelas / Rombel / Kurikulum tersedia di
+  `resources/js/pages/Academic/KelasRombel/`.
+- Page list mendukung search, filter periode/unit/kurikulum/status/arsip,
+  pagination, summary cards, table desktop, dan card mobile.
+- Page detail menampilkan identitas rombel, periode, kapasitas, daftar santri,
+  dan riwayat wali kelas.
+- Menu sidebar ditambahkan di namespace Academic memakai route
+  `academic.class-groups.index`.
+
+Verifikasi:
+
+- [x] `php artisan test --filter=KelasRombelPresentation --no-ansi`
+- [x] `npm run types:check`
+- [x] `npm run lint:check`
+- [x] `npm run build`
 
 ## Increment 11: UI Mutation dan QA Browser
 

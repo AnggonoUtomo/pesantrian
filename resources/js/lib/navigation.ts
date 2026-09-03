@@ -6,6 +6,7 @@ import {
     NotebookTabs,
     ScrollText,
     Settings2,
+    School,
     ShieldCheck,
     UsersRound,
 } from 'lucide-react';
@@ -112,19 +113,51 @@ function buildAcademicNavigation(auth: Auth): NavItem[] {
         !hasAnyPermission(auth, [
             'academic_period.view',
             'academic_period.manage',
+            'kelas_rombel.view',
+            'kelas_rombel.manage',
+            'kelas_rombel.placement',
+            'kelas_rombel.archive',
         ])
     ) {
         return [];
     }
 
-    return [
-        {
+    const items: NavItem[] = [];
+
+    if (
+        hasAnyPermission(auth, [
+            'academic_period.view',
+            'academic_period.manage',
+        ])
+    ) {
+        items.push({
             title: 'Periode Akademik',
             href: route('academic.periods.index'),
             icon: CalendarRange,
             iconClassName: 'text-rose-600 dark:text-rose-300',
-        },
-    ];
+        });
+    }
+
+    if (
+        hasAnyPermission(auth, [
+            'kelas_rombel.view',
+            'kelas_rombel.manage',
+            'kelas_rombel.placement',
+            'kelas_rombel.archive',
+        ])
+    ) {
+        items.push({
+            title: 'Kelas / Rombel / Kurikulum',
+            href: routeOr(
+                '/academic/class-groups',
+                'academic.class-groups.index',
+            ),
+            icon: School,
+            iconClassName: 'text-blue-600 dark:text-blue-300',
+        });
+    }
+
+    return items;
 }
 
 function buildHumanResourceNavigation(auth: Auth): NavItem[] {

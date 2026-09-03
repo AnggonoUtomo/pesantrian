@@ -8,11 +8,27 @@ authorization context, dan page frontend dasar.
 ## Seeder demo
 
 Seeder module membaca seluruh permission identity dari module valid melalui
-`ModuleRegistry`, lalu membuat role `SuperSystem` dan `SecurityAdmin`, serta user demo berikut di luar environment
-production:
+`ModuleRegistry`, lalu membuat role `SuperSystem`, `SecurityAdmin`, dan role
+operator demo berikut di luar environment production:
 
 - `super-system@example.test`
 - `security-admin@example.test`
+- `operator-ppdb@example.test`
+- `operator-santri@example.test`
+- `operator-akademik@example.test`
+- `operator-sdm@example.test`
+- `auditor@example.test`
+- `viewer@example.test`
+
+Role operator yang disediakan:
+
+- `OperatorPPDB`: uji PPDB sampai keputusan pendaftaran.
+- `OperatorSantri`: uji data induk santri, wali, lifecycle, dan arsip.
+- `OperatorAkademik`: uji periode akademik, kelas/rombel, placement, dan wali
+  kelas.
+- `OperatorSDM`: uji data pegawai dan penugasan unit.
+- `Auditor`: uji audit trail dan akses baca lintas module.
+- `Viewer`: uji mode baca data operasional.
 
 Password user demo dibaca dari `ACCESS_CONTROL_DUMMY_PASSWORD`. Jika nilainya
 kosong, seeder memakai password acak. Untuk menjalankan:

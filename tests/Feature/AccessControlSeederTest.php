@@ -24,12 +24,17 @@ final class AccessControlSeederTest extends TestCase
         $this->assertSame($this->expectedPermissionCount(), Permission::count());
         $this->assertTrue(Role::where('name', 'SuperSystem')->exists());
         $this->assertTrue(Role::where('name', 'SecurityAdmin')->exists());
+        $this->assertTrue(Role::where('name', 'OperatorPPDB')->exists());
+        $this->assertTrue(Role::where('name', 'OperatorAkademik')->exists());
 
         $securityAdmin = User::where('email', 'security-admin@example.test')->firstOrFail();
+        $operatorAkademik = User::where('email', 'operator-akademik@example.test')->firstOrFail();
 
         $this->assertTrue($securityAdmin->hasRole('SecurityAdmin'));
         $this->assertTrue($securityAdmin->hasPermissionTo('access_control.role.manage'));
         $this->assertTrue($securityAdmin->hasPermissionTo('user.impersonate'));
+        $this->assertTrue($operatorAkademik->hasRole('OperatorAkademik'));
+        $this->assertTrue($operatorAkademik->hasPermissionTo('kelas_rombel.placement'));
     }
 
     public function test_seeder_idempotent_dan_tidak_menduplikasi_data(): void
@@ -38,10 +43,16 @@ final class AccessControlSeederTest extends TestCase
         $this->seed(AccessControlSeeder::class);
 
         $this->assertSame($this->expectedPermissionCount(), Permission::count());
-        $this->assertSame(2, Role::count());
-        $this->assertSame(2, User::whereIn('email', [
+        $this->assertSame(8, Role::count());
+        $this->assertSame(8, User::whereIn('email', [
             'super-system@example.test',
             'security-admin@example.test',
+            'operator-ppdb@example.test',
+            'operator-santri@example.test',
+            'operator-akademik@example.test',
+            'operator-sdm@example.test',
+            'auditor@example.test',
+            'viewer@example.test',
         ])->count());
     }
 
@@ -52,7 +63,7 @@ final class AccessControlSeederTest extends TestCase
             ->expectsOutput('Seeder AccessControl selesai.');
 
         $this->assertSame($this->expectedPermissionCount(), Permission::count());
-        $this->assertSame(2, Role::count());
+        $this->assertSame(8, Role::count());
     }
 
     public function test_database_seeder_global_menjalankan_seeder_module(): void
@@ -60,8 +71,8 @@ final class AccessControlSeederTest extends TestCase
         $this->seed();
 
         $this->assertSame($this->expectedPermissionCount(), Permission::count());
-        $this->assertSame(2, Role::count());
-        $this->assertSame(52, User::count());
+        $this->assertSame(8, Role::count());
+        $this->assertSame(58, User::count());
     }
 
     public function test_seeder_tidak_membuat_dummy_data_di_production(): void

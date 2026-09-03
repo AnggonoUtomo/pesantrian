@@ -26,11 +26,19 @@
   - Acceptance: tersedia status aktif, nonaktif, pindah, lulus, dan arsip.
 - [x] Update workflow/template agar module baru dengan data operasional wajib
   membawa demo seeder idempotent.
+- [x] Lengkapi role dan user operator demo.
+  - Acceptance: tersedia role PPDB, Santri, Akademik, SDM, Auditor, dan Viewer
+    dengan permission sesuai scope uji manual.
+- [x] Buat user manual lifecycle lintas module.
+  - Acceptance: user pemula bisa mengikuti urutan uji dari System,
+    Organisasi, Academic, SDM, PPDB, Santri, sampai Kelas/Rombel.
 
 ## Hasil
 
 - [x] Scope selesai.
-  - Perubahan: seeder demo bisnis lintas module dan dokumentasi workflow.
+  - Perubahan: seeder demo bisnis lintas module, role/user operator demo,
+    dokumentasi workflow, dan user manual lifecycle.
   - Verification: lihat handoff kerja.
   - Risiko terbuka: data demo hanya untuk non-production; jangan menjalankan
-    seeder demo pada database produksi.
+    seeder demo pada database produksi. Browser/manual QA tetap perlu dijalankan
+    oleh user dengan password demo lokal.

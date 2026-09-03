@@ -19,6 +19,26 @@ final class BusinessDemoSeederTest extends TestCase
         $this->seed();
         $this->seed();
 
+        self::assertSame(1, DB::table('roles')->where('name', 'SuperSystem')->count());
+        self::assertSame(1, DB::table('roles')->where('name', 'OperatorPPDB')->count());
+        self::assertSame(1, DB::table('roles')->where('name', 'OperatorSantri')->count());
+        self::assertSame(1, DB::table('roles')->where('name', 'OperatorAkademik')->count());
+        self::assertSame(1, DB::table('roles')->where('name', 'OperatorSDM')->count());
+        self::assertSame(1, DB::table('roles')->where('name', 'Auditor')->count());
+        self::assertSame(1, DB::table('roles')->where('name', 'Viewer')->count());
+        self::assertSame(1, User::where('email', 'operator-ppdb@example.test')->count());
+        self::assertSame(1, User::where('email', 'operator-santri@example.test')->count());
+        self::assertSame(1, User::where('email', 'operator-akademik@example.test')->count());
+        self::assertSame(1, User::where('email', 'operator-sdm@example.test')->count());
+        self::assertSame(1, User::where('email', 'auditor@example.test')->count());
+        self::assertSame(1, User::where('email', 'viewer@example.test')->count());
+        self::assertSame(1, $this->rolePermissionCount('OperatorPPDB', 'penerimaan_santri.decide'));
+        self::assertSame(1, $this->rolePermissionCount('OperatorSantri', 'santri.lifecycle'));
+        self::assertSame(1, $this->rolePermissionCount('OperatorAkademik', 'kelas_rombel.placement'));
+        self::assertSame(1, $this->rolePermissionCount('OperatorSDM', 'human_resource.manage'));
+        self::assertSame(1, $this->rolePermissionCount('Auditor', 'audit_log.view'));
+        self::assertSame(1, $this->rolePermissionCount('Viewer', 'kelas_rombel.view'));
+
         self::assertSame(7, DB::table('organization_units')->where('code', 'like', 'DEMO-%')->count());
         self::assertSame(1, DB::table('organization_units')->where('code', 'DEMO-YAYASAN')->where('status', 'active')->count());
         self::assertSame(1, DB::table('organization_units')->where('code', 'DEMO-ARSIP')->where('status', 'inactive')->count());
@@ -32,7 +52,7 @@ final class BusinessDemoSeederTest extends TestCase
         self::assertSame(4, DB::table('employees')->where('employee_no', 'like', 'PEG-DEMO-%')->where('status', 'active')->count());
         self::assertSame(2, DB::table('employees')->where('employee_no', 'like', 'PEG-DEMO-%')->where('status', 'inactive')->count());
         self::assertSame(1, DB::table('employees')->where('employee_no', 'PEG-DEMO-003')->where('employment_type', 'teacher')->count());
-        self::assertSame(1, DB::table('employees')->where('employee_no', 'PEG-DEMO-004')->where('employment_type', 'ustadz')->count());
+        self::assertSame(1, DB::table('employees')->where('employee_no', 'PEG-DEMO-004')->where('employment_type', 'teacher')->count());
         self::assertSame(6, DB::table('employee_unit_assignments')->where('role', 'like', 'demo_%')->count());
 
         self::assertSame(6, DB::table('student_admissions')->where('registration_no', 'like', 'PPDB-DEMO-%')->count());
@@ -82,5 +102,16 @@ final class BusinessDemoSeederTest extends TestCase
         self::assertSame(0, DB::table('class_group_students')->count());
         self::assertSame(0, DB::table('class_group_homerooms')->count());
         self::assertSame(0, User::where('email', 'like', 'user-management-dummy-%@example.test')->count());
+        self::assertSame(0, User::where('email', 'operator-ppdb@example.test')->count());
+    }
+
+    private function rolePermissionCount(string $roleName, string $permissionName): int
+    {
+        return DB::table('role_has_permissions')
+            ->join('roles', 'roles.id', '=', 'role_has_permissions.role_id')
+            ->join('permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
+            ->where('roles.name', $roleName)
+            ->where('permissions.name', $permissionName)
+            ->count();
     }
 }

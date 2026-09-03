@@ -19,6 +19,14 @@
   memiliki data operasional.
 - Jalankan test seeder, `db:seed`, `module:validate`, dan hygiene diff.
 
+## Increment 4: Manual Lifecycle dan Role Operator Demo
+
+- Tambahkan user manual lifecycle lintas module untuk uji manual operator.
+- Lengkapi role demo berbasis pekerjaan harian: PPDB, Santri, Akademik, SDM,
+  Auditor, dan Viewer.
+- Pastikan permission role demo mencakup relasi antar module aktif tanpa
+  memberi akses mutation di luar kebutuhan role.
+
 ## Rollback
 
 Rollback kode melalui commit. Untuk data lokal demo, hapus record dengan prefix:

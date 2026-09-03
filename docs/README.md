@@ -16,6 +16,8 @@ ini mengikuti baseline lengkap:
 6. Pilih pemeriksaan dari [Quality](QUALITY.md) sesuai risiko.
 7. Baca [Keputusan](DECISIONS.md) saat menyentuh keputusan aktif.
 8. Baca [API](API.md) saat mengubah endpoint publik.
+9. Baca [User Manual Lifecycle](USER-MANUAL-LIFECYCLE.md) untuk uji coba
+   manual alur aplikasi dan relasi antar module aktif.
 
 Template tersedia di [`templates/`](templates/README.md). Konvensi dokumentasi
 module dan work item berada di [`modules/`](modules/README.md) dan

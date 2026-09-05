@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Pesantrian\Asrama;
 
+use App\Modules\Pesantrian\Asrama\Application\Contracts\ActiveDormitoryResidentReader;
 use App\Modules\Pesantrian\Asrama\Application\Contracts\AsramaActivityPublisher;
 use App\Modules\Pesantrian\Asrama\Application\Contracts\AsramaMutationRepository;
 use App\Modules\Pesantrian\Asrama\Application\Contracts\AsramaReadRepository;
@@ -18,6 +19,7 @@ final class ServiceProvider extends FrameworkServiceProvider
         $this->app->bind(AsramaActivityPublisher::class, LaravelAsramaActivityPublisher::class);
         $this->app->bind(AsramaMutationRepository::class, EloquentAsramaReadRepository::class);
         $this->app->bind(AsramaReadRepository::class, EloquentAsramaReadRepository::class);
+        $this->app->bind(ActiveDormitoryResidentReader::class, EloquentAsramaReadRepository::class);
     }
 
     public function boot(): void

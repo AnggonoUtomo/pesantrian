@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Modules\Academic\KelasRombel\Infrastructure\Repositories;
 
+use App\Modules\Academic\KelasRombel\Application\Contracts\ActiveClassGroupRosterReader;
 use App\Modules\Academic\KelasRombel\Application\Contracts\KelasRombelMutationRepository;
 use App\Modules\Academic\KelasRombel\Application\Contracts\KelasRombelReadRepository;
+use App\Modules\Academic\KelasRombel\Application\DTO\ActiveClassGroupStudentData;
 use App\Modules\Academic\KelasRombel\Application\DTO\AssignHomeroomData;
 use App\Modules\Academic\KelasRombel\Application\DTO\ClassGroupData;
 use App\Modules\Academic\KelasRombel\Application\DTO\ClassGroupHomeroomData;
@@ -33,7 +35,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
-final class EloquentKelasRombelReadRepository implements KelasRombelMutationRepository, KelasRombelReadRepository
+final class EloquentKelasRombelReadRepository implements ActiveClassGroupRosterReader, KelasRombelMutationRepository, KelasRombelReadRepository
 {
     public function paginateClassGroups(ClassGroupListFilter $filter): PaginatedClassGroupData
     {
@@ -81,6 +83,35 @@ final class EloquentKelasRombelReadRepository implements KelasRombelMutationRepo
         }
 
         return $this->map($record, includeDetails: true);
+    }
+
+    public function studentsForClassGroup(string $classGroupId, ?string $academicTermId = null): array
+    {
+        return ClassGroupStudentRecord::query()
+            ->leftJoin('students', 'students.id', '=', 'class_group_students.student_id')
+            ->where('class_group_students.class_group_id', $classGroupId)
+            ->where('class_group_students.status', 'active')
+            ->whereNotNull('class_group_students.active_period_student_key')
+            ->where('students.status', 'active')
+            ->whereNull('students.archived_at')
+            ->when($academicTermId !== null, fn (Builder $query) => $query->where('class_group_students.academic_term_id', $academicTermId))
+            ->orderBy('students.full_name')
+            ->orderBy('class_group_students.student_no')
+            ->get([
+                'class_group_students.*',
+                'students.full_name as student_name',
+            ])
+            ->map(static fn (ClassGroupStudentRecord $placement): ActiveClassGroupStudentData => new ActiveClassGroupStudentData(
+                placementId: (string) $placement->getKey(),
+                classGroupId: (string) $placement->class_group_id,
+                academicTermId: (string) $placement->academic_term_id,
+                studentId: (string) $placement->student_id,
+                studentNo: (string) $placement->student_no,
+                studentName: $placement->getAttribute('student_name') === null ? null : (string) $placement->getAttribute('student_name'),
+                joinedOn: $placement->joined_on->toDateString(),
+            ))
+            ->values()
+            ->all();
     }
 
     public function createCurriculum(UpsertCurriculumData $data): CurriculumData

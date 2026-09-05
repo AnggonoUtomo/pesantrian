@@ -37,8 +37,12 @@ final class AccessControlSeederTest extends TestCase
         $this->assertTrue($operatorSantri->hasRole('OperatorSantri'));
         $this->assertTrue($operatorSantri->hasPermissionTo('asrama.placement'));
         $this->assertTrue($operatorSantri->hasPermissionTo('asrama.supervisor'));
+        $this->assertTrue($operatorSantri->hasPermissionTo('presensi_santri.manage'));
+        $this->assertTrue($operatorSantri->hasPermissionTo('presensi_santri.submit'));
         $this->assertTrue($operatorAkademik->hasRole('OperatorAkademik'));
         $this->assertTrue($operatorAkademik->hasPermissionTo('kelas_rombel.placement'));
+        $this->assertTrue($operatorAkademik->hasPermissionTo('presensi_santri.manage'));
+        $this->assertTrue($operatorAkademik->hasPermissionTo('presensi_santri.submit'));
     }
 
     public function test_seeder_idempotent_dan_tidak_menduplikasi_data(): void

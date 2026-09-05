@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Academic\KelasRombel;
 
+use App\Modules\Academic\KelasRombel\Application\Contracts\ActiveClassGroupRosterReader;
 use App\Modules\Academic\KelasRombel\Application\Contracts\KelasRombelActivityPublisher;
 use App\Modules\Academic\KelasRombel\Application\Contracts\KelasRombelMutationRepository;
 use App\Modules\Academic\KelasRombel\Application\Contracts\KelasRombelReadRepository;
@@ -18,6 +19,7 @@ final class ServiceProvider extends FrameworkServiceProvider
         $this->app->bind(KelasRombelActivityPublisher::class, LaravelKelasRombelActivityPublisher::class);
         $this->app->bind(KelasRombelMutationRepository::class, EloquentKelasRombelReadRepository::class);
         $this->app->bind(KelasRombelReadRepository::class, EloquentKelasRombelReadRepository::class);
+        $this->app->bind(ActiveClassGroupRosterReader::class, EloquentKelasRombelReadRepository::class);
     }
 
     public function boot(): void

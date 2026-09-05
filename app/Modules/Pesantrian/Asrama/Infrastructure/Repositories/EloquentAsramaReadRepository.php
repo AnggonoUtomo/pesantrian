@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Modules\Pesantrian\Asrama\Infrastructure\Repositories;
 
+use App\Modules\Pesantrian\Asrama\Application\Contracts\ActiveDormitoryResidentReader;
 use App\Modules\Pesantrian\Asrama\Application\Contracts\AsramaMutationRepository;
 use App\Modules\Pesantrian\Asrama\Application\Contracts\AsramaReadRepository;
+use App\Modules\Pesantrian\Asrama\Application\DTO\ActiveDormitoryResidentData;
 use App\Modules\Pesantrian\Asrama\Application\DTO\AssignDormitorySupervisorData;
 use App\Modules\Pesantrian\Asrama\Application\DTO\DormitoryData;
 use App\Modules\Pesantrian\Asrama\Application\DTO\DormitoryListFilter;
@@ -28,7 +30,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
-final class EloquentAsramaReadRepository implements AsramaMutationRepository, AsramaReadRepository
+final class EloquentAsramaReadRepository implements ActiveDormitoryResidentReader, AsramaMutationRepository, AsramaReadRepository
 {
     public function paginateDormitories(DormitoryListFilter $filter): PaginatedDormitoryData
     {
@@ -74,6 +76,43 @@ final class EloquentAsramaReadRepository implements AsramaMutationRepository, As
         }
 
         return $this->map($record, includeDetails: true);
+    }
+
+    public function residentsForDormitory(string $dormitoryId, ?string $roomId = null): array
+    {
+        return $this->placementQuery()
+            ->join('dormitories', 'dormitories.id', '=', 'dormitory_rooms.dormitory_id')
+            ->where('dormitories.id', $dormitoryId)
+            ->where('dormitories.status', 'active')
+            ->whereNull('dormitories.archived_at')
+            ->where('dormitory_rooms.status', 'active')
+            ->whereNull('dormitory_rooms.archived_at')
+            ->where('student_room_placements.status', 'active')
+            ->whereNotNull('student_room_placements.active_student_key')
+            ->where('students.status', 'active')
+            ->whereNull('students.archived_at')
+            ->when($roomId !== null, fn (Builder $query) => $query->where('dormitory_rooms.id', $roomId))
+            ->orderBy('dormitory_rooms.code')
+            ->orderBy('students.full_name')
+            ->get([
+                'student_room_placements.*',
+                'students.full_name as student_name',
+                'dormitory_rooms.id as room_id',
+                'dormitory_rooms.code as room_code',
+                'dormitories.id as dormitory_id',
+            ])
+            ->map(static fn (StudentRoomPlacementRecord $placement): ActiveDormitoryResidentData => new ActiveDormitoryResidentData(
+                placementId: (string) $placement->getKey(),
+                dormitoryId: $dormitoryId,
+                roomId: (string) $placement->dormitory_room_id,
+                studentId: (string) $placement->student_id,
+                studentNo: (string) $placement->student_no,
+                studentName: $placement->getAttribute('student_name') === null ? null : (string) $placement->getAttribute('student_name'),
+                roomCode: $placement->getAttribute('room_code') === null ? null : (string) $placement->getAttribute('room_code'),
+                startedAt: $placement->started_at->toJSON(),
+            ))
+            ->values()
+            ->all();
     }
 
     public function createDormitory(UpsertDormitoryData $data): DormitoryData

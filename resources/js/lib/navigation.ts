@@ -1,4 +1,5 @@
 import {
+    BedDouble,
     Building2,
     CalendarRange,
     GraduationCap,
@@ -89,12 +90,7 @@ function buildSystemNavigation(auth: Auth): NavItem[] {
 }
 
 function buildOrganizationNavigation(auth: Auth): NavItem[] {
-    if (
-        !hasAnyPermission(auth, [
-            'organization.view',
-            'organization.manage',
-        ])
-    ) {
+    if (!hasAnyPermission(auth, ['organization.view', 'organization.manage'])) {
         return [];
     }
 
@@ -190,6 +186,11 @@ function buildPesantrianNavigation(auth: Auth): NavItem[] {
             'santri.manage',
             'santri.lifecycle',
             'santri.archive',
+            'asrama.view',
+            'asrama.manage',
+            'asrama.placement',
+            'asrama.supervisor',
+            'asrama.archive',
         ])
     ) {
         return [];
@@ -231,13 +232,32 @@ function buildPesantrianNavigation(auth: Auth): NavItem[] {
         });
     }
 
+    if (
+        hasAnyPermission(auth, [
+            'asrama.view',
+            'asrama.manage',
+            'asrama.placement',
+            'asrama.supervisor',
+            'asrama.archive',
+        ])
+    ) {
+        items.push({
+            title: 'Asrama',
+            href: routeOr('/pesantrian/asrama', 'pesantrian.asrama.index'),
+            icon: BedDouble,
+            iconClassName: 'text-indigo-600 dark:text-indigo-300',
+        });
+    }
+
     return items;
 }
 
 function hasAnyPermission(auth: Auth, permissions: string[]): boolean {
     return (
         auth.superSystem === true ||
-        permissions.some((permission) => auth.permissions?.[permission] === true)
+        permissions.some(
+            (permission) => auth.permissions?.[permission] === true,
+        )
     );
 }
 

@@ -296,13 +296,37 @@ Verifikasi:
 
 ## Increment 10: UI/Inertia List dan Detail
 
-- [ ] Buat page `resources/js/pages/Pesantrian/Asrama/pages/Index.tsx`.
-- [ ] Buat page `resources/js/pages/Pesantrian/Asrama/pages/Show.tsx`.
-- [ ] Buat komponen table/filter/summary/detail di folder `components`.
-- [ ] Tambahkan pagination.
-- [ ] Tambahkan menu sidebar namespace Pesantrian.
-- [ ] Tambahkan presentation tests/Ziggy route test bila relevan.
-- [ ] Jalankan typecheck, lint, dan build.
+- [x] Buat page `resources/js/pages/Pesantrian/Asrama/pages/Index.tsx`.
+- [x] Buat page `resources/js/pages/Pesantrian/Asrama/pages/Show.tsx`.
+- [x] Buat komponen table/filter/summary/detail di folder `components`.
+- [x] Tambahkan pagination.
+- [x] Tambahkan menu sidebar namespace Pesantrian.
+- [x] Tambahkan presentation tests/Ziggy route test bila relevan.
+- [x] Jalankan typecheck, lint, dan build.
+
+Hasil:
+
+- Web route Inertia `pesantrian.asrama.index` dan
+  `pesantrian.asrama.show` tersedia agar route Ziggy tidak hilang dari UI.
+- Halaman Index dan Show tetap tipis; logic list/detail berada pada komponen
+  `resources/js/pages/Pesantrian/Asrama/components/`.
+- Index menyediakan ringkasan, filter, table responsif, empty state, dan
+  pagination.
+- Detail menyediakan ringkasan asrama, daftar kamar, penempatan santri aktif,
+  dan musyrif/pembina.
+- Sidebar namespace Pesantrian menampilkan menu `Asrama` untuk user dengan
+  permission Asrama.
+- UI mutation belum dibuka; form create/update, placement, musyrif, dan archive
+  disiapkan untuk Increment 11.
+
+Verifikasi:
+
+- [x] `php artisan test tests\Feature\AsramaPresentationTest.php --no-ansi`
+- [x] `php artisan test tests\Feature\SantriPresentationTest.php tests\Feature\KelasRombelPresentationTest.php --no-ansi`
+- [x] `php artisan route:list --name=pesantrian.asrama --no-ansi`
+- [x] `npm run lint:check`
+- [x] `npm run types:check`
+- [x] `npm run build`
 
 ## Increment 11: UI Mutation dan QA Browser
 

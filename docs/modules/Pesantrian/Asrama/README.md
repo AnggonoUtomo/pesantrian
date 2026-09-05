@@ -7,7 +7,7 @@
 - Nama tampil: `Asrama`
 - Source: `app/Modules/Pesantrian/Asrama/`
 - Frontend: `resources/js/pages/Pesantrian/Asrama/`
-- Status: Active - backend lifecycle dan demo seeder
+- Status: Active - backend lifecycle, demo seeder, dan UI read/list
 
 ## Tujuan
 
@@ -151,12 +151,14 @@ Endpoint lifecycle backend yang sudah tersedia:
 Seeder memakai data demo dari Organization, Santri, dan HumanResource. Jika
 dependency demo belum ada, seeder berhenti aman tanpa membuat data yatim.
 
-## UI Baseline
+## UI Read/List
 
 UI berada di `resources/js/pages/Pesantrian/Asrama/`.
 
-Halaman index dan detail harus dijaga tetap tipis. Komponen business-specific
-ditempatkan pada folder `components/`, mengikuti pola module sebelumnya:
+Halaman index dan detail dijaga tetap tipis. Komponen business-specific
+ditempatkan pada folder `components/`, mengikuti pola module sebelumnya. UI
+read/list sudah tersedia untuk operator melihat daftar asrama, filter,
+pagination, detail kamar, penempatan santri aktif, dan musyrif/pembina.
 
 ```text
 resources/js/pages/Pesantrian/Asrama/
@@ -164,16 +166,18 @@ resources/js/pages/Pesantrian/Asrama/
 |   |-- Index.tsx
 |   `-- Show.tsx
 `-- components/
+    |-- AsramaDashboard.tsx
+    |-- AsramaDetailPanel.tsx
     |-- AsramaFilters.tsx
+    |-- AsramaPagination.tsx
+    |-- AsramaStatusBadge.tsx
     |-- AsramaTable.tsx
-    |-- AsramaSummaryCards.tsx
-    |-- AsramaForm.tsx
-    |-- KamarForm.tsx
-    |-- PenempatanSantriForm.tsx
-    `-- MusyrifAssignmentForm.tsx
+    `-- AsramaSummaryCards.tsx
 ```
 
 Menu sidebar berada di namespace Pesantrian dengan nama tampil `Asrama`.
+UI mutation seperti create/update asrama, kamar, placement, musyrif, dan
+archive/restore dikerjakan pada increment berikutnya.
 
 ## Dokumentasi Terkait
 

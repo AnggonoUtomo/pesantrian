@@ -9,10 +9,13 @@ use App\Modules\Pesantrian\Asrama\Application\Contracts\AsramaReadRepository;
 use App\Modules\Pesantrian\Asrama\Application\DTO\DormitoryData;
 use App\Modules\Pesantrian\Asrama\Application\DTO\DormitoryListFilter;
 use App\Modules\Pesantrian\Asrama\Application\DTO\DormitoryRoomData;
+use App\Modules\Pesantrian\Asrama\Application\DTO\DormitoryRoomPlacementContextData;
 use App\Modules\Pesantrian\Asrama\Application\DTO\DormitorySupervisorAssignmentData;
 use App\Modules\Pesantrian\Asrama\Application\DTO\PaginatedDormitoryData;
+use App\Modules\Pesantrian\Asrama\Application\DTO\PlaceStudentRoomData;
 use App\Modules\Pesantrian\Asrama\Application\DTO\ReferenceData;
 use App\Modules\Pesantrian\Asrama\Application\DTO\StudentRoomPlacementData;
+use App\Modules\Pesantrian\Asrama\Application\DTO\StudentRoomTransferData;
 use App\Modules\Pesantrian\Asrama\Application\DTO\UpsertDormitoryData;
 use App\Modules\Pesantrian\Asrama\Application\DTO\UpsertDormitoryRoomData;
 use App\Modules\Pesantrian\Asrama\Infrastructure\Models\DormitoryRecord;
@@ -21,6 +24,7 @@ use App\Modules\Pesantrian\Asrama\Infrastructure\Models\DormitorySupervisorAssig
 use App\Modules\Pesantrian\Asrama\Infrastructure\Models\StudentRoomPlacementRecord;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 final class EloquentAsramaReadRepository implements AsramaMutationRepository, AsramaReadRepository
@@ -117,6 +121,114 @@ final class EloquentAsramaReadRepository implements AsramaMutationRepository, As
         return $this->freshDormitoryDataById($dormitoryId);
     }
 
+    public function findRoomForPlacement(string $roomId): ?DormitoryRoomPlacementContextData
+    {
+        $room = DormitoryRoomRecord::query()
+            ->join('dormitories', 'dormitories.id', '=', 'dormitory_rooms.dormitory_id')
+            ->where('dormitory_rooms.id', $roomId)
+            ->select('dormitory_rooms.*')
+            ->addSelect([
+                DB::raw('dormitories.id as placement_dormitory_id'),
+                DB::raw('dormitories.unit_id as placement_dormitory_unit_id'),
+                DB::raw('dormitories.status as placement_dormitory_status'),
+                DB::raw('dormitories.gender_policy as placement_gender_policy'),
+                DB::raw('dormitories.archived_at as placement_dormitory_archived_at'),
+                DB::raw("(select count(*) from student_room_placements where student_room_placements.dormitory_room_id = dormitory_rooms.id and student_room_placements.status = 'active' and student_room_placements.active_student_key is not null) as occupied_count"),
+            ])
+            ->first();
+
+        if (! $room instanceof DormitoryRoomRecord) {
+            return null;
+        }
+
+        $dormitoryArchivedAt = $room->getAttribute('placement_dormitory_archived_at');
+
+        return new DormitoryRoomPlacementContextData(
+            dormitoryId: (string) $room->getAttribute('placement_dormitory_id'),
+            dormitoryUnitId: (string) $room->getAttribute('placement_dormitory_unit_id'),
+            dormitoryStatus: (string) $room->getAttribute('placement_dormitory_status'),
+            genderPolicy: (string) $room->getAttribute('placement_gender_policy'),
+            dormitoryArchivedAt: $dormitoryArchivedAt === null ? null : Carbon::parse($dormitoryArchivedAt)->toJSON(),
+            roomId: (string) $room->getKey(),
+            roomCode: (string) $room->code,
+            capacity: (int) $room->capacity,
+            occupiedCount: (int) $room->getAttribute('occupied_count'),
+            roomStatus: (string) $room->status,
+            roomArchivedAt: $room->archived_at?->toJSON(),
+        );
+    }
+
+    public function findPlacement(string $id): ?StudentRoomPlacementData
+    {
+        $record = $this->placementQuery()
+            ->where('student_room_placements.id', $id)
+            ->first();
+
+        return $record instanceof StudentRoomPlacementRecord ? $this->mapPlacement($record) : null;
+    }
+
+    public function findActivePlacementForStudent(string $studentId): ?StudentRoomPlacementData
+    {
+        $record = $this->placementQuery()
+            ->where('student_room_placements.student_id', $studentId)
+            ->where('student_room_placements.status', 'active')
+            ->whereNotNull('student_room_placements.active_student_key')
+            ->first();
+
+        return $record instanceof StudentRoomPlacementRecord ? $this->mapPlacement($record) : null;
+    }
+
+    public function placeStudent(PlaceStudentRoomData $data): StudentRoomPlacementData
+    {
+        /** @var StudentRoomPlacementRecord $record */
+        $record = StudentRoomPlacementRecord::query()->create($data->toArray());
+
+        return $this->freshPlacementData((string) $record->getKey());
+    }
+
+    public function transferStudent(string $placementId, PlaceStudentRoomData $target, string $reason): ?StudentRoomTransferData
+    {
+        $previous = StudentRoomPlacementRecord::query()->find($placementId);
+
+        if (! $previous instanceof StudentRoomPlacementRecord || $previous->status !== 'active') {
+            return null;
+        }
+
+        $previous->forceFill([
+            'ended_at' => $target->startedAt,
+            'status' => 'moved',
+            'reason' => $reason,
+            'active_student_key' => null,
+        ])->save();
+
+        /** @var StudentRoomPlacementRecord $current */
+        $current = StudentRoomPlacementRecord::query()->create($target->toArray());
+
+        return new StudentRoomTransferData(
+            previous: $this->freshPlacementData((string) $previous->getKey()),
+            current: $this->freshPlacementData((string) $current->getKey()),
+        );
+    }
+
+    public function removeStudent(string $placementId, string $endedAt, string $reason, ?string $actorId): ?StudentRoomPlacementData
+    {
+        $record = StudentRoomPlacementRecord::query()->find($placementId);
+
+        if (! $record instanceof StudentRoomPlacementRecord || $record->status !== 'active') {
+            return null;
+        }
+
+        $record->forceFill([
+            'ended_at' => $endedAt,
+            'status' => 'inactive',
+            'reason' => $reason,
+            'active_student_key' => null,
+            'ended_by' => $actorId,
+        ])->save();
+
+        return $this->freshPlacementData((string) $record->getKey());
+    }
+
     /** @return Builder<DormitoryRecord> */
     private function baseQuery(): Builder
     {
@@ -210,20 +322,38 @@ final class EloquentAsramaReadRepository implements AsramaMutationRepository, As
                 'students.full_name as student_name',
                 'dormitory_rooms.code as room_code',
             ])
-            ->map(static fn (StudentRoomPlacementRecord $placement): StudentRoomPlacementData => new StudentRoomPlacementData(
-                id: (string) $placement->getKey(),
-                studentId: (string) $placement->student_id,
-                dormitoryRoomId: (string) $placement->dormitory_room_id,
-                studentNo: (string) $placement->student_no,
-                studentName: $placement->getAttribute('student_name') === null ? null : (string) $placement->getAttribute('student_name'),
-                roomCode: $placement->getAttribute('room_code') === null ? null : (string) $placement->getAttribute('room_code'),
-                startedAt: $placement->started_at->toJSON(),
-                endedAt: $placement->ended_at?->toJSON(),
-                status: (string) $placement->status,
-                reason: $placement->reason === null ? null : (string) $placement->reason,
-            ))
+            ->map(fn (StudentRoomPlacementRecord $placement): StudentRoomPlacementData => $this->mapPlacement($placement))
             ->values()
             ->all());
+    }
+
+    /** @return Builder<StudentRoomPlacementRecord> */
+    private function placementQuery(): Builder
+    {
+        return StudentRoomPlacementRecord::query()
+            ->leftJoin('students', 'students.id', '=', 'student_room_placements.student_id')
+            ->leftJoin('dormitory_rooms', 'dormitory_rooms.id', '=', 'student_room_placements.dormitory_room_id')
+            ->select([
+                'student_room_placements.*',
+                'students.full_name as student_name',
+                'dormitory_rooms.code as room_code',
+            ]);
+    }
+
+    private function mapPlacement(StudentRoomPlacementRecord $placement): StudentRoomPlacementData
+    {
+        return new StudentRoomPlacementData(
+            id: (string) $placement->getKey(),
+            studentId: (string) $placement->student_id,
+            dormitoryRoomId: (string) $placement->dormitory_room_id,
+            studentNo: (string) $placement->student_no,
+            studentName: $placement->getAttribute('student_name') === null ? null : (string) $placement->getAttribute('student_name'),
+            roomCode: $placement->getAttribute('room_code') === null ? null : (string) $placement->getAttribute('room_code'),
+            startedAt: $placement->started_at->toJSON(),
+            endedAt: $placement->ended_at?->toJSON(),
+            status: (string) $placement->status,
+            reason: $placement->reason === null ? null : (string) $placement->reason,
+        );
     }
 
     /** @return list<DormitorySupervisorAssignmentData> */
@@ -282,6 +412,17 @@ final class EloquentAsramaReadRepository implements AsramaMutationRepository, As
 
         if (! $fresh instanceof DormitoryData) {
             throw new \RuntimeException('Asrama gagal dibaca ulang setelah mutation.');
+        }
+
+        return $fresh;
+    }
+
+    private function freshPlacementData(string $placementId): StudentRoomPlacementData
+    {
+        $fresh = $this->findPlacement($placementId);
+
+        if (! $fresh instanceof StudentRoomPlacementData) {
+            throw new \RuntimeException('Penempatan kamar gagal dibaca ulang setelah mutation.');
         }
 
         return $fresh;

@@ -185,11 +185,41 @@ Verifikasi:
 
 ## Increment 7: Penempatan dan Transfer Santri
 
-- [ ] Buat action place student.
-- [ ] Buat action transfer room.
-- [ ] Buat action remove student.
-- [ ] Tambahkan audit placement/transfer/remove.
-- [ ] Jalankan focused placement tests.
+- [x] Buat action place student.
+- [x] Buat action transfer room.
+- [x] Buat action remove student.
+- [x] Tambahkan audit placement/transfer/remove.
+- [x] Jalankan focused placement tests.
+
+Hasil:
+
+- Endpoint mutation penempatan kamar santri tersedia:
+  - `POST /api/v1/pesantrian/asrama/{dormitory}/placements`
+  - `PATCH /api/v1/pesantrian/asrama/{dormitory}/placements/{placement}/transfer`
+  - `PATCH /api/v1/pesantrian/asrama/{dormitory}/placements/{placement}/remove`
+- Mutation memakai permission `asrama.placement` dan idempotency middleware.
+- Action placement memvalidasi santri aktif melalui contract Santri,
+  memastikan santri berada pada unit asrama, menjaga satu kamar aktif per
+  santri, mengecek kapasitas kamar, status/arsip asrama dan kamar, serta
+  kebijakan gender asrama.
+- Transfer kamar menutup placement lama sebagai `moved` dan membuat placement
+  aktif baru.
+- Keluar kamar menutup placement sebagai `inactive`, menyimpan alasan, dan
+  mencatat actor penutup.
+- Audit placement mem-publish:
+  - `asrama.student.placed`
+  - `asrama.student.transferred`
+  - `asrama.student.removed`
+
+Verifikasi:
+
+- [x] `php artisan test tests\Feature\AsramaPlacementApiTest.php --no-ansi`
+- [x] `php artisan test --filter=Asrama --no-ansi`
+- [x] `php artisan route:list --name=api.v1.pesantrian.asrama --no-ansi`
+- [x] `php artisan module:validate --no-ansi`
+- [x] `php artisan optimize:clear --no-ansi`
+- [x] `vendor\bin\pint --dirty --test`
+- [x] `vendor\bin\phpstan analyse app/Modules/Pesantrian/Asrama --no-progress --error-format=table`
 
 ## Increment 8: Penugasan Musyrif dan Archive
 

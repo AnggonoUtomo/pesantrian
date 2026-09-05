@@ -7,7 +7,7 @@
 - Nama tampil: `Asrama`
 - Source: `app/Modules/Pesantrian/Asrama/`
 - Frontend: `resources/js/pages/Pesantrian/Asrama/`
-- Status: Active - skeleton module
+- Status: Active - data foundation
 
 ## Tujuan
 
@@ -64,6 +64,19 @@ Contract readiness awal:
   divalidasi tanpa membaca model Santri.
 - `HumanResource/HumanResource\Application\Contracts\ActiveEmployeeReader`
   dipakai untuk selector musyrif/pembina aktif.
+
+## Data Foundation
+
+Increment data foundation sudah menyiapkan table:
+
+- `dormitories` untuk data asrama.
+- `dormitory_rooms` untuk kamar dan kapasitas.
+- `student_room_placements` untuk riwayat tinggal santri di kamar.
+- `dormitory_supervisor_assignments` untuk riwayat musyrif/pembina.
+
+Semua table memakai ULID. Satu placement aktif per santri dijaga melalui
+`active_student_key` nullable unique; placement lama disimpan sebagai histori
+dengan `active_student_key = null`.
 
 ## Lifecycle Operasional
 

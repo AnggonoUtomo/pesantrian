@@ -2,9 +2,9 @@
 
 ## Status
 
-Active - contract readiness. Source module awal, permission identity, dan
-contract minimum lintas module sudah tersedia. Migration, route behavior, seeder
-demo, dan UI belum dibuat pada increment ini.
+Active - data foundation. Source module awal, permission identity, contract
+minimum lintas module, migration, record model, dan factory minimum sudah
+tersedia. Route behavior, seeder demo, dan UI belum dibuat pada increment ini.
 
 ## Objective
 
@@ -127,6 +127,7 @@ operasional aktif. Penghapusan permanen tidak menjadi baseline.
 | `ended_at` | Nullable, tanggal keluar/pindah |
 | `status` | active/transferred/ended |
 | `reason` | Nullable untuk alasan pindah/keluar |
+| `active_student_key` | Nullable unique untuk menjaga satu placement aktif per santri |
 | `created_by`, `ended_by` | Nullable actor id |
 | `created_at`, `updated_at` | Timestamp standar |
 
@@ -138,10 +139,12 @@ operasional aktif. Penghapusan permanen tidak menjadi baseline.
 | `employee_id` | Rujukan pegawai dari public contract |
 | `dormitory_id` | Nullable jika assignment khusus kamar |
 | `dormitory_room_id` | Nullable jika assignment level asrama |
+| `employee_name` | Snapshot nama pegawai saat assignment dibuat |
 | `role` | musyrif/pembina/koordinator |
 | `started_at` | Tanggal mulai |
 | `ended_at` | Nullable |
 | `status` | active/ended |
+| `reason` | Nullable untuk alasan penugasan ditutup |
 | `created_at`, `updated_at` | Timestamp standar |
 
 ## Rule Baseline
@@ -220,7 +223,7 @@ Acceptance UI awal:
 - [x] Permission candidate tersedia.
 - [x] Contract readiness lintas module Organization, Santri, dan HumanResource
   tersedia tanpa direct import Infrastructure.
-- [ ] Schema asrama, kamar, placement, dan musyrif tersedia dengan ULID.
+- [x] Schema asrama, kamar, placement, dan musyrif tersedia dengan ULID.
 - [ ] List/search/filter Asrama tersedia.
 - [ ] Detail Asrama tersedia.
 - [ ] Create/update asrama dan kamar tersedia.

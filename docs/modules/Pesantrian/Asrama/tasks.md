@@ -107,12 +107,26 @@ Verifikasi:
 
 ## Increment 4: Data Foundation
 
-- [ ] Buat migration `dormitories`.
-- [ ] Buat migration `dormitory_rooms`.
-- [ ] Buat migration `student_room_placements`.
-- [ ] Buat migration `dormitory_supervisor_assignments`.
-- [ ] Buat Infrastructure model/factory minimum.
-- [ ] Tambahkan focused schema/invariant tests.
+- [x] Buat migration `dormitories`.
+- [x] Buat migration `dormitory_rooms`.
+- [x] Buat migration `student_room_placements`.
+- [x] Buat migration `dormitory_supervisor_assignments`.
+- [x] Buat Infrastructure model/factory minimum.
+- [x] Tambahkan focused schema/invariant tests.
+
+Hasil:
+
+- Migration module Asrama dimuat dari `ServiceProvider`.
+- Table `dormitories`, `dormitory_rooms`, `student_room_placements`, dan
+  `dormitory_supervisor_assignments` tersedia dengan ULID.
+- Kode asrama unique global, kode kamar unique per asrama.
+- Satu placement kamar aktif per santri dijaga dengan `active_student_key`
+  nullable unique, sementara placement lama tetap tersimpan sebagai histori.
+- Record model dan factory minimum tersedia di layer Infrastructure/Database.
+
+Verifikasi:
+
+- [x] `php artisan test tests\Feature\AsramaDataFoundationTest.php --no-ansi`
 
 ## Increment 5: Backend Read/List
 

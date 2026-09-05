@@ -7,7 +7,7 @@
 - Nama tampil: `Asrama`
 - Source: `app/Modules/Pesantrian/Asrama/`
 - Frontend: `resources/js/pages/Pesantrian/Asrama/`
-- Status: Active - create/update asrama dan kamar
+- Status: Active - backend lifecycle dan demo seeder
 
 ## Tujuan
 
@@ -119,6 +119,38 @@ Asrama aktif
 Satu santri hanya boleh memiliki satu placement kamar aktif pada waktu yang
 sama. Perpindahan kamar tidak menghapus riwayat lama.
 
+Endpoint lifecycle backend yang sudah tersedia:
+
+- Penempatan santri:
+  `POST /api/v1/pesantrian/asrama/{dormitory}/placements`
+- Transfer kamar:
+  `PATCH /api/v1/pesantrian/asrama/{dormitory}/placements/{placement}/transfer`
+- Keluar kamar:
+  `PATCH /api/v1/pesantrian/asrama/{dormitory}/placements/{placement}/remove`
+- Penugasan musyrif/pembina:
+  `POST /api/v1/pesantrian/asrama/{dormitory}/supervisors`
+- Akhir tugas musyrif/pembina:
+  `PATCH /api/v1/pesantrian/asrama/{dormitory}/supervisors/{assignment}/end`
+- Archive/restore asrama:
+  `PATCH /api/v1/pesantrian/asrama/{dormitory}/archive`
+  dan `PATCH /api/v1/pesantrian/asrama/{dormitory}/restore`
+- Archive/restore kamar:
+  `PATCH /api/v1/pesantrian/asrama/{dormitory}/rooms/{room}/archive`
+  dan `PATCH /api/v1/pesantrian/asrama/{dormitory}/rooms/{room}/restore`
+
+## Data Demo
+
+`AsramaDemoSeeder` menyediakan data demo idempotent untuk uji manual:
+
+- `DEMO-ASR-PUTRA` dan `DEMO-ASR-PUTRI` sebagai asrama aktif.
+- `DEMO-ASR-RENOVASI` sebagai asrama nonaktif/arsip.
+- Kamar demo `DEMO-KMR-*`, termasuk satu kamar arsip/renovasi.
+- Placement santri aktif, riwayat pindah kamar, dan riwayat keluar kamar.
+- Musyrif/pembina aktif dan assignment historis yang sudah selesai.
+
+Seeder memakai data demo dari Organization, Santri, dan HumanResource. Jika
+dependency demo belum ada, seeder berhenti aman tanpa membuat data yatim.
+
 ## UI Baseline
 
 UI berada di `resources/js/pages/Pesantrian/Asrama/`.
@@ -159,6 +191,9 @@ php artisan module:validate
 php artisan test --filter=Asrama
 php artisan test tests\Feature\AsramaApiTest.php --no-ansi
 php artisan test tests\Feature\AsramaMutationApiTest.php --no-ansi
+php artisan test tests\Feature\AsramaPlacementApiTest.php --no-ansi
+php artisan test tests\Feature\AsramaSupervisorArchiveApiTest.php --no-ansi
+php artisan test tests\Feature\BusinessDemoSeederTest.php --no-ansi
 npm run types:check
 npm run lint:check
 npm run build

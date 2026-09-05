@@ -17,7 +17,8 @@ php artisan db:seed
 
 Seeder bersifat idempotent, artinya aman dijalankan berulang untuk melengkapi
 data demo tanpa membuat data demo dobel berdasarkan kode unik seperti
-`DEMO-*`, `PPDB-DEMO-*`, `NIS-DEMO-*`, dan `PEG-DEMO-*`.
+`DEMO-*`, `PPDB-DEMO-*`, `NIS-DEMO-*`, `PEG-DEMO-*`, `DEMO-ASR-*`, dan
+`DEMO-KMR-*`.
 
 Password akun demo tidak ditulis di source code. Jika ingin semua akun demo
 punya password lokal yang sama, isi `.env` lokal:
@@ -110,8 +111,8 @@ Tujuan:
 
 Relasi:
 
-- Module seperti PPDB, Santri, SDM, Academic Period, dan Kelas/Rombel menulis
-  audit lewat contract audit yang tersedia.
+- Module seperti PPDB, Santri, SDM, Academic Period, Kelas/Rombel, dan Asrama
+  menulis audit lewat contract audit yang tersedia.
 
 ### Langkah E: Organisasi
 
@@ -133,9 +134,9 @@ Tujuan:
 
 Relasi:
 
-- Unit dipakai oleh PPDB, Santri, SDM, Academic/KelasRombel.
-- Module Asrama sudah memiliki skeleton dan permission awal, tetapi data kamar,
-  penempatan santri, dan UI operasional asrama belum tersedia.
+- Unit dipakai oleh PPDB, Santri, SDM, Academic/KelasRombel, dan Asrama.
+- `DEMO-ASRAMA-PUTRA` dan `DEMO-ASRAMA-PUTRI` dipakai sebagai unit induk data
+  Asrama.
 
 ### Langkah F: Tahun Ajaran dan Semester
 
@@ -180,9 +181,8 @@ Tujuan:
 Relasi:
 
 - Guru aktif dipakai sebagai wali kelas di module Kelas/Rombel.
-- Musyrif/pembina asrama sudah ada sebagai data demo SDM. Module Asrama sudah
-  memiliki skeleton dan permission awal, tetapi penugasan musyrif operasional
-  belum tersedia.
+- Musyrif/pembina asrama dipakai oleh module Asrama untuk penugasan pembina
+  aktif dan historis.
 - Payroll belum dibuat dan memang tidak dicampur ke module SDM awal.
 
 ### Langkah H: PPDB / Penerimaan Santri Baru
@@ -274,6 +274,44 @@ Relasi:
 - Mapel/detail kurikulum belum dibuat; kurikulum saat ini masih label/struktur
   minimum.
 
+### Langkah K: Asrama
+
+Menu: **Pesantrian -> Asrama**
+
+Data demo penting:
+
+- `DEMO-ASR-PUTRA` asrama putra aktif.
+- `DEMO-ASR-PUTRI` asrama putri aktif.
+- `DEMO-ASR-RENOVASI` asrama nonaktif/arsip untuk uji restore.
+- Kamar `DEMO-KMR-PUTRA-A01`, `DEMO-KMR-PUTRA-A02`,
+  `DEMO-KMR-PUTRI-A01`, `DEMO-KMR-PUTRI-A02`, dan
+  `DEMO-KMR-RENOVASI-A01`.
+- Placement aktif untuk `NIS-DEMO-AKTIF` dan `NIS-DEMO-PPDB`.
+- Riwayat pindah kamar untuk `NIS-DEMO-PPDB`.
+- Riwayat keluar kamar untuk `NIS-DEMO-NONAKTIF`.
+- Musyrif aktif dari `PEG-DEMO-002` dan riwayat pembina selesai dari
+  `PEG-DEMO-006`.
+
+Tujuan:
+
+- Melihat daftar dan detail asrama.
+- Memeriksa kapasitas dan keterisian kamar.
+- Menempatkan santri aktif ke kamar.
+- Memindahkan santri ke kamar lain.
+- Mengeluarkan santri dari kamar dengan alasan.
+- Menugaskan dan mengakhiri tugas musyrif/pembina.
+- Mengarsipkan dan memulihkan asrama atau kamar.
+
+Relasi:
+
+- Asrama memakai unit dari Organisasi.
+- Penempatan kamar memakai santri aktif dari Data Induk Santri.
+- Musyrif/pembina memakai pegawai aktif dari SDM Pesantren.
+- Satu santri hanya boleh memiliki satu kamar aktif pada satu waktu.
+- Asrama/kamar yang diarsipkan tidak menerima placement baru.
+- UI Asrama belum dibuat pada tahap backend ini; uji manual sementara dapat
+  dilakukan lewat endpoint API internal atau setelah Increment UI selesai.
+
 ## 4. Module yang Belum Dibuat
 
 Jika saat uji manual terasa ada relasi yang belum bisa diklik, itu memang masih
@@ -282,7 +320,7 @@ di luar baseline running saat ini.
 | Kebutuhan | Status saat ini |
 | --- | --- |
 | Wali Santri master | Belum dibuat; wali masih snapshot di Santri/PPDB. |
-| Asrama | Skeleton dan permission awal sudah dibuat; data kamar, placement, dan UI belum tersedia. |
+| Asrama UI | Backend lifecycle dan data demo sudah tersedia; UI akan dibuat pada increment berikutnya. |
 | Tahfidz / Hafalan | Belum dibuat. |
 | Presensi Santri | Belum dibuat. |
 | Perizinan Santri | Belum dibuat. |
@@ -307,6 +345,8 @@ di luar baseline running saat ini.
 - Buka Santri dan cek santri hasil PPDB.
 - Buka Kelas/Rombel, buka detail rombel, lalu coba placement santri dan wali
   kelas.
+- Buka/akses Asrama, cek data `DEMO-ASR-*`, kamar `DEMO-KMR-*`, placement
+  santri, musyrif, archive, dan restore.
 - Buka Audit Trail setelah beberapa aksi dan cek aktivitas tercatat.
 
 Jika ada error Ziggy/route di console browser, catat nama route yang disebutkan.

@@ -268,10 +268,31 @@ Verifikasi:
 
 ## Increment 9: Demo Seeder
 
-- [ ] Tambahkan seeder demo Asrama idempotent.
-- [ ] Update business demo seeder.
-- [ ] Tambahkan seeder test.
-- [ ] Dokumentasikan data demo di README/user manual bila diperlukan.
+- [x] Tambahkan seeder demo Asrama idempotent.
+- [x] Update business demo seeder.
+- [x] Tambahkan seeder test.
+- [x] Dokumentasikan data demo di README/user manual bila diperlukan.
+
+Hasil:
+
+- `AsramaDemoSeeder` tersedia dan aman dijalankan ulang pada environment non
+  production.
+- Global `DatabaseSeeder` memanggil `AsramaDemoSeeder` setelah Organization,
+  HumanResource, Santri, dan Kelas/Rombel demo tersedia.
+- Data demo Asrama mencakup:
+  - asrama putra dan putri aktif;
+  - asrama arsip/renovasi;
+  - lima kamar demo termasuk kamar arsip;
+  - placement santri aktif;
+  - riwayat pindah kamar;
+  - riwayat keluar kamar;
+  - musyrif aktif dan pembina historis yang sudah selesai.
+- User manual lifecycle dan README module menjelaskan data demo Asrama serta
+  relasinya ke Organization, Santri, dan HumanResource.
+
+Verifikasi:
+
+- [x] `php artisan test tests\Feature\BusinessDemoSeederTest.php --no-ansi`
 
 ## Increment 10: UI/Inertia List dan Detail
 

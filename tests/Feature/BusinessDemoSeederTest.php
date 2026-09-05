@@ -86,6 +86,24 @@ final class BusinessDemoSeederTest extends TestCase
         );
         self::assertSame(2, DB::table('class_group_homerooms')->where('status', 'active')->whereNotNull('active_class_group_key')->count());
         self::assertSame(1, DB::table('class_group_homerooms')->where('status', 'ended')->whereNull('active_class_group_key')->count());
+
+        self::assertSame(3, DB::table('dormitories')->where('code', 'like', 'DEMO-ASR-%')->count());
+        self::assertSame(2, DB::table('dormitories')->where('code', 'like', 'DEMO-ASR-%')->where('status', 'active')->whereNull('archived_at')->count());
+        self::assertSame(1, DB::table('dormitories')->where('code', 'DEMO-ASR-RENOVASI')->where('status', 'inactive')->whereNotNull('archived_at')->count());
+        self::assertSame(5, DB::table('dormitory_rooms')->where('code', 'like', 'DEMO-KMR-%')->count());
+        self::assertSame(4, DB::table('student_room_placements')->where('student_no', 'like', 'NIS-DEMO-%')->count());
+        self::assertSame(2, DB::table('student_room_placements')->where('status', 'active')->whereNotNull('active_student_key')->count());
+        self::assertSame(1, DB::table('student_room_placements')->where('status', 'moved')->whereNull('active_student_key')->count());
+        self::assertSame(1, DB::table('student_room_placements')->where('status', 'inactive')->whereNull('active_student_key')->count());
+        self::assertSame(
+            2,
+            DB::table('dormitory_supervisor_assignments')
+                ->join('dormitories', 'dormitories.id', '=', 'dormitory_supervisor_assignments.dormitory_id')
+                ->where('dormitories.code', 'like', 'DEMO-ASR-%')
+                ->count(),
+        );
+        self::assertSame(1, DB::table('dormitory_supervisor_assignments')->where('status', 'active')->whereNull('ended_at')->count());
+        self::assertSame(1, DB::table('dormitory_supervisor_assignments')->where('status', 'ended')->whereNotNull('ended_at')->count());
     }
 
     public function test_demo_seeder_tidak_membuat_data_bisnis_di_production(): void
@@ -102,6 +120,10 @@ final class BusinessDemoSeederTest extends TestCase
         self::assertSame(0, DB::table('class_groups')->count());
         self::assertSame(0, DB::table('class_group_students')->count());
         self::assertSame(0, DB::table('class_group_homerooms')->count());
+        self::assertSame(0, DB::table('dormitories')->count());
+        self::assertSame(0, DB::table('dormitory_rooms')->count());
+        self::assertSame(0, DB::table('student_room_placements')->count());
+        self::assertSame(0, DB::table('dormitory_supervisor_assignments')->count());
         self::assertSame(0, User::where('email', 'like', 'user-management-dummy-%@example.test')->count());
         self::assertSame(0, User::where('email', 'operator-ppdb@example.test')->count());
     }

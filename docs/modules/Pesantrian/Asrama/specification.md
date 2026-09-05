@@ -2,9 +2,9 @@
 
 ## Status
 
-Active - skeleton module. Source module awal dan permission identity sudah
-tersedia. Migration, route behavior, seeder demo, dan UI belum dibuat pada
-increment ini.
+Active - contract readiness. Source module awal, permission identity, dan
+contract minimum lintas module sudah tersedia. Migration, route behavior, seeder
+demo, dan UI belum dibuat pada increment ini.
 
 ## Objective
 
@@ -166,6 +166,14 @@ Public contract dibuat hanya saat consumer nyata tersedia. Candidate awal:
 Pada slice awal, Asrama menjadi consumer contract Santri dan HumanResource.
 Contract keluar dari Asrama boleh ditunda sampai ada consumer nyata.
 
+Contract readiness yang disiapkan:
+
+| Owner | Contract | Alasan |
+| --- | --- | --- |
+| `Organization/Organization` | `DormitoryUnitReader` | Asrama perlu selector unit bertipe `dormitory`, sedangkan `EducationUnitReader` sengaja khusus unit pendidikan. |
+| `Pesantrian/Santri` | `ActiveStudentReader` + `ActiveStudentOptionData.gender` | Placement Asrama perlu memastikan santri aktif dan rule asrama putra/putri tanpa membaca model Infrastructure Santri. |
+| `HumanResource/HumanResource` | `ActiveEmployeeReader` | Penugasan musyrif cukup memakai pegawai aktif dengan employee type/position yang sudah tersedia. |
+
 ## Permission Candidate
 
 - `asrama.view`
@@ -210,6 +218,8 @@ Acceptance UI awal:
 
 - [x] Module skeleton `Pesantrian/Asrama` valid menurut module registry.
 - [x] Permission candidate tersedia.
+- [x] Contract readiness lintas module Organization, Santri, dan HumanResource
+  tersedia tanpa direct import Infrastructure.
 - [ ] Schema asrama, kamar, placement, dan musyrif tersedia dengan ULID.
 - [ ] List/search/filter Asrama tersedia.
 - [ ] Detail Asrama tersedia.

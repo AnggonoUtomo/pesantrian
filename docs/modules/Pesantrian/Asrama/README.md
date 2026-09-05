@@ -55,6 +55,16 @@ Asrama tidak boleh membaca model Infrastructure module lain secara langsung.
 Lookup lintas module harus memakai public contract yang sudah ada atau contract
 baru hanya jika consumer nyata dibutuhkan.
 
+Contract readiness awal:
+
+- `Organization/Organization\Application\Contracts\DormitoryUnitReader` untuk
+  memilih unit organisasi bertipe `dormitory`.
+- `Pesantrian/Santri\Application\Contracts\ActiveStudentReader` dipakai untuk
+  santri aktif; DTO-nya membawa `gender` agar rule asrama putra/putri dapat
+  divalidasi tanpa membaca model Santri.
+- `HumanResource/HumanResource\Application\Contracts\ActiveEmployeeReader`
+  dipakai untuk selector musyrif/pembina aktif.
+
 ## Lifecycle Operasional
 
 Alur awal:

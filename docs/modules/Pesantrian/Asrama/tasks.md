@@ -76,13 +76,34 @@ Verifikasi:
 
 ## Increment 3: Contract Readiness
 
-- [ ] Review kebutuhan public contract lintas module.
+- [x] Review kebutuhan public contract lintas module.
   - Acceptance: field minimum Organization, Santri, dan HumanResource jelas.
   - Verification: review manual spec dan source contract existing.
-- [ ] Implementasikan contract minimum hanya bila consumer nyata disetujui.
+- [x] Implementasikan contract minimum hanya bila consumer nyata disetujui.
   - Acceptance: consumer memakai DTO/query public boundary, bukan Eloquent model
     Infrastructure module lain.
   - Verification: focused contract/query tests.
+
+Hasil:
+
+- `EducationUnitReader` tidak dipakai ulang untuk Asrama karena namanya dan
+  kontraknya khusus unit pendidikan.
+- Ditambahkan `DormitoryUnitReader` dan `DormitoryUnitOptionData` di
+  `Organization/Organization` untuk selector unit organisasi bertipe
+  `dormitory`.
+- `ActiveStudentOptionData` ditambah field optional `gender` agar Asrama dapat
+  memvalidasi aturan asrama putra/putri tanpa membaca model Infrastructure
+  Santri.
+- `ActiveEmployeeReader` existing dinilai cukup untuk selector musyrif/pembina
+  karena sudah membawa employee no, nama, unit utama, jenis pegawai, dan posisi.
+- Belum dibuat public contract keluar dari Asrama karena belum ada consumer
+  nyata.
+
+Verifikasi:
+
+- [x] `php artisan test tests\Feature\AsramaContractReadinessTest.php --no-ansi`
+- [x] `php artisan test tests\Feature\KelasRombelContractReadinessTest.php --no-ansi`
+- [x] `php artisan test --filter=Santri --no-ansi`
 
 ## Increment 4: Data Foundation
 

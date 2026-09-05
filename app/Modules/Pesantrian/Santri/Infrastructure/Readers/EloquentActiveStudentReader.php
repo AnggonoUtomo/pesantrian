@@ -17,7 +17,7 @@ final class EloquentActiveStudentReader implements ActiveStudentReader
             ->where('status', 'active')
             ->whereNull('archived_at')
             ->when($primaryUnitId !== null, fn ($query) => $query->where('primary_unit_id', $primaryUnitId))
-            ->first(['id', 'student_no', 'full_name', 'primary_unit_id']);
+            ->first(['id', 'student_no', 'full_name', 'primary_unit_id', 'gender']);
 
         return $record instanceof StudentRecord ? $this->map($record) : null;
     }
@@ -39,7 +39,7 @@ final class EloquentActiveStudentReader implements ActiveStudentReader
             })
             ->orderBy('full_name')
             ->limit($safeLimit)
-            ->get(['id', 'student_no', 'full_name', 'primary_unit_id'])
+            ->get(['id', 'student_no', 'full_name', 'primary_unit_id', 'gender'])
             ->map(fn (StudentRecord $record): ActiveStudentOptionData => $this->map($record))
             ->values()
             ->all();
@@ -52,6 +52,7 @@ final class EloquentActiveStudentReader implements ActiveStudentReader
             studentNo: (string) $record->student_no,
             fullName: (string) $record->full_name,
             primaryUnitId: $record->primary_unit_id === null ? null : (string) $record->primary_unit_id,
+            gender: $record->gender === null ? null : (string) $record->gender,
         );
     }
 }

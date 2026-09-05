@@ -11,5 +11,6 @@ final readonly class ActiveStudentOptionData
         public string $studentNo,
         public string $fullName,
         public ?string $primaryUnitId,
+        public ?string $gender = null,
     ) {}
 }

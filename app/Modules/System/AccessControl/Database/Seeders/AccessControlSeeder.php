@@ -59,6 +59,11 @@ final class AccessControlSeeder extends Seeder
             'santri.lifecycle',
             'santri.archive',
             'kelas_rombel.view',
+            'asrama.view',
+            'asrama.manage',
+            'asrama.placement',
+            'asrama.supervisor',
+            'asrama.archive',
         ]);
         $this->syncDemoRole('OperatorAkademik', [
             'system.dashboard.view',
@@ -87,6 +92,7 @@ final class AccessControlSeeder extends Seeder
             'penerimaan_santri.view',
             'santri.view',
             'kelas_rombel.view',
+            'asrama.view',
             'system_setting.view',
         ]);
         $this->syncDemoRole('Viewer', [
@@ -97,6 +103,7 @@ final class AccessControlSeeder extends Seeder
             'penerimaan_santri.view',
             'santri.view',
             'kelas_rombel.view',
+            'asrama.view',
         ]);
 
         $configuredPassword = config('access-control.dummy_password') ?: config('access_control.dummy_password');

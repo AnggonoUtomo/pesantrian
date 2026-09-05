@@ -15,7 +15,7 @@
 - [x] Buat `specification.md`.
 - [x] Buat `plan.md`.
 - [x] Buat `tasks.md`.
-- [ ] Review dan setujui open questions sebelum coding.
+- [x] Review dan setujui open questions sebelum coding.
 
 Hasil:
 
@@ -27,31 +27,52 @@ Hasil:
 
 Verifikasi:
 
-- [ ] Review manual isi dokumen.
-- [ ] `git diff --check`
+- [x] Review manual isi dokumen.
+- [x] `git diff --check`
 
 ## Increment 2: Skeleton Module
 
-- [ ] Jalankan dry-run generator module.
+- [x] Jalankan dry-run generator module.
   - Acceptance: target `app/Modules/Pesantrian/Asrama`, diagnostics kosong,
     dan tidak ada folder optional placeholder.
   - Verification:
     `php artisan module:make Pesantrian Asrama --dry-run --json --no-ansi`.
-- [ ] Generate skeleton module.
+- [x] Generate skeleton module.
   - Acceptance: file awal module dibuat tanpa folder kosong placeholder.
   - Verification:
     `php artisan module:make Pesantrian Asrama --force --yes --json --no-ansi`.
-- [ ] Tambahkan metadata module.
+- [x] Tambahkan metadata module.
   - Acceptance: manifest dan runtime config sesuai baseline.
   - Verification: `php artisan module:inspect Pesantrian/Asrama --json --no-ansi`.
-- [ ] Tambahkan permission candidate.
+- [x] Tambahkan permission candidate.
   - Acceptance: `asrama.view`, `asrama.manage`, `asrama.placement`,
     `asrama.supervisor`, dan `asrama.archive` tersedia.
   - Verification: focused permission identity test.
-- [ ] Pastikan module registry valid.
+- [x] Pastikan module registry valid.
   - Verification: `php artisan module:validate --no-ansi`.
-- [ ] Pastikan command artisan baseline normal.
-  - Verification: `php artisan optimize:clear --no-ansi`.
+- [x] Pastikan command artisan baseline normal.
+
+Hasil:
+
+- Skeleton module tersedia di `app/Modules/Pesantrian/Asrama`.
+- Generator membuat artefak root module dan route baseline tanpa folder optional
+  placeholder.
+- Permission identity tersedia: `asrama.view`, `asrama.manage`,
+  `asrama.placement`, `asrama.supervisor`, dan `asrama.archive`.
+- Seeder AccessControl memberikan permission Asrama ke role demo terkait:
+  SuperSystem/SecurityAdmin melalui sync semua permission, OperatorSantri untuk
+  operasional Asrama, serta Auditor/Viewer untuk akses baca.
+
+Verifikasi:
+
+- [x] `php artisan module:make Pesantrian Asrama --dry-run --json --no-ansi`
+- [x] `php artisan module:make Pesantrian Asrama --force --yes --json --no-ansi`
+- [x] `php artisan module:inspect Pesantrian/Asrama --json --no-ansi`
+- [x] `php artisan test tests\Unit\AsramaPermissionIdentityTest.php --no-ansi`
+- [x] `php artisan test --filter=AccessControlSeeder --no-ansi`
+- [x] `php artisan test --filter=BusinessDemoSeeder --no-ansi`
+- [x] `php artisan module:validate --no-ansi`
+- [x] `php artisan optimize:clear --no-ansi`
 
 ## Increment 3: Contract Readiness
 

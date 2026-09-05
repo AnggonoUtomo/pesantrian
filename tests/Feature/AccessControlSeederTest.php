@@ -28,11 +28,15 @@ final class AccessControlSeederTest extends TestCase
         $this->assertTrue(Role::where('name', 'OperatorAkademik')->exists());
 
         $securityAdmin = User::where('email', 'security-admin@example.test')->firstOrFail();
+        $operatorSantri = User::where('email', 'operator-santri@example.test')->firstOrFail();
         $operatorAkademik = User::where('email', 'operator-akademik@example.test')->firstOrFail();
 
         $this->assertTrue($securityAdmin->hasRole('SecurityAdmin'));
         $this->assertTrue($securityAdmin->hasPermissionTo('access_control.role.manage'));
         $this->assertTrue($securityAdmin->hasPermissionTo('user.impersonate'));
+        $this->assertTrue($operatorSantri->hasRole('OperatorSantri'));
+        $this->assertTrue($operatorSantri->hasPermissionTo('asrama.placement'));
+        $this->assertTrue($operatorSantri->hasPermissionTo('asrama.supervisor'));
         $this->assertTrue($operatorAkademik->hasRole('OperatorAkademik'));
         $this->assertTrue($operatorAkademik->hasPermissionTo('kelas_rombel.placement'));
     }

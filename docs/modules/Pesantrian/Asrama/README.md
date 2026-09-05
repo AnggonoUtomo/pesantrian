@@ -7,7 +7,7 @@
 - Nama tampil: `Asrama`
 - Source: `app/Modules/Pesantrian/Asrama/`
 - Frontend: `resources/js/pages/Pesantrian/Asrama/`
-- Status: Active - dokumentasi awal
+- Status: Active - skeleton module
 
 ## Tujuan
 

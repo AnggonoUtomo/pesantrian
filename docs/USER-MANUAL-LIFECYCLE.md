@@ -42,7 +42,7 @@ Role operator dibuat agar uji coba terasa seperti pekerjaan harian.
 | SuperSystem | `super-system@example.test` | Semua fitur dan pemeriksaan permission. |
 | SecurityAdmin | `security-admin@example.test` | Role, permission, user, dan audit awal. |
 | OperatorPPDB | `operator-ppdb@example.test` | Pendaftaran santri baru sampai keputusan. |
-| OperatorSantri | `operator-santri@example.test` | Data induk santri, wali, lifecycle santri. |
+| OperatorSantri | `operator-santri@example.test` | Data induk santri, wali, lifecycle santri, dan persiapan operasional asrama. |
 | OperatorAkademik | `operator-akademik@example.test` | Tahun ajaran, semester, kelas, rombel, placement. |
 | OperatorSDM | `operator-sdm@example.test` | Data pegawai, guru, ustaz, staff, dan unit tugas. |
 | Auditor | `auditor@example.test` | Audit log dan data baca lintas module. |
@@ -134,8 +134,8 @@ Tujuan:
 Relasi:
 
 - Unit dipakai oleh PPDB, Santri, SDM, Academic/KelasRombel.
-- Module Asrama belum dibuat, jadi unit asrama baru menjadi data organisasi
-  pendukung.
+- Module Asrama sudah memiliki skeleton dan permission awal, tetapi data kamar,
+  penempatan santri, dan UI operasional asrama belum tersedia.
 
 ### Langkah F: Tahun Ajaran dan Semester
 
@@ -180,8 +180,9 @@ Tujuan:
 Relasi:
 
 - Guru aktif dipakai sebagai wali kelas di module Kelas/Rombel.
-- Musyrif/pembina asrama sudah ada sebagai data demo, tetapi module Asrama belum
-  dibuat.
+- Musyrif/pembina asrama sudah ada sebagai data demo SDM. Module Asrama sudah
+  memiliki skeleton dan permission awal, tetapi penugasan musyrif operasional
+  belum tersedia.
 - Payroll belum dibuat dan memang tidak dicampur ke module SDM awal.
 
 ### Langkah H: PPDB / Penerimaan Santri Baru
@@ -281,7 +282,7 @@ di luar baseline running saat ini.
 | Kebutuhan | Status saat ini |
 | --- | --- |
 | Wali Santri master | Belum dibuat; wali masih snapshot di Santri/PPDB. |
-| Asrama | Belum dibuat; unit asrama baru ada di Organisasi. |
+| Asrama | Skeleton dan permission awal sudah dibuat; data kamar, placement, dan UI belum tersedia. |
 | Tahfidz / Hafalan | Belum dibuat. |
 | Presensi Santri | Belum dibuat. |
 | Perizinan Santri | Belum dibuat. |

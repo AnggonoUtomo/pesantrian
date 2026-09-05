@@ -34,6 +34,7 @@ final class BusinessDemoSeederTest extends TestCase
         self::assertSame(1, User::where('email', 'viewer@example.test')->count());
         self::assertSame(1, $this->rolePermissionCount('OperatorPPDB', 'penerimaan_santri.decide'));
         self::assertSame(1, $this->rolePermissionCount('OperatorSantri', 'santri.lifecycle'));
+        self::assertSame(1, $this->rolePermissionCount('OperatorSantri', 'asrama.placement'));
         self::assertSame(1, $this->rolePermissionCount('OperatorAkademik', 'kelas_rombel.placement'));
         self::assertSame(1, $this->rolePermissionCount('OperatorSDM', 'human_resource.manage'));
         self::assertSame(1, $this->rolePermissionCount('Auditor', 'audit_log.view'));

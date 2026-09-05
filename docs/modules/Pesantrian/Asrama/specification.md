@@ -2,8 +2,9 @@
 
 ## Status
 
-Active - dokumentasi awal. Belum ada source module, migration, route, seeder,
-atau UI yang dibuat pada increment ini.
+Active - skeleton module. Source module awal dan permission identity sudah
+tersedia. Migration, route behavior, seeder demo, dan UI belum dibuat pada
+increment ini.
 
 ## Objective
 
@@ -207,8 +208,8 @@ Acceptance UI awal:
 
 ## Acceptance Criteria
 
-- [ ] Module skeleton `Pesantrian/Asrama` valid menurut module registry.
-- [ ] Permission candidate tersedia.
+- [x] Module skeleton `Pesantrian/Asrama` valid menurut module registry.
+- [x] Permission candidate tersedia.
 - [ ] Schema asrama, kamar, placement, dan musyrif tersedia dengan ULID.
 - [ ] List/search/filter Asrama tersedia.
 - [ ] Detail Asrama tersedia.

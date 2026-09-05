@@ -1,0 +1,13 @@
+{
+    "name": "Asrama",
+    "namespace": "App\\Modules\\Pesantrian\\Asrama",
+    "version": "1.0.0",
+    "schema_version": 1,
+    "status": "enabled",
+    "domain": "Pesantrian",
+    "path": "app/Modules/Pesantrian/Asrama",
+    "provider": "App\\Modules\\Pesantrian\\Asrama\\ServiceProvider",
+    "dependencies": [],
+    "permission_source": "permissions.php",
+    "config_source": "module.php"
+}

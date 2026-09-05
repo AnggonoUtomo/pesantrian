@@ -2,9 +2,10 @@
 
 ## Status
 
-Active - data foundation. Source module awal, permission identity, contract
-minimum lintas module, migration, record model, dan factory minimum sudah
-tersedia. Route behavior, seeder demo, dan UI belum dibuat pada increment ini.
+Active - backend read/list. Source module awal, permission identity, contract
+minimum lintas module, migration, record model, factory minimum, route API
+read-only, dan query list/detail sudah tersedia. Mutation, seeder demo, dan UI
+belum dibuat pada increment ini.
 
 ## Objective
 
@@ -224,8 +225,8 @@ Acceptance UI awal:
 - [x] Contract readiness lintas module Organization, Santri, dan HumanResource
   tersedia tanpa direct import Infrastructure.
 - [x] Schema asrama, kamar, placement, dan musyrif tersedia dengan ULID.
-- [ ] List/search/filter Asrama tersedia.
-- [ ] Detail Asrama tersedia.
+- [x] List/search/filter Asrama tersedia.
+- [x] Detail Asrama tersedia.
 - [ ] Create/update asrama dan kamar tersedia.
 - [ ] Penempatan santri menjaga kapasitas dan satu placement aktif.
 - [ ] Transfer/keluar kamar menjaga histori.

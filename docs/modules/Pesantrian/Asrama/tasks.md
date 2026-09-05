@@ -130,11 +130,29 @@ Verifikasi:
 
 ## Increment 5: Backend Read/List
 
-- [ ] Buat DTO/read model Asrama.
-- [ ] Buat use case list/search/filter.
-- [ ] Buat use case detail.
-- [ ] Buat controller/route API read.
-- [ ] Jalankan focused API tests.
+- [x] Buat DTO/read model Asrama.
+- [x] Buat use case list/search/filter.
+- [x] Buat use case detail.
+- [x] Buat controller/route API read.
+- [x] Jalankan focused API tests.
+
+Hasil:
+
+- Contract `AsramaReadRepository` tersedia untuk query read-only.
+- DTO list/detail Asrama tersedia, termasuk unit, kamar, occupancy, placement
+  aktif, dan musyrif aktif.
+- Endpoint internal `GET /api/v1/pesantrian/asrama` mendukung search, filter,
+  pagination, sort, dan permission `asrama.view`.
+- Endpoint internal `GET /api/v1/pesantrian/asrama/{dormitory}` mengembalikan
+  detail asrama dengan kamar, keterisian, placement aktif, dan musyrif aktif.
+- Response mengikuti envelope API canonical dengan correlation id.
+
+Verifikasi:
+
+- [x] `php artisan test tests\Feature\AsramaApiTest.php --no-ansi`
+- [x] `php artisan test --filter=Asrama --no-ansi`
+- [x] `php artisan module:validate --no-ansi`
+- [x] `php artisan optimize:clear --no-ansi`
 
 ## Increment 6: Create/Update Asrama dan Kamar
 

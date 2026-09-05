@@ -7,7 +7,7 @@
 - Nama tampil: `Asrama`
 - Source: `app/Modules/Pesantrian/Asrama/`
 - Frontend: `resources/js/pages/Pesantrian/Asrama/`
-- Status: Active - data foundation
+- Status: Active - backend read/list
 
 ## Tujuan
 
@@ -78,6 +78,18 @@ Semua table memakai ULID. Satu placement aktif per santri dijaga melalui
 `active_student_key` nullable unique; placement lama disimpan sebagai histori
 dengan `active_student_key = null`.
 
+## Backend Read/List
+
+Increment read/list menyediakan endpoint API internal:
+
+- `GET /api/v1/pesantrian/asrama`
+- `GET /api/v1/pesantrian/asrama/{dormitory}`
+
+Endpoint memakai permission `asrama.view`, envelope API canonical, pagination,
+search, filter `unit_id`, `gender_policy`, `status`, serta status arsip.
+Detail asrama memuat kamar, kapasitas, keterisian aktif, placement aktif, dan
+musyrif aktif.
+
 ## Lifecycle Operasional
 
 Alur awal:
@@ -132,6 +144,7 @@ php artisan module:make Pesantrian Asrama --dry-run --json --no-ansi
 php artisan module:make Pesantrian Asrama --force --yes --no-ansi
 php artisan module:validate
 php artisan test --filter=Asrama
+php artisan test tests\Feature\AsramaApiTest.php --no-ansi
 npm run types:check
 npm run lint:check
 npm run build

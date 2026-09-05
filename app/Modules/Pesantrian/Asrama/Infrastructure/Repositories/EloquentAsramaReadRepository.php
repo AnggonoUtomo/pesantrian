@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Pesantrian\Asrama\Infrastructure\Repositories;
 
+use App\Modules\Pesantrian\Asrama\Application\Contracts\AsramaMutationRepository;
 use App\Modules\Pesantrian\Asrama\Application\Contracts\AsramaReadRepository;
 use App\Modules\Pesantrian\Asrama\Application\DTO\DormitoryData;
 use App\Modules\Pesantrian\Asrama\Application\DTO\DormitoryListFilter;
@@ -12,6 +13,8 @@ use App\Modules\Pesantrian\Asrama\Application\DTO\DormitorySupervisorAssignmentD
 use App\Modules\Pesantrian\Asrama\Application\DTO\PaginatedDormitoryData;
 use App\Modules\Pesantrian\Asrama\Application\DTO\ReferenceData;
 use App\Modules\Pesantrian\Asrama\Application\DTO\StudentRoomPlacementData;
+use App\Modules\Pesantrian\Asrama\Application\DTO\UpsertDormitoryData;
+use App\Modules\Pesantrian\Asrama\Application\DTO\UpsertDormitoryRoomData;
 use App\Modules\Pesantrian\Asrama\Infrastructure\Models\DormitoryRecord;
 use App\Modules\Pesantrian\Asrama\Infrastructure\Models\DormitoryRoomRecord;
 use App\Modules\Pesantrian\Asrama\Infrastructure\Models\DormitorySupervisorAssignmentRecord;
@@ -20,7 +23,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
-final class EloquentAsramaReadRepository implements AsramaReadRepository
+final class EloquentAsramaReadRepository implements AsramaMutationRepository, AsramaReadRepository
 {
     public function paginateDormitories(DormitoryListFilter $filter): PaginatedDormitoryData
     {
@@ -66,6 +69,52 @@ final class EloquentAsramaReadRepository implements AsramaReadRepository
         }
 
         return $this->map($record, includeDetails: true);
+    }
+
+    public function createDormitory(UpsertDormitoryData $data): DormitoryData
+    {
+        /** @var DormitoryRecord $record */
+        $record = DormitoryRecord::query()->create($data->toArray());
+
+        return $this->freshDormitoryData($record);
+    }
+
+    public function updateDormitory(string $id, array $changes): ?DormitoryData
+    {
+        $record = DormitoryRecord::query()->find($id);
+
+        if (! $record instanceof DormitoryRecord) {
+            return null;
+        }
+
+        $record->fill($changes);
+        $record->save();
+
+        return $this->freshDormitoryData($record);
+    }
+
+    public function createRoom(UpsertDormitoryRoomData $data): DormitoryData
+    {
+        /** @var DormitoryRoomRecord $room */
+        $room = DormitoryRoomRecord::query()->create($data->toArray());
+
+        return $this->freshDormitoryDataById($room->dormitory_id);
+    }
+
+    public function updateRoom(string $dormitoryId, string $roomId, array $changes): ?DormitoryData
+    {
+        $room = DormitoryRoomRecord::query()
+            ->where('dormitory_id', $dormitoryId)
+            ->find($roomId);
+
+        if (! $room instanceof DormitoryRoomRecord) {
+            return null;
+        }
+
+        $room->fill($changes);
+        $room->save();
+
+        return $this->freshDormitoryDataById($dormitoryId);
     }
 
     /** @return Builder<DormitoryRecord> */
@@ -220,5 +269,21 @@ final class EloquentAsramaReadRepository implements AsramaReadRepository
             'status' => 'dormitories.status',
             default => 'dormitories.created_at',
         };
+    }
+
+    private function freshDormitoryData(DormitoryRecord $record): DormitoryData
+    {
+        return $this->freshDormitoryDataById((string) $record->getKey());
+    }
+
+    private function freshDormitoryDataById(string $dormitoryId): DormitoryData
+    {
+        $fresh = $this->findDormitory($dormitoryId);
+
+        if (! $fresh instanceof DormitoryData) {
+            throw new \RuntimeException('Asrama gagal dibaca ulang setelah mutation.');
+        }
+
+        return $fresh;
     }
 }

@@ -15,6 +15,7 @@ final readonly class RecordSystemActivity
     private const SUPPORTED_EVENTS = [
         'AccessControl' => 'access-control.activity.occurred',
         'AcademicPeriod' => 'academic-period.activity.occurred',
+        'Asrama' => 'asrama.activity.occurred',
         'HumanResource' => 'human-resource.activity.occurred',
         'KelasRombel' => 'kelas-rombel.activity.occurred',
         'Organization' => 'organization.activity.occurred',

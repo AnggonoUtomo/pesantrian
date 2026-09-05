@@ -2,10 +2,11 @@
 
 ## Status
 
-Active - backend read/list. Source module awal, permission identity, contract
-minimum lintas module, migration, record model, factory minimum, route API
-read-only, dan query list/detail sudah tersedia. Mutation, seeder demo, dan UI
-belum dibuat pada increment ini.
+Active - create/update asrama dan kamar. Source module awal, permission
+identity, contract minimum lintas module, migration, record model, factory
+minimum, route API read-only, query list/detail, serta mutation create/update
+asrama dan kamar sudah tersedia. Placement, seeder demo, dan UI belum dibuat
+pada increment ini.
 
 ## Objective
 
@@ -227,7 +228,7 @@ Acceptance UI awal:
 - [x] Schema asrama, kamar, placement, dan musyrif tersedia dengan ULID.
 - [x] List/search/filter Asrama tersedia.
 - [x] Detail Asrama tersedia.
-- [ ] Create/update asrama dan kamar tersedia.
+- [x] Create/update asrama dan kamar tersedia.
 - [ ] Penempatan santri menjaga kapasitas dan satu placement aktif.
 - [ ] Transfer/keluar kamar menjaga histori.
 - [ ] Penugasan musyrif memakai pegawai aktif.

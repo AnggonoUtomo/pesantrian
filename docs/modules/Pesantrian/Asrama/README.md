@@ -7,7 +7,7 @@
 - Nama tampil: `Asrama`
 - Source: `app/Modules/Pesantrian/Asrama/`
 - Frontend: `resources/js/pages/Pesantrian/Asrama/`
-- Status: Active - backend read/list
+- Status: Active - create/update asrama dan kamar
 
 ## Tujuan
 
@@ -90,6 +90,19 @@ search, filter `unit_id`, `gender_policy`, `status`, serta status arsip.
 Detail asrama memuat kamar, kapasitas, keterisian aktif, placement aktif, dan
 musyrif aktif.
 
+## Mutation Asrama dan Kamar
+
+Increment mutation awal menyediakan endpoint internal:
+
+- `POST /api/v1/pesantrian/asrama`
+- `PATCH /api/v1/pesantrian/asrama/{dormitory}`
+- `POST /api/v1/pesantrian/asrama/{dormitory}/rooms`
+- `PATCH /api/v1/pesantrian/asrama/{dormitory}/rooms/{room}`
+
+Mutation memakai permission `asrama.manage`, idempotency middleware, validation
+request, application action, repository port, dan audit `Asrama`. Unit asrama
+wajib merujuk `organization_units.type = dormitory`.
+
 ## Lifecycle Operasional
 
 Alur awal:
@@ -145,6 +158,7 @@ php artisan module:make Pesantrian Asrama --force --yes --no-ansi
 php artisan module:validate
 php artisan test --filter=Asrama
 php artisan test tests\Feature\AsramaApiTest.php --no-ansi
+php artisan test tests\Feature\AsramaMutationApiTest.php --no-ansi
 npm run types:check
 npm run lint:check
 npm run build

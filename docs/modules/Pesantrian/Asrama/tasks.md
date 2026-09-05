@@ -156,11 +156,32 @@ Verifikasi:
 
 ## Increment 6: Create/Update Asrama dan Kamar
 
-- [ ] Buat request validation create/update.
-- [ ] Buat action create/update asrama.
-- [ ] Buat action create/update kamar.
-- [ ] Tambahkan audit mutation.
-- [ ] Jalankan focused mutation tests.
+- [x] Buat request validation create/update.
+- [x] Buat action create/update asrama.
+- [x] Buat action create/update kamar.
+- [x] Tambahkan audit mutation.
+- [x] Jalankan focused mutation tests.
+
+Hasil:
+
+- Endpoint mutation internal Asrama tersedia:
+  - `POST /api/v1/pesantrian/asrama`
+  - `PATCH /api/v1/pesantrian/asrama/{dormitory}`
+  - `POST /api/v1/pesantrian/asrama/{dormitory}/rooms`
+  - `PATCH /api/v1/pesantrian/asrama/{dormitory}/rooms/{room}`
+- Mutation memakai permission `asrama.manage` dan idempotency middleware.
+- Request validation menjaga kode uppercase, status valid, capacity positif,
+  kode kamar unique per asrama, dan unit organisasi wajib bertipe `dormitory`.
+- Action mutation mem-publish audit:
+  - `asrama.dormitory.created`
+  - `asrama.dormitory.updated`
+  - `asrama.room.created`
+  - `asrama.room.updated`
+- AuditLog menerima integration event `Asrama`.
+
+Verifikasi:
+
+- [x] `php artisan test tests\Feature\AsramaMutationApiTest.php --no-ansi`
 
 ## Increment 7: Penempatan dan Transfer Santri
 

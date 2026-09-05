@@ -13,6 +13,7 @@ export default function Show() {
         canPlacement,
         canSupervisor,
         canArchive,
+        options,
     } = usePage<DormitoryShowPageProps>().props;
     const canView = canAccess(auth, 'asrama.view');
 
@@ -27,6 +28,7 @@ export default function Show() {
                 {canView ? (
                     <AsramaDetailPanel
                         dormitory={dormitory}
+                        options={options}
                         canManage={canManage}
                         canPlacement={canPlacement}
                         canSupervisor={canSupervisor}

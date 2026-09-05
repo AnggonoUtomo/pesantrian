@@ -56,8 +56,8 @@ return new class extends Migration
             $table->foreignUlid('ended_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
 
-            $table->index(['dormitory_room_id', 'status']);
-            $table->index(['student_id', 'started_at', 'ended_at']);
+            $table->index(['dormitory_room_id', 'status'], 'srp_room_status_idx');
+            $table->index(['student_id', 'started_at', 'ended_at'], 'srp_student_period_idx');
         });
 
         Schema::create('dormitory_supervisor_assignments', static function (Blueprint $table): void {
@@ -73,9 +73,9 @@ return new class extends Migration
             $table->text('reason')->nullable();
             $table->timestamps();
 
-            $table->index(['employee_id', 'started_at', 'ended_at']);
-            $table->index(['dormitory_id', 'status']);
-            $table->index(['dormitory_room_id', 'status']);
+            $table->index(['employee_id', 'started_at', 'ended_at'], 'dsa_employee_period_idx');
+            $table->index(['dormitory_id', 'status'], 'dsa_dormitory_status_idx');
+            $table->index(['dormitory_room_id', 'status'], 'dsa_room_status_idx');
         });
     }
 

@@ -151,7 +151,7 @@ Endpoint lifecycle backend yang sudah tersedia:
 Seeder memakai data demo dari Organization, Santri, dan HumanResource. Jika
 dependency demo belum ada, seeder berhenti aman tanpa membuat data yatim.
 
-## UI Read/List
+## UI Read/List dan Mutation
 
 UI berada di `resources/js/pages/Pesantrian/Asrama/`.
 
@@ -159,6 +159,8 @@ Halaman index dan detail dijaga tetap tipis. Komponen business-specific
 ditempatkan pada folder `components/`, mengikuti pola module sebelumnya. UI
 read/list sudah tersedia untuk operator melihat daftar asrama, filter,
 pagination, detail kamar, penempatan santri aktif, dan musyrif/pembina.
+UI mutation utama juga tersedia dari halaman index dan detail untuk operator
+yang memiliki permission Asrama.
 
 ```text
 resources/js/pages/Pesantrian/Asrama/
@@ -169,6 +171,8 @@ resources/js/pages/Pesantrian/Asrama/
     |-- AsramaDashboard.tsx
     |-- AsramaDetailPanel.tsx
     |-- AsramaFilters.tsx
+    |-- AsramaFormFields.tsx
+    |-- AsramaMutationDialogs.tsx
     |-- AsramaPagination.tsx
     |-- AsramaStatusBadge.tsx
     |-- AsramaTable.tsx
@@ -176,8 +180,16 @@ resources/js/pages/Pesantrian/Asrama/
 ```
 
 Menu sidebar berada di namespace Pesantrian dengan nama tampil `Asrama`.
-UI mutation seperti create/update asrama, kamar, placement, musyrif, dan
-archive/restore dikerjakan pada increment berikutnya.
+Action yang tersedia:
+
+- tambah/edit asrama;
+- tambah/edit kamar;
+- tempatkan santri, pindah kamar, dan keluarkan santri dari kamar;
+- tugaskan/akhiri tugas musyrif atau pembina;
+- arsipkan/pulihkan asrama dan kamar.
+
+Form mutation tetap berada di folder komponen module, bukan di `Index.tsx`,
+agar page utama tetap tipis.
 
 ## Dokumentasi Terkait
 
@@ -198,6 +210,7 @@ php artisan test tests\Feature\AsramaMutationApiTest.php --no-ansi
 php artisan test tests\Feature\AsramaPlacementApiTest.php --no-ansi
 php artisan test tests\Feature\AsramaSupervisorArchiveApiTest.php --no-ansi
 php artisan test tests\Feature\BusinessDemoSeederTest.php --no-ansi
+php artisan test tests\Feature\AsramaPresentationTest.php --no-ansi
 npm run types:check
 npm run lint:check
 npm run build

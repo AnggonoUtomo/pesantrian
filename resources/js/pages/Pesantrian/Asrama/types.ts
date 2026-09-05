@@ -128,8 +128,56 @@ export type DormitoryIndexPageProps = {
 export type DormitoryShowPageProps = {
     auth: Auth;
     dormitory: Dormitory;
+    options: {
+        students: ReferenceOption[];
+        employees: ReferenceOption[];
+    };
     canManage: boolean;
     canPlacement: boolean;
     canSupervisor: boolean;
     canArchive: boolean;
+};
+
+export type DormitoryMutationPayload = {
+    unit_id: string;
+    code: string;
+    name: string;
+    gender_policy: DormitoryGenderPolicy;
+    description: string | null;
+    status: Exclude<DormitoryStatus, 'archived'>;
+};
+
+export type DormitoryRoomPayload = {
+    code: string;
+    name: string;
+    capacity: string;
+    status: Exclude<DormitoryStatus, 'archived'>;
+};
+
+export type StudentPlacementPayload = {
+    student_id: string;
+    dormitory_room_id: string;
+    started_at: string;
+};
+
+export type StudentTransferPayload = {
+    target_room_id: string;
+    started_at: string;
+    reason: string;
+};
+
+export type EndPayload = {
+    ended_at: string;
+    reason: string;
+};
+
+export type SupervisorPayload = {
+    employee_id: string;
+    dormitory_room_id: string | null;
+    role: 'musyrif' | 'pembina';
+    started_at: string;
+};
+
+export type ArchivePayload = {
+    reason: string;
 };

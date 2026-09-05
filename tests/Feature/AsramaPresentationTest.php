@@ -97,6 +97,195 @@ final class AsramaPresentationTest extends TestCase
                 ->where('canArchive', false));
     }
 
+    public function test_web_mutation_ui_asrama_memakai_action_application(): void
+    {
+        $permissions = [
+            'asrama.view',
+            'asrama.manage',
+            'asrama.placement',
+            'asrama.supervisor',
+            'asrama.archive',
+        ];
+
+        foreach ($permissions as $permission) {
+            Permission::create(['name' => $permission, 'guard_name' => 'web']);
+        }
+
+        $actor = $this->createUser();
+        $actor->givePermissionTo($permissions);
+        $fixture = $this->createAsramaFixture(withDetails: true, withSecondRoom: true);
+
+        $this->actingAs($actor)
+            ->post(route('pesantrian.asrama.store'), [
+                'unit_id' => $fixture['unitId'],
+                'code' => 'ASR-WEB-BARU',
+                'name' => 'Asrama Web Baru',
+                'gender_policy' => 'mixed',
+                'description' => 'Dibuat dari UI web.',
+                'status' => 'active',
+            ])
+            ->assertRedirect()
+            ->assertSessionHasNoErrors();
+
+        $createdDormitoryId = (string) DB::table('dormitories')->where('code', 'ASR-WEB-BARU')->value('id');
+
+        $this->actingAs($actor)
+            ->patch(route('pesantrian.asrama.update', $createdDormitoryId), [
+                'unit_id' => $fixture['unitId'],
+                'code' => 'ASR-WEB-EDIT',
+                'name' => 'Asrama Web Edit',
+                'gender_policy' => 'mixed',
+                'description' => 'Diperbarui dari UI web.',
+                'status' => 'active',
+            ])
+            ->assertRedirect(route('pesantrian.asrama.show', $createdDormitoryId))
+            ->assertSessionHasNoErrors();
+
+        $this->actingAs($actor)
+            ->post(route('pesantrian.asrama.rooms.store', $createdDormitoryId), [
+                'code' => 'KMR-WEB-01',
+                'name' => 'Kamar Web 01',
+                'capacity' => 4,
+                'status' => 'active',
+            ])
+            ->assertRedirect(route('pesantrian.asrama.show', $createdDormitoryId))
+            ->assertSessionHasNoErrors();
+
+        $createdRoomId = (string) DB::table('dormitory_rooms')->where('code', 'KMR-WEB-01')->value('id');
+
+        $this->actingAs($actor)
+            ->patch(route('pesantrian.asrama.rooms.update', [$createdDormitoryId, $createdRoomId]), [
+                'code' => 'KMR-WEB-01A',
+                'name' => 'Kamar Web 01A',
+                'capacity' => 5,
+                'status' => 'active',
+            ])
+            ->assertRedirect(route('pesantrian.asrama.show', $createdDormitoryId))
+            ->assertSessionHasNoErrors();
+
+        $student = StudentRecord::factory()->create([
+            'student_no' => 'NIS-ASRAMA-WEB',
+            'full_name' => 'Santri Asrama Web',
+            'gender' => 'male',
+            'primary_unit_id' => $fixture['unitId'],
+            'status' => 'active',
+        ]);
+
+        $this->actingAs($actor)
+            ->post(route('pesantrian.asrama.placements.store', $fixture['dormitoryId']), [
+                'student_id' => $student->id,
+                'dormitory_room_id' => $fixture['roomId'],
+                'started_at' => '2026-08-01',
+            ])
+            ->assertRedirect(route('pesantrian.asrama.show', $fixture['dormitoryId']))
+            ->assertSessionHasNoErrors();
+
+        $placementId = (string) DB::table('student_room_placements')->where('student_id', $student->id)->value('id');
+
+        $this->actingAs($actor)
+            ->patch(route('pesantrian.asrama.placements.transfer', [$fixture['dormitoryId'], $placementId]), [
+                'target_room_id' => $fixture['secondRoomId'],
+                'started_at' => '2026-08-02',
+                'reason' => 'Pindah kamar untuk uji web.',
+            ])
+            ->assertRedirect(route('pesantrian.asrama.show', $fixture['dormitoryId']))
+            ->assertSessionHasNoErrors();
+
+        $currentPlacementId = (string) DB::table('student_room_placements')
+            ->where('student_id', $student->id)
+            ->where('status', 'active')
+            ->value('id');
+
+        $this->actingAs($actor)
+            ->patch(route('pesantrian.asrama.placements.remove', [$fixture['dormitoryId'], $currentPlacementId]), [
+                'ended_at' => '2026-08-03',
+                'reason' => 'Keluar kamar untuk uji web.',
+            ])
+            ->assertRedirect(route('pesantrian.asrama.show', $fixture['dormitoryId']))
+            ->assertSessionHasNoErrors();
+
+        $employee = EmployeeRecord::query()->create([
+            'employee_no' => 'PEG-ASRAMA-WEB',
+            'name' => 'Ustaz Asrama Web',
+            'preferred_name' => 'Ustaz Web',
+            'employment_type' => 'teacher',
+            'primary_unit_id' => $fixture['unitId'],
+            'position' => 'Musyrif Web',
+            'status' => 'active',
+            'joined_on' => '2026-07-01',
+            'left_on' => null,
+            'notes' => null,
+        ]);
+
+        $this->actingAs($actor)
+            ->post(route('pesantrian.asrama.supervisors.store', $fixture['dormitoryId']), [
+                'employee_id' => $employee->id,
+                'dormitory_room_id' => $fixture['roomId'],
+                'role' => 'musyrif',
+                'started_at' => '2026-08-01',
+            ])
+            ->assertRedirect(route('pesantrian.asrama.show', $fixture['dormitoryId']))
+            ->assertSessionHasNoErrors();
+
+        $assignmentId = (string) DB::table('dormitory_supervisor_assignments')->where('employee_id', $employee->id)->value('id');
+
+        $this->actingAs($actor)
+            ->patch(route('pesantrian.asrama.supervisors.end', [$fixture['dormitoryId'], $assignmentId]), [
+                'ended_at' => '2026-08-10',
+                'reason' => 'Selesai tugas untuk uji web.',
+            ])
+            ->assertRedirect(route('pesantrian.asrama.show', $fixture['dormitoryId']))
+            ->assertSessionHasNoErrors();
+
+        $this->actingAs($actor)
+            ->patch(route('pesantrian.asrama.rooms.archive', [$createdDormitoryId, $createdRoomId]), [
+                'reason' => 'Kamar diarsipkan dari UI web.',
+            ])
+            ->assertRedirect(route('pesantrian.asrama.show', $createdDormitoryId))
+            ->assertSessionHasNoErrors();
+
+        $this->actingAs($actor)
+            ->patch(route('pesantrian.asrama.rooms.restore', [$createdDormitoryId, $createdRoomId]))
+            ->assertRedirect(route('pesantrian.asrama.show', $createdDormitoryId))
+            ->assertSessionHasNoErrors();
+
+        $this->actingAs($actor)
+            ->patch(route('pesantrian.asrama.archive', $createdDormitoryId), [
+                'reason' => 'Asrama diarsipkan dari UI web.',
+            ])
+            ->assertRedirect(route('pesantrian.asrama.index'))
+            ->assertSessionHasNoErrors();
+
+        $this->actingAs($actor)
+            ->patch(route('pesantrian.asrama.restore', $createdDormitoryId))
+            ->assertRedirect(route('pesantrian.asrama.show', $createdDormitoryId))
+            ->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas('dormitories', [
+            'id' => $createdDormitoryId,
+            'code' => 'ASR-WEB-EDIT',
+            'status' => 'active',
+            'archived_at' => null,
+        ]);
+        $this->assertDatabaseHas('dormitory_rooms', [
+            'id' => $createdRoomId,
+            'code' => 'KMR-WEB-01A',
+            'capacity' => 5,
+            'archived_at' => null,
+        ]);
+        $this->assertDatabaseHas('student_room_placements', [
+            'id' => $currentPlacementId,
+            'student_id' => $student->id,
+            'status' => 'inactive',
+            'reason' => 'Keluar kamar untuk uji web.',
+        ]);
+        $this->assertDatabaseHas('dormitory_supervisor_assignments', [
+            'id' => $assignmentId,
+            'status' => 'ended',
+            'reason' => 'Selesai tugas untuk uji web.',
+        ]);
+    }
+
     public function test_menghubungkan_ui_asrama_ke_komponen_canonical_dan_sidebar(): void
     {
         $index = $this->sourceFile('js/pages/Pesantrian/Asrama/pages/Index.tsx');
@@ -107,6 +296,7 @@ final class AsramaPresentationTest extends TestCase
         $summary = $this->sourceFile('js/pages/Pesantrian/Asrama/components/AsramaSummaryCards.tsx');
         $pagination = $this->sourceFile('js/pages/Pesantrian/Asrama/components/AsramaPagination.tsx');
         $detail = $this->sourceFile('js/pages/Pesantrian/Asrama/components/AsramaDetailPanel.tsx');
+        $mutation = $this->sourceFile('js/pages/Pesantrian/Asrama/components/AsramaMutationDialogs.tsx');
         $navigation = $this->sourceFile('js/lib/navigation.ts');
 
         self::assertStringContainsString('AsramaDashboard', $index);
@@ -129,19 +319,33 @@ final class AsramaPresentationTest extends TestCase
         self::assertStringContainsString('Daftar kamar', $detail);
         self::assertStringContainsString('Penempatan santri', $detail);
         self::assertStringContainsString('Musyrif / pembina', $detail);
+        self::assertStringContainsString('Tambah asrama', $mutation);
+        self::assertStringContainsString('Tambah kamar', $mutation);
+        self::assertStringContainsString('Tempatkan santri', $mutation);
+        self::assertStringContainsString('Pindah kamar', $mutation);
+        self::assertStringContainsString('Keluarkan santri', $mutation);
+        self::assertStringContainsString('Tugaskan musyrif', $mutation);
+        self::assertStringContainsString('Akhiri tugas musyrif', $mutation);
+        self::assertStringContainsString('Arsipkan asrama', $detail);
+        self::assertStringContainsString('Pulihkan asrama', $detail);
+        self::assertStringContainsString('pesantrian.asrama.store', $mutation);
+        self::assertStringContainsString('pesantrian.asrama.rooms.store', $mutation);
+        self::assertStringContainsString('pesantrian.asrama.placements.store', $mutation);
+        self::assertStringContainsString('pesantrian.asrama.supervisors.store', $mutation);
         self::assertStringContainsString('Asrama', $show);
         self::assertStringContainsString('Asrama', $navigation);
         self::assertStringContainsString('pesantrian.asrama.index', $navigation);
         self::assertStringContainsString("'asrama.view'", $navigation);
     }
 
-    /** @return array{unitId: string, dormitoryId: string, roomId: string} */
-    private function createAsramaFixture(bool $withDetails = false): array
+    /** @return array{unitId: string, dormitoryId: string, roomId: string, secondRoomId: string|null} */
+    private function createAsramaFixture(bool $withDetails = false, bool $withSecondRoom = false): array
     {
         $now = now();
         $unitId = (string) Str::ulid();
         $dormitoryId = (string) Str::ulid();
         $roomId = (string) Str::ulid();
+        $secondRoomId = $withSecondRoom ? (string) Str::ulid() : null;
 
         DB::table('organization_units')->insert([
             'id' => $unitId,
@@ -179,6 +383,20 @@ final class AsramaPresentationTest extends TestCase
             'created_at' => $now,
             'updated_at' => $now,
         ]);
+        if ($secondRoomId !== null) {
+            DB::table('dormitory_rooms')->insert([
+                'id' => $secondRoomId,
+                'dormitory_id' => $dormitoryId,
+                'code' => 'KMR-UI-P02',
+                'name' => 'Kamar UI Putra 02',
+                'capacity' => 8,
+                'status' => 'active',
+                'archived_at' => null,
+                'archived_by' => null,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]);
+        }
 
         $student = StudentRecord::factory()->create([
             'student_no' => 'NIS-ASRAMA-UI',
@@ -236,6 +454,7 @@ final class AsramaPresentationTest extends TestCase
             'unitId' => $unitId,
             'dormitoryId' => $dormitoryId,
             'roomId' => $roomId,
+            'secondRoomId' => $secondRoomId,
         ];
     }
 

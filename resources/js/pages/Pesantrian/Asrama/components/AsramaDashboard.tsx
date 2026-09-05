@@ -1,19 +1,29 @@
 import { router, usePage } from '@inertiajs/react';
+import { Plus } from 'lucide-react';
 import { useState } from 'react';
 import type { FormEvent } from 'react';
+import { Button } from '@/components/ui/button';
 import { canAccess } from '@/lib/authorization';
 import { routeOr } from '@/lib/route';
 import type { DormitoryArchiveFilter, DormitoryIndexPageProps } from '../types';
 import { AsramaAccessDenied } from './AsramaAccessDenied';
 import { AsramaEmptyState } from './AsramaEmptyState';
 import { AsramaFilters } from './AsramaFilters';
+import { DormitoryFormDialog } from './AsramaMutationDialogs';
 import { AsramaPagination } from './AsramaPagination';
 import { AsramaSummaryCards } from './AsramaSummaryCards';
 import { AsramaTable } from './AsramaTable';
 
 export function AsramaDashboard() {
-    const { auth, dormitories, filters, pagination, options, errors } =
-        usePage<DormitoryIndexPageProps>().props;
+    const {
+        auth,
+        dormitories,
+        filters,
+        pagination,
+        options,
+        errors,
+        canManage,
+    } = usePage<DormitoryIndexPageProps>().props;
     const [search, setSearch] = useState(filters.search ?? '');
     const [status, setStatus] = useState<string>(
         filters.filter?.status ?? 'all',
@@ -27,6 +37,7 @@ export function AsramaDashboard() {
     const [unitId, setUnitId] = useState<string>(
         filters.filter?.unit_id ?? 'all',
     );
+    const [createOpen, setCreateOpen] = useState(false);
     const canView = canAccess(auth, 'asrama.view');
     const dormitoryIndexUrl = () =>
         routeOr('/pesantrian/asrama', 'pesantrian.asrama.index');
@@ -93,6 +104,14 @@ export function AsramaDashboard() {
                 total={dormitories.meta.total}
                 dormitories={dormitories.data}
             />
+            {canManage ? (
+                <div className="flex justify-end">
+                    <Button type="button" onClick={() => setCreateOpen(true)}>
+                        <Plus className="size-4" aria-hidden="true" />
+                        Tambah asrama
+                    </Button>
+                </div>
+            ) : null}
 
             {errors && Object.keys(errors).length > 0 ? (
                 <p role="alert" className="dashboard-message--error text-sm">
@@ -136,6 +155,13 @@ export function AsramaDashboard() {
                     <AsramaEmptyState />
                 )}
             </section>
+
+            <DormitoryFormDialog
+                open={createOpen}
+                dormitory={null}
+                units={options.units}
+                onOpenChange={setCreateOpen}
+            />
         </div>
     );
 }

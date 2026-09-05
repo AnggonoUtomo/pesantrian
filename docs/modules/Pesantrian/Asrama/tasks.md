@@ -330,14 +330,59 @@ Verifikasi:
 
 ## Increment 11: UI Mutation dan QA Browser
 
-- [ ] Buat form asrama.
-- [ ] Buat form kamar.
-- [ ] Buat form placement/transfer/remove.
-- [ ] Buat form musyrif.
-- [ ] Buat archive/restore confirmation.
-- [ ] Jalankan browser QA desktop.
-- [ ] Jalankan browser QA mobile/responsive.
-- [ ] Dokumentasikan hasil QA.
+- [x] Buat form asrama.
+- [x] Buat form kamar.
+- [x] Buat form placement/transfer/remove.
+- [x] Buat form musyrif.
+- [x] Buat archive/restore confirmation.
+- [x] Jalankan browser QA desktop.
+- [x] Jalankan browser QA mobile/responsive.
+- [x] Dokumentasikan hasil QA.
+
+Hasil:
+
+- Web mutation route Asrama tersedia untuk Inertia:
+  - `POST /pesantrian/asrama`
+  - `PATCH /pesantrian/asrama/{dormitory}`
+  - `POST /pesantrian/asrama/{dormitory}/rooms`
+  - `PATCH /pesantrian/asrama/{dormitory}/rooms/{room}`
+  - `POST /pesantrian/asrama/{dormitory}/placements`
+  - `PATCH /pesantrian/asrama/{dormitory}/placements/{placement}/transfer`
+  - `PATCH /pesantrian/asrama/{dormitory}/placements/{placement}/remove`
+  - `POST /pesantrian/asrama/{dormitory}/supervisors`
+  - `PATCH /pesantrian/asrama/{dormitory}/supervisors/{assignment}/end`
+  - `PATCH /pesantrian/asrama/{dormitory}/archive`
+  - `PATCH /pesantrian/asrama/{dormitory}/restore`
+  - `PATCH /pesantrian/asrama/{dormitory}/rooms/{room}/archive`
+  - `PATCH /pesantrian/asrama/{dormitory}/rooms/{room}/restore`
+- Form mutation ditempatkan pada
+  `resources/js/pages/Pesantrian/Asrama/components/AsramaMutationDialogs.tsx`
+  dan field reusable pada `AsramaFormFields.tsx`.
+- Page `Index.tsx` dan `Show.tsx` tetap tipis; logic UI berada di folder
+  `components`.
+- Backend tetap menjadi authority permission dan validasi business rule.
+  Frontend hanya menampilkan action sesuai permission untuk UX.
+- QA browser menemukan migrasi MySQL gagal karena nama index auto-generated
+  terlalu panjang. Migration Asrama diperbaiki dengan nama index eksplisit yang
+  lebih pendek.
+- QA browser desktop/mobile berhasil membuka list/detail Asrama, dialog tambah
+  asrama, tambah kamar, placement, transfer, musyrif, dan archive confirmation
+  tanpa console error/Ziggy error.
+
+Verifikasi:
+
+- [x] `php artisan migrate --no-ansi`
+- [x] `php artisan db:seed --class=App\Modules\Pesantrian\Asrama\Database\Seeders\AsramaDemoSeeder --no-ansi`
+- [x] `php artisan test tests\Feature\AsramaPresentationTest.php tests\Feature\AsramaMutationApiTest.php tests\Feature\AsramaPlacementApiTest.php tests\Feature\AsramaSupervisorArchiveApiTest.php`
+- [x] `php artisan route:list --name=pesantrian.asrama --no-ansi`
+- [x] `vendor\bin\pint --dirty --test`
+- [x] `vendor\bin\phpstan analyse app/Modules/Pesantrian/Asrama tests/Feature/AsramaPresentationTest.php --no-progress --error-format=table`
+- [x] `npm run types:check`
+- [x] `npm run lint:check`
+- [x] `npm run build`
+- [x] Browser QA desktop: `http://pesantrian.test/pesantrian/asrama`
+      dan detail demo Asrama.
+- [x] Browser QA mobile 390x844: list/detail Asrama dan dialog mutation utama.
 
 ## Keputusan Baseline
 

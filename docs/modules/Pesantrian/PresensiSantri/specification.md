@@ -2,9 +2,9 @@
 
 ## Status
 
-Active - contract readiness ready. Source module, permission identity, dan
-contract kandidat presensi awal sudah tersedia. Dokumen ini tetap menjadi acuan
-untuk data foundation, API, seeder demo, dan UI.
+Active - data foundation ready. Source module, permission identity, contract
+kandidat presensi awal, migration, model record, dan factory minimum sudah
+tersedia. Dokumen ini tetap menjadi acuan untuk API, seeder demo, dan UI.
 
 ## Objective
 

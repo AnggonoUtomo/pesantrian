@@ -90,18 +90,37 @@ Verifikasi:
 
 ## Increment 4: Data Foundation
 
-- [ ] Buat migration session presensi.
-- [ ] Buat migration entry presensi.
-- [ ] Buat migration revision presensi.
-- [ ] Buat record model.
-- [ ] Buat factory minimum.
-- [ ] Jalankan focused data foundation tests.
+- [x] Buat migration session presensi.
+- [x] Buat migration entry presensi.
+- [x] Buat migration revision presensi.
+- [x] Buat record model.
+- [x] Buat factory minimum.
+- [x] Jalankan focused data foundation tests.
 
 Acceptance:
 
 - Table memakai ULID.
 - Entry unique per sesi dan santri.
 - Nama index eksplisit aman untuk MySQL.
+
+Hasil:
+
+- Migration `student_attendance_sessions`,
+  `student_attendance_entries`, dan `student_attendance_revisions` dibuat di
+  module `Pesantrian/PresensiSantri`.
+- `ServiceProvider` PresensiSantri memuat migration module.
+- Record model Eloquent dibuat untuk session, entry, dan revision.
+- Factory minimum dibuat untuk mendukung test dan seeder demo pada increment
+  berikutnya.
+- Constraint baseline dibuat:
+  - unique sesi per tanggal, konteks, dan kode sesi;
+  - unique entry per session dan santri;
+  - revision history dapat menyimpan beberapa perubahan untuk session yang
+    sama.
+
+Verifikasi:
+
+- [x] `php artisan test tests/Feature/PresensiSantriDataFoundationTest.php --no-ansi`
 
 ## Increment 5: Backend Read/List
 

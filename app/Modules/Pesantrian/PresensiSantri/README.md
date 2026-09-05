@@ -13,6 +13,6 @@ Dokumentasi kerja aktif:
 
 Increment aktif:
 
-- Increment 3 sudah menyediakan skeleton module, permission identity, dan
-  readiness contract kandidat presensi.
-- Data presensi, API, seeder demo, dan UI dikerjakan pada increment berikutnya.
+- Increment 4 sudah menyediakan skeleton module, permission identity, readiness
+  contract kandidat presensi, migration, record model, dan factory minimum.
+- API, seeder demo, dan UI dikerjakan pada increment berikutnya.

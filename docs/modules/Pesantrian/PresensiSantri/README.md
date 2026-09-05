@@ -10,7 +10,7 @@ dan [`docs/FOLDER-STRUCTURE.md`](../../../FOLDER-STRUCTURE.md).
 - Nama tampil: `Presensi Santri`
 - Candidate source: `app/Modules/Pesantrian/PresensiSantri/`
 - Candidate frontend: `resources/js/pages/Pesantrian/PresensiSantri/`
-- Status: Active - contract readiness ready
+- Status: Active - data foundation ready
 
 ## Tujuan
 

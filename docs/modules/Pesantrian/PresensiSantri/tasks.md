@@ -124,17 +124,35 @@ Verifikasi:
 
 ## Increment 5: Backend Read/List
 
-- [ ] Buat DTO/read model presensi.
-- [ ] Buat query list/search/filter.
-- [ ] Buat query detail.
-- [ ] Buat controller/resource API read.
-- [ ] Jalankan focused API tests.
+- [x] Buat DTO/read model presensi.
+- [x] Buat query list/search/filter.
+- [x] Buat query detail.
+- [x] Buat controller/resource API read.
+- [x] Jalankan focused API tests.
 
 Acceptance:
 
 - List presensi mendukung filter tanggal, konteks, status, dan pagination.
 - Detail presensi mengembalikan summary dan entries.
 - Actor tanpa permission view ditolak.
+
+Hasil:
+
+- Read repository `StudentAttendanceReadRepository` dibuat sebagai contract
+  Application dan di-bind ke adapter Eloquent.
+- Query `ListStudentAttendances` dan `ShowStudentAttendance` dibuat untuk
+  membaca list/detail presensi.
+- DTO read model dibuat untuk sesi, entry, summary, filter, dan pagination.
+- Endpoint API read ditambahkan:
+  - `GET /api/v1/pesantrian/student-attendances`
+  - `GET /api/v1/pesantrian/student-attendances/{attendance}`
+- Request validation list mendukung search, filter tanggal, context, status,
+  pagination, dan sort.
+- Resource API memakai envelope canonical dan summary status kehadiran.
+
+Verifikasi:
+
+- [x] `php artisan test tests/Feature/PresensiSantriApiTest.php --no-ansi`
 
 ## Increment 6: Create/Update Draft dan Entry
 

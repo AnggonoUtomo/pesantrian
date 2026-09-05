@@ -2,9 +2,10 @@
 
 ## Status
 
-Active - data foundation ready. Source module, permission identity, contract
-kandidat presensi awal, migration, model record, dan factory minimum sudah
-tersedia. Dokumen ini tetap menjadi acuan untuk API, seeder demo, dan UI.
+Active - backend read/list ready. Source module, permission identity, contract
+kandidat presensi awal, migration, model record, factory minimum, dan API
+read/list sudah tersedia. Dokumen ini tetap menjadi acuan untuk mutation,
+seeder demo, dan UI.
 
 ## Objective
 

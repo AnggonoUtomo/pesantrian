@@ -223,11 +223,48 @@ Verifikasi:
 
 ## Increment 8: Penugasan Musyrif dan Archive
 
-- [ ] Buat action assign/end supervisor.
-- [ ] Buat use case archive/restore asrama.
-- [ ] Buat use case archive/restore kamar.
-- [ ] Tambahkan audit supervisor/archive/restore.
-- [ ] Jalankan focused tests.
+- [x] Buat action assign/end supervisor.
+- [x] Buat use case archive/restore asrama.
+- [x] Buat use case archive/restore kamar.
+- [x] Tambahkan audit supervisor/archive/restore.
+- [x] Jalankan focused tests.
+
+Hasil:
+
+- Endpoint mutation penugasan musyrif/pembina tersedia:
+  - `POST /api/v1/pesantrian/asrama/{dormitory}/supervisors`
+  - `PATCH /api/v1/pesantrian/asrama/{dormitory}/supervisors/{assignment}/end`
+- Endpoint archive/restore tersedia:
+  - `PATCH /api/v1/pesantrian/asrama/{dormitory}/archive`
+  - `PATCH /api/v1/pesantrian/asrama/{dormitory}/restore`
+  - `PATCH /api/v1/pesantrian/asrama/{dormitory}/rooms/{room}/archive`
+  - `PATCH /api/v1/pesantrian/asrama/{dormitory}/rooms/{room}/restore`
+- Penugasan musyrif memakai contract `ActiveEmployeeReader` dari
+  `HumanResource/HumanResource`, sehingga Asrama tidak membaca model
+  Infrastructure module SDM secara langsung.
+- Penugasan menolak pegawai tidak aktif, asrama/kamar arsip, kamar beda
+  asrama, dan duplicate active assignment pada scope yang sama.
+- Archive asrama/kamar mengubah status menjadi `inactive`, menyimpan
+  `archived_at` dan `archived_by`; restore mengembalikan status menjadi
+  `active`.
+- Placement baru otomatis tertolak ketika asrama atau kamar sudah terarsip.
+- Audit mutation mem-publish:
+  - `asrama.supervisor.assigned`
+  - `asrama.supervisor.ended`
+  - `asrama.dormitory.archived`
+  - `asrama.dormitory.restored`
+  - `asrama.room.archived`
+  - `asrama.room.restored`
+
+Verifikasi:
+
+- [x] `php artisan test tests\Feature\AsramaSupervisorArchiveApiTest.php --no-ansi`
+- [x] `php artisan test --filter=Asrama --no-ansi`
+- [x] `php artisan route:list --name=api.v1.pesantrian.asrama --no-ansi`
+- [x] `php artisan module:validate --no-ansi`
+- [x] `php artisan optimize:clear --no-ansi`
+- [x] `vendor\bin\pint --dirty --test`
+- [x] `vendor\bin\phpstan analyse app/Modules/Pesantrian/Asrama --no-progress --error-format=table`
 
 ## Increment 9: Demo Seeder
 

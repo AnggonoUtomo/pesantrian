@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Modules\Pesantrian\Asrama\Application\Contracts;
 
+use App\Modules\Pesantrian\Asrama\Application\DTO\AssignDormitorySupervisorData;
 use App\Modules\Pesantrian\Asrama\Application\DTO\DormitoryData;
 use App\Modules\Pesantrian\Asrama\Application\DTO\DormitoryRoomPlacementContextData;
+use App\Modules\Pesantrian\Asrama\Application\DTO\DormitorySupervisorAssignmentData;
 use App\Modules\Pesantrian\Asrama\Application\DTO\PlaceStudentRoomData;
 use App\Modules\Pesantrian\Asrama\Application\DTO\StudentRoomPlacementData;
 use App\Modules\Pesantrian\Asrama\Application\DTO\StudentRoomTransferData;
@@ -35,4 +37,20 @@ interface AsramaMutationRepository
     public function transferStudent(string $placementId, PlaceStudentRoomData $target, string $reason): ?StudentRoomTransferData;
 
     public function removeStudent(string $placementId, string $endedAt, string $reason, ?string $actorId): ?StudentRoomPlacementData;
+
+    public function findSupervisorAssignment(string $id): ?DormitorySupervisorAssignmentData;
+
+    public function findActiveSupervisorForScope(string $employeeId, string $dormitoryId, ?string $roomId): ?DormitorySupervisorAssignmentData;
+
+    public function assignSupervisor(AssignDormitorySupervisorData $data): DormitorySupervisorAssignmentData;
+
+    public function endSupervisor(string $assignmentId, string $endedAt, string $reason): ?DormitorySupervisorAssignmentData;
+
+    public function archiveDormitory(string $id, ?string $actorId): ?DormitoryData;
+
+    public function restoreDormitory(string $id): ?DormitoryData;
+
+    public function archiveRoom(string $dormitoryId, string $roomId, ?string $actorId): ?DormitoryData;
+
+    public function restoreRoom(string $dormitoryId, string $roomId): ?DormitoryData;
 }

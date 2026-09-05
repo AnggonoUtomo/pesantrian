@@ -5,14 +5,19 @@ declare(strict_types=1);
 namespace App\Modules\Pesantrian\Asrama\Presentation\Controllers;
 
 use App\Http\ApiResponseFactory;
+use App\Modules\Pesantrian\Asrama\Application\Actions\ArchiveDormitory;
+use App\Modules\Pesantrian\Asrama\Application\Actions\ArchiveDormitoryRoom;
 use App\Modules\Pesantrian\Asrama\Application\Actions\CreateDormitory;
 use App\Modules\Pesantrian\Asrama\Application\Actions\CreateDormitoryRoom;
+use App\Modules\Pesantrian\Asrama\Application\Actions\RestoreDormitory;
+use App\Modules\Pesantrian\Asrama\Application\Actions\RestoreDormitoryRoom;
 use App\Modules\Pesantrian\Asrama\Application\Actions\UpdateDormitory;
 use App\Modules\Pesantrian\Asrama\Application\Actions\UpdateDormitoryRoom;
 use App\Modules\Pesantrian\Asrama\Application\DTO\DormitoryData;
 use App\Modules\Pesantrian\Asrama\Application\DTO\PaginatedDormitoryData;
 use App\Modules\Pesantrian\Asrama\Application\Queries\ListDormitories;
 use App\Modules\Pesantrian\Asrama\Application\Queries\ShowDormitory;
+use App\Modules\Pesantrian\Asrama\Presentation\Requests\ArchiveDormitoryApiRequest;
 use App\Modules\Pesantrian\Asrama\Presentation\Requests\ListDormitoriesApiRequest;
 use App\Modules\Pesantrian\Asrama\Presentation\Requests\StoreDormitoryApiRequest;
 use App\Modules\Pesantrian\Asrama\Presentation\Requests\StoreDormitoryRoomApiRequest;
@@ -33,6 +38,10 @@ final readonly class DormitoryApiController implements HasMiddleware
         private UpdateDormitory $updateDormitory,
         private CreateDormitoryRoom $createDormitoryRoom,
         private UpdateDormitoryRoom $updateDormitoryRoom,
+        private ArchiveDormitory $archiveDormitory,
+        private RestoreDormitory $restoreDormitory,
+        private ArchiveDormitoryRoom $archiveDormitoryRoom,
+        private RestoreDormitoryRoom $restoreDormitoryRoom,
         private ApiResponseFactory $responses,
     ) {}
 
@@ -41,6 +50,7 @@ final readonly class DormitoryApiController implements HasMiddleware
         return [
             new Middleware('can:asrama.view', only: ['index', 'show']),
             new Middleware('can:asrama.manage', only: ['store', 'update', 'storeRoom', 'updateRoom']),
+            new Middleware('can:asrama.archive', only: ['archive', 'restore', 'archiveRoom', 'restoreRoom']),
         ];
     }
 
@@ -137,6 +147,78 @@ final readonly class DormitoryApiController implements HasMiddleware
         return $this->responses->success(
             $request,
             'Kamar asrama berhasil diperbarui.',
+            (new DormitoryResource($updated, includeDetails: true))->toArray($request),
+        );
+    }
+
+    public function archive(ArchiveDormitoryApiRequest $request, string $dormitory): JsonResponse
+    {
+        $archived = $this->archiveDormitory->execute(
+            $request->user(),
+            $dormitory,
+            (string) $request->validated('reason'),
+            $this->responses->correlationId($request),
+        );
+
+        abort_if($archived === null, 404);
+
+        return $this->responses->success(
+            $request,
+            'Asrama berhasil diarsipkan.',
+            (new DormitoryResource($archived))->toArray($request),
+        );
+    }
+
+    public function restore(Request $request, string $dormitory): JsonResponse
+    {
+        $restored = $this->restoreDormitory->execute(
+            $request->user(),
+            $dormitory,
+            $this->responses->correlationId($request),
+        );
+
+        abort_if($restored === null, 404);
+
+        return $this->responses->success(
+            $request,
+            'Asrama berhasil dipulihkan.',
+            (new DormitoryResource($restored))->toArray($request),
+        );
+    }
+
+    public function archiveRoom(ArchiveDormitoryApiRequest $request, string $dormitory, string $room): JsonResponse
+    {
+        $updated = $this->archiveDormitoryRoom->execute(
+            $request->user(),
+            $dormitory,
+            $room,
+            (string) $request->validated('reason'),
+            $this->responses->correlationId($request),
+        );
+
+        abort_if($updated === null, 404);
+
+        return $this->responses->success(
+            $request,
+            'Kamar asrama berhasil diarsipkan.',
+            (new DormitoryResource($updated, includeDetails: true))->toArray($request),
+        );
+    }
+
+    public function restoreRoom(Request $request, string $dormitory, string $room): JsonResponse
+    {
+        $updated = $this->restoreDormitoryRoom->execute(
+            $request->user(),
+            $dormitory,
+            $room,
+            $this->responses->correlationId($request),
+        );
+
+        abort_if($updated === null, 404);
+
+        return $this->responses->success(
+            $request,
+            'Kamar asrama berhasil dipulihkan.',
             (new DormitoryResource($updated, includeDetails: true))->toArray($request),
         );
     }

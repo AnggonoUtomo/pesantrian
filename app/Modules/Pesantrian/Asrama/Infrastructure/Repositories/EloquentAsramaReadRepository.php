@@ -6,6 +6,7 @@ namespace App\Modules\Pesantrian\Asrama\Infrastructure\Repositories;
 
 use App\Modules\Pesantrian\Asrama\Application\Contracts\AsramaMutationRepository;
 use App\Modules\Pesantrian\Asrama\Application\Contracts\AsramaReadRepository;
+use App\Modules\Pesantrian\Asrama\Application\DTO\AssignDormitorySupervisorData;
 use App\Modules\Pesantrian\Asrama\Application\DTO\DormitoryData;
 use App\Modules\Pesantrian\Asrama\Application\DTO\DormitoryListFilter;
 use App\Modules\Pesantrian\Asrama\Application\DTO\DormitoryRoomData;
@@ -229,6 +230,139 @@ final class EloquentAsramaReadRepository implements AsramaMutationRepository, As
         return $this->freshPlacementData((string) $record->getKey());
     }
 
+    public function findSupervisorAssignment(string $id): ?DormitorySupervisorAssignmentData
+    {
+        $record = $this->supervisorQuery()
+            ->where('dormitory_supervisor_assignments.id', $id)
+            ->first();
+
+        return $record instanceof DormitorySupervisorAssignmentRecord ? $this->mapSupervisor($record) : null;
+    }
+
+    public function findActiveSupervisorForScope(string $employeeId, string $dormitoryId, ?string $roomId): ?DormitorySupervisorAssignmentData
+    {
+        $record = $this->supervisorQuery()
+            ->where('dormitory_supervisor_assignments.employee_id', $employeeId)
+            ->where('dormitory_supervisor_assignments.dormitory_id', $dormitoryId)
+            ->where('dormitory_supervisor_assignments.status', 'active')
+            ->whereNull('dormitory_supervisor_assignments.ended_at')
+            ->when(
+                $roomId === null,
+                static fn (Builder $query) => $query->whereNull('dormitory_supervisor_assignments.dormitory_room_id'),
+                static fn (Builder $query) => $query->where('dormitory_supervisor_assignments.dormitory_room_id', $roomId),
+            )
+            ->first();
+
+        return $record instanceof DormitorySupervisorAssignmentRecord ? $this->mapSupervisor($record) : null;
+    }
+
+    public function assignSupervisor(AssignDormitorySupervisorData $data): DormitorySupervisorAssignmentData
+    {
+        /** @var DormitorySupervisorAssignmentRecord $record */
+        $record = DormitorySupervisorAssignmentRecord::query()->create($data->toArray());
+
+        return $this->freshSupervisorData((string) $record->getKey());
+    }
+
+    public function endSupervisor(string $assignmentId, string $endedAt, string $reason): ?DormitorySupervisorAssignmentData
+    {
+        $record = DormitorySupervisorAssignmentRecord::query()->find($assignmentId);
+
+        if (! $record instanceof DormitorySupervisorAssignmentRecord || $record->status !== 'active') {
+            return null;
+        }
+
+        $record->forceFill([
+            'ended_at' => $endedAt,
+            'status' => 'ended',
+            'reason' => $reason,
+        ])->save();
+
+        return $this->freshSupervisorData((string) $record->getKey());
+    }
+
+    public function archiveDormitory(string $id, ?string $actorId): ?DormitoryData
+    {
+        $record = DormitoryRecord::query()
+            ->whereKey($id)
+            ->whereNull('archived_at')
+            ->first();
+
+        if (! $record instanceof DormitoryRecord) {
+            return null;
+        }
+
+        $record->forceFill([
+            'status' => 'inactive',
+            'archived_at' => now(),
+            'archived_by' => $actorId,
+        ])->save();
+
+        return $this->freshDormitoryData($record);
+    }
+
+    public function restoreDormitory(string $id): ?DormitoryData
+    {
+        $record = DormitoryRecord::query()
+            ->whereKey($id)
+            ->whereNotNull('archived_at')
+            ->first();
+
+        if (! $record instanceof DormitoryRecord) {
+            return null;
+        }
+
+        $record->forceFill([
+            'status' => 'active',
+            'archived_at' => null,
+            'archived_by' => null,
+        ])->save();
+
+        return $this->freshDormitoryData($record);
+    }
+
+    public function archiveRoom(string $dormitoryId, string $roomId, ?string $actorId): ?DormitoryData
+    {
+        $room = DormitoryRoomRecord::query()
+            ->where('dormitory_id', $dormitoryId)
+            ->whereKey($roomId)
+            ->whereNull('archived_at')
+            ->first();
+
+        if (! $room instanceof DormitoryRoomRecord) {
+            return null;
+        }
+
+        $room->forceFill([
+            'status' => 'inactive',
+            'archived_at' => now(),
+            'archived_by' => $actorId,
+        ])->save();
+
+        return $this->freshDormitoryDataById($dormitoryId);
+    }
+
+    public function restoreRoom(string $dormitoryId, string $roomId): ?DormitoryData
+    {
+        $room = DormitoryRoomRecord::query()
+            ->where('dormitory_id', $dormitoryId)
+            ->whereKey($roomId)
+            ->whereNotNull('archived_at')
+            ->first();
+
+        if (! $room instanceof DormitoryRoomRecord) {
+            return null;
+        }
+
+        $room->forceFill([
+            'status' => 'active',
+            'archived_at' => null,
+            'archived_by' => null,
+        ])->save();
+
+        return $this->freshDormitoryDataById($dormitoryId);
+    }
+
     /** @return Builder<DormitoryRecord> */
     private function baseQuery(): Builder
     {
@@ -371,21 +505,37 @@ final class EloquentAsramaReadRepository implements AsramaMutationRepository, As
                 'dormitory_supervisor_assignments.*',
                 'dormitory_rooms.code as room_code',
             ])
-            ->map(static fn (DormitorySupervisorAssignmentRecord $supervisor): DormitorySupervisorAssignmentData => new DormitorySupervisorAssignmentData(
-                id: (string) $supervisor->getKey(),
-                employeeId: (string) $supervisor->employee_id,
-                employeeName: (string) $supervisor->employee_name,
-                role: (string) $supervisor->role,
-                dormitoryId: $supervisor->dormitory_id === null ? null : (string) $supervisor->dormitory_id,
-                dormitoryRoomId: $supervisor->dormitory_room_id === null ? null : (string) $supervisor->dormitory_room_id,
-                roomCode: $supervisor->getAttribute('room_code') === null ? null : (string) $supervisor->getAttribute('room_code'),
-                startedAt: $supervisor->started_at->toJSON(),
-                endedAt: $supervisor->ended_at?->toJSON(),
-                status: (string) $supervisor->status,
-                reason: $supervisor->reason === null ? null : (string) $supervisor->reason,
-            ))
+            ->map(fn (DormitorySupervisorAssignmentRecord $supervisor): DormitorySupervisorAssignmentData => $this->mapSupervisor($supervisor))
             ->values()
             ->all());
+    }
+
+    /** @return Builder<DormitorySupervisorAssignmentRecord> */
+    private function supervisorQuery(): Builder
+    {
+        return DormitorySupervisorAssignmentRecord::query()
+            ->leftJoin('dormitory_rooms', 'dormitory_rooms.id', '=', 'dormitory_supervisor_assignments.dormitory_room_id')
+            ->select([
+                'dormitory_supervisor_assignments.*',
+                'dormitory_rooms.code as room_code',
+            ]);
+    }
+
+    private function mapSupervisor(DormitorySupervisorAssignmentRecord $supervisor): DormitorySupervisorAssignmentData
+    {
+        return new DormitorySupervisorAssignmentData(
+            id: (string) $supervisor->getKey(),
+            employeeId: (string) $supervisor->employee_id,
+            employeeName: (string) $supervisor->employee_name,
+            role: (string) $supervisor->role,
+            dormitoryId: $supervisor->dormitory_id === null ? null : (string) $supervisor->dormitory_id,
+            dormitoryRoomId: $supervisor->dormitory_room_id === null ? null : (string) $supervisor->dormitory_room_id,
+            roomCode: $supervisor->getAttribute('room_code') === null ? null : (string) $supervisor->getAttribute('room_code'),
+            startedAt: $supervisor->started_at->toJSON(),
+            endedAt: $supervisor->ended_at?->toJSON(),
+            status: (string) $supervisor->status,
+            reason: $supervisor->reason === null ? null : (string) $supervisor->reason,
+        );
     }
 
     private function qualifiedSortField(string $field): string
@@ -423,6 +573,17 @@ final class EloquentAsramaReadRepository implements AsramaMutationRepository, As
 
         if (! $fresh instanceof StudentRoomPlacementData) {
             throw new \RuntimeException('Penempatan kamar gagal dibaca ulang setelah mutation.');
+        }
+
+        return $fresh;
+    }
+
+    private function freshSupervisorData(string $assignmentId): DormitorySupervisorAssignmentData
+    {
+        $fresh = $this->findSupervisorAssignment($assignmentId);
+
+        if (! $fresh instanceof DormitorySupervisorAssignmentData) {
+            throw new \RuntimeException('Penugasan musyrif gagal dibaca ulang setelah mutation.');
         }
 
         return $fresh;

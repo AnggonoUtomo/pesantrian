@@ -2,10 +2,10 @@
 
 ## Status
 
-Active - draft mutation ready. Source module, permission identity, contract
+Active - lifecycle mutation ready. Source module, permission identity, contract
 kandidat presensi awal, migration, model record, factory minimum, API read/list,
-dan API create/update draft serta entry sudah tersedia. Dokumen ini tetap
-menjadi acuan untuk submit/revisi/void, seeder demo, dan UI.
+API create/update draft serta entry, dan API submit/revisi/void sudah tersedia.
+Dokumen ini tetap menjadi acuan untuk seeder demo dan UI.
 
 ## Objective
 
@@ -137,7 +137,9 @@ sesi serta daftar detail santri.
 - Status `late` wajib memiliki `minutes_late` lebih dari 0.
 - Status `present` tidak boleh memiliki alasan wajib.
 - Status `excused`, `sick`, dan `absent` boleh memiliki catatan.
-- Sesi `submitted` tidak boleh diedit tanpa jalur revisi.
+- Sesi `submitted` tidak boleh diedit tanpa jalur revisi. Jalur revisi baseline
+  mengubah status ke `revised` dengan alasan, lalu koreksi data dilakukan lewat
+  endpoint update yang sama.
 - Sesi `void` tidak boleh disubmit atau direvisi.
 - Backend menjadi authority status, permission, dan validasi. Frontend hanya
   membantu UX.

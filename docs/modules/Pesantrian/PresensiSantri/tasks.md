@@ -179,8 +179,8 @@ Hasil:
 - Entry presensi mengambil snapshot NIS/nama dari contract `ActiveStudentReader`
   module Santri, bukan dari payload frontend.
 - Status `late` wajib memiliki `minutes_late` lebih dari 0.
-- Sesi non-draft (`submitted`, `revised`, `void`) ditolak dari update langsung
-  sampai jalur lifecycle/revisi tersedia.
+- Sesi `submitted` dan `void` ditolak dari update langsung sampai jalur
+  lifecycle/revisi yang sesuai dipakai.
 - Audit create/update dicatat sebagai aktivitas module `PresensiSantri`.
 
 Verifikasi:
@@ -189,17 +189,36 @@ Verifikasi:
 
 ## Increment 7: Submit, Revisi, dan Void
 
-- [ ] Buat action submit.
-- [ ] Buat action revise.
-- [ ] Buat action void.
-- [ ] Tambahkan audit lifecycle.
-- [ ] Jalankan focused lifecycle tests.
+- [x] Buat action submit.
+- [x] Buat action revise.
+- [x] Buat action void.
+- [x] Tambahkan audit lifecycle.
+- [x] Jalankan focused lifecycle tests.
 
 Acceptance:
 
 - Submit mengunci sesi draft.
 - Revisi wajib alasan.
 - Void wajib alasan dan tidak menghapus data.
+
+Hasil:
+
+- Endpoint lifecycle ditambahkan:
+  - `PATCH /api/v1/pesantrian/student-attendances/{attendance}/submit`
+  - `PATCH /api/v1/pesantrian/student-attendances/{attendance}/revise`
+  - `PATCH /api/v1/pesantrian/student-attendances/{attendance}/void`
+- Submit hanya menerima sesi `draft` dan mengisi `submitted_at` serta
+  `submitted_by`.
+- Revisi wajib alasan minimal dan mengubah sesi `submitted/revised` menjadi
+  `revised`; setelah itu koreksi entry/session boleh dilakukan lewat endpoint
+  update yang sudah ada.
+- Void wajib alasan, mengubah status menjadi `void`, menyimpan actor/alasan,
+  dan tidak menghapus entry.
+- Audit lifecycle dicatat untuk submitted, revised, dan voided.
+
+Verifikasi:
+
+- [x] `php artisan test tests/Feature/PresensiSantriLifecycleApiTest.php --no-ansi`
 
 ## Increment 8: Demo Seeder
 

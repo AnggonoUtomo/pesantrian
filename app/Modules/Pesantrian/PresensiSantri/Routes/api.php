@@ -21,6 +21,18 @@ Route::middleware(['web', 'auth', 'verified', 'throttle:system-api'])
             ->whereUlid('attendance')
             ->middleware('api.idempotency')
             ->name('entries.update');
+        Route::patch('/{attendance}/submit', [StudentAttendanceApiController::class, 'submit'])
+            ->whereUlid('attendance')
+            ->middleware('api.idempotency')
+            ->name('submit');
+        Route::patch('/{attendance}/revise', [StudentAttendanceApiController::class, 'revise'])
+            ->whereUlid('attendance')
+            ->middleware('api.idempotency')
+            ->name('revise');
+        Route::patch('/{attendance}/void', [StudentAttendanceApiController::class, 'void'])
+            ->whereUlid('attendance')
+            ->middleware('api.idempotency')
+            ->name('void');
         Route::get('/{attendance}', [StudentAttendanceApiController::class, 'show'])
             ->whereUlid('attendance')
             ->name('show');

@@ -55,13 +55,13 @@ final readonly class UpdateStudentAttendanceEntries
 
     private function ensureDraft(StudentAttendanceData $attendance): void
     {
-        if ($attendance->status === 'draft') {
+        if (in_array($attendance->status, ['draft', 'revised'], true)) {
             return;
         }
 
         throw new StudentAttendanceMutationException(
             'Sesi presensi yang sudah dikunci tidak bisa diedit langsung.',
-            ['status' => ['Sesi submitted, revised, atau void harus memakai jalur lifecycle/revisi.']],
+            ['status' => ['Sesi submitted atau void harus memakai jalur lifecycle/revisi yang sesuai.']],
         );
     }
 

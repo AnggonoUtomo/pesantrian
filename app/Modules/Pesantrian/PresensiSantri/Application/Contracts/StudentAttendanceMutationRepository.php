@@ -17,4 +17,10 @@ interface StudentAttendanceMutationRepository
 
     /** @param list<StudentAttendanceEntryMutationData> $entries */
     public function upsertEntries(string $id, array $entries): ?StudentAttendanceData;
+
+    public function submitSession(string $id, string $actorId): ?StudentAttendanceData;
+
+    public function reviseSession(string $id, string $reason, string $actorId): ?StudentAttendanceData;
+
+    public function voidSession(string $id, string $reason, string $actorId): ?StudentAttendanceData;
 }

@@ -14,6 +14,7 @@ use App\Modules\Pesantrian\PresensiSantri\Application\DTO\StudentAttendanceListF
 use App\Modules\Pesantrian\PresensiSantri\Application\DTO\StudentAttendanceSessionMutationData;
 use App\Modules\Pesantrian\PresensiSantri\Application\DTO\StudentAttendanceSummaryData;
 use App\Modules\Pesantrian\PresensiSantri\Infrastructure\Models\StudentAttendanceEntryRecord;
+use App\Modules\Pesantrian\PresensiSantri\Infrastructure\Models\StudentAttendanceRevisionRecord;
 use App\Modules\Pesantrian\PresensiSantri\Infrastructure\Models\StudentAttendanceSessionRecord;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
@@ -111,6 +112,67 @@ final class EloquentStudentAttendanceReadRepository implements StudentAttendance
             );
         }
 
+        $record->load(['entries' => fn ($query) => $query->orderBy('student_name')->orderBy('student_no')]);
+
+        return $this->map($record);
+    }
+
+    public function submitSession(string $id, string $actorId): ?StudentAttendanceData
+    {
+        $record = StudentAttendanceSessionRecord::query()->find($id);
+
+        if (! $record instanceof StudentAttendanceSessionRecord) {
+            return null;
+        }
+
+        $record->forceFill([
+            'status' => 'submitted',
+            'submitted_at' => now(),
+            'submitted_by' => $actorId,
+        ])->save();
+        $record->load(['entries' => fn ($query) => $query->orderBy('student_name')->orderBy('student_no')]);
+
+        return $this->map($record);
+    }
+
+    public function reviseSession(string $id, string $reason, string $actorId): ?StudentAttendanceData
+    {
+        $record = StudentAttendanceSessionRecord::query()->find($id);
+
+        if (! $record instanceof StudentAttendanceSessionRecord) {
+            return null;
+        }
+
+        $record->forceFill(['status' => 'revised'])->save();
+        StudentAttendanceRevisionRecord::query()->create([
+            'session_id' => $record->id,
+            'reason' => $reason,
+            'changed_by' => $actorId,
+            'changed_at' => now(),
+            'summary' => [
+                'status' => 'revised',
+                'entry_count' => $record->entries()->count(),
+            ],
+        ]);
+        $record->load(['entries' => fn ($query) => $query->orderBy('student_name')->orderBy('student_no')]);
+
+        return $this->map($record);
+    }
+
+    public function voidSession(string $id, string $reason, string $actorId): ?StudentAttendanceData
+    {
+        $record = StudentAttendanceSessionRecord::query()->find($id);
+
+        if (! $record instanceof StudentAttendanceSessionRecord) {
+            return null;
+        }
+
+        $record->forceFill([
+            'status' => 'void',
+            'voided_at' => now(),
+            'voided_by' => $actorId,
+            'void_reason' => $reason,
+        ])->save();
         $record->load(['entries' => fn ($query) => $query->orderBy('student_name')->orderBy('student_no')]);
 
         return $this->map($record);

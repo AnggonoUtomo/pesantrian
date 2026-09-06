@@ -8,11 +8,10 @@ use App\Modules\Pesantrian\PresensiSantri\Application\Contracts\StudentAttendanc
 use App\Modules\Pesantrian\PresensiSantri\Application\Contracts\StudentAttendanceMutationRepository;
 use App\Modules\Pesantrian\PresensiSantri\Application\Contracts\StudentAttendanceReadRepository;
 use App\Modules\Pesantrian\PresensiSantri\Application\DTO\StudentAttendanceData;
-use App\Modules\Pesantrian\PresensiSantri\Application\DTO\StudentAttendanceSessionMutationData;
 use App\Modules\Pesantrian\PresensiSantri\Application\Exceptions\StudentAttendanceMutationException;
 use Illuminate\Contracts\Auth\Authenticatable;
 
-final readonly class UpdateStudentAttendance
+final readonly class ReviseStudentAttendance
 {
     public function __construct(
         private StudentAttendanceActivityPublisher $activities,
@@ -20,47 +19,37 @@ final readonly class UpdateStudentAttendance
         private StudentAttendanceMutationRepository $repository,
     ) {}
 
-    public function execute(?Authenticatable $actor, string $id, StudentAttendanceSessionMutationData $data, ?string $correlationId = null): ?StudentAttendanceData
+    public function execute(?Authenticatable $actor, string $id, string $reason, ?string $correlationId = null): ?StudentAttendanceData
     {
+        $actorId = $actor ? (string) $actor->getAuthIdentifier() : null;
         $attendance = $this->reader->find($id);
 
         if ($attendance === null) {
             return null;
         }
 
-        $this->ensureDraft($attendance);
-
-        return $this->activities->publish(
-            actorId: $actor ? (string) $actor->getAuthIdentifier() : null,
-            action: 'presensi_santri.session.updated',
-            subjectType: 'student_attendance_session',
-            mutation: fn (): ?StudentAttendanceData => $this->repository->updateSession($id, $data),
-            subjectId: static fn (?StudentAttendanceData $attendance): ?string => $attendance?->id,
-            metadata: static fn (?StudentAttendanceData $attendance): array => [
-                'changed_fields' => array_keys($data->toDatabasePayload()),
-                'result' => $attendance === null ? null : [
-                    'attendance_date' => $attendance->attendanceDate,
-                    'context_type' => $attendance->contextType,
-                    'context_id' => $attendance->contextId,
-                    'context_name' => $attendance->contextName,
-                    'session_code' => $attendance->sessionCode,
-                    'session_name' => $attendance->sessionName,
-                    'status' => $attendance->status,
-                ],
-            ],
-            correlationId: $correlationId,
-        );
-    }
-
-    private function ensureDraft(StudentAttendanceData $attendance): void
-    {
-        if (in_array($attendance->status, ['draft', 'revised'], true)) {
-            return;
+        if (! in_array($attendance->status, ['submitted', 'revised'], true)) {
+            throw new StudentAttendanceMutationException(
+                'Hanya sesi submitted atau revised yang bisa dibuka untuk revisi.',
+                ['status' => ['Sesi draft belum perlu direvisi dan sesi void tidak bisa direvisi.']],
+            );
         }
 
-        throw new StudentAttendanceMutationException(
-            'Sesi presensi yang sudah dikunci tidak bisa diedit langsung.',
-            ['status' => ['Sesi submitted atau void harus memakai jalur lifecycle/revisi yang sesuai.']],
+        return $this->activities->publish(
+            actorId: $actorId,
+            action: 'presensi_santri.session.revised',
+            subjectType: 'student_attendance_session',
+            mutation: fn (): ?StudentAttendanceData => $this->repository->reviseSession($id, $reason, (string) $actorId),
+            subjectId: static fn (?StudentAttendanceData $attendance): ?string => $attendance?->id,
+            metadata: static fn (?StudentAttendanceData $attendance): array => [
+                'changed_fields' => ['status', 'revision_reason'],
+                'result' => $attendance === null ? null : [
+                    'status' => $attendance->status,
+                    'summary' => $attendance->summary->toArray(),
+                ],
+            ],
+            reason: $reason,
+            correlationId: $correlationId,
         );
     }
 }

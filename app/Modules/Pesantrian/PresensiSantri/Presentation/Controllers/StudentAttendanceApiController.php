@@ -6,8 +6,11 @@ namespace App\Modules\Pesantrian\PresensiSantri\Presentation\Controllers;
 
 use App\Http\ApiResponseFactory;
 use App\Modules\Pesantrian\PresensiSantri\Application\Actions\CreateStudentAttendance;
+use App\Modules\Pesantrian\PresensiSantri\Application\Actions\ReviseStudentAttendance;
+use App\Modules\Pesantrian\PresensiSantri\Application\Actions\SubmitStudentAttendance;
 use App\Modules\Pesantrian\PresensiSantri\Application\Actions\UpdateStudentAttendance;
 use App\Modules\Pesantrian\PresensiSantri\Application\Actions\UpdateStudentAttendanceEntries;
+use App\Modules\Pesantrian\PresensiSantri\Application\Actions\VoidStudentAttendance;
 use App\Modules\Pesantrian\PresensiSantri\Application\DTO\PaginatedStudentAttendanceData;
 use App\Modules\Pesantrian\PresensiSantri\Application\DTO\StudentAttendanceData;
 use App\Modules\Pesantrian\PresensiSantri\Application\Exceptions\StudentAttendanceMutationException;
@@ -15,6 +18,7 @@ use App\Modules\Pesantrian\PresensiSantri\Application\Queries\ListStudentAttenda
 use App\Modules\Pesantrian\PresensiSantri\Application\Queries\ShowStudentAttendance;
 use App\Modules\Pesantrian\PresensiSantri\Presentation\Requests\ListStudentAttendancesApiRequest;
 use App\Modules\Pesantrian\PresensiSantri\Presentation\Requests\StoreStudentAttendanceApiRequest;
+use App\Modules\Pesantrian\PresensiSantri\Presentation\Requests\StudentAttendanceReasonApiRequest;
 use App\Modules\Pesantrian\PresensiSantri\Presentation\Requests\UpdateStudentAttendanceApiRequest;
 use App\Modules\Pesantrian\PresensiSantri\Presentation\Requests\UpdateStudentAttendanceEntriesApiRequest;
 use App\Modules\Pesantrian\PresensiSantri\Presentation\Resources\StudentAttendanceResource;
@@ -31,6 +35,9 @@ final readonly class StudentAttendanceApiController implements HasMiddleware
         private CreateStudentAttendance $createStudentAttendance,
         private UpdateStudentAttendance $updateStudentAttendance,
         private UpdateStudentAttendanceEntries $updateStudentAttendanceEntries,
+        private SubmitStudentAttendance $submitStudentAttendance,
+        private ReviseStudentAttendance $reviseStudentAttendance,
+        private VoidStudentAttendance $voidStudentAttendance,
         private ApiResponseFactory $responses,
     ) {}
 
@@ -39,6 +46,9 @@ final readonly class StudentAttendanceApiController implements HasMiddleware
         return [
             new Middleware('can:presensi_santri.view', only: ['index', 'show']),
             new Middleware('can:presensi_santri.manage', only: ['store', 'update', 'updateEntries']),
+            new Middleware('can:presensi_santri.submit', only: ['submit']),
+            new Middleware('can:presensi_santri.revise', only: ['revise']),
+            new Middleware('can:presensi_santri.archive', only: ['void']),
         ];
     }
 
@@ -131,6 +141,71 @@ final readonly class StudentAttendanceApiController implements HasMiddleware
         return $this->responses->success(
             $request,
             'Entry presensi santri berhasil diperbarui.',
+            (new StudentAttendanceResource($data))->toArray($request),
+        );
+    }
+
+    public function submit(Request $request, string $attendance): JsonResponse
+    {
+        try {
+            $data = $this->submitStudentAttendance->execute(
+                $request->user(),
+                $attendance,
+                $this->responses->correlationId($request),
+            );
+        } catch (StudentAttendanceMutationException $exception) {
+            return $this->invalidMutation($request, $exception);
+        }
+
+        abort_if($data === null, 404);
+
+        return $this->responses->success(
+            $request,
+            'Sesi presensi santri berhasil disubmit.',
+            (new StudentAttendanceResource($data))->toArray($request),
+        );
+    }
+
+    public function revise(StudentAttendanceReasonApiRequest $request, string $attendance): JsonResponse
+    {
+        try {
+            $data = $this->reviseStudentAttendance->execute(
+                $request->user(),
+                $attendance,
+                (string) $request->validated('reason'),
+                $this->responses->correlationId($request),
+            );
+        } catch (StudentAttendanceMutationException $exception) {
+            return $this->invalidMutation($request, $exception);
+        }
+
+        abort_if($data === null, 404);
+
+        return $this->responses->success(
+            $request,
+            'Sesi presensi santri berhasil dibuka untuk revisi.',
+            (new StudentAttendanceResource($data))->toArray($request),
+        );
+    }
+
+    public function void(StudentAttendanceReasonApiRequest $request, string $attendance): JsonResponse
+    {
+        try {
+            $data = $this->voidStudentAttendance->execute(
+                $request->user(),
+                $attendance,
+                (string) $request->validated('reason'),
+                $this->responses->correlationId($request),
+            );
+        } catch (StudentAttendanceMutationException $exception) {
+            return $this->invalidMutation($request, $exception);
+        }
+
+        abort_if($data === null, 404);
+
+        return $this->responses->success(
+            $request,
+            'Sesi presensi santri berhasil dibatalkan.',
             (new StudentAttendanceResource($data))->toArray($request),
         );
     }

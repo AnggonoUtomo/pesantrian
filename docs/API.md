@@ -41,6 +41,9 @@ frontend memakai Laravel named routes melalui Ziggy untuk Inertia React.
 | POST | `/api/v1/pesantrian/student-attendances` | `api.v1.pesantrian.student-attendances.store` | `presensi_santri.manage` | Ya | Envelope sukses `201` dengan sesi draft presensi yang dibuat |
 | PATCH | `/api/v1/pesantrian/student-attendances/{attendance}` | `api.v1.pesantrian.student-attendances.update` | `presensi_santri.manage` | Ya | Envelope sukses dengan sesi draft presensi yang diperbarui |
 | PATCH | `/api/v1/pesantrian/student-attendances/{attendance}/entries` | `api.v1.pesantrian.student-attendances.entries.update` | `presensi_santri.manage` | Ya | Envelope sukses dengan entry presensi yang di-upsert |
+| PATCH | `/api/v1/pesantrian/student-attendances/{attendance}/submit` | `api.v1.pesantrian.student-attendances.submit` | `presensi_santri.submit` | Ya | Envelope sukses dengan sesi presensi berstatus submitted |
+| PATCH | `/api/v1/pesantrian/student-attendances/{attendance}/revise` | `api.v1.pesantrian.student-attendances.revise` | `presensi_santri.revise` | Ya | Envelope sukses dengan sesi presensi dibuka untuk revisi |
+| PATCH | `/api/v1/pesantrian/student-attendances/{attendance}/void` | `api.v1.pesantrian.student-attendances.void` | `presensi_santri.archive` | Ya | Envelope sukses dengan sesi presensi berstatus void tanpa menghapus entry |
 | GET | `/api/v1/permissions` | `api.v1.permissions.index` | Access control view policy | Tidak | Envelope sukses dengan daftar permission dan pagination meta |
 | GET | `/api/v1/roles` | `api.v1.roles.index` | Access control view policy | Tidak | Envelope sukses dengan daftar role dan pagination meta |
 | POST | `/api/v1/roles` | `api.v1.roles.store` | Access control create policy | Ya | Envelope sukses `201` dengan role yang dibuat |

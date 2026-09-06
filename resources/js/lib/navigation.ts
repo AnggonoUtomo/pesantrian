@@ -2,6 +2,7 @@ import {
     BedDouble,
     Building2,
     CalendarRange,
+    ClipboardCheck,
     GraduationCap,
     LayoutGrid,
     NotebookTabs,
@@ -191,6 +192,11 @@ function buildPesantrianNavigation(auth: Auth): NavItem[] {
             'asrama.placement',
             'asrama.supervisor',
             'asrama.archive',
+            'presensi_santri.view',
+            'presensi_santri.manage',
+            'presensi_santri.submit',
+            'presensi_santri.revise',
+            'presensi_santri.archive',
         ])
     ) {
         return [];
@@ -246,6 +252,26 @@ function buildPesantrianNavigation(auth: Auth): NavItem[] {
             href: routeOr('/pesantrian/asrama', 'pesantrian.asrama.index'),
             icon: BedDouble,
             iconClassName: 'text-indigo-600 dark:text-indigo-300',
+        });
+    }
+
+    if (
+        hasAnyPermission(auth, [
+            'presensi_santri.view',
+            'presensi_santri.manage',
+            'presensi_santri.submit',
+            'presensi_santri.revise',
+            'presensi_santri.archive',
+        ])
+    ) {
+        items.push({
+            title: 'Presensi Santri',
+            href: routeOr(
+                '/pesantrian/student-attendances',
+                'pesantrian.student-attendances.index',
+            ),
+            icon: ClipboardCheck,
+            iconClassName: 'text-cyan-600 dark:text-cyan-300',
         });
     }
 

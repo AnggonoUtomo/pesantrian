@@ -2,10 +2,11 @@
 
 ## Status
 
-Active - demo seeder ready. Source module, permission identity, contract
+Active - UI read/list ready. Source module, permission identity, contract
 kandidat presensi awal, migration, model record, factory minimum, API read/list,
-API create/update draft serta entry, dan API submit/revisi/void sudah tersedia.
-Seeder demo lifecycle sudah tersedia. Dokumen ini tetap menjadi acuan untuk UI.
+API create/update draft serta entry, API submit/revisi/void, seeder demo
+lifecycle, dan UI Inertia read-only list/detail sudah tersedia. Dokumen ini
+tetap menjadi acuan untuk UI mutation.
 
 ## Objective
 
@@ -209,11 +210,12 @@ UI berada di `resources/js/pages/Pesantrian/PresensiSantri/`.
 
 Acceptance UI awal:
 
-- index tetap minimal dan delegasi ke komponen;
+- index tetap minimal dan delegasi ke komponen; [selesai Increment 9]
 - list mendukung search/filter tanggal, konteks, status, dan pagination;
-- detail menampilkan ringkasan status dan daftar santri;
-- form mutation berada di folder `components`;
-- submit/revisi/void memakai confirmation;
+  [selesai Increment 9]
+- detail menampilkan ringkasan status dan daftar santri; [selesai Increment 9]
+- form mutation berada di folder `components`; [Increment 10]
+- submit/revisi/void memakai confirmation; [Increment 10]
 - browser QA desktop/mobile wajib dilakukan.
 
 ## Demo Seeder Candidate

@@ -252,18 +252,40 @@ Verifikasi:
 
 ## Increment 9: UI/Inertia List dan Detail
 
-- [ ] Buat page index.
-- [ ] Buat page detail.
-- [ ] Buat komponen filter/table/card/summary/pagination.
-- [ ] Tambahkan sidebar menu namespace Pesantrian.
-- [ ] Tambahkan presentation/Ziggy tests.
-- [ ] Jalankan typecheck, lint, dan build.
+- [x] Buat page index.
+- [x] Buat page detail.
+- [x] Buat komponen filter/table/card/summary/pagination.
+- [x] Tambahkan sidebar menu namespace Pesantrian.
+- [x] Tambahkan presentation/Ziggy tests.
+- [x] Jalankan typecheck, lint, dan build.
 
 Acceptance:
 
 - Page tetap tipis.
 - UI berada di `resources/js/pages/Pesantrian/PresensiSantri/`.
 - Console browser bersih dari route/Ziggy error.
+
+Hasil:
+
+- Route web Inertia `pesantrian.student-attendances.index` dan
+  `pesantrian.student-attendances.show` ditambahkan agar tersedia di Ziggy.
+- Page `Index` dan `Show` dibuat tipis dan mendelegasikan tampilan ke komponen
+  module.
+- Komponen list/detail dibuat di
+  `resources/js/pages/Pesantrian/PresensiSantri/components/`, mencakup
+  dashboard, filter, table responsif, summary cards, pagination, status badge,
+  empty state, access denied, dan detail panel.
+- Sidebar namespace Pesantrian menampilkan menu `Presensi Santri` untuk actor
+  yang memiliki permission presensi.
+- UI Increment 9 masih read-only; dialog create/update, editor entry,
+  submit/revisi/void masuk Increment 10.
+
+Verifikasi:
+
+- [x] `php artisan test tests/Feature/PresensiSantriPresentationTest.php --no-ansi`
+- [x] `php artisan route:list --name=pesantrian.student-attendances --no-ansi`
+- [x] `npm run types:check`
+- [x] `npm run build`
 
 ## Increment 10: UI Mutation
 

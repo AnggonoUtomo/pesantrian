@@ -4,18 +4,21 @@ declare(strict_types=1);
 
 namespace App\Modules\Pesantrian\PresensiSantri\Infrastructure\Repositories;
 
+use App\Modules\Pesantrian\PresensiSantri\Application\Contracts\StudentAttendanceMutationRepository;
 use App\Modules\Pesantrian\PresensiSantri\Application\Contracts\StudentAttendanceReadRepository;
 use App\Modules\Pesantrian\PresensiSantri\Application\DTO\PaginatedStudentAttendanceData;
 use App\Modules\Pesantrian\PresensiSantri\Application\DTO\StudentAttendanceData;
 use App\Modules\Pesantrian\PresensiSantri\Application\DTO\StudentAttendanceEntryData;
+use App\Modules\Pesantrian\PresensiSantri\Application\DTO\StudentAttendanceEntryMutationData;
 use App\Modules\Pesantrian\PresensiSantri\Application\DTO\StudentAttendanceListFilter;
+use App\Modules\Pesantrian\PresensiSantri\Application\DTO\StudentAttendanceSessionMutationData;
 use App\Modules\Pesantrian\PresensiSantri\Application\DTO\StudentAttendanceSummaryData;
 use App\Modules\Pesantrian\PresensiSantri\Infrastructure\Models\StudentAttendanceEntryRecord;
 use App\Modules\Pesantrian\PresensiSantri\Infrastructure\Models\StudentAttendanceSessionRecord;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 
-final class EloquentStudentAttendanceReadRepository implements StudentAttendanceReadRepository
+final class EloquentStudentAttendanceReadRepository implements StudentAttendanceMutationRepository, StudentAttendanceReadRepository
 {
     public function paginate(StudentAttendanceListFilter $filter): PaginatedStudentAttendanceData
     {
@@ -48,6 +51,67 @@ final class EloquentStudentAttendanceReadRepository implements StudentAttendance
         if (! $record instanceof StudentAttendanceSessionRecord) {
             return null;
         }
+
+        return $this->map($record);
+    }
+
+    /** @param list<StudentAttendanceEntryMutationData> $entries */
+    public function createSession(StudentAttendanceSessionMutationData $data, array $entries, ?string $actorId): StudentAttendanceData
+    {
+        $record = StudentAttendanceSessionRecord::query()->create([
+            ...$data->toDatabasePayload(),
+            'status' => 'draft',
+            'submitted_at' => null,
+            'submitted_by' => null,
+            'voided_at' => null,
+            'voided_by' => null,
+            'void_reason' => null,
+            'created_by' => $actorId,
+        ]);
+
+        foreach ($entries as $entry) {
+            $this->createEntry($record, $entry);
+        }
+
+        $record->load(['entries' => fn ($query) => $query->orderBy('student_name')->orderBy('student_no')]);
+
+        return $this->map($record);
+    }
+
+    public function updateSession(string $id, StudentAttendanceSessionMutationData $data): ?StudentAttendanceData
+    {
+        $record = StudentAttendanceSessionRecord::query()->find($id);
+
+        if (! $record instanceof StudentAttendanceSessionRecord) {
+            return null;
+        }
+
+        $record->forceFill($data->toDatabasePayload())->save();
+        $record->load(['entries' => fn ($query) => $query->orderBy('student_name')->orderBy('student_no')]);
+
+        return $this->map($record);
+    }
+
+    /** @param list<StudentAttendanceEntryMutationData> $entries */
+    public function upsertEntries(string $id, array $entries): ?StudentAttendanceData
+    {
+        $record = StudentAttendanceSessionRecord::query()->find($id);
+
+        if (! $record instanceof StudentAttendanceSessionRecord) {
+            return null;
+        }
+
+        foreach ($entries as $entry) {
+            StudentAttendanceEntryRecord::query()->updateOrCreate(
+                [
+                    'session_id' => $record->id,
+                    'student_id' => $entry->studentId,
+                ],
+                $this->entryPayload($entry),
+            );
+        }
+
+        $record->load(['entries' => fn ($query) => $query->orderBy('student_name')->orderBy('student_no')]);
 
         return $this->map($record);
     }
@@ -149,5 +213,28 @@ final class EloquentStudentAttendanceReadRepository implements StudentAttendance
             'status' => 'student_attendance_sessions.status',
             default => 'student_attendance_sessions.created_at',
         };
+    }
+
+    private function createEntry(StudentAttendanceSessionRecord $session, StudentAttendanceEntryMutationData $entry): StudentAttendanceEntryRecord
+    {
+        return StudentAttendanceEntryRecord::query()->create([
+            'session_id' => $session->id,
+            'student_id' => $entry->studentId,
+            ...$this->entryPayload($entry),
+        ]);
+    }
+
+    /** @return array<string, mixed> */
+    private function entryPayload(StudentAttendanceEntryMutationData $entry): array
+    {
+        return [
+            'student_no' => $entry->studentNo,
+            'student_name' => $entry->studentName,
+            'status' => $entry->status,
+            'minutes_late' => $entry->status === 'late' ? $entry->minutesLate : null,
+            'note' => $entry->note,
+            'source_reference_type' => $entry->sourceReferenceType,
+            'source_reference_id' => $entry->sourceReferenceId,
+        ];
     }
 }

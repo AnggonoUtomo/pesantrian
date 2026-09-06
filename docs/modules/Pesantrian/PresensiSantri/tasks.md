@@ -156,17 +156,36 @@ Verifikasi:
 
 ## Increment 6: Create/Update Draft dan Entry
 
-- [ ] Buat request validation create/update session.
-- [ ] Buat action create/update draft.
-- [ ] Buat action update entries.
-- [ ] Tambahkan audit create/update.
-- [ ] Jalankan focused mutation tests.
+- [x] Buat request validation create/update session.
+- [x] Buat action create/update draft.
+- [x] Buat action update entries.
+- [x] Tambahkan audit create/update.
+- [x] Jalankan focused mutation tests.
 
 Acceptance:
 
 - Sesi draft bisa dibuat dan diubah.
 - Entry presensi bisa diisi.
 - Sesi submitted/void tidak bisa diedit langsung.
+
+Hasil:
+
+- Endpoint mutation draft ditambahkan:
+  - `POST /api/v1/pesantrian/student-attendances`
+  - `PATCH /api/v1/pesantrian/student-attendances/{attendance}`
+  - `PATCH /api/v1/pesantrian/student-attendances/{attendance}/entries`
+- Mutation memakai permission `presensi_santri.manage` dan middleware
+  idempotency.
+- Entry presensi mengambil snapshot NIS/nama dari contract `ActiveStudentReader`
+  module Santri, bukan dari payload frontend.
+- Status `late` wajib memiliki `minutes_late` lebih dari 0.
+- Sesi non-draft (`submitted`, `revised`, `void`) ditolak dari update langsung
+  sampai jalur lifecycle/revisi tersedia.
+- Audit create/update dicatat sebagai aktivitas module `PresensiSantri`.
+
+Verifikasi:
+
+- [x] `php artisan test tests/Feature/PresensiSantriMutationApiTest.php --no-ansi`
 
 ## Increment 7: Submit, Revisi, dan Void
 

@@ -2,10 +2,10 @@
 
 ## Status
 
-Active - backend read/list ready. Source module, permission identity, contract
-kandidat presensi awal, migration, model record, factory minimum, dan API
-read/list sudah tersedia. Dokumen ini tetap menjadi acuan untuk mutation,
-seeder demo, dan UI.
+Active - draft mutation ready. Source module, permission identity, contract
+kandidat presensi awal, migration, model record, factory minimum, API read/list,
+dan API create/update draft serta entry sudah tersedia. Dokumen ini tetap
+menjadi acuan untuk submit/revisi/void, seeder demo, dan UI.
 
 ## Objective
 

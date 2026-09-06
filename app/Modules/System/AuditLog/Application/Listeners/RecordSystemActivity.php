@@ -20,6 +20,7 @@ final readonly class RecordSystemActivity
         'KelasRombel' => 'kelas-rombel.activity.occurred',
         'Organization' => 'organization.activity.occurred',
         'PenerimaanSantri' => 'penerimaan-santri.activity.occurred',
+        'PresensiSantri' => 'presensi-santri.activity.occurred',
         'Santri' => 'santri.activity.occurred',
         'UserManagement' => 'user-management.activity.occurred',
     ];

@@ -5,11 +5,18 @@ declare(strict_types=1);
 namespace App\Modules\Pesantrian\PresensiSantri\Presentation\Controllers;
 
 use App\Http\ApiResponseFactory;
+use App\Modules\Pesantrian\PresensiSantri\Application\Actions\CreateStudentAttendance;
+use App\Modules\Pesantrian\PresensiSantri\Application\Actions\UpdateStudentAttendance;
+use App\Modules\Pesantrian\PresensiSantri\Application\Actions\UpdateStudentAttendanceEntries;
 use App\Modules\Pesantrian\PresensiSantri\Application\DTO\PaginatedStudentAttendanceData;
 use App\Modules\Pesantrian\PresensiSantri\Application\DTO\StudentAttendanceData;
+use App\Modules\Pesantrian\PresensiSantri\Application\Exceptions\StudentAttendanceMutationException;
 use App\Modules\Pesantrian\PresensiSantri\Application\Queries\ListStudentAttendances;
 use App\Modules\Pesantrian\PresensiSantri\Application\Queries\ShowStudentAttendance;
 use App\Modules\Pesantrian\PresensiSantri\Presentation\Requests\ListStudentAttendancesApiRequest;
+use App\Modules\Pesantrian\PresensiSantri\Presentation\Requests\StoreStudentAttendanceApiRequest;
+use App\Modules\Pesantrian\PresensiSantri\Presentation\Requests\UpdateStudentAttendanceApiRequest;
+use App\Modules\Pesantrian\PresensiSantri\Presentation\Requests\UpdateStudentAttendanceEntriesApiRequest;
 use App\Modules\Pesantrian\PresensiSantri\Presentation\Resources\StudentAttendanceResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -21,6 +28,9 @@ final readonly class StudentAttendanceApiController implements HasMiddleware
     public function __construct(
         private ListStudentAttendances $listStudentAttendances,
         private ShowStudentAttendance $showStudentAttendance,
+        private CreateStudentAttendance $createStudentAttendance,
+        private UpdateStudentAttendance $updateStudentAttendance,
+        private UpdateStudentAttendanceEntries $updateStudentAttendanceEntries,
         private ApiResponseFactory $responses,
     ) {}
 
@@ -28,6 +38,7 @@ final readonly class StudentAttendanceApiController implements HasMiddleware
     {
         return [
             new Middleware('can:presensi_santri.view', only: ['index', 'show']),
+            new Middleware('can:presensi_santri.manage', only: ['store', 'update', 'updateEntries']),
         ];
     }
 
@@ -59,6 +70,71 @@ final readonly class StudentAttendanceApiController implements HasMiddleware
         );
     }
 
+    public function store(StoreStudentAttendanceApiRequest $request): JsonResponse
+    {
+        try {
+            $data = $this->createStudentAttendance->execute(
+                $request->user(),
+                $request->toData(),
+                $request->entries(),
+                $this->responses->correlationId($request),
+            );
+        } catch (StudentAttendanceMutationException $exception) {
+            return $this->invalidMutation($request, $exception);
+        }
+
+        return $this->responses->success(
+            $request,
+            'Sesi presensi santri berhasil dibuat.',
+            (new StudentAttendanceResource($data))->toArray($request),
+            status: 201,
+        );
+    }
+
+    public function update(UpdateStudentAttendanceApiRequest $request, string $attendance): JsonResponse
+    {
+        try {
+            $data = $this->updateStudentAttendance->execute(
+                $request->user(),
+                $attendance,
+                $request->toData(),
+                $this->responses->correlationId($request),
+            );
+        } catch (StudentAttendanceMutationException $exception) {
+            return $this->invalidMutation($request, $exception);
+        }
+
+        abort_if($data === null, 404);
+
+        return $this->responses->success(
+            $request,
+            'Sesi presensi santri berhasil diperbarui.',
+            (new StudentAttendanceResource($data))->toArray($request),
+        );
+    }
+
+    public function updateEntries(UpdateStudentAttendanceEntriesApiRequest $request, string $attendance): JsonResponse
+    {
+        try {
+            $data = $this->updateStudentAttendanceEntries->execute(
+                $request->user(),
+                $attendance,
+                $request->entries(),
+                $this->responses->correlationId($request),
+            );
+        } catch (StudentAttendanceMutationException $exception) {
+            return $this->invalidMutation($request, $exception);
+        }
+
+        abort_if($data === null, 404);
+
+        return $this->responses->success(
+            $request,
+            'Entry presensi santri berhasil diperbarui.',
+            (new StudentAttendanceResource($data))->toArray($request),
+        );
+    }
+
     /** @return array{current_page: int, per_page: int, total: int, last_page: int} */
     private function paginationMeta(PaginatedStudentAttendanceData $result): array
     {
@@ -68,5 +144,16 @@ final readonly class StudentAttendanceApiController implements HasMiddleware
             'total' => $result->total,
             'last_page' => $result->lastPage,
         ];
+    }
+
+    private function invalidMutation(Request $request, StudentAttendanceMutationException $exception): JsonResponse
+    {
+        return $this->responses->error(
+            $request,
+            $exception->getMessage(),
+            'PRESENSI_SANTRI_MUTATION_INVALID',
+            422,
+            $exception->errors(),
+        );
     }
 }

@@ -222,16 +222,33 @@ Verifikasi:
 
 ## Increment 8: Demo Seeder
 
-- [ ] Buat `PresensiSantriDemoSeeder`.
-- [ ] Update `DatabaseSeeder`.
-- [ ] Tambahkan test idempotent seeder.
-- [ ] Dokumentasikan data demo.
+- [x] Buat `PresensiSantriDemoSeeder`.
+- [x] Update `DatabaseSeeder`.
+- [x] Tambahkan test idempotent seeder.
+- [x] Dokumentasikan data demo.
 
 Acceptance:
 
 - Seeder mencakup sesi kelas, asrama, dan kegiatan umum.
 - Seeder mencakup variasi status hadir/izin/sakit/alfa/terlambat.
 - Seeder aman diulang dan tidak berjalan pada environment production.
+
+Hasil:
+
+- `PresensiSantriDemoSeeder` dipanggil dari global `DatabaseSeeder` setelah
+  data demo Santri, Kelas/Rombel, dan Asrama tersedia.
+- Seeder membuat sesi demo:
+  - `DEMO-KBM-PAGI`: presensi kelas submitted.
+  - `DEMO-ASRAMA-MALAM`: presensi asrama draft.
+  - `DEMO-MUHADHARAH`: presensi kegiatan umum revised beserta revision record.
+  - `DEMO-VOID`: sesi kegiatan umum void tanpa menghapus entry.
+- Entry demo mencakup status `present`, `late`, `excused`, `sick`, dan
+  `absent`.
+- Seeder idempotent dan guard production mengikuti pola seeder demo module lain.
+
+Verifikasi:
+
+- [x] `php artisan test tests/Feature/BusinessDemoSeederTest.php --no-ansi`
 
 ## Increment 9: UI/Inertia List dan Detail
 

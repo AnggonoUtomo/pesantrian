@@ -8,6 +8,7 @@ use App\Modules\HumanResource\HumanResource\Database\Seeders\HumanResourceDemoSe
 use App\Modules\Organization\Organization\Database\Seeders\OrganizationDemoSeeder;
 use App\Modules\Pesantrian\Asrama\Database\Seeders\AsramaDemoSeeder;
 use App\Modules\Pesantrian\PenerimaanSantri\Database\Seeders\PenerimaanSantriDemoSeeder;
+use App\Modules\Pesantrian\PresensiSantri\Database\Seeders\PresensiSantriDemoSeeder;
 use App\Modules\Pesantrian\Santri\Database\Seeders\SantriDemoSeeder;
 use App\Modules\System\AccessControl\Database\Seeders\AccessControlSeeder;
 use App\Modules\System\AuditLog\Database\Seeders\AuditLogSeeder;
@@ -40,6 +41,7 @@ class DatabaseSeeder extends Seeder
             SantriDemoSeeder::class,
             KelasRombelDemoSeeder::class,
             AsramaDemoSeeder::class,
+            PresensiSantriDemoSeeder::class,
         ]);
     }
 }

@@ -2,10 +2,10 @@
 
 ## Status
 
-Active - lifecycle mutation ready. Source module, permission identity, contract
+Active - demo seeder ready. Source module, permission identity, contract
 kandidat presensi awal, migration, model record, factory minimum, API read/list,
 API create/update draft serta entry, dan API submit/revisi/void sudah tersedia.
-Dokumen ini tetap menjadi acuan untuk seeder demo dan UI.
+Seeder demo lifecycle sudah tersedia. Dokumen ini tetap menjadi acuan untuk UI.
 
 ## Objective
 

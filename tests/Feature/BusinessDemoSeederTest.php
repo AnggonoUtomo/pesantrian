@@ -108,6 +108,18 @@ final class BusinessDemoSeederTest extends TestCase
         );
         self::assertSame(1, DB::table('dormitory_supervisor_assignments')->where('status', 'active')->whereNull('ended_at')->count());
         self::assertSame(1, DB::table('dormitory_supervisor_assignments')->where('status', 'ended')->whereNotNull('ended_at')->count());
+
+        self::assertSame(4, DB::table('student_attendance_sessions')->where('session_code', 'like', 'DEMO-%')->count());
+        self::assertSame(1, DB::table('student_attendance_sessions')->where('session_code', 'DEMO-KBM-PAGI')->where('context_type', 'class_group')->where('status', 'submitted')->count());
+        self::assertSame(1, DB::table('student_attendance_sessions')->where('session_code', 'DEMO-ASRAMA-MALAM')->where('context_type', 'dormitory')->where('status', 'draft')->count());
+        self::assertSame(1, DB::table('student_attendance_sessions')->where('session_code', 'DEMO-MUHADHARAH')->where('context_type', 'activity')->where('status', 'revised')->count());
+        self::assertSame(1, DB::table('student_attendance_sessions')->where('session_code', 'DEMO-VOID')->where('status', 'void')->whereNotNull('voided_at')->count());
+        self::assertSame(7, DB::table('student_attendance_entries')->where('student_no', 'like', 'NIS-DEMO-%')->count());
+        foreach (['present', 'late', 'excused', 'sick', 'absent'] as $status) {
+            self::assertGreaterThanOrEqual(1, DB::table('student_attendance_entries')->where('status', $status)->count());
+        }
+        self::assertSame(1, DB::table('student_attendance_entries')->where('status', 'late')->where('minutes_late', 15)->count());
+        self::assertSame(1, DB::table('student_attendance_revisions')->count());
     }
 
     public function test_demo_seeder_tidak_membuat_data_bisnis_di_production(): void
@@ -128,6 +140,9 @@ final class BusinessDemoSeederTest extends TestCase
         self::assertSame(0, DB::table('dormitory_rooms')->count());
         self::assertSame(0, DB::table('student_room_placements')->count());
         self::assertSame(0, DB::table('dormitory_supervisor_assignments')->count());
+        self::assertSame(0, DB::table('student_attendance_sessions')->count());
+        self::assertSame(0, DB::table('student_attendance_entries')->count());
+        self::assertSame(0, DB::table('student_attendance_revisions')->count());
         self::assertSame(0, User::where('email', 'like', 'user-management-dummy-%@example.test')->count());
         self::assertSame(0, User::where('email', 'operator-ppdb@example.test')->count());
     }

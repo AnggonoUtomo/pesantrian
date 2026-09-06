@@ -22,6 +22,12 @@ final class PresensiSantriPresentationTest extends TestCase
     {
         self::assertTrue(Route::has('pesantrian.student-attendances.index'));
         self::assertTrue(Route::has('pesantrian.student-attendances.show'));
+        self::assertTrue(Route::has('pesantrian.student-attendances.store'));
+        self::assertTrue(Route::has('pesantrian.student-attendances.update'));
+        self::assertTrue(Route::has('pesantrian.student-attendances.entries.update'));
+        self::assertTrue(Route::has('pesantrian.student-attendances.submit'));
+        self::assertTrue(Route::has('pesantrian.student-attendances.revise'));
+        self::assertTrue(Route::has('pesantrian.student-attendances.void'));
     }
 
     public function test_menolak_actor_tanpa_permission_presensi_santri_view(): void
@@ -169,6 +175,145 @@ final class PresensiSantriPresentationTest extends TestCase
                 ->where('canArchive', false));
     }
 
+    public function test_mengelola_mutation_lifecycle_presensi_santri_melalui_web_inertia(): void
+    {
+        foreach ([
+            'presensi_santri.view',
+            'presensi_santri.manage',
+            'presensi_santri.submit',
+            'presensi_santri.revise',
+            'presensi_santri.archive',
+        ] as $permission) {
+            Permission::firstOrCreate(['name' => $permission, 'guard_name' => 'web']);
+        }
+
+        $actor = $this->createUser();
+        $actor->givePermissionTo([
+            'presensi_santri.view',
+            'presensi_santri.manage',
+            'presensi_santri.submit',
+            'presensi_santri.revise',
+            'presensi_santri.archive',
+        ]);
+        $firstStudent = StudentRecord::factory()->create([
+            'student_no' => 'NIS-WEB-001',
+            'full_name' => 'Ahmad Web Presensi',
+            'status' => 'active',
+        ]);
+        $secondStudent = StudentRecord::factory()->create([
+            'student_no' => 'NIS-WEB-002',
+            'full_name' => 'Budi Web Presensi',
+            'status' => 'active',
+        ]);
+
+        $create = $this->actingAs($actor)->post(route('pesantrian.student-attendances.store'), [
+            'attendance_date' => '2026-09-06',
+            'context_type' => 'activity',
+            'context_id' => null,
+            'context_name' => 'Kegiatan Web',
+            'session_code' => 'web-pagi',
+            'session_name' => 'Presensi Web Pagi',
+            'entries' => [
+                [
+                    'student_id' => $firstStudent->id,
+                    'status' => 'present',
+                ],
+                [
+                    'student_id' => $secondStudent->id,
+                    'status' => 'late',
+                    'minutes_late' => 10,
+                    'note' => 'Terlambat apel.',
+                ],
+            ],
+        ]);
+
+        $session = StudentAttendanceSessionRecord::query()->where('session_code', 'WEB-PAGI')->firstOrFail();
+
+        $create
+            ->assertRedirect(route('pesantrian.student-attendances.show', $session->id))
+            ->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas('student_attendance_entries', [
+            'session_id' => $session->id,
+            'student_id' => $secondStudent->id,
+            'student_no' => 'NIS-WEB-002',
+            'status' => 'late',
+            'minutes_late' => 10,
+        ]);
+
+        $this->actingAs($actor)->patch(route('pesantrian.student-attendances.update', $session->id), [
+            'attendance_date' => '2026-09-07',
+            'context_type' => 'activity',
+            'context_id' => null,
+            'context_name' => 'Kegiatan Web Update',
+            'session_code' => 'web-sore',
+            'session_name' => 'Presensi Web Sore',
+        ])
+            ->assertRedirect(route('pesantrian.student-attendances.show', $session->id))
+            ->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas('student_attendance_sessions', [
+            'id' => $session->id,
+            'attendance_date' => '2026-09-07 00:00:00',
+            'session_code' => 'WEB-SORE',
+            'session_name' => 'Presensi Web Sore',
+        ]);
+
+        $this->actingAs($actor)->patch(route('pesantrian.student-attendances.entries.update', $session->id), [
+            'entries' => [
+                [
+                    'student_id' => $firstStudent->id,
+                    'status' => 'sick',
+                    'note' => 'Sakit dari klinik.',
+                ],
+                [
+                    'student_id' => $secondStudent->id,
+                    'status' => 'present',
+                ],
+            ],
+        ])
+            ->assertRedirect(route('pesantrian.student-attendances.show', $session->id))
+            ->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas('student_attendance_entries', [
+            'session_id' => $session->id,
+            'student_id' => $firstStudent->id,
+            'status' => 'sick',
+            'note' => 'Sakit dari klinik.',
+        ]);
+
+        $this->actingAs($actor)
+            ->patch(route('pesantrian.student-attendances.submit', $session->id))
+            ->assertRedirect(route('pesantrian.student-attendances.show', $session->id))
+            ->assertSessionHasNoErrors();
+        $this->assertDatabaseHas('student_attendance_sessions', [
+            'id' => $session->id,
+            'status' => 'submitted',
+            'submitted_by' => $actor->id,
+        ]);
+
+        $this->actingAs($actor)->patch(route('pesantrian.student-attendances.revise', $session->id), [
+            'reason' => 'Koreksi setelah pengecekan wali kelas.',
+        ])
+            ->assertRedirect(route('pesantrian.student-attendances.show', $session->id))
+            ->assertSessionHasNoErrors();
+        $this->assertDatabaseHas('student_attendance_sessions', [
+            'id' => $session->id,
+            'status' => 'revised',
+        ]);
+
+        $this->actingAs($actor)->patch(route('pesantrian.student-attendances.void', $session->id), [
+            'reason' => 'Sesi diganti dengan presensi final.',
+        ])
+            ->assertRedirect(route('pesantrian.student-attendances.index'))
+            ->assertSessionHasNoErrors();
+        $this->assertDatabaseHas('student_attendance_sessions', [
+            'id' => $session->id,
+            'status' => 'void',
+            'void_reason' => 'Sesi diganti dengan presensi final.',
+        ]);
+    }
+
     public function test_menghubungkan_ui_presensi_santri_ke_komponen_canonical_dan_sidebar(): void
     {
         $index = $this->sourceFile('js/pages/Pesantrian/PresensiSantri/pages/Index.tsx');
@@ -179,6 +324,10 @@ final class PresensiSantriPresentationTest extends TestCase
         $summary = $this->sourceFile('js/pages/Pesantrian/PresensiSantri/components/PresensiSantriSummaryCards.tsx');
         $pagination = $this->sourceFile('js/pages/Pesantrian/PresensiSantri/components/PresensiSantriPagination.tsx');
         $detail = $this->sourceFile('js/pages/Pesantrian/PresensiSantri/components/PresensiSantriDetailPanel.tsx');
+        $actionBar = $this->sourceFile('js/pages/Pesantrian/PresensiSantri/components/PresensiSantriActionBar.tsx');
+        $mutation = $this->sourceFile('js/pages/Pesantrian/PresensiSantri/components/PresensiSantriMutationDialog.tsx');
+        $entryEditor = $this->sourceFile('js/pages/Pesantrian/PresensiSantri/components/PresensiSantriEntryEditor.tsx');
+        $lifecycleDialogs = $this->sourceFile('js/pages/Pesantrian/PresensiSantri/components/PresensiSantriLifecycleDialogs.tsx');
         $navigation = $this->sourceFile('js/lib/navigation.ts');
 
         self::assertStringContainsString('PresensiSantriDashboard', $index);
@@ -203,6 +352,21 @@ final class PresensiSantriPresentationTest extends TestCase
         self::assertStringContainsString('Ringkasan status', $detail);
         self::assertStringContainsString('Daftar santri', $detail);
         self::assertStringContainsString('NIS', $detail);
+        self::assertStringContainsString('Tambah sesi presensi', $actionBar);
+        self::assertStringContainsString('PresensiSantriMutationDialog', $dashboard);
+        self::assertStringContainsString('PresensiSantriEntryEditor', $detail);
+        self::assertStringContainsString('PresensiSantriLifecycleDialogs', $detail);
+        self::assertStringContainsString('Edit sesi presensi', $mutation);
+        self::assertStringContainsString('pesantrian.student-attendances.store', $mutation);
+        self::assertStringContainsString('pesantrian.student-attendances.update', $mutation);
+        self::assertStringContainsString('Editor entry presensi', $entryEditor);
+        self::assertStringContainsString('pesantrian.student-attendances.entries.update', $entryEditor);
+        self::assertStringContainsString('Submit presensi', $lifecycleDialogs);
+        self::assertStringContainsString('Buka revisi', $lifecycleDialogs);
+        self::assertStringContainsString('Batalkan sesi presensi', $lifecycleDialogs);
+        self::assertStringContainsString('pesantrian.student-attendances.submit', $lifecycleDialogs);
+        self::assertStringContainsString('pesantrian.student-attendances.revise', $lifecycleDialogs);
+        self::assertStringContainsString('pesantrian.student-attendances.void', $lifecycleDialogs);
         self::assertStringContainsString('Presensi Santri', $navigation);
         self::assertStringContainsString('pesantrian.student-attendances.index', $navigation);
         self::assertStringContainsString("'presensi_santri.view'", $navigation);

@@ -2,11 +2,12 @@
 
 ## Status
 
-Active - UI read/list ready. Source module, permission identity, contract
+Active - UI mutation ready. Source module, permission identity, contract
 kandidat presensi awal, migration, model record, factory minimum, API read/list,
 API create/update draft serta entry, API submit/revisi/void, seeder demo
-lifecycle, dan UI Inertia read-only list/detail sudah tersedia. Dokumen ini
-tetap menjadi acuan untuk UI mutation.
+lifecycle, UI Inertia read-only list/detail, dan UI mutation sesi/entry/lifecycle
+sudah tersedia. Dokumen ini tetap menjadi acuan untuk QA browser dan user
+manual.
 
 ## Objective
 
@@ -214,8 +215,8 @@ Acceptance UI awal:
 - list mendukung search/filter tanggal, konteks, status, dan pagination;
   [selesai Increment 9]
 - detail menampilkan ringkasan status dan daftar santri; [selesai Increment 9]
-- form mutation berada di folder `components`; [Increment 10]
-- submit/revisi/void memakai confirmation; [Increment 10]
+- form mutation berada di folder `components`; [selesai Increment 10]
+- submit/revisi/void memakai confirmation; [selesai Increment 10]
 - browser QA desktop/mobile wajib dilakukan.
 
 ## Demo Seeder Candidate

@@ -103,6 +103,11 @@ export type StudentAttendanceFilters = {
 export type StudentAttendanceOptions = {
     contexts: ReferenceOption[];
     statuses: ReferenceOption[];
+    students: {
+        id: string;
+        code: string;
+        name: string;
+    }[];
 };
 
 export type StudentAttendanceIndexPageProps = {
@@ -129,4 +134,31 @@ export type StudentAttendanceShowPageProps = {
     canSubmit: boolean;
     canRevise: boolean;
     canArchive: boolean;
+};
+
+export type StudentAttendanceEntryPayload = {
+    student_id: string;
+    status: StudentAttendanceEntryStatus;
+    minutes_late: string | null;
+    note: string | null;
+    source_reference_type: string | null;
+    source_reference_id: string | null;
+};
+
+export type StudentAttendanceSessionPayload = {
+    attendance_date: string;
+    context_type: StudentAttendanceContext;
+    context_id: string | null;
+    context_name: string;
+    session_code: string;
+    session_name: string;
+    entries: StudentAttendanceEntryPayload[];
+};
+
+export type StudentAttendanceEntriesPayload = {
+    entries: StudentAttendanceEntryPayload[];
+};
+
+export type StudentAttendanceReasonPayload = {
+    reason: string;
 };

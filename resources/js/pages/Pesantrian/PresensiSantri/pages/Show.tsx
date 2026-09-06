@@ -6,8 +6,15 @@ import { PresensiSantriDetailPanel } from '../components/PresensiSantriDetailPan
 import type { StudentAttendanceShowPageProps } from '../types';
 
 export default function Show() {
-    const { auth, attendance, canManage, canSubmit, canRevise, canArchive } =
-        usePage<StudentAttendanceShowPageProps>().props;
+    const {
+        auth,
+        attendance,
+        options,
+        canManage,
+        canSubmit,
+        canRevise,
+        canArchive,
+    } = usePage<StudentAttendanceShowPageProps>().props;
     const canView = canAccess(auth, 'presensi_santri.view');
 
     return (
@@ -23,6 +30,7 @@ export default function Show() {
                 {canView ? (
                     <PresensiSantriDetailPanel
                         attendance={attendance}
+                        options={options}
                         canManage={canManage}
                         canSubmit={canSubmit}
                         canRevise={canRevise}

@@ -3,10 +3,13 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { canAccess } from '@/lib/authorization';
 import { routeOr } from '@/lib/route';
+import type { StudentAttendance } from '../types';
 import type { StudentAttendanceIndexPageProps } from '../types';
 import { PresensiSantriAccessDenied } from './PresensiSantriAccessDenied';
+import { PresensiSantriActionBar } from './PresensiSantriActionBar';
 import { PresensiSantriEmptyState } from './PresensiSantriEmptyState';
 import { PresensiSantriFilters } from './PresensiSantriFilters';
+import { PresensiSantriMutationDialog } from './PresensiSantriMutationDialog';
 import { PresensiSantriPagination } from './PresensiSantriPagination';
 import { PresensiSantriSummaryCards } from './PresensiSantriSummaryCards';
 import { PresensiSantriTable } from './PresensiSantriTable';
@@ -32,6 +35,9 @@ export function PresensiSantriDashboard() {
     const [status, setStatus] = useState<string>(
         filters.filter?.status ?? 'all',
     );
+    const [mutationAttendance, setMutationAttendance] =
+        useState<StudentAttendance | null>(null);
+    const [mutationOpen, setMutationOpen] = useState(false);
     const canView = canAccess(auth, 'presensi_santri.view');
     const attendanceIndexUrl = () =>
         routeOr(
@@ -102,13 +108,13 @@ export function PresensiSantriDashboard() {
                 attendances={attendances.data}
             />
 
-            {canManage ? (
-                <p className="dashboard-message--info rounded-xl border p-3 text-sm">
-                    Mode tambah/edit sesi akan masuk Increment 10. Untuk
-                    sekarang UI fokus ke list dan detail agar operator bisa
-                    membaca data demo dengan aman.
-                </p>
-            ) : null}
+            <PresensiSantriActionBar
+                canManage={canManage}
+                onCreate={() => {
+                    setMutationAttendance(null);
+                    setMutationOpen(true);
+                }}
+            />
 
             {errors && Object.keys(errors).length > 0 ? (
                 <p role="alert" className="dashboard-message--error text-sm">
@@ -156,6 +162,13 @@ export function PresensiSantriDashboard() {
                     <PresensiSantriEmptyState />
                 )}
             </section>
+
+            <PresensiSantriMutationDialog
+                open={mutationOpen}
+                attendance={mutationAttendance}
+                options={options}
+                onOpenChange={setMutationOpen}
+            />
         </div>
     );
 }

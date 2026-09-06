@@ -289,18 +289,43 @@ Verifikasi:
 
 ## Increment 10: UI Mutation
 
-- [ ] Buat dialog create/update session.
-- [ ] Buat editor entry presensi.
-- [ ] Buat confirmation submit.
-- [ ] Buat dialog revisi.
-- [ ] Buat confirmation void.
-- [ ] Jalankan typecheck, lint, dan build.
+- [x] Buat dialog create/update session.
+- [x] Buat editor entry presensi.
+- [x] Buat confirmation submit.
+- [x] Buat dialog revisi.
+- [x] Buat confirmation void.
+- [x] Jalankan typecheck, lint, dan build.
 
 Acceptance:
 
 - Form mutation berada di folder `components`.
 - Submit/revisi/void memakai confirmation.
 - Backend tetap authority permission dan validasi.
+
+Hasil:
+
+- Route web mutation ditambahkan:
+  - `POST /pesantrian/student-attendances`
+  - `PATCH /pesantrian/student-attendances/{attendance}`
+  - `PATCH /pesantrian/student-attendances/{attendance}/entries`
+  - `PATCH /pesantrian/student-attendances/{attendance}/submit`
+  - `PATCH /pesantrian/student-attendances/{attendance}/revise`
+  - `PATCH /pesantrian/student-attendances/{attendance}/void`
+- Controller web memakai action Application yang sama dengan API, sehingga
+  validasi, permission, audit, dan rule lifecycle tetap diputuskan backend.
+- Dialog `Tambah/Edit sesi presensi` dibuat untuk metadata sesi dan entry awal.
+- `Editor entry presensi` dibuat di halaman detail untuk mengubah status
+  hadir/terlambat/izin/sakit/alfa saat sesi masih `draft` atau `revised`.
+- Confirmation submit, dialog revisi dengan alasan, dan confirmation void
+  dengan alasan dibuat di folder komponen module.
+
+Verifikasi:
+
+- [x] `php artisan test tests/Feature/PresensiSantriPresentationTest.php --no-ansi`
+- [x] `php artisan test tests/Feature/PresensiSantriPresentationTest.php tests/Feature/PresensiSantriLifecycleApiTest.php tests/Feature/PresensiSantriMutationApiTest.php tests/Feature/PresensiSantriApiTest.php tests/Feature/PresensiSantriDataFoundationTest.php tests/Feature/PresensiSantriContractReadinessTest.php --no-ansi`
+- [x] `npm run types:check`
+- [x] `npm run lint:check`
+- [x] `npm run build`
 
 ## Increment 11: QA Browser dan User Manual
 

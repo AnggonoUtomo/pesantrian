@@ -1,17 +1,25 @@
 import { Link } from '@inertiajs/react';
 import { ArrowLeft } from 'lucide-react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { routeOr } from '@/lib/route';
-import type { StudentAttendance } from '../types';
+import type { StudentAttendance, StudentAttendanceShowPageProps } from '../types';
 import {
     contextLabel,
     entryStatusLabel,
     followUpCount,
 } from './presensiSantriDisplay';
+import { PresensiSantriEntryEditor } from './PresensiSantriEntryEditor';
+import {
+    ReasonPresensiSantriDialog,
+    SubmitPresensiSantriDialog,
+} from './PresensiSantriLifecycleDialogs';
+import { PresensiSantriMutationDialog } from './PresensiSantriMutationDialog';
 import { PresensiSantriStatusBadge } from './PresensiSantriStatusBadge';
 
 type Props = {
     attendance: StudentAttendance;
+    options: StudentAttendanceShowPageProps['options'];
     canManage: boolean;
     canSubmit: boolean;
     canRevise: boolean;
@@ -20,12 +28,23 @@ type Props = {
 
 export function PresensiSantriDetailPanel({
     attendance,
+    options,
     canManage,
     canSubmit,
     canRevise,
     canArchive,
 }: Props) {
     const entries = attendance.entries ?? [];
+    const [editOpen, setEditOpen] = useState(false);
+    const [submitOpen, setSubmitOpen] = useState(false);
+    const [reviseOpen, setReviseOpen] = useState(false);
+    const [voidOpen, setVoidOpen] = useState(false);
+    const canEditSession =
+        canManage && ['draft', 'revised'].includes(attendance.status);
+    const canSubmitSession = canSubmit && attendance.status === 'draft';
+    const canReviseSession =
+        canRevise && ['submitted', 'revised'].includes(attendance.status);
+    const canVoidSession = canArchive && attendance.status !== 'void';
 
     return (
         <div className="space-y-5">
@@ -44,10 +63,46 @@ export function PresensiSantriDetailPanel({
                     </Link>
                 </Button>
                 <div className="flex flex-wrap gap-2">
-                    {canManage ? <ActionPill label="Edit sesi" /> : null}
-                    {canSubmit ? <ActionPill label="Submit" /> : null}
-                    {canRevise ? <ActionPill label="Revisi" /> : null}
-                    {canArchive ? <ActionPill label="Batalkan sesi" /> : null}
+                    {canEditSession ? (
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setEditOpen(true)}
+                        >
+                            Edit sesi presensi
+                        </Button>
+                    ) : null}
+                    {canSubmitSession ? (
+                        <Button
+                            type="button"
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => setSubmitOpen(true)}
+                        >
+                            Submit presensi
+                        </Button>
+                    ) : null}
+                    {canReviseSession ? (
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setReviseOpen(true)}
+                        >
+                            Buka revisi
+                        </Button>
+                    ) : null}
+                    {canVoidSession ? (
+                        <Button
+                            type="button"
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => setVoidOpen(true)}
+                        >
+                            Batalkan sesi presensi
+                        </Button>
+                    ) : null}
                 </div>
             </div>
 
@@ -196,6 +251,36 @@ export function PresensiSantriDetailPanel({
                     </div>
                 </div>
             </section>
+
+            <PresensiSantriEntryEditor
+                attendance={attendance}
+                students={options.students}
+                canManage={canManage}
+            />
+
+            <PresensiSantriMutationDialog
+                open={editOpen}
+                attendance={attendance}
+                options={options}
+                onOpenChange={setEditOpen}
+            />
+            <SubmitPresensiSantriDialog
+                open={submitOpen}
+                attendance={attendance}
+                onOpenChange={setSubmitOpen}
+            />
+            <ReasonPresensiSantriDialog
+                open={reviseOpen}
+                attendance={attendance}
+                mode="revise"
+                onOpenChange={setReviseOpen}
+            />
+            <ReasonPresensiSantriDialog
+                open={voidOpen}
+                attendance={attendance}
+                mode="void"
+                onOpenChange={setVoidOpen}
+            />
         </div>
     );
 }
@@ -206,13 +291,5 @@ function SummaryItem({ label, value }: { label: string; value: number }) {
             <dt className="text-xs text-foreground/55">{label}</dt>
             <dd className="mt-1 text-xl font-semibold">{value}</dd>
         </div>
-    );
-}
-
-function ActionPill({ label }: { label: string }) {
-    return (
-        <span className="rounded-full border px-3 py-1 text-xs text-foreground/65">
-            {label} di Increment 10
-        </span>
     );
 }

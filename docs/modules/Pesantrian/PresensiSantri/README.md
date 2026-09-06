@@ -10,7 +10,7 @@ dan [`docs/FOLDER-STRUCTURE.md`](../../../FOLDER-STRUCTURE.md).
 - Nama tampil: `Presensi Santri`
 - Candidate source: `app/Modules/Pesantrian/PresensiSantri/`
 - Candidate frontend: `resources/js/pages/Pesantrian/PresensiSantri/`
-- Status: Active - backend read/list ready
+- Status: Active - lifecycle UI ready
 
 ## Tujuan
 
@@ -126,7 +126,7 @@ Candidate yang mungkin dibutuhkan nanti:
 
 ## UI Baseline
 
-UI akan berada di `resources/js/pages/Pesantrian/PresensiSantri/`.
+UI berada di `resources/js/pages/Pesantrian/PresensiSantri/`.
 
 Struktur komponen wajib menjaga page tetap tipis:
 
@@ -150,6 +150,22 @@ resources/js/pages/Pesantrian/PresensiSantri/
 Menu sidebar berada di namespace Pesantrian dengan nama tampil
 `Presensi Santri`.
 
+## Status Implementasi
+
+Presensi Santri sudah memiliki baseline operasional:
+
+- data foundation session, entry, dan revision;
+- API read/list/detail dan mutation;
+- lifecycle draft -> submitted -> revised -> void;
+- demo seeder untuk presensi kelas, asrama, kegiatan umum, dan void;
+- UI Inertia list, detail, create/update sesi, editor entry, submit, revisi,
+  dan void;
+- QA browser desktop dan mobile/responsive untuk flow utama.
+
+Relasi otomatis ke `PerizinanSantri`, `Kesehatan/Klinik`, dan
+`Pelanggaran/Kedisiplinan` belum dibuat karena module terkait belum tersedia.
+Status izin, sakit, dan alfa saat ini dicatat manual pada entry presensi.
+
 ## Dokumentasi Terkait
 
 - [`specification.md`](specification.md)
@@ -169,4 +185,5 @@ php artisan test --filter=PresensiSantri
 npm run types:check
 npm run lint:check
 npm run build
+npx playwright test tests/Browser/presensi-santri.spec.ts
 ```

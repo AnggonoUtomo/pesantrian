@@ -329,16 +329,41 @@ Verifikasi:
 
 ## Increment 11: QA Browser dan User Manual
 
-- [ ] Jalankan browser QA desktop.
-- [ ] Jalankan browser QA mobile/responsive.
-- [ ] Update user manual lifecycle.
-- [ ] Update README/tasks hasil final.
+- [x] Jalankan browser QA desktop.
+- [x] Jalankan browser QA mobile/responsive.
+- [x] Update user manual lifecycle.
+- [x] Update README/tasks hasil final.
 
 Acceptance:
 
 - Flow list/detail/mutation utama bisa diuji manual.
 - Relasi ke module yang belum ada diberi keterangan.
 - Console browser bersih dari error.
+
+Hasil:
+
+- Browser QA PresensiSantri ditambahkan untuk desktop dan mobile/responsive.
+- Fixture browser membuat operator sementara dengan permission presensi dan dua
+  santri aktif sementara tanpa menyimpan credential tetap di source.
+- Flow yang diuji: login, buka list, create sesi draft, tambah entry,
+  buka detail, edit metadata sesi, edit entry, submit, buka revisi, void, filter
+  list, pagination, dan accessibility check dasar.
+- `docs/USER-MANUAL-LIFECYCLE.md` diperbarui agar Presensi Santri masuk urutan
+  uji manual setelah Asrama.
+- README module diperbarui dari status backend/read-only menjadi baseline
+  lifecycle UI ready.
+- Relasi otomatis ke `PerizinanSantri`, `Kesehatan/Klinik`, dan
+  `Pelanggaran/Kedisiplinan` tetap diberi keterangan sebagai belum tersedia
+  karena module terkait belum dibuat.
+
+Verifikasi:
+
+- [x] `php artisan migrate --no-ansi`
+- [x] `npx playwright test tests/Browser/presensi-santri.spec.ts`
+- [x] `php artisan test tests/Feature/PresensiSantriPresentationTest.php --no-ansi`
+- [x] `php artisan module:validate --no-ansi`
+- [x] `npm run types:check`
+- [x] `npm run lint:check`
 
 ## Keputusan Baseline
 

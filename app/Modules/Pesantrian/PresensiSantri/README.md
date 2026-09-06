@@ -13,7 +13,9 @@ Dokumentasi kerja aktif:
 
 Increment aktif:
 
-- Increment 5 sudah menyediakan skeleton module, permission identity, readiness
-  contract kandidat presensi, migration, record model, factory minimum, dan API
-  read/list.
-- Mutation, seeder demo, dan UI dikerjakan pada increment berikutnya.
+- Increment 11 sudah menutup baseline operasional: skeleton module, permission
+  identity, readiness contract kandidat presensi, migration, record model,
+  factory minimum, API read/list/detail, mutation, lifecycle submit/revisi/void,
+  demo seeder, UI Inertia, dan QA browser desktop/mobile.
+- Relasi otomatis ke Perizinan Santri, Kesehatan/Klinik, dan
+  Pelanggaran/Kedisiplinan belum dibuat karena module tersebut belum tersedia.

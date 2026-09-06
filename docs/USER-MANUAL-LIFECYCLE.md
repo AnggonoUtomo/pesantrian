@@ -17,8 +17,8 @@ php artisan db:seed
 
 Seeder bersifat idempotent, artinya aman dijalankan berulang untuk melengkapi
 data demo tanpa membuat data demo dobel berdasarkan kode unik seperti
-`DEMO-*`, `PPDB-DEMO-*`, `NIS-DEMO-*`, `PEG-DEMO-*`, `DEMO-ASR-*`, dan
-`DEMO-KMR-*`.
+`DEMO-*`, `PPDB-DEMO-*`, `NIS-DEMO-*`, `PEG-DEMO-*`, `DEMO-ASR-*`,
+`DEMO-KMR-*`, dan kode presensi `DEMO-*`.
 
 Password akun demo tidak ditulis di source code. Jika ingin semua akun demo
 punya password lokal yang sama, isi `.env` lokal:
@@ -309,8 +309,41 @@ Relasi:
 - Musyrif/pembina memakai pegawai aktif dari SDM Pesantren.
 - Satu santri hanya boleh memiliki satu kamar aktif pada satu waktu.
 - Asrama/kamar yang diarsipkan tidak menerima placement baru.
-- UI Asrama belum dibuat pada tahap backend ini; uji manual sementara dapat
-  dilakukan lewat endpoint API internal atau setelah Increment UI selesai.
+
+### Langkah L: Presensi Santri
+
+Menu: **Pesantrian -> Presensi Santri**
+
+Data demo penting:
+
+- `DEMO-KBM-PAGI` presensi kelas/rombel yang sudah submitted.
+- `DEMO-ASRAMA-MALAM` presensi asrama yang masih draft.
+- `DEMO-MUHADHARAH` presensi kegiatan umum yang pernah direvisi.
+- `DEMO-VOID` presensi kegiatan umum yang dibatalkan tanpa menghapus entry.
+
+Tujuan:
+
+- Melihat daftar sesi presensi.
+- Memfilter berdasarkan pencarian, tanggal, konteks, dan status.
+- Membuka detail sesi untuk melihat ringkasan status hadir, terlambat, izin,
+  sakit, dan alfa.
+- Membuat sesi presensi draft.
+- Mengisi atau mengubah entry presensi saat sesi masih draft/revisi.
+- Submit presensi agar sesi terkunci.
+- Membuka revisi dengan alasan bila ada koreksi.
+- Membatalkan/void sesi dengan alasan tanpa menghapus histori data.
+
+Relasi:
+
+- Presensi memakai santri aktif dari Data Induk Santri.
+- Presensi kelas/rombel memakai snapshot konteks dari Kelas/Rombel.
+- Presensi asrama memakai snapshot konteks dari Asrama.
+- Presensi kegiatan umum bisa dipakai tanpa module jadwal khusus.
+- Module Perizinan, Kesehatan/Klinik, dan Pelanggaran/Kedisiplinan belum
+  otomatis terhubung. Status izin/sakit/alfa saat ini dicatat manual di
+  Presensi Santri, lalu nanti bisa dihubungkan ke module terkait setelah
+  dibuat.
+- Integrasi perangkat absensi belum dibuat; input awal masih admin/internal.
 
 ## 4. Module yang Belum Dibuat
 
@@ -320,9 +353,7 @@ di luar baseline running saat ini.
 | Kebutuhan | Status saat ini |
 | --- | --- |
 | Wali Santri master | Belum dibuat; wali masih snapshot di Santri/PPDB. |
-| Asrama UI | Backend lifecycle dan data demo sudah tersedia; UI akan dibuat pada increment berikutnya. |
 | Tahfidz / Hafalan | Belum dibuat. |
-| Presensi Santri | Belum dibuat. |
 | Perizinan Santri | Belum dibuat. |
 | Pelanggaran / Kedisiplinan | Belum dibuat. |
 | Prestasi | Belum dibuat. |
@@ -347,6 +378,9 @@ di luar baseline running saat ini.
   kelas.
 - Buka/akses Asrama, cek data `DEMO-ASR-*`, kamar `DEMO-KMR-*`, placement
   santri, musyrif, archive, dan restore.
+- Buka Presensi Santri, cek `DEMO-KBM-PAGI`, `DEMO-ASRAMA-MALAM`,
+  `DEMO-MUHADHARAH`, dan `DEMO-VOID`, lalu coba buat draft, isi entry, submit,
+  revisi, dan void.
 - Buka Audit Trail setelah beberapa aksi dan cek aktivitas tercatat.
 
 Jika ada error Ziggy/route di console browser, catat nama route yang disebutkan.

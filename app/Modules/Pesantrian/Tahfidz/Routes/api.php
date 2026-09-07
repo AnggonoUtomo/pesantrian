@@ -31,6 +31,14 @@ Route::middleware(['web', 'auth', 'verified', 'throttle:system-api'])
             ->whereUlid('submission')
             ->middleware('api.idempotency')
             ->name('submissions.update');
+        Route::patch('/submissions/{submission}/review', [TahfidzApiController::class, 'reviewSubmission'])
+            ->whereUlid('submission')
+            ->middleware('api.idempotency')
+            ->name('submissions.review');
+        Route::patch('/submissions/{submission}/void', [TahfidzApiController::class, 'voidSubmission'])
+            ->whereUlid('submission')
+            ->middleware('api.idempotency')
+            ->name('submissions.void');
         Route::get('/{submission}', [TahfidzApiController::class, 'show'])
             ->whereUlid('submission')
             ->name('show');

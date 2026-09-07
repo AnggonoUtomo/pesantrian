@@ -26,5 +26,6 @@ Increment aktif:
 - Increment 7 menyediakan request validation, Application action, API mutation,
   snapshot santri/pembimbing, dan audit untuk setoran hafalan baru serta
   murojaah.
-- Review/void lifecycle, seeder demo, dan UI dikerjakan pada increment
-  berikutnya.
+- Increment 8 menyediakan lifecycle review accepted/needs_revision, void wajib
+  alasan, revision history, dan audit lifecycle setoran.
+- Seeder demo dan UI dikerjakan pada increment berikutnya.

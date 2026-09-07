@@ -235,17 +235,37 @@ Verifikasi:
 
 ## Increment 8: Review, Koreksi, dan Void
 
-- [ ] Buat action review accepted/needs_revision.
-- [ ] Buat action void dengan alasan.
-- [ ] Buat revision history.
-- [ ] Tambahkan audit lifecycle.
-- [ ] Jalankan focused lifecycle tests.
+- [x] Buat action review accepted/needs_revision.
+- [x] Buat action void dengan alasan.
+- [x] Buat revision history.
+- [x] Tambahkan audit lifecycle.
+- [x] Jalankan focused lifecycle tests.
 
 Acceptance:
 
 - Review memakai permission `tahfidz.review`.
 - Void wajib alasan dan tidak menghapus data.
 - Koreksi/revision meninggalkan histori.
+
+Hasil:
+
+- API lifecycle setoran tersedia:
+  `PATCH /api/v1/pesantrian/tahfidz/submissions/{submission}/review` dan
+  `PATCH /api/v1/pesantrian/tahfidz/submissions/{submission}/void`.
+- Review hanya menerima setoran berstatus `submitted`, lalu mengubah status
+  menjadi `accepted` atau `needs_revision`.
+- Review dan void wajib alasan agar operator pemula tetap punya jejak keputusan
+  yang mudah dibaca.
+- Void mengubah status menjadi `void`, mengisi `voided_at`, `voided_by`, dan
+  `void_reason`, tanpa menghapus record setoran.
+- Review/void membuat `tahfidz_submission_revisions` berisi ringkasan perubahan
+  status.
+- Audit mencatat `tahfidz.submission.reviewed` dan
+  `tahfidz.submission.voided`.
+
+Verifikasi:
+
+- [x] `php artisan test tests/Feature/TahfidzLifecycleApiTest.php tests/Feature/TahfidzSubmissionMutationApiTest.php tests/Feature/TahfidzProgramTargetMutationApiTest.php tests/Feature/TahfidzApiTest.php --no-ansi`
 
 ## Increment 9: Demo Seeder
 

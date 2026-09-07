@@ -8,9 +8,11 @@ use App\Http\ApiResponseFactory;
 use App\Modules\Pesantrian\Tahfidz\Application\Actions\CreateTahfidzProgram;
 use App\Modules\Pesantrian\Tahfidz\Application\Actions\CreateTahfidzSubmission;
 use App\Modules\Pesantrian\Tahfidz\Application\Actions\CreateTahfidzTarget;
+use App\Modules\Pesantrian\Tahfidz\Application\Actions\ReviewTahfidzSubmission;
 use App\Modules\Pesantrian\Tahfidz\Application\Actions\UpdateTahfidzProgram;
 use App\Modules\Pesantrian\Tahfidz\Application\Actions\UpdateTahfidzSubmission;
 use App\Modules\Pesantrian\Tahfidz\Application\Actions\UpdateTahfidzTarget;
+use App\Modules\Pesantrian\Tahfidz\Application\Actions\VoidTahfidzSubmission;
 use App\Modules\Pesantrian\Tahfidz\Application\DTO\PaginatedTahfidzSubmissionData;
 use App\Modules\Pesantrian\Tahfidz\Application\DTO\TahfidzSubmissionData;
 use App\Modules\Pesantrian\Tahfidz\Application\Exceptions\TahfidzMutationException;
@@ -20,6 +22,8 @@ use App\Modules\Pesantrian\Tahfidz\Presentation\Requests\ListTahfidzSubmissionsA
 use App\Modules\Pesantrian\Tahfidz\Presentation\Requests\StoreTahfidzProgramApiRequest;
 use App\Modules\Pesantrian\Tahfidz\Presentation\Requests\StoreTahfidzSubmissionApiRequest;
 use App\Modules\Pesantrian\Tahfidz\Presentation\Requests\StoreTahfidzTargetApiRequest;
+use App\Modules\Pesantrian\Tahfidz\Presentation\Requests\TahfidzReasonApiRequest;
+use App\Modules\Pesantrian\Tahfidz\Presentation\Requests\TahfidzReviewApiRequest;
 use App\Modules\Pesantrian\Tahfidz\Presentation\Requests\UpdateTahfidzProgramApiRequest;
 use App\Modules\Pesantrian\Tahfidz\Presentation\Requests\UpdateTahfidzSubmissionApiRequest;
 use App\Modules\Pesantrian\Tahfidz\Presentation\Requests\UpdateTahfidzTargetApiRequest;
@@ -42,6 +46,8 @@ final readonly class TahfidzApiController implements HasMiddleware
         private UpdateTahfidzTarget $updateTahfidzTarget,
         private CreateTahfidzSubmission $createTahfidzSubmission,
         private UpdateTahfidzSubmission $updateTahfidzSubmission,
+        private ReviewTahfidzSubmission $reviewTahfidzSubmission,
+        private VoidTahfidzSubmission $voidTahfidzSubmission,
         private ApiResponseFactory $responses,
     ) {}
 
@@ -51,6 +57,8 @@ final readonly class TahfidzApiController implements HasMiddleware
             new Middleware('can:tahfidz.view', only: ['index', 'show']),
             new Middleware('can:tahfidz.manage', only: ['storeProgram', 'updateProgram', 'storeTarget', 'updateTarget']),
             new Middleware('can:tahfidz.record', only: ['storeSubmission', 'updateSubmission']),
+            new Middleware('can:tahfidz.review', only: ['reviewSubmission']),
+            new Middleware('can:tahfidz.archive', only: ['voidSubmission']),
         ];
     }
 
@@ -197,6 +205,51 @@ final readonly class TahfidzApiController implements HasMiddleware
             $request,
             'Setoran tahfidz berhasil diperbarui.',
             (new TahfidzSubmissionResource($updated))->toArray($request),
+        );
+    }
+
+    public function reviewSubmission(TahfidzReviewApiRequest $request, string $submission): JsonResponse
+    {
+        try {
+            $reviewed = $this->reviewTahfidzSubmission->execute(
+                $request->user(),
+                $submission,
+                (string) $request->validated('status'),
+                (string) $request->validated('reason'),
+                $this->responses->correlationId($request),
+            );
+        } catch (TahfidzMutationException $exception) {
+            return $this->invalidMutation($request, $exception);
+        }
+
+        abort_if($reviewed === null, 404);
+
+        return $this->responses->success(
+            $request,
+            'Setoran tahfidz berhasil direview.',
+            (new TahfidzSubmissionResource($reviewed))->toArray($request),
+        );
+    }
+
+    public function voidSubmission(TahfidzReasonApiRequest $request, string $submission): JsonResponse
+    {
+        try {
+            $voided = $this->voidTahfidzSubmission->execute(
+                $request->user(),
+                $submission,
+                (string) $request->validated('reason'),
+                $this->responses->correlationId($request),
+            );
+        } catch (TahfidzMutationException $exception) {
+            return $this->invalidMutation($request, $exception);
+        }
+
+        abort_if($voided === null, 404);
+
+        return $this->responses->success(
+            $request,
+            'Setoran tahfidz berhasil dibatalkan.',
+            (new TahfidzSubmissionResource($voided))->toArray($request),
         );
     }
 

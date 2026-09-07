@@ -103,6 +103,63 @@ final class EloquentTahfidzReadRepository implements TahfidzMutationRepository, 
         return $this->map($record->refresh()->load(['program', 'target', 'revisions']));
     }
 
+    public function reviewSubmission(string $id, string $status, string $reason, ?string $actorId): ?TahfidzSubmissionData
+    {
+        $record = TahfidzSubmissionRecord::query()->find($id);
+
+        if (! $record instanceof TahfidzSubmissionRecord) {
+            return null;
+        }
+
+        $fromStatus = (string) $record->status;
+        $record->forceFill([
+            'status' => $status,
+            'reviewed_at' => now(),
+            'reviewed_by' => $actorId,
+        ])->save();
+
+        $this->createRevision($record, $reason, $actorId, [
+            'action' => 'review',
+            'from_status' => $fromStatus,
+            'to_status' => $status,
+        ]);
+
+        return $this->map($record->refresh()->load([
+            'program',
+            'target',
+            'revisions' => fn ($query) => $query->orderBy('changed_at')->orderBy('created_at'),
+        ]));
+    }
+
+    public function voidSubmission(string $id, string $reason, ?string $actorId): ?TahfidzSubmissionData
+    {
+        $record = TahfidzSubmissionRecord::query()->find($id);
+
+        if (! $record instanceof TahfidzSubmissionRecord) {
+            return null;
+        }
+
+        $fromStatus = (string) $record->status;
+        $record->forceFill([
+            'status' => 'void',
+            'voided_at' => now(),
+            'voided_by' => $actorId,
+            'void_reason' => $reason,
+        ])->save();
+
+        $this->createRevision($record, $reason, $actorId, [
+            'action' => 'void',
+            'from_status' => $fromStatus,
+            'to_status' => 'void',
+        ]);
+
+        return $this->map($record->refresh()->load([
+            'program',
+            'target',
+            'revisions' => fn ($query) => $query->orderBy('changed_at')->orderBy('created_at'),
+        ]));
+    }
+
     public function paginate(TahfidzListFilter $filter): PaginatedTahfidzSubmissionData
     {
         $query = $this->filteredQuery($filter)
@@ -297,5 +354,17 @@ final class EloquentTahfidzReadRepository implements TahfidzMutationRepository, 
         $year = trim((string) ($period->year_name ?: $period->year_code));
 
         return trim($term.' '.$year);
+    }
+
+    /** @param array<string, mixed> $summary */
+    private function createRevision(TahfidzSubmissionRecord $record, string $reason, ?string $actorId, array $summary): void
+    {
+        TahfidzSubmissionRevisionRecord::query()->create([
+            'submission_id' => $record->getKey(),
+            'reason' => $reason,
+            'changed_by' => $actorId,
+            'changed_at' => now(),
+            'summary' => $summary,
+        ]);
     }
 }

@@ -51,6 +51,8 @@ frontend memakai Laravel named routes melalui Ziggy untuk Inertia React.
 | PATCH | `/api/v1/pesantrian/tahfidz/targets/{target}` | `api.v1.pesantrian.tahfidz.targets.update` | `tahfidz.manage` | Ya | Envelope sukses dengan target hafalan yang diperbarui |
 | POST | `/api/v1/pesantrian/tahfidz/submissions` | `api.v1.pesantrian.tahfidz.submissions.store` | `tahfidz.record` | Ya | Envelope sukses `201` dengan setoran tahfidz/murojaah berisi snapshot santri dan pembimbing |
 | PATCH | `/api/v1/pesantrian/tahfidz/submissions/{submission}` | `api.v1.pesantrian.tahfidz.submissions.update` | `tahfidz.record` | Ya | Envelope sukses dengan setoran tahfidz/murojaah draft atau submitted yang diperbarui |
+| PATCH | `/api/v1/pesantrian/tahfidz/submissions/{submission}/review` | `api.v1.pesantrian.tahfidz.submissions.review` | `tahfidz.review` | Ya | Envelope sukses dengan setoran berstatus accepted atau needs_revision dan revision history |
+| PATCH | `/api/v1/pesantrian/tahfidz/submissions/{submission}/void` | `api.v1.pesantrian.tahfidz.submissions.void` | `tahfidz.archive` | Ya | Envelope sukses dengan setoran berstatus void tanpa menghapus data |
 | GET | `/api/v1/pesantrian/tahfidz/{submission}` | `api.v1.pesantrian.tahfidz.show` | `tahfidz.view` | Tidak | Envelope sukses dengan detail setoran, target, pembimbing, summary, dan histori revisi |
 | GET | `/api/v1/permissions` | `api.v1.permissions.index` | Access control view policy | Tidak | Envelope sukses dengan daftar permission dan pagination meta |
 | GET | `/api/v1/roles` | `api.v1.roles.index` | Access control view policy | Tidak | Envelope sukses dengan daftar role dan pagination meta |

@@ -2,13 +2,14 @@
 
 ## Status
 
-Active - backend setoran/murojaah mutation ready. Source module, manifest,
+Active - backend review/void lifecycle ready. Source module, manifest,
 ServiceProvider, README source, permission identity, wiring AccessControl,
 guardrail contract lintas module, migration, record model, factory minimum,
 Application read query, API baca, request validation program/target/setoran,
 Application action create/update program/target/setoran, dan audit mutation
-program/target/setoran sudah tersedia. Belum ada review/void lifecycle, seeder
-demo Tahfidz, atau UI.
+program/target/setoran, review accepted/needs_revision, void wajib alasan,
+revision history, dan audit lifecycle sudah tersedia. Belum ada seeder demo
+Tahfidz atau UI.
 
 ## Objective
 
@@ -227,11 +228,11 @@ Endpoint yang sudah tersedia:
 - `PATCH /api/v1/pesantrian/tahfidz/targets/{target}`
 - `POST /api/v1/pesantrian/tahfidz/submissions`
 - `PATCH /api/v1/pesantrian/tahfidz/submissions/{submission}`
-
-Endpoint mutation kandidat berikutnya:
-
 - `PATCH /api/v1/pesantrian/tahfidz/submissions/{submission}/review`
 - `PATCH /api/v1/pesantrian/tahfidz/submissions/{submission}/void`
+
+Endpoint mutation kandidat berikutnya:
+- Belum ada endpoint backend tambahan sampai seeder dan UI berikutnya.
 
 Route web Inertia direncanakan memakai nama `pesantrian.tahfidz.*` agar Ziggy
 stabil di frontend.

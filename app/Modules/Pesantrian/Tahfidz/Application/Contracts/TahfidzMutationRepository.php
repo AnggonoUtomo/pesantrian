@@ -27,4 +27,8 @@ interface TahfidzMutationRepository
 
     /** @param array<string, int|string|null> $changes */
     public function updateSubmission(string $id, array $changes): ?TahfidzSubmissionData;
+
+    public function reviewSubmission(string $id, string $status, string $reason, ?string $actorId): ?TahfidzSubmissionData;
+
+    public function voidSubmission(string $id, string $reason, ?string $actorId): ?TahfidzSubmissionData;
 }

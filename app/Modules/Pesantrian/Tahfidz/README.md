@@ -36,4 +36,6 @@ Increment aktif:
   untuk `Tahfidz / Hafalan`.
 - Increment 11 menyediakan route web mutation dan dialog UI untuk buat/ubah
   program, buat/ubah target, buat/ubah setoran, review, dan void setoran.
-- QA browser dan user manual dikerjakan pada increment berikutnya.
+- Increment 12 menyediakan browser QA desktop/mobile untuk list, filter, detail,
+  dialog lifecycle utama, accessibility gate, dan console bersih; user manual
+  lifecycle juga sudah diperbarui.

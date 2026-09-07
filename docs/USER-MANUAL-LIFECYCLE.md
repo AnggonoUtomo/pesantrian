@@ -18,7 +18,7 @@ php artisan db:seed
 Seeder bersifat idempotent, artinya aman dijalankan berulang untuk melengkapi
 data demo tanpa membuat data demo dobel berdasarkan kode unik seperti
 `DEMO-*`, `PPDB-DEMO-*`, `NIS-DEMO-*`, `PEG-DEMO-*`, `DEMO-ASR-*`,
-`DEMO-KMR-*`, dan kode presensi `DEMO-*`.
+`DEMO-KMR-*`, kode presensi `DEMO-*`, dan kode Tahfidz `DEMO-THF-*`.
 
 Password akun demo tidak ditulis di source code. Jika ingin semua akun demo
 punya password lokal yang sama, isi `.env` lokal:
@@ -43,7 +43,7 @@ Role operator dibuat agar uji coba terasa seperti pekerjaan harian.
 | SuperSystem | `super-system@example.test` | Semua fitur dan pemeriksaan permission. |
 | SecurityAdmin | `security-admin@example.test` | Role, permission, user, dan audit awal. |
 | OperatorPPDB | `operator-ppdb@example.test` | Pendaftaran santri baru sampai keputusan. |
-| OperatorSantri | `operator-santri@example.test` | Data induk santri, wali, lifecycle santri, dan persiapan operasional asrama. |
+| OperatorSantri | `operator-santri@example.test` | Data induk santri, wali, lifecycle santri, asrama, presensi, dan Tahfidz/Hafalan. |
 | OperatorAkademik | `operator-akademik@example.test` | Tahun ajaran, semester, kelas, rombel, placement. |
 | OperatorSDM | `operator-sdm@example.test` | Data pegawai, guru, ustaz, staff, dan unit tugas. |
 | Auditor | `auditor@example.test` | Audit log dan data baca lintas module. |
@@ -345,6 +345,41 @@ Relasi:
   dibuat.
 - Integrasi perangkat absensi belum dibuat; input awal masih admin/internal.
 
+### Langkah M: Tahfidz / Hafalan
+
+Menu: **Pesantrian -> Tahfidz / Hafalan**
+
+Data demo penting:
+
+- Program aktif `DEMO-THF-REG`.
+- Program nonaktif/arsip `DEMO-THF-INT`.
+- Target hafalan untuk `NIS-DEMO-AKTIF` dan `NIS-DEMO-PPDB`.
+- Setoran dengan status diterima, menunggu review, perlu koreksi, dan
+  dibatalkan.
+- Contoh murojaah dan riwayat koreksi/pembatalan.
+
+Tujuan:
+
+- Melihat daftar setoran Tahfidz/Hafalan.
+- Memfilter setoran berdasarkan pencarian, tanggal, tipe, dan status.
+- Membuka detail setoran untuk membaca program, santri, pembimbing, target,
+  catatan kualitas, dan riwayat koreksi.
+- Membuat atau mengubah program tahfidz.
+- Membuat atau mengubah target hafalan santri.
+- Mencatat setoran hafalan baru atau murojaah.
+- Mereview setoran yang menunggu review menjadi diterima atau perlu koreksi.
+- Membatalkan/void setoran dengan alasan tanpa menghapus histori data.
+
+Relasi:
+
+- Tahfidz memakai santri aktif dari Data Induk Santri.
+- Tahfidz memakai pembimbing aktif dari SDM Pesantren.
+- Target dapat memakai periode aktif dari Tahun Ajaran & Semester.
+- Kelas/Rombel dan Asrama saat ini belum menjadi filter khusus di layar
+  Tahfidz; data santri tetap bisa ditelusuri dari module asalnya.
+- Sertifikat tahfidz, lampiran audio/video, dan portal wali/santri belum
+  dibuat. Baseline sekarang fokus pada pencatatan internal/admin dulu.
+
 ## 4. Module yang Belum Dibuat
 
 Jika saat uji manual terasa ada relasi yang belum bisa diklik, itu memang masih
@@ -353,7 +388,6 @@ di luar baseline running saat ini.
 | Kebutuhan | Status saat ini |
 | --- | --- |
 | Wali Santri master | Belum dibuat; wali masih snapshot di Santri/PPDB. |
-| Tahfidz / Hafalan | Belum dibuat. |
 | Perizinan Santri | Belum dibuat. |
 | Pelanggaran / Kedisiplinan | Belum dibuat. |
 | Prestasi | Belum dibuat. |
@@ -381,6 +415,9 @@ di luar baseline running saat ini.
 - Buka Presensi Santri, cek `DEMO-KBM-PAGI`, `DEMO-ASRAMA-MALAM`,
   `DEMO-MUHADHARAH`, dan `DEMO-VOID`, lalu coba buat draft, isi entry, submit,
   revisi, dan void.
+- Buka Tahfidz / Hafalan, cek `DEMO-THF-REG`, target santri, setoran
+  accepted/submitted/needs_revision/void, lalu coba tambah program, tambah
+  target, tambah setoran, review, dan void.
 - Buka Audit Trail setelah beberapa aksi dan cek aktivitas tercatat.
 
 Jika ada error Ziggy/route di console browser, catat nama route yang disebutkan.

@@ -385,10 +385,30 @@ Verifikasi:
 
 ## Increment 12: QA Browser dan User Manual
 
-- [ ] Jalankan browser QA desktop.
-- [ ] Jalankan browser QA mobile/responsive.
-- [ ] Update user manual lifecycle.
-- [ ] Update README/tasks hasil final.
+- [x] Jalankan browser QA desktop.
+- [x] Jalankan browser QA mobile/responsive.
+- [x] Update user manual lifecycle.
+- [x] Update README/tasks hasil final.
+
+Hasil:
+
+- Browser QA ditambahkan di `tests/Browser/tahfidz.spec.ts`.
+- Fixture browser self-contained ditambahkan di
+  `tests/Browser/support/tahfidz-fixture.ts`.
+- QA desktop/mobile memverifikasi list, filter, dialog program/target/setoran,
+  detail setoran submitted, tombol edit/review/void, accessibility gate
+  critical/serious, console error, page error, dan response 403.
+- User manual lifecycle diperbarui dengan **Langkah M: Tahfidz / Hafalan**.
+- Keterbatasan integrasi sertifikat, portal wali/santri, lampiran audio/video,
+  dan filter rombel/asrama khusus Tahfidz dicatat sebagai belum dibuat.
+
+Verifikasi:
+
+- [x] `php artisan migrate --no-ansi`
+- [x] `php artisan route:list --name=pesantrian.tahfidz --no-ansi`
+- [x] `npm run types:check`
+- [x] `npm run lint:check`
+- [x] `E2E_START_SERVER=true npx playwright test tests/Browser/tahfidz.spec.ts`
 
 Acceptance:
 

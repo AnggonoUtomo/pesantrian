@@ -10,7 +10,7 @@ dan [`docs/FOLDER-STRUCTURE.md`](../../../FOLDER-STRUCTURE.md).
 - Nama tampil: `Tahfidz / Hafalan`
 - Candidate source: `app/Modules/Pesantrian/Tahfidz/`
 - Candidate frontend: `resources/js/pages/Pesantrian/Tahfidz/`
-- Status: Active - UI mutation ready
+- Status: Active - QA browser dan user manual ready
 
 ## Tujuan
 
@@ -211,7 +211,12 @@ resources/js/pages/Pesantrian/Tahfidz/
     |-- TahfidzFilters.tsx
     |-- TahfidzTable.tsx
     |-- TahfidzDetailPanel.tsx
-    |-- TahfidzMutationDialogs.tsx
+    |-- TahfidzActionBar.tsx
+    |-- TahfidzFormFields.tsx
+    |-- TahfidzProgramDialog.tsx
+    |-- TahfidzTargetDialog.tsx
+    |-- TahfidzSubmissionDialog.tsx
+    |-- TahfidzLifecycleDialogs.tsx
     |-- TahfidzStatusBadge.tsx
     |-- TahfidzSummaryCards.tsx
     `-- TahfidzPagination.tsx
@@ -239,6 +244,33 @@ UI mutation awal sudah tersedia:
 Backend tetap menjadi authority permission dan validasi. Frontend hanya
 mengatur pengalaman pengguna.
 
+## QA Browser dan User Manual
+
+QA browser tersedia di `tests/Browser/tahfidz.spec.ts` dengan fixture khusus di
+`tests/Browser/support/tahfidz-fixture.ts`.
+
+Coverage QA:
+
+- desktop Chromium dan mobile Chromium;
+- login operator fixture;
+- buka list dan filter setoran;
+- buka dialog program, target, dan setoran;
+- buka detail setoran submitted;
+- cek tombol edit, review, dan void;
+- accessibility gate untuk issue critical/serious;
+- console error, page error, dan response 403 harus kosong.
+
+Manual penggunaan end-to-end tercatat di
+[`../../../USER-MANUAL-LIFECYCLE.md`](../../../USER-MANUAL-LIFECYCLE.md) pada
+bagian **Langkah M: Tahfidz / Hafalan**.
+
+Keterbatasan baseline yang sengaja belum dibuat:
+
+- sertifikat tahfidz;
+- lampiran audio/video setoran;
+- portal wali/santri;
+- filter khusus rombel/asrama pada layar Tahfidz.
+
 ## Dokumentasi Terkait
 
 - [`specification.md`](specification.md)
@@ -260,4 +292,5 @@ php artisan test --filter=Tahfidz
 npm run types:check
 npm run lint:check
 npm run build
+E2E_START_SERVER=true npx playwright test tests/Browser/tahfidz.spec.ts
 ```

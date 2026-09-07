@@ -2,10 +2,10 @@
 
 ## Status
 
-Active - skeleton dan permission ready. Source module, manifest, route
-placeholder, ServiceProvider, README source, permission identity, dan wiring
-AccessControl sudah tersedia. Belum ada migration, table bisnis, API bisnis,
-seeder demo Tahfidz, atau UI.
+Active - contract readiness ready. Source module, manifest, route placeholder,
+ServiceProvider, README source, permission identity, wiring AccessControl, dan
+guardrail contract lintas module sudah tersedia. Belum ada migration, table
+bisnis, API bisnis, seeder demo Tahfidz, atau UI.
 
 ## Objective
 
@@ -178,6 +178,14 @@ kelas/rombel, atau asrama.
 | Periode | `Academic/AcademicPeriod` | Opsional untuk target per semester/tahun ajaran. |
 | Rombel | `Academic/KelasRombel` | Filter monitoring, bukan pemilik rule tahfidz. |
 | Asrama | `Pesantrian/Asrama` | Filter monitoring, bukan pemilik rule tahfidz. |
+
+Contract readiness awal:
+
+- `ActiveStudentReader` dipakai untuk mengambil opsi dan validasi santri aktif.
+- `ActiveEmployeeReader` dipakai untuk mengambil opsi dan validasi pembimbing
+  aktif.
+- `ActiveAcademicPeriodReader` dipakai untuk mengambil periode aktif.
+- Tahfidz tidak boleh mengimpor model Infrastructure dari module dependency.
 
 ## Permission Candidate
 

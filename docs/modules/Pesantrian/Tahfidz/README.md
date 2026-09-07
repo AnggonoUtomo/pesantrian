@@ -10,7 +10,7 @@ dan [`docs/FOLDER-STRUCTURE.md`](../../../FOLDER-STRUCTURE.md).
 - Nama tampil: `Tahfidz / Hafalan`
 - Candidate source: `app/Modules/Pesantrian/Tahfidz/`
 - Candidate frontend: `resources/js/pages/Pesantrian/Tahfidz/`
-- Status: Active - skeleton dan permission ready
+- Status: Active - contract readiness ready
 
 ## Tujuan
 
@@ -64,6 +64,15 @@ alur inti stabil.
 Dependency lintas module wajib melalui public contract/Application DTO yang
 tersedia. Tahfidz tidak boleh membaca model Eloquent Infrastructure module lain
 secara langsung.
+
+Contract awal yang sudah siap dipakai:
+
+- `ActiveStudentReader` dari `Pesantrian/Santri` untuk selector dan validasi
+  santri aktif.
+- `ActiveEmployeeReader` dari `HumanResource/HumanResource` untuk selector dan
+  validasi pembimbing aktif.
+- `ActiveAcademicPeriodReader` dari `Academic/AcademicPeriod` untuk periode
+  aktif.
 
 ## Konsep Data Awal
 

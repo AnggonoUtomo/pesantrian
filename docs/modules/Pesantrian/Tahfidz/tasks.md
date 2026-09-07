@@ -60,17 +60,35 @@ Verifikasi:
 
 ## Increment 3: Contract Readiness
 
-- [ ] Audit contract Santri aktif.
-- [ ] Audit contract pembimbing/pegawai aktif.
-- [ ] Audit contract periode akademik aktif.
-- [ ] Tambahkan contract hanya bila belum tersedia dan memang dibutuhkan.
-- [ ] Tambahkan tests readiness lintas module.
+- [x] Audit contract Santri aktif.
+- [x] Audit contract pembimbing/pegawai aktif.
+- [x] Audit contract periode akademik aktif.
+- [x] Tambahkan contract hanya bila belum tersedia dan memang dibutuhkan.
+- [x] Tambahkan tests readiness lintas module.
 
 Acceptance:
 
 - Tahfidz tidak membaca model Infrastructure module lain.
 - Candidate santri, pembimbing, dan periode bisa diambil melalui public
   contract.
+
+Hasil:
+
+- Contract `ActiveStudentReader` dari `Pesantrian/Santri` sudah cukup untuk
+  selector dan validasi santri aktif.
+- Contract `ActiveEmployeeReader` dari `HumanResource/HumanResource` sudah
+  cukup untuk selector pembimbing aktif.
+- Contract `ActiveAcademicPeriodReader` dari `Academic/AcademicPeriod` sudah
+  cukup untuk konteks periode target hafalan.
+- Tidak ada contract baru yang dibuat karena kebutuhan Tahfidz awal sudah
+  terlayani oleh public contract existing.
+- Guardrail readiness ditambahkan agar Tahfidz tidak mengambil model
+  Infrastructure module dependency secara langsung.
+
+Verifikasi:
+
+- [x] `php artisan test tests/Feature/TahfidzContractReadinessTest.php --no-ansi`
+- [x] `php artisan module:validate --no-ansi`
 
 ## Increment 4: Data Foundation
 

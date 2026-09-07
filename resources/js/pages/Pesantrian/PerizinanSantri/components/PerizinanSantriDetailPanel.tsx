@@ -1,5 +1,6 @@
 import { Link } from '@inertiajs/react';
 import { ArrowLeft, Clock, FileText, History, UserRound } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import { routeOr } from '@/lib/route';
@@ -18,6 +19,13 @@ type Props = {
     canCheckout: boolean;
     canReturn: boolean;
     canArchive: boolean;
+    onEdit: (permit: StudentPermit) => void;
+    onSubmitPermit: (permit: StudentPermit) => void;
+    onApprove: (permit: StudentPermit) => void;
+    onReject: (permit: StudentPermit) => void;
+    onCheckout: (permit: StudentPermit) => void;
+    onReturn: (permit: StudentPermit) => void;
+    onVoid: (permit: StudentPermit) => void;
 };
 
 export function PerizinanSantriDetailPanel({
@@ -27,7 +35,19 @@ export function PerizinanSantriDetailPanel({
     canCheckout,
     canReturn,
     canArchive,
+    onEdit,
+    onSubmitPermit,
+    onApprove,
+    onReject,
+    onCheckout,
+    onReturn,
+    onVoid,
 }: Props) {
+    const isFinal =
+        permit.status === 'rejected' ||
+        permit.status === 'returned' ||
+        permit.status === 'void';
+
     return (
         <div className="space-y-5">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
@@ -42,12 +62,75 @@ export function PerizinanSantriDetailPanel({
                         Kembali ke daftar
                     </Link>
                 </Button>
-                <div className="flex flex-wrap gap-2 text-xs text-foreground/60">
-                    {canManage ? <span>Kelola draft aktif</span> : null}
-                    {canApprove ? <span>Review aktif</span> : null}
-                    {canCheckout ? <span>Check-out aktif</span> : null}
-                    {canReturn ? <span>Return aktif</span> : null}
-                    {canArchive ? <span>Void aktif</span> : null}
+                <div className="flex flex-wrap gap-2">
+                    {canManage && permit.status === 'draft' ? (
+                        <>
+                            <Button
+                                type="button"
+                                size="sm"
+                                onClick={() => onEdit(permit)}
+                            >
+                                Edit izin
+                            </Button>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => onSubmitPermit(permit)}
+                            >
+                                Submit
+                            </Button>
+                        </>
+                    ) : null}
+                    {canApprove && permit.status === 'submitted' ? (
+                        <>
+                            <Button
+                                type="button"
+                                size="sm"
+                                onClick={() => onApprove(permit)}
+                            >
+                                Approve
+                            </Button>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => onReject(permit)}
+                            >
+                                Reject
+                            </Button>
+                        </>
+                    ) : null}
+                    {canCheckout && permit.status === 'approved' ? (
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => onCheckout(permit)}
+                        >
+                            Check-out
+                        </Button>
+                    ) : null}
+                    {canReturn && permit.status === 'checked_out' ? (
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => onReturn(permit)}
+                        >
+                            Return/check-in
+                        </Button>
+                    ) : null}
+                    {canArchive && !isFinal ? (
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => onVoid(permit)}
+                        >
+                            Void
+                        </Button>
+                    ) : null}
                 </div>
             </div>
 
@@ -171,7 +254,7 @@ function DetailSection({
     title,
     children,
 }: {
-    icon: typeof FileText;
+    icon: LucideIcon;
     title: string;
     children: ReactNode;
 }) {

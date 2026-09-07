@@ -11,9 +11,35 @@ import { PerizinanSantriStatusBadge } from './PerizinanSantriStatusBadge';
 
 type Props = {
     permits: StudentPermit[];
+    canManage: boolean;
+    canApprove: boolean;
+    canCheckout: boolean;
+    canReturn: boolean;
+    canArchive: boolean;
+    onEdit: (permit: StudentPermit) => void;
+    onSubmitPermit: (permit: StudentPermit) => void;
+    onApprove: (permit: StudentPermit) => void;
+    onReject: (permit: StudentPermit) => void;
+    onCheckout: (permit: StudentPermit) => void;
+    onReturn: (permit: StudentPermit) => void;
+    onVoid: (permit: StudentPermit) => void;
 };
 
-export function PerizinanSantriTable({ permits }: Props) {
+export function PerizinanSantriTable({
+    permits,
+    canManage,
+    canApprove,
+    canCheckout,
+    canReturn,
+    canArchive,
+    onEdit,
+    onSubmitPermit,
+    onApprove,
+    onReject,
+    onCheckout,
+    onReturn,
+    onVoid,
+}: Props) {
     return (
         <div className="overflow-hidden rounded-xl border bg-background">
             <div className="hidden overflow-x-auto md:block">
@@ -79,6 +105,21 @@ export function PerizinanSantriTable({ permits }: Props) {
                                             Lihat detail
                                         </Link>
                                     </Button>
+                                    <PermitActions
+                                        permit={permit}
+                                        canManage={canManage}
+                                        canApprove={canApprove}
+                                        canCheckout={canCheckout}
+                                        canReturn={canReturn}
+                                        canArchive={canArchive}
+                                        onEdit={onEdit}
+                                        onSubmitPermit={onSubmitPermit}
+                                        onApprove={onApprove}
+                                        onReject={onReject}
+                                        onCheckout={onCheckout}
+                                        onReturn={onReturn}
+                                        onVoid={onVoid}
+                                    />
                                 </td>
                             </tr>
                         ))}
@@ -132,9 +173,120 @@ export function PerizinanSantriTable({ permits }: Props) {
                                 </Link>
                             </Button>
                         </div>
+                        <PermitActions
+                            permit={permit}
+                            canManage={canManage}
+                            canApprove={canApprove}
+                            canCheckout={canCheckout}
+                            canReturn={canReturn}
+                            canArchive={canArchive}
+                            onEdit={onEdit}
+                            onSubmitPermit={onSubmitPermit}
+                            onApprove={onApprove}
+                            onReject={onReject}
+                            onCheckout={onCheckout}
+                            onReturn={onReturn}
+                            onVoid={onVoid}
+                        />
                     </article>
                 ))}
             </div>
+        </div>
+    );
+}
+
+function PermitActions({
+    permit,
+    canManage,
+    canApprove,
+    canCheckout,
+    canReturn,
+    canArchive,
+    onEdit,
+    onSubmitPermit,
+    onApprove,
+    onReject,
+    onCheckout,
+    onReturn,
+    onVoid,
+}: Omit<Props, 'permits'> & { permit: StudentPermit }) {
+    const isFinal =
+        permit.status === 'rejected' ||
+        permit.status === 'returned' ||
+        permit.status === 'void';
+
+    return (
+        <div className="mt-2 flex flex-wrap justify-end gap-2">
+            {canManage && permit.status === 'draft' ? (
+                <>
+                    <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => onEdit(permit)}
+                    >
+                        Edit
+                    </Button>
+                    <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => onSubmitPermit(permit)}
+                    >
+                        Submit
+                    </Button>
+                </>
+            ) : null}
+            {canApprove && permit.status === 'submitted' ? (
+                <>
+                    <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => onApprove(permit)}
+                    >
+                        Approve
+                    </Button>
+                    <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => onReject(permit)}
+                    >
+                        Reject
+                    </Button>
+                </>
+            ) : null}
+            {canCheckout && permit.status === 'approved' ? (
+                <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => onCheckout(permit)}
+                >
+                    Check-out
+                </Button>
+            ) : null}
+            {canReturn && permit.status === 'checked_out' ? (
+                <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => onReturn(permit)}
+                >
+                    Return
+                </Button>
+            ) : null}
+            {canArchive && !isFinal ? (
+                <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => onVoid(permit)}
+                >
+                    Void
+                </Button>
+            ) : null}
         </div>
     );
 }

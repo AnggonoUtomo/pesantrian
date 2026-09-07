@@ -33,5 +33,8 @@ Increment aktif:
 - Increment 10 menyiapkan web Inertia list/detail read-only, komponen filter,
   table/card responsive, summary, pagination, detail panel, sidebar namespace
   Pesantrian, dan whitelist route Ziggy.
-- UI mutation dan integrasi awal ke PresensiSantri dikerjakan pada increment
-  berikutnya.
+- Increment 11 menyiapkan UI mutation untuk create/update draft, submit,
+  approve/reject, check-out, return/check-in, void, serta whitelist route Ziggy
+  untuk seluruh route mutation web.
+- QA browser, user manual final, dan integrasi awal ke PresensiSantri
+  dikerjakan pada increment berikutnya.

@@ -5,16 +5,37 @@ import SystemDashboardLayout from '@/layouts/system-dashboard-layout';
 import { canAccess } from '@/lib/authorization';
 import { routeOr } from '@/lib/route';
 import { PerizinanSantriAccessDenied } from '../components/PerizinanSantriAccessDenied';
+import { PerizinanSantriActionBar } from '../components/PerizinanSantriActionBar';
 import { PerizinanSantriEmptyState } from '../components/PerizinanSantriEmptyState';
 import { PerizinanSantriFilters } from '../components/PerizinanSantriFilters';
+import {
+    ApprovePerizinanDialog,
+    CheckoutPerizinanDialog,
+    RejectPerizinanDialog,
+    ReturnPerizinanDialog,
+    SubmitPerizinanDialog,
+    VoidPerizinanDialog,
+} from '../components/PerizinanSantriLifecycleDialogs';
+import { PerizinanSantriMutationDialog } from '../components/PerizinanSantriMutationDialog';
 import { PerizinanSantriPagination } from '../components/PerizinanSantriPagination';
 import { PerizinanSantriSummaryCards } from '../components/PerizinanSantriSummaryCards';
 import { PerizinanSantriTable } from '../components/PerizinanSantriTable';
-import type { StudentPermitIndexPageProps } from '../types';
+import type { StudentPermit, StudentPermitIndexPageProps } from '../types';
 
 export default function Index() {
-    const { auth, permits, filters, pagination, options, errors } =
-        usePage<StudentPermitIndexPageProps>().props;
+    const {
+        auth,
+        permits,
+        filters,
+        pagination,
+        options,
+        errors,
+        canManage,
+        canApprove,
+        canCheckout,
+        canReturn,
+        canArchive,
+    } = usePage<StudentPermitIndexPageProps>().props;
     const [search, setSearch] = useState(filters.search ?? '');
     const [dateFrom, setDateFrom] = useState(
         filters.filter?.date_from ?? '',
@@ -31,6 +52,24 @@ export default function Index() {
             ? 'all'
             : String(filters.filter.is_late),
     );
+    const [mutationPermit, setMutationPermit] =
+        useState<StudentPermit | null>(null);
+    const [mutationDialogOpen, setMutationDialogOpen] = useState(false);
+    const [submitPermit, setSubmitPermit] = useState<StudentPermit | null>(
+        null,
+    );
+    const [approvePermit, setApprovePermit] = useState<StudentPermit | null>(
+        null,
+    );
+    const [rejectPermit, setRejectPermit] = useState<StudentPermit | null>(
+        null,
+    );
+    const [checkoutPermit, setCheckoutPermit] =
+        useState<StudentPermit | null>(null);
+    const [returnPermit, setReturnPermit] = useState<StudentPermit | null>(
+        null,
+    );
+    const [voidPermit, setVoidPermit] = useState<StudentPermit | null>(null);
     const canView = canAccess(auth, 'perizinan_santri.view');
     const permitIndexUrl = () =>
         routeOr(
@@ -92,6 +131,16 @@ export default function Index() {
         );
     };
 
+    const openCreateDialog = () => {
+        setMutationPermit(null);
+        setMutationDialogOpen(true);
+    };
+
+    const openEditDialog = (permit: StudentPermit) => {
+        setMutationPermit(permit);
+        setMutationDialogOpen(true);
+    };
+
     if (!canView) {
         return <PerizinanSantriAccessDenied />;
     }
@@ -105,6 +154,11 @@ export default function Index() {
                 description="Pantau permohonan izin, approval, check-out, return/check-in, void, dan keterlambatan santri."
             >
                 <div className="space-y-5">
+                    <PerizinanSantriActionBar
+                        canManage={canManage}
+                        onCreate={openCreateDialog}
+                    />
+
                     <PerizinanSantriSummaryCards
                         total={permits.meta.total}
                         permits={permits.data}
@@ -144,6 +198,18 @@ export default function Index() {
                             <>
                                 <PerizinanSantriTable
                                     permits={permits.data}
+                                    canManage={canManage}
+                                    canApprove={canApprove}
+                                    canCheckout={canCheckout}
+                                    canReturn={canReturn}
+                                    canArchive={canArchive}
+                                    onEdit={openEditDialog}
+                                    onSubmitPermit={setSubmitPermit}
+                                    onApprove={setApprovePermit}
+                                    onReject={setRejectPermit}
+                                    onCheckout={setCheckoutPermit}
+                                    onReturn={setReturnPermit}
+                                    onVoid={setVoidPermit}
                                 />
                                 <PerizinanSantriPagination
                                     meta={permits.meta}
@@ -162,6 +228,55 @@ export default function Index() {
                     </section>
                 </div>
             </SystemDashboardLayout>
+
+            <PerizinanSantriMutationDialog
+                open={mutationDialogOpen}
+                permit={mutationPermit}
+                options={options}
+                onOpenChange={setMutationDialogOpen}
+            />
+            {submitPermit ? (
+                <SubmitPerizinanDialog
+                    open
+                    permit={submitPermit}
+                    onOpenChange={(open) => !open && setSubmitPermit(null)}
+                />
+            ) : null}
+            {approvePermit ? (
+                <ApprovePerizinanDialog
+                    open
+                    permit={approvePermit}
+                    onOpenChange={(open) => !open && setApprovePermit(null)}
+                />
+            ) : null}
+            {rejectPermit ? (
+                <RejectPerizinanDialog
+                    open
+                    permit={rejectPermit}
+                    onOpenChange={(open) => !open && setRejectPermit(null)}
+                />
+            ) : null}
+            {checkoutPermit ? (
+                <CheckoutPerizinanDialog
+                    open
+                    permit={checkoutPermit}
+                    onOpenChange={(open) => !open && setCheckoutPermit(null)}
+                />
+            ) : null}
+            {returnPermit ? (
+                <ReturnPerizinanDialog
+                    open
+                    permit={returnPermit}
+                    onOpenChange={(open) => !open && setReturnPermit(null)}
+                />
+            ) : null}
+            {voidPermit ? (
+                <VoidPerizinanDialog
+                    open
+                    permit={voidPermit}
+                    onOpenChange={(open) => !open && setVoidPermit(null)}
+                />
+            ) : null}
         </>
     );
 }

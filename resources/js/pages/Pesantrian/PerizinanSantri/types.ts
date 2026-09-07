@@ -117,6 +117,7 @@ export type StudentPermitIndexPageProps = {
         defaultPerPage: number;
     };
     options: {
+        students: StudentPermitOption[];
         permitTypes: StudentPermitOption[];
         statuses: StudentPermitOption[];
     };
@@ -131,9 +132,33 @@ export type StudentPermitIndexPageProps = {
 export type StudentPermitShowPageProps = {
     auth: Auth;
     permit: StudentPermit;
+    options: StudentPermitIndexPageProps['options'];
     canManage: boolean;
     canApprove: boolean;
     canCheckout: boolean;
     canReturn: boolean;
     canArchive: boolean;
+};
+
+export type StudentPermitMutationPayload = {
+    student_id: string;
+    permit_type: StudentPermitType;
+    starts_at: string;
+    ends_at: string;
+    destination: string | null;
+    reason: string;
+    revision_reason?: string;
+};
+
+export type StudentPermitReasonPayload = {
+    reason: string;
+};
+
+export type StudentPermitReviewPayload = {
+    review_note: string | null;
+};
+
+export type StudentPermitReturnPayload = {
+    returned_at: string;
+    return_note: string | null;
 };

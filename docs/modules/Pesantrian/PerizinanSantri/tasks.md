@@ -349,19 +349,48 @@ Acceptance:
 
 ## Increment 11: UI Mutation
 
-- [ ] Buat dialog create/update permit.
-- [ ] Buat confirmation submit.
-- [ ] Buat dialog approve/reject.
-- [ ] Buat confirmation check-out.
-- [ ] Buat dialog return/check-in.
-- [ ] Buat confirmation void.
-- [ ] Jalankan typecheck, lint, dan build.
+- [x] Buat dialog create/update permit.
+- [x] Buat confirmation submit.
+- [x] Buat dialog approve/reject.
+- [x] Buat confirmation check-out.
+- [x] Buat dialog return/check-in.
+- [x] Buat confirmation void.
+- [x] Jalankan typecheck, lint, dan build.
+
+Hasil:
+
+- Route web mutation tersedia untuk create draft, update draft, submit,
+  approve, reject, check-out, return/check-in, dan void.
+- Page Index dan Show tetap tipis; state dialog mutation berada di page,
+  sedangkan isi form/action berada di component folder.
+- `PerizinanSantriMutationDialog` menangani create/update draft dengan pilihan
+  santri aktif, jenis izin, rentang waktu, tujuan, alasan izin, dan alasan
+  koreksi saat edit.
+- `PerizinanSantriLifecycleDialogs` menangani confirmation submit, approve
+  dengan catatan review opsional, reject dengan alasan wajib, check-out,
+  return/check-in dengan waktu kembali dan catatan, serta void dengan alasan
+  wajib.
+- Tombol aksi lifecycle muncul berdasarkan permission dan status izin, tetapi
+  backend tetap authority final untuk permission, validasi, dan rule status.
+- Route mutation PerizinanSantri masuk whitelist Ziggy supaya UI production
+  tidak gagal karena route name hilang.
+
+Verifikasi:
+
+- [x] `php -l app/Modules/Pesantrian/PerizinanSantri/Presentation/Controllers/StudentPermitController.php`
+- [x] `php -l app/Modules/Pesantrian/PerizinanSantri/Routes/web.php`
+- [x] `php artisan test tests/Feature/PerizinanSantriPresentationTest.php tests/Feature/PerizinanSantriOperationalLifecycleApiTest.php tests/Feature/PerizinanSantriDecisionApiTest.php tests/Feature/PerizinanSantriMutationApiTest.php tests/Feature/NavigationSidebarTest.php tests/Feature/ZiggyRouteTest.php --no-ansi`
+- [x] `php artisan module:validate --no-ansi`
+- [x] `php artisan route:list --name=pesantrian.student-permits --no-ansi`
+- [x] `npm run types:check`
+- [x] `npm run lint:check`
+- [x] `npm run build`
 
 Acceptance:
 
-- Form mutation berada di folder `components`.
-- Submit/approve/reject/check-out/return/void memakai confirmation atau alasan.
-- Backend tetap authority permission dan validasi.
+- [x] Form mutation berada di folder `components`.
+- [x] Submit/approve/reject/check-out/return/void memakai confirmation atau alasan.
+- [x] Backend tetap authority permission dan validasi.
 
 ## Increment 12: QA Browser dan User Manual
 

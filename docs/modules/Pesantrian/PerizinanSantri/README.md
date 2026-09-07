@@ -24,6 +24,10 @@ izin, petugas berwenang menyetujui atau menolak, lalu mencatat santri sudah
 kembali. Public form wali/santri, tanda tangan digital, dan integrasi
 notifikasi otomatis ditunda sampai flow internal stabil.
 
+UI internal sekarang mendukung list/detail serta mutation utama: buat draft,
+edit draft, submit, approve, reject, check-out, return/check-in, dan void.
+Semua aksi tetap divalidasi di backend.
+
 ## Boundary
 
 ### Dimiliki PerizinanSantri

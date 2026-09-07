@@ -301,18 +301,45 @@ Verifikasi:
 
 ## Increment 10: UI/Inertia List dan Detail
 
-- [ ] Buat page index.
-- [ ] Buat page detail.
-- [ ] Buat komponen filter/table/card/summary/pagination.
-- [ ] Tambahkan sidebar menu namespace Pesantrian.
-- [ ] Tambahkan presentation/Ziggy tests.
-- [ ] Jalankan typecheck, lint, dan build.
+- [x] Buat page index.
+- [x] Buat page detail.
+- [x] Buat komponen filter/table/card/summary/pagination.
+- [x] Tambahkan sidebar menu namespace Pesantrian.
+- [x] Tambahkan presentation/Ziggy tests.
+- [x] Jalankan typecheck, lint, dan build.
 
 Acceptance:
 
-- Page tetap tipis.
-- UI berada di `resources/js/pages/Pesantrian/Tahfidz/`.
-- Console browser bersih dari route/Ziggy error.
+- [x] Page tetap tipis.
+- [x] UI berada di `resources/js/pages/Pesantrian/Tahfidz/`.
+- [x] Console browser bersih dari route/Ziggy error.
+
+Hasil:
+
+- Route web Inertia tersedia:
+  `GET /pesantrian/tahfidz` dan
+  `GET /pesantrian/tahfidz/{submission}` dengan nama
+  `pesantrian.tahfidz.index` dan `pesantrian.tahfidz.show`.
+- Controller Inertia memakai query Application yang sama dengan API read,
+  sehingga UI list/detail tidak membaca Infrastructure secara langsung.
+- Page `Index.tsx` dan `Show.tsx` dibuat tipis; komponen business berada di
+  `resources/js/pages/Pesantrian/Tahfidz/components/`.
+- UI list mendukung pencarian bebas, rentang tanggal, filter tipe setoran,
+  filter status, summary cards, table desktop, card mobile, empty state, dan
+  pagination.
+- UI detail menampilkan identitas setoran, program, target hafalan, pembimbing,
+  catatan kualitas, ringkasan review, dan riwayat koreksi.
+- Sidebar namespace Pesantrian menampilkan menu `Tahfidz / Hafalan` untuk user
+  yang punya permission `tahfidz.*`.
+
+Verifikasi:
+
+- [x] `php artisan test tests/Feature/TahfidzPresentationTest.php tests/Feature/TahfidzApiTest.php --no-ansi`
+- [x] `php artisan route:list --name=pesantrian.tahfidz --no-ansi`
+- [x] `php artisan module:validate --no-ansi`
+- [x] `npm run types:check`
+- [x] `npm run lint:check`
+- [x] `npm run build`
 
 ## Increment 11: UI Mutation
 

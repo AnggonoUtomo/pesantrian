@@ -31,4 +31,7 @@ Increment aktif:
 - Increment 9 menyediakan `TahfidzDemoSeeder` idempotent yang dipanggil dari
   `DatabaseSeeder`, berisi program, target, setoran accepted/submitted/
   needs_revision/void, murojaah, dan revision history.
-- UI dikerjakan pada increment berikutnya.
+- Increment 10 menyediakan route web Inertia, page list/detail, komponen
+  filter/table/card/summary/pagination, dan menu sidebar namespace Pesantrian
+  untuk `Tahfidz / Hafalan`.
+- UI mutation dikerjakan pada increment berikutnya.

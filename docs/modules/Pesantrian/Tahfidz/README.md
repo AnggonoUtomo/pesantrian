@@ -10,7 +10,7 @@ dan [`docs/FOLDER-STRUCTURE.md`](../../../FOLDER-STRUCTURE.md).
 - Nama tampil: `Tahfidz / Hafalan`
 - Candidate source: `app/Modules/Pesantrian/Tahfidz/`
 - Candidate frontend: `resources/js/pages/Pesantrian/Tahfidz/`
-- Status: Active - demo seeder ready
+- Status: Active - UI read/list ready
 
 ## Tujuan
 
@@ -156,6 +156,11 @@ API internal:
 - `PATCH /api/v1/pesantrian/tahfidz/submissions/{submission}/review`
 - `PATCH /api/v1/pesantrian/tahfidz/submissions/{submission}/void`
 
+Route web Inertia:
+
+- `GET /pesantrian/tahfidz`
+- `GET /pesantrian/tahfidz/{submission}`
+
 ## Data Demo
 
 Seeder demo tersedia di
@@ -206,6 +211,16 @@ resources/js/pages/Pesantrian/Tahfidz/
 
 Menu sidebar berada di namespace Pesantrian dengan nama tampil
 `Tahfidz / Hafalan`.
+
+UI read/list awal sudah tersedia:
+
+- halaman daftar setoran Tahfidz / Hafalan;
+- halaman detail setoran;
+- filter pencarian, rentang tanggal, tipe, dan status;
+- summary cards, table desktop, card mobile, empty state, dan pagination;
+- menu sidebar namespace Pesantrian.
+
+UI mutation program, target, setoran, review, dan void masuk Increment 11.
 
 ## Dokumentasi Terkait
 

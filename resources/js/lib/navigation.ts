@@ -1,5 +1,6 @@
 import {
     BedDouble,
+    BookOpenCheck,
     Building2,
     CalendarRange,
     ClipboardCheck,
@@ -197,6 +198,11 @@ function buildPesantrianNavigation(auth: Auth): NavItem[] {
             'presensi_santri.submit',
             'presensi_santri.revise',
             'presensi_santri.archive',
+            'tahfidz.view',
+            'tahfidz.manage',
+            'tahfidz.record',
+            'tahfidz.review',
+            'tahfidz.archive',
         ])
     ) {
         return [];
@@ -272,6 +278,23 @@ function buildPesantrianNavigation(auth: Auth): NavItem[] {
             ),
             icon: ClipboardCheck,
             iconClassName: 'text-cyan-600 dark:text-cyan-300',
+        });
+    }
+
+    if (
+        hasAnyPermission(auth, [
+            'tahfidz.view',
+            'tahfidz.manage',
+            'tahfidz.record',
+            'tahfidz.review',
+            'tahfidz.archive',
+        ])
+    ) {
+        items.push({
+            title: 'Tahfidz / Hafalan',
+            href: routeOr('/pesantrian/tahfidz', 'pesantrian.tahfidz.index'),
+            icon: BookOpenCheck,
+            iconClassName: 'text-emerald-600 dark:text-emerald-300',
         });
     }
 

@@ -68,6 +68,11 @@ final class AccessControlSeeder extends Seeder
             'presensi_santri.manage',
             'presensi_santri.submit',
             'presensi_santri.revise',
+            'perizinan_santri.view',
+            'perizinan_santri.manage',
+            'perizinan_santri.approve',
+            'perizinan_santri.checkout',
+            'perizinan_santri.return',
             'tahfidz.view',
             'tahfidz.manage',
             'tahfidz.record',
@@ -88,6 +93,7 @@ final class AccessControlSeeder extends Seeder
             'presensi_santri.manage',
             'presensi_santri.submit',
             'presensi_santri.revise',
+            'perizinan_santri.view',
             'tahfidz.view',
         ]);
         $this->syncDemoRole('OperatorSDM', [
@@ -107,6 +113,7 @@ final class AccessControlSeeder extends Seeder
             'kelas_rombel.view',
             'asrama.view',
             'presensi_santri.view',
+            'perizinan_santri.view',
             'tahfidz.view',
             'system_setting.view',
         ]);
@@ -120,6 +127,7 @@ final class AccessControlSeeder extends Seeder
             'kelas_rombel.view',
             'asrama.view',
             'presensi_santri.view',
+            'perizinan_santri.view',
             'tahfidz.view',
         ]);
 

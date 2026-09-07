@@ -1,0 +1,13 @@
+{
+    "name": "PerizinanSantri",
+    "namespace": "App\\Modules\\Pesantrian\\PerizinanSantri",
+    "version": "1.0.0",
+    "schema_version": 1,
+    "status": "enabled",
+    "domain": "Pesantrian",
+    "path": "app/Modules/Pesantrian/PerizinanSantri",
+    "provider": "App\\Modules\\Pesantrian\\PerizinanSantri\\ServiceProvider",
+    "dependencies": [],
+    "permission_source": "permissions.php",
+    "config_source": "module.php"
+}

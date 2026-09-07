@@ -39,12 +39,17 @@ final class AccessControlSeederTest extends TestCase
         $this->assertTrue($operatorSantri->hasPermissionTo('asrama.supervisor'));
         $this->assertTrue($operatorSantri->hasPermissionTo('presensi_santri.manage'));
         $this->assertTrue($operatorSantri->hasPermissionTo('presensi_santri.submit'));
+        $this->assertTrue($operatorSantri->hasPermissionTo('perizinan_santri.manage'));
+        $this->assertTrue($operatorSantri->hasPermissionTo('perizinan_santri.approve'));
+        $this->assertTrue($operatorSantri->hasPermissionTo('perizinan_santri.checkout'));
+        $this->assertTrue($operatorSantri->hasPermissionTo('perizinan_santri.return'));
         $this->assertTrue($operatorSantri->hasPermissionTo('tahfidz.record'));
         $this->assertTrue($operatorSantri->hasPermissionTo('tahfidz.review'));
         $this->assertTrue($operatorAkademik->hasRole('OperatorAkademik'));
         $this->assertTrue($operatorAkademik->hasPermissionTo('kelas_rombel.placement'));
         $this->assertTrue($operatorAkademik->hasPermissionTo('presensi_santri.manage'));
         $this->assertTrue($operatorAkademik->hasPermissionTo('presensi_santri.submit'));
+        $this->assertTrue($operatorAkademik->hasPermissionTo('perizinan_santri.view'));
         $this->assertTrue($operatorAkademik->hasPermissionTo('tahfidz.view'));
     }
 

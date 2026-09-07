@@ -27,19 +27,41 @@ Verifikasi:
 
 ## Increment 2: Module Skeleton dan Permission
 
-- [ ] Jalankan dry-run generator module.
-- [ ] Buat module `Pesantrian/PerizinanSantri`.
-- [ ] Tambahkan permission identity.
-- [ ] Wire permission ke seeder AccessControl.
-- [ ] Jalankan module validate.
+- [x] Jalankan dry-run generator module.
+- [x] Buat module `Pesantrian/PerizinanSantri`.
+- [x] Tambahkan permission identity.
+- [x] Wire permission ke seeder AccessControl.
+- [x] Jalankan module validate.
+
+Hasil:
+
+- Module `Pesantrian/PerizinanSantri` dibuat memakai generator
+  `default-v1`.
+- Permission identity awal tersedia untuk lihat, kelola, approve/reject,
+  check-out, return/check-in, dan archive.
+- Seeder AccessControl membaca permission dari module registry dan memberi
+  akses operasional Perizinan Santri ke `OperatorSantri`; `OperatorAkademik`,
+  `Auditor`, dan `Viewer` mendapat akses lihat.
+- `perizinan_santri.archive` tetap permission sensitif dan belum diberikan ke
+  role operator demo.
+- Belum ada table bisnis atau migration pada increment ini.
+
+Verifikasi:
+
+- [x] `php artisan module:make Pesantrian PerizinanSantri --dry-run --json --no-ansi`
+- [x] `php artisan module:make Pesantrian PerizinanSantri --force --yes --no-ansi`
+- [x] `php artisan module:validate --no-ansi`
+- [x] `php artisan module:list --json --no-ansi`
+- [x] `php artisan test tests/Unit/PerizinanSantriPermissionIdentityTest.php --no-ansi`
+- [x] `php artisan test tests/Feature/AccessControlSeederTest.php --no-ansi`
 
 Acceptance:
 
-- `php artisan module:validate --no-ansi` berhasil.
-- Permission `perizinan_santri.view`, `perizinan_santri.manage`,
+- [x] `php artisan module:validate --no-ansi` berhasil.
+- [x] Permission `perizinan_santri.view`, `perizinan_santri.manage`,
   `perizinan_santri.approve`, `perizinan_santri.checkout`,
   `perizinan_santri.return`, dan `perizinan_santri.archive` tersedia.
-- Belum ada table bisnis.
+- [x] Belum ada table bisnis.
 
 ## Increment 3: Contract Readiness
 

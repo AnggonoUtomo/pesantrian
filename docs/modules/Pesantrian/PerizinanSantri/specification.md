@@ -149,6 +149,12 @@ izin, santri, dan keterlambatan kembali.
 - Backend menjadi authority status, permission, dan validasi. Frontend hanya
   membantu UX.
 
+Catatan data foundation: schema `student_permits` menyiapkan index
+`sp_student_status_range_idx` untuk query overlap. Enforcement final rule
+`starts_at < ends_at` dan tidak overlap dikerjakan di Application action
+mutation karena baseline database MySQL/SQLite project tidak menyediakan
+exclusion constraint lintas rentang yang portable.
+
 ## Permit Type Baseline
 
 | Type | Nama tampil | Catatan |

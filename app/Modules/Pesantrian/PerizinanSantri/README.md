@@ -15,5 +15,7 @@ Increment aktif:
 - Increment 2 menyiapkan skeleton module dan permission identity.
 - Increment 3 menyiapkan readiness contract ke `ActiveStudentReader`,
   `ActiveEmployeeReader`, dan snapshot wali utama dari Santri.
-- Table bisnis, lifecycle izin, demo seeder, UI, dan integrasi awal ke
-  PresensiSantri dikerjakan pada increment berikutnya.
+- Increment 4 menyiapkan table bisnis `student_permits`,
+  `student_permit_revisions`, record model, dan factory minimum.
+- Lifecycle izin, demo seeder, UI, dan integrasi awal ke PresensiSantri
+  dikerjakan pada increment berikutnya.

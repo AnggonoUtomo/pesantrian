@@ -97,18 +97,39 @@ Acceptance:
 
 ## Increment 4: Data Foundation
 
-- [ ] Buat migration `student_permits`.
-- [ ] Buat migration `student_permit_revisions`.
-- [ ] Buat record model.
-- [ ] Buat factory minimum.
-- [ ] Jalankan focused data foundation tests.
+- [x] Buat migration `student_permits`.
+- [x] Buat migration `student_permit_revisions`.
+- [x] Buat record model.
+- [x] Buat factory minimum.
+- [x] Jalankan focused data foundation tests.
+
+Hasil:
+
+- Table `student_permits` dibuat untuk nomor izin, snapshot santri/wali,
+  jenis izin, rentang waktu, status lifecycle, actor lifecycle, dan catatan.
+- Table `student_permit_revisions` dibuat untuk histori perubahan izin.
+- Record model `StudentPermitRecord` dan `StudentPermitRevisionRecord` dibuat
+  dengan ULID, relation revisions/permit, dan casts datetime/json.
+- Factory minimum dibuat untuk kebutuhan test dan demo seeder berikutnya.
+- `ServiceProvider` PerizinanSantri sekarang memuat migration dan route module.
+- Unique nomor izin dijaga di database.
+- Rule overlap aktif disiapkan lewat index
+  `sp_student_status_range_idx`; enforcement final rentang tidak overlap tetap
+  dikerjakan pada Application action Increment 6 karena database baseline
+  MySQL/SQLite tidak punya exclusion constraint portable.
+
+Verifikasi:
+
+- [x] `php artisan test tests/Feature/PerizinanSantriDataFoundationTest.php --no-ansi`
+- [x] `php artisan module:validate --no-ansi`
 
 Acceptance:
 
-- Table memakai ULID.
-- Nomor izin unique.
-- Izin aktif tidak overlap untuk santri yang sama pada rentang waktu sama.
-- Nama index eksplisit aman untuk MySQL.
+- [x] Table memakai ULID.
+- [x] Nomor izin unique.
+- [x] Index pendukung rule overlap izin aktif tersedia; enforcement final
+  dikerjakan di Increment 6.
+- [x] Nama index eksplisit aman untuk MySQL.
 
 ## Increment 5: Backend Read/List
 

@@ -1,0 +1,211 @@
+# Tasks: Pesantrian/PerizinanSantri
+
+## Increment 1: Documentation Baseline
+
+- [x] Buat folder dokumentasi module.
+- [x] Buat README module.
+- [x] Buat specification module.
+- [x] Buat implementation plan.
+- [x] Buat task roadmap.
+- [x] Update indeks module.
+
+Hasil:
+
+- Boundary PerizinanSantri ditetapkan sebagai permohonan izin, approval,
+  check-out, return/check-in, void, dan histori izin.
+- Nama tampil ditetapkan `Perizinan Santri`.
+- Baseline awal memakai admin/internal, bukan public form wali/santri.
+- Integrasi otomatis ke PresensiSantri, KesehatanSantri, KedisiplinanSantri,
+  Notification, Document, dan Finance ditunda sampai module/data terkait siap.
+- Roadmap incremental dibuat dari skeleton sampai QA browser dan integrasi awal
+  PresensiSantri.
+
+Verifikasi:
+
+- [x] Review dokumen terhadap `docs/ARCHITECTURE.md`.
+- [x] Review dokumen terhadap `docs/FOLDER-STRUCTURE.md`.
+
+## Increment 2: Module Skeleton dan Permission
+
+- [ ] Jalankan dry-run generator module.
+- [ ] Buat module `Pesantrian/PerizinanSantri`.
+- [ ] Tambahkan permission identity.
+- [ ] Wire permission ke seeder AccessControl.
+- [ ] Jalankan module validate.
+
+Acceptance:
+
+- `php artisan module:validate --no-ansi` berhasil.
+- Permission `perizinan_santri.view`, `perizinan_santri.manage`,
+  `perizinan_santri.approve`, `perizinan_santri.checkout`,
+  `perizinan_santri.return`, dan `perizinan_santri.archive` tersedia.
+- Belum ada table bisnis.
+
+## Increment 3: Contract Readiness
+
+- [ ] Audit contract santri aktif.
+- [ ] Audit contract petugas/pegawai aktif.
+- [ ] Tentukan strategi snapshot wali baseline.
+- [ ] Tambahkan contract hanya jika consumer nyata belum tersedia.
+- [ ] Tambahkan tests readiness lintas module.
+
+Acceptance:
+
+- PerizinanSantri tidak membaca model Infrastructure module lain.
+- Candidate santri dan petugas bisa diambil melalui public contract.
+- Snapshot wali tidak memaksa pembuatan module WaliSantri master.
+
+## Increment 4: Data Foundation
+
+- [ ] Buat migration `student_permits`.
+- [ ] Buat migration `student_permit_revisions`.
+- [ ] Buat record model.
+- [ ] Buat factory minimum.
+- [ ] Jalankan focused data foundation tests.
+
+Acceptance:
+
+- Table memakai ULID.
+- Nomor izin unique.
+- Izin aktif tidak overlap untuk santri yang sama pada rentang waktu sama.
+- Nama index eksplisit aman untuk MySQL.
+
+## Increment 5: Backend Read/List
+
+- [ ] Buat DTO/read model perizinan.
+- [ ] Buat query list/search/filter.
+- [ ] Buat query detail.
+- [ ] Buat controller/resource API read.
+- [ ] Jalankan focused API tests.
+
+Acceptance:
+
+- List perizinan mendukung filter tanggal, jenis izin, status, santri,
+  keterlambatan, dan pagination.
+- Detail perizinan mengembalikan lifecycle, snapshot santri/wali, approval,
+  check-out, return, dan revisions.
+- Actor tanpa permission view ditolak.
+
+## Increment 6: Create/Update Draft dan Submit
+
+- [ ] Buat request validation create/update permit.
+- [ ] Buat action create/update draft.
+- [ ] Buat action submit permit.
+- [ ] Tambahkan audit create/update/submit.
+- [ ] Jalankan focused mutation tests.
+
+Acceptance:
+
+- Permohonan izin bisa dibuat sebagai draft.
+- Draft bisa diubah sebelum submit.
+- Submit hanya dari draft.
+- Rentang waktu valid dan tidak overlap untuk izin aktif santri.
+
+## Increment 7: Approve dan Reject
+
+- [ ] Buat action approve.
+- [ ] Buat action reject.
+- [ ] Tambahkan request validation decision note/reason.
+- [ ] Tambahkan audit decision.
+- [ ] Jalankan focused lifecycle tests.
+
+Acceptance:
+
+- Approve/reject hanya dari submitted.
+- Reject wajib alasan.
+- Decision menyimpan actor, waktu, dan catatan.
+
+## Increment 8: Check-out, Return, dan Void
+
+- [ ] Buat action check-out.
+- [ ] Buat action return/check-in.
+- [ ] Buat action void.
+- [ ] Tambahkan revision history.
+- [ ] Tambahkan audit lifecycle.
+- [ ] Jalankan focused lifecycle tests.
+
+Acceptance:
+
+- Check-out hanya dari approved.
+- Return hanya dari checked_out.
+- Return terlambat terbaca pada read model.
+- Void wajib alasan dan tidak menghapus data.
+
+## Increment 9: Demo Seeder
+
+- [ ] Buat `PerizinanSantriDemoSeeder`.
+- [ ] Update `DatabaseSeeder`.
+- [ ] Tambahkan test idempotent seeder.
+- [ ] Dokumentasikan data demo.
+
+Acceptance:
+
+- Seeder mencakup draft/submitted/approved/rejected/checked_out/returned/void.
+- Seeder memakai santri dan petugas demo yang sudah ada.
+- Seeder aman diulang dan tidak berjalan pada environment production.
+
+## Increment 10: UI/Inertia List dan Detail
+
+- [ ] Buat page index.
+- [ ] Buat page detail.
+- [ ] Buat komponen filter/table/card/summary/pagination.
+- [ ] Tambahkan sidebar menu namespace Pesantrian.
+- [ ] Tambahkan presentation/Ziggy tests.
+- [ ] Jalankan typecheck, lint, dan build.
+
+Acceptance:
+
+- Page tetap tipis.
+- UI berada di `resources/js/pages/Pesantrian/PerizinanSantri/`.
+- Console browser bersih dari route/Ziggy error.
+
+## Increment 11: UI Mutation
+
+- [ ] Buat dialog create/update permit.
+- [ ] Buat confirmation submit.
+- [ ] Buat dialog approve/reject.
+- [ ] Buat confirmation check-out.
+- [ ] Buat dialog return/check-in.
+- [ ] Buat confirmation void.
+- [ ] Jalankan typecheck, lint, dan build.
+
+Acceptance:
+
+- Form mutation berada di folder `components`.
+- Submit/approve/reject/check-out/return/void memakai confirmation atau alasan.
+- Backend tetap authority permission dan validasi.
+
+## Increment 12: QA Browser dan User Manual
+
+- [ ] Jalankan browser QA desktop.
+- [ ] Jalankan browser QA mobile/responsive.
+- [ ] Update user manual lifecycle.
+- [ ] Update README/tasks hasil final.
+
+Acceptance:
+
+- Flow list/detail/mutation utama bisa diuji manual.
+- Relasi ke module yang belum ada diberi keterangan.
+- Console browser bersih dari error.
+
+## Increment 13: Integrasi Awal ke PresensiSantri
+
+- [ ] Buat public contract read-only izin approved.
+- [ ] Buat DTO status izin santri per tanggal.
+- [ ] Tambahkan test consumer readiness.
+- [ ] Dokumentasikan batas integrasi.
+
+Acceptance:
+
+- PresensiSantri bisa membaca izin approved tanpa coupling ke Infrastructure.
+- Izin tidak otomatis mengubah presensi tanpa keputusan eksplisit.
+- Fallback manual PresensiSantri tetap tersedia.
+
+## Keputusan Baseline
+
+- [x] Module teknis memakai `Pesantrian/PerizinanSantri`.
+- [x] Nama tampil memakai `Perizinan Santri`.
+- [x] Perizinan awal memakai admin/internal, bukan public form.
+- [x] Snapshot wali dipakai dulu; master WaliSantri tidak dipaksa.
+- [x] Approval baseline satu level dulu.
+- [x] Integrasi otomatis Presensi/Kesehatan/Kedisiplinan ditunda.

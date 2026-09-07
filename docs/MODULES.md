@@ -24,7 +24,7 @@ item migrasi.
 | `Academic/KelasRombel` | Kelas / Rombel / Kurikulum | Active | Backend read/list, create/update API, penempatan santri, wali kelas, archive/restore rombel, demo seeder, UI list/detail, form mutation utama, dan QA browser desktop/mobile. |
 | `Pesantrian/Asrama` | Asrama | Active - QA browser selesai | Asrama, kamar, kapasitas, musyrif, penempatan santri, transfer kamar, occupancy, riwayat placement, demo seeder, UI list/detail/mutation, dan QA browser desktop/mobile. |
 | `Pesantrian/PresensiSantri` | Presensi Santri | Active - lifecycle UI dan QA browser selesai | Sesi presensi santri, detail kehadiran, status hadir/izin/sakit/alfa/terlambat, revisi, dan rekap awal. |
-| `Pesantrian/Tahfidz` | Tahfidz / Hafalan | Active - skeleton dan permission ready | Program, target, setoran, murojaah, review, dan progres hafalan santri. |
+| `Pesantrian/Tahfidz` | Tahfidz / Hafalan | Active - QA browser selesai | Program, target, setoran, murojaah, review, dan progres hafalan santri. |
 
 ## Target Module Baseline
 
@@ -42,9 +42,9 @@ item migrasi.
 | 10 | `Pesantrian/Santri` | Data Induk Santri dan Wali | Student master, lifecycle, status, registration link, transfer, graduation, snapshot wali minimum | Organization, PenerimaanSantri, WaliSantri bila dipromosikan | Active - baseline complete sampai QA UI desktop/mobile |
 | 11 | `Academic/KelasRombel` | Kelas / Rombel / Kurikulum | Kelas, rombel, kurikulum minimum, penempatan santri, dan wali kelas | Organization, AcademicPeriod, Santri contract, HumanResource contract | Active - QA browser desktop/mobile selesai |
 | 12 | `Pesantrian/Asrama` | Asrama | Dormitory, room, occupancy, placement, musyrif relation, placement history | Organization, Santri contract, HumanResource contract | Active - QA browser desktop/mobile selesai |
-| 13 | `Pesantrian/Tahfidz` | Tahfidz / Hafalan | Target hafalan, setoran, murojaah, capaian, pembimbing tahfidz | Santri contract, HumanResource contract, AcademicPeriod bila diperlukan | Active - skeleton dan permission ready |
+| 13 | `Pesantrian/Tahfidz` | Tahfidz / Hafalan | Target hafalan, setoran, murojaah, capaian, pembimbing tahfidz | Santri contract, HumanResource contract, AcademicPeriod bila diperlukan | Active - QA browser desktop/mobile selesai |
 | 14 | `Pesantrian/PresensiSantri` | Presensi Santri | Presensi kegiatan santri di luar/bersama akademik formal | Santri contract, KelasRombel contract, Asrama contract bila diperlukan | Active - lifecycle UI dan QA browser selesai |
-| 15 | `Pesantrian/PerizinanSantri` | Perizinan Santri | Izin keluar/pulang/sakit, approval ringan, status kembali, riwayat izin | Santri contract, WaliSantri contract, HumanResource contract bila diperlukan | Planned |
+| 15 | `Pesantrian/PerizinanSantri` | Perizinan Santri | Izin keluar/pulang/sakit, approval ringan, status kembali, riwayat izin | Santri contract, WaliSantri snapshot/query bila tersedia, HumanResource contract bila diperlukan | Active - documentation baseline ready |
 | 16 | `Pesantrian/KedisiplinanSantri` | Pelanggaran / Kedisiplinan | Catatan pelanggaran, kategori, poin/tingkat, tindakan pembinaan, riwayat penyelesaian | Santri contract, WaliSantri contract, HumanResource contract bila diperlukan | Planned |
 | 17 | `Pesantrian/PrestasiSantri` | Prestasi | Catatan prestasi, kategori, tingkat, tanggal/periode, lampiran bukti | Santri contract, Document bila diperlukan | Planned |
 | 18 | `Pesantrian/KesehatanSantri` | Kesehatan / Klinik | Kunjungan klinik, keluhan, tindakan awal, rujukan, catatan kesehatan operasional | Santri contract, HumanResource contract bila diperlukan | Planned |

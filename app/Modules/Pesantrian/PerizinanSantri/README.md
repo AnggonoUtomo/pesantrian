@@ -13,5 +13,7 @@ Dokumentasi kerja aktif:
 Increment aktif:
 
 - Increment 2 menyiapkan skeleton module dan permission identity.
+- Increment 3 menyiapkan readiness contract ke `ActiveStudentReader`,
+  `ActiveEmployeeReader`, dan snapshot wali utama dari Santri.
 - Table bisnis, lifecycle izin, demo seeder, UI, dan integrasi awal ke
   PresensiSantri dikerjakan pada increment berikutnya.

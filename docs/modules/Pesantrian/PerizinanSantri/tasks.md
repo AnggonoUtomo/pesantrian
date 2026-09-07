@@ -65,17 +65,35 @@ Acceptance:
 
 ## Increment 3: Contract Readiness
 
-- [ ] Audit contract santri aktif.
-- [ ] Audit contract petugas/pegawai aktif.
-- [ ] Tentukan strategi snapshot wali baseline.
-- [ ] Tambahkan contract hanya jika consumer nyata belum tersedia.
-- [ ] Tambahkan tests readiness lintas module.
+- [x] Audit contract santri aktif.
+- [x] Audit contract petugas/pegawai aktif.
+- [x] Tentukan strategi snapshot wali baseline.
+- [x] Tambahkan contract hanya jika consumer nyata belum tersedia.
+- [x] Tambahkan tests readiness lintas module.
+
+Hasil:
+
+- Kandidat santri aktif memakai public contract `ActiveStudentReader` dari
+  module Santri.
+- Kandidat petugas/approver aktif memakai public contract
+  `ActiveEmployeeReader` dari module HumanResource.
+- Snapshot wali baseline memakai contract baru `PrimaryStudentGuardianReader`
+  pada module Santri karena PerizinanSantri perlu `guardian_name`,
+  `guardian_phone`, dan `guardian_relation` tanpa membaca model Infrastructure
+  Santri langsung.
+- Snapshot wali tetap minimum dan tidak memaksa module master `WaliSantri`.
+- PerizinanSantri belum memiliki import model Infrastructure lintas module.
+
+Verifikasi:
+
+- [x] `php artisan test tests/Feature/PerizinanSantriContractReadinessTest.php --no-ansi`
+- [x] `php artisan module:validate --no-ansi`
 
 Acceptance:
 
-- PerizinanSantri tidak membaca model Infrastructure module lain.
-- Candidate santri dan petugas bisa diambil melalui public contract.
-- Snapshot wali tidak memaksa pembuatan module WaliSantri master.
+- [x] PerizinanSantri tidak membaca model Infrastructure module lain.
+- [x] Candidate santri dan petugas bisa diambil melalui public contract.
+- [x] Snapshot wali tidak memaksa pembuatan module WaliSantri master.
 
 ## Increment 4: Data Foundation
 

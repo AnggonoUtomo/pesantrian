@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace App\Modules\Pesantrian\Santri;
 
 use App\Modules\Pesantrian\Santri\Application\Contracts\ActiveStudentReader;
+use App\Modules\Pesantrian\Santri\Application\Contracts\PrimaryStudentGuardianReader;
 use App\Modules\Pesantrian\Santri\Application\Contracts\StudentActivityPublisher;
 use App\Modules\Pesantrian\Santri\Application\Contracts\StudentRepository;
 use App\Modules\Pesantrian\Santri\Infrastructure\Events\LaravelStudentActivityPublisher;
 use App\Modules\Pesantrian\Santri\Infrastructure\Readers\EloquentActiveStudentReader;
+use App\Modules\Pesantrian\Santri\Infrastructure\Readers\EloquentPrimaryStudentGuardianReader;
 use App\Modules\Pesantrian\Santri\Infrastructure\Repositories\EloquentStudentRepository;
 use Illuminate\Support\ServiceProvider as FrameworkServiceProvider;
 
@@ -19,6 +21,7 @@ final class ServiceProvider extends FrameworkServiceProvider
         $this->app->bind(StudentActivityPublisher::class, LaravelStudentActivityPublisher::class);
         $this->app->bind(StudentRepository::class, EloquentStudentRepository::class);
         $this->app->bind(ActiveStudentReader::class, EloquentActiveStudentReader::class);
+        $this->app->bind(PrimaryStudentGuardianReader::class, EloquentPrimaryStudentGuardianReader::class);
     }
 
     public function boot(): void

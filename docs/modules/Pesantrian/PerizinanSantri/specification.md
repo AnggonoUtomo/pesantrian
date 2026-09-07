@@ -168,6 +168,19 @@ izin, santri, dan keterlambatan kembali.
 | Notification | Mengirim info approval ke wali/operator | Ditunda |
 | Document | Lampiran surat izin/sakit | Ditunda |
 
+## Contract Readiness
+
+- Kandidat santri aktif memakai contract
+  `App\Modules\Pesantrian\Santri\Application\Contracts\ActiveStudentReader`.
+- Kandidat petugas/approver aktif memakai contract
+  `App\Modules\HumanResource\HumanResource\Application\Contracts\ActiveEmployeeReader`.
+- Snapshot wali baseline memakai contract
+  `App\Modules\Pesantrian\Santri\Application\Contracts\PrimaryStudentGuardianReader`.
+- Snapshot wali hanya mengambil data minimum `guardian_name`, `guardian_phone`,
+  dan `guardian_relation` dari data wali utama di Santri.
+- Module `Pesantrian/WaliSantri` belum dipaksa karena kebutuhan master wali
+  lintas santri/portal wali belum menjadi scope baseline PerizinanSantri.
+
 ## Permission Candidate
 
 - `perizinan_santri.view`

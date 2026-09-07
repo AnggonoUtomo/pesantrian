@@ -105,13 +105,16 @@ Deliverable:
 - audit contract `ActiveStudentReader`;
 - audit contract `ActiveEmployeeReader`;
 - strategi snapshot wali dari data yang sudah tersedia;
-- contract tambahan hanya jika consumer nyata belum tersedia;
+- contract tambahan `PrimaryStudentGuardianReader` di module Santri karena
+  PerizinanSantri membutuhkan snapshot wali dan contract khusus belum tersedia;
 - tests contract readiness.
 
 Acceptance:
 
 - PerizinanSantri dapat mengambil kandidat santri aktif dan petugas aktif
   melalui contract;
+- PerizinanSantri dapat mengambil snapshot wali utama tanpa master
+  `WaliSantri`;
 - tidak ada import model Infrastructure lintas module.
 
 ## Increment 4: Data Foundation

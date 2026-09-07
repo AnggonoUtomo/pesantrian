@@ -4,6 +4,7 @@ import {
     Building2,
     CalendarRange,
     ClipboardCheck,
+    ClipboardList,
     GraduationCap,
     LayoutGrid,
     NotebookTabs,
@@ -203,6 +204,12 @@ function buildPesantrianNavigation(auth: Auth): NavItem[] {
             'tahfidz.record',
             'tahfidz.review',
             'tahfidz.archive',
+            'perizinan_santri.view',
+            'perizinan_santri.manage',
+            'perizinan_santri.approve',
+            'perizinan_santri.checkout',
+            'perizinan_santri.return',
+            'perizinan_santri.archive',
         ])
     ) {
         return [];
@@ -295,6 +302,27 @@ function buildPesantrianNavigation(auth: Auth): NavItem[] {
             href: routeOr('/pesantrian/tahfidz', 'pesantrian.tahfidz.index'),
             icon: BookOpenCheck,
             iconClassName: 'text-emerald-600 dark:text-emerald-300',
+        });
+    }
+
+    if (
+        hasAnyPermission(auth, [
+            'perizinan_santri.view',
+            'perizinan_santri.manage',
+            'perizinan_santri.approve',
+            'perizinan_santri.checkout',
+            'perizinan_santri.return',
+            'perizinan_santri.archive',
+        ])
+    ) {
+        items.push({
+            title: 'Perizinan Santri',
+            href: routeOr(
+                '/pesantrian/student-permits',
+                'pesantrian.student-permits.index',
+            ),
+            icon: ClipboardList,
+            iconClassName: 'text-cyan-600 dark:text-cyan-300',
         });
     }
 

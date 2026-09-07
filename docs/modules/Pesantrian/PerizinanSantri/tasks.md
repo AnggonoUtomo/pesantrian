@@ -306,18 +306,46 @@ Acceptance:
 
 ## Increment 10: UI/Inertia List dan Detail
 
-- [ ] Buat page index.
-- [ ] Buat page detail.
-- [ ] Buat komponen filter/table/card/summary/pagination.
-- [ ] Tambahkan sidebar menu namespace Pesantrian.
-- [ ] Tambahkan presentation/Ziggy tests.
-- [ ] Jalankan typecheck, lint, dan build.
+- [x] Buat page index.
+- [x] Buat page detail.
+- [x] Buat komponen filter/table/card/summary/pagination.
+- [x] Tambahkan sidebar menu namespace Pesantrian.
+- [x] Tambahkan presentation/Ziggy tests.
+- [x] Jalankan typecheck, lint, dan build.
+
+Hasil:
+
+- Web Inertia route tersedia:
+  - `GET /pesantrian/student-permits`
+  - `GET /pesantrian/student-permits/{permit}`
+- Page frontend tersedia di
+  `resources/js/pages/Pesantrian/PerizinanSantri/pages/Index.tsx` dan
+  `resources/js/pages/Pesantrian/PerizinanSantri/pages/Show.tsx`.
+- Komponen business-specific ditempatkan di
+  `resources/js/pages/Pesantrian/PerizinanSantri/components/`.
+- UI list mendukung filter search, tanggal, jenis izin, status,
+  keterlambatan, pagination, summary card, empty state, dan table/card
+  responsive.
+- UI detail menampilkan informasi izin, snapshot santri/wali, lifecycle waktu,
+  status, keterlambatan, dan histori revisi.
+- Menu sidebar namespace Pesantrian menampilkan `Perizinan Santri` untuk actor
+  dengan permission terkait.
+- Route web PerizinanSantri masuk whitelist Ziggy.
+- Mutation UI belum dibuat; dialog create/update/submit/approve/reject/
+  check-out/return/void masuk Increment 11.
+
+Verifikasi:
+
+- [x] `php artisan test tests/Feature/PerizinanSantriPresentationTest.php tests/Feature/NavigationSidebarTest.php tests/Feature/ZiggyRouteTest.php --no-ansi`
+- [x] `npm run types:check`
+- [x] `npm run lint:check`
+- [x] `npm run build`
 
 Acceptance:
 
-- Page tetap tipis.
-- UI berada di `resources/js/pages/Pesantrian/PerizinanSantri/`.
-- Console browser bersih dari route/Ziggy error.
+- [x] Page tetap tipis.
+- [x] UI berada di `resources/js/pages/Pesantrian/PerizinanSantri/`.
+- [x] Console browser bersih dari route/Ziggy error.
 
 ## Increment 11: UI Mutation
 

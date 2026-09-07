@@ -30,4 +30,8 @@ Increment aktif:
 - Increment 9 menyiapkan demo seeder idempotent untuk status
   `draft/submitted/approved/rejected/checked_out/returned/void`, snapshot wali,
   actor demo, dan revision history demo.
-- UI dan integrasi awal ke PresensiSantri dikerjakan pada increment berikutnya.
+- Increment 10 menyiapkan web Inertia list/detail read-only, komponen filter,
+  table/card responsive, summary, pagination, detail panel, sidebar namespace
+  Pesantrian, dan whitelist route Ziggy.
+- UI mutation dan integrasi awal ke PresensiSantri dikerjakan pada increment
+  berikutnya.

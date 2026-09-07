@@ -71,6 +71,8 @@ return [
         'organization.units.archive',
         'organization.units.restore',
         'pesantrian.admissions.index',
+        'pesantrian.student-permits.index',
+        'pesantrian.student-permits.show',
         'api.v1.pesantrian.admissions.store',
         'api.v1.pesantrian.admissions.update',
         'api.v1.pesantrian.admissions.verify',

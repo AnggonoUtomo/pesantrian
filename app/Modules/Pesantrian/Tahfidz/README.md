@@ -34,4 +34,6 @@ Increment aktif:
 - Increment 10 menyediakan route web Inertia, page list/detail, komponen
   filter/table/card/summary/pagination, dan menu sidebar namespace Pesantrian
   untuk `Tahfidz / Hafalan`.
-- UI mutation dikerjakan pada increment berikutnya.
+- Increment 11 menyediakan route web mutation dan dialog UI untuk buat/ubah
+  program, buat/ubah target, buat/ubah setoran, review, dan void setoran.
+- QA browser dan user manual dikerjakan pada increment berikutnya.

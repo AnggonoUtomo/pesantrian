@@ -9,6 +9,7 @@ export default function Show() {
     const {
         auth,
         submission,
+        options,
         canManage,
         canRecord,
         canReview,
@@ -27,6 +28,7 @@ export default function Show() {
                 {canView ? (
                     <TahfidzDetailPanel
                         submission={submission}
+                        options={options}
                         canManage={canManage}
                         canRecord={canRecord}
                         canReview={canReview}

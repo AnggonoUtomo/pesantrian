@@ -199,6 +199,58 @@ final class EloquentTahfidzReadRepository implements TahfidzMutationRepository, 
         return $this->map($record);
     }
 
+    /** @return list<array{id: string, code: string, name: string, description: string|null, status: string}> */
+    public function programOptions(int $limit = 100): array
+    {
+        return TahfidzProgramRecord::query()
+            ->whereNull('archived_at')
+            ->orderBy('name')
+            ->limit($limit)
+            ->get(['id', 'code', 'name', 'description', 'status'])
+            ->map(static fn (TahfidzProgramRecord $program): array => [
+                'id' => (string) $program->id,
+                'code' => (string) $program->code,
+                'name' => (string) $program->name,
+                'description' => $program->description === null ? null : (string) $program->description,
+                'status' => (string) $program->status,
+            ])
+            ->values()
+            ->all();
+    }
+
+    /** @return list<array<string, mixed>> */
+    public function targetOptions(int $limit = 200): array
+    {
+        return TahfidzTargetRecord::query()
+            ->with('program')
+            ->where('status', 'active')
+            ->orderBy('student_name')
+            ->limit($limit)
+            ->get()
+            ->map(static function (TahfidzTargetRecord $target): array {
+                $range = collect([
+                    $target->target_juz === null ? null : 'Juz '.$target->target_juz,
+                    $target->target_surah,
+                ])->filter()->join(' · ');
+
+                return [
+                    'id' => (string) $target->id,
+                    'program_id' => (string) $target->program_id,
+                    'student_id' => (string) $target->student_id,
+                    'academic_period_id' => $target->academic_period_id === null ? null : (string) $target->academic_period_id,
+                    'label' => trim($target->student_name.' - '.($range ?: 'Target aktif')),
+                    'target_juz' => $target->target_juz === null ? null : (int) $target->target_juz,
+                    'target_surah' => $target->target_surah === null ? null : (string) $target->target_surah,
+                    'target_ayah_from' => $target->target_ayah_from === null ? null : (int) $target->target_ayah_from,
+                    'target_ayah_to' => $target->target_ayah_to === null ? null : (int) $target->target_ayah_to,
+                    'target_note' => $target->target_note === null ? null : (string) $target->target_note,
+                    'status' => (string) $target->status,
+                ];
+            })
+            ->values()
+            ->all();
+    }
+
     /** @return Builder<TahfidzSubmissionRecord> */
     private function filteredQuery(TahfidzListFilter $filter): Builder
     {

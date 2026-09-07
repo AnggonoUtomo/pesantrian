@@ -343,18 +343,45 @@ Verifikasi:
 
 ## Increment 11: UI Mutation
 
-- [ ] Buat dialog create/update program.
-- [ ] Buat dialog create/update target.
-- [ ] Buat dialog create/update setoran.
-- [ ] Buat dialog review.
-- [ ] Buat confirmation void.
-- [ ] Jalankan typecheck, lint, dan build.
+- [x] Buat dialog create/update program.
+- [x] Buat dialog create/update target.
+- [x] Buat dialog create/update setoran.
+- [x] Buat dialog review.
+- [x] Buat confirmation void.
+- [x] Jalankan typecheck, lint, dan build.
 
 Acceptance:
 
-- Form mutation berada di folder `components`.
-- Review/void memakai confirmation atau dialog alasan.
-- Backend tetap authority permission dan validasi.
+- [x] Form mutation berada di folder `components`.
+- [x] Review/void memakai confirmation atau dialog alasan.
+- [x] Backend tetap authority permission dan validasi.
+
+Hasil:
+
+- Route web mutation tersedia untuk program, target, setoran, review, dan void
+  dengan namespace `pesantrian.tahfidz.*`.
+- Controller web memakai Application action yang sama dengan API mutation,
+  sehingga validasi, permission, snapshot, lifecycle, dan audit tetap berasal
+  dari backend.
+- Dialog UI tersedia:
+  `TahfidzProgramDialog`, `TahfidzTargetDialog`,
+  `TahfidzSubmissionDialog`, `ReviewTahfidzDialog`, dan
+  `VoidTahfidzDialog`.
+- Halaman daftar memiliki action bar untuk membuat program, target, dan
+  setoran sesuai permission.
+- Halaman detail memiliki tombol edit setoran, review, dan void sesuai
+  permission serta status setoran.
+- Dropdown form memakai option santri aktif, pegawai aktif, periode akademik
+  aktif, program Tahfidz, dan target aktif.
+
+Verifikasi:
+
+- [x] `php artisan test tests/Feature/TahfidzPresentationTest.php tests/Feature/TahfidzProgramTargetMutationApiTest.php tests/Feature/TahfidzSubmissionMutationApiTest.php tests/Feature/TahfidzLifecycleApiTest.php --no-ansi`
+- [x] `php artisan route:list --name=pesantrian.tahfidz --no-ansi`
+- [x] `php artisan module:validate --no-ansi`
+- [x] `npm run types:check`
+- [x] `npm run lint:check`
+- [x] `npm run build`
 
 ## Increment 12: QA Browser dan User Manual
 

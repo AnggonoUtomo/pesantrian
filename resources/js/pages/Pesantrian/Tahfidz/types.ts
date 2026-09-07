@@ -36,6 +36,28 @@ export type TahfidzTarget = {
     status: string;
 };
 
+export type TahfidzProgramOption = {
+    id: string;
+    code: string;
+    name: string;
+    description: string | null;
+    status: string;
+};
+
+export type TahfidzTargetOption = {
+    id: string;
+    program_id: string;
+    student_id: string;
+    academic_period_id: string | null;
+    label: string;
+    target_juz: number | null;
+    target_surah: string | null;
+    target_ayah_from: number | null;
+    target_ayah_to: number | null;
+    target_note: string | null;
+    status: string;
+};
+
 export type TahfidzSubmissionSummary = {
     has_target: boolean;
     has_supervisor: boolean;
@@ -118,6 +140,23 @@ export type TahfidzFilters = {
 };
 
 export type TahfidzOptions = {
+    programs: TahfidzProgramOption[];
+    targets: TahfidzTargetOption[];
+    students: {
+        id: string;
+        code: string;
+        name: string;
+    }[];
+    employees: {
+        id: string;
+        code: string;
+        name: string;
+        position: string | null;
+    }[];
+    academicPeriods: {
+        id: string;
+        label: string;
+    }[];
     types: ReferenceOption[];
     statuses: ReferenceOption[];
 };
@@ -146,4 +185,47 @@ export type TahfidzShowPageProps = {
     canRecord: boolean;
     canReview: boolean;
     canArchive: boolean;
+};
+
+export type TahfidzProgramPayload = {
+    code: string;
+    name: string;
+    description: string | null;
+    status: 'active' | 'inactive';
+};
+
+export type TahfidzTargetPayload = {
+    program_id: string;
+    student_id: string;
+    academic_period_id: string | null;
+    target_juz: string | null;
+    target_surah: string | null;
+    target_ayah_from: string | null;
+    target_ayah_to: string | null;
+    target_note: string | null;
+    status: 'active' | 'completed' | 'cancelled';
+};
+
+export type TahfidzSubmissionPayload = {
+    program_id: string;
+    target_id: string | null;
+    student_id: string;
+    supervisor_id: string | null;
+    submission_date: string;
+    type: TahfidzSubmissionType;
+    juz: string | null;
+    surah: string | null;
+    ayah_from: string | null;
+    ayah_to: string | null;
+    status: 'draft' | 'submitted';
+    quality_note: string | null;
+};
+
+export type TahfidzReviewPayload = {
+    status: 'accepted' | 'needs_revision';
+    reason: string;
+};
+
+export type TahfidzReasonPayload = {
+    reason: string;
 };

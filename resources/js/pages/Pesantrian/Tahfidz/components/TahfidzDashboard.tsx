@@ -5,11 +5,15 @@ import { canAccess } from '@/lib/authorization';
 import { routeOr } from '@/lib/route';
 import type { TahfidzIndexPageProps } from '../types';
 import { TahfidzAccessDenied } from './TahfidzAccessDenied';
+import { TahfidzActionBar } from './TahfidzActionBar';
 import { TahfidzEmptyState } from './TahfidzEmptyState';
 import { TahfidzFilters } from './TahfidzFilters';
 import { TahfidzPagination } from './TahfidzPagination';
+import { TahfidzProgramDialog } from './TahfidzProgramDialog';
+import { TahfidzSubmissionDialog } from './TahfidzSubmissionDialog';
 import { TahfidzSummaryCards } from './TahfidzSummaryCards';
 import { TahfidzTable } from './TahfidzTable';
+import { TahfidzTargetDialog } from './TahfidzTargetDialog';
 
 export function TahfidzDashboard() {
     const {
@@ -19,6 +23,8 @@ export function TahfidzDashboard() {
         pagination,
         options,
         errors,
+        canManage,
+        canRecord,
     } = usePage<TahfidzIndexPageProps>().props;
     const [search, setSearch] = useState(filters.search ?? '');
     const [dateFrom, setDateFrom] = useState(filters.filter?.date_from ?? '');
@@ -27,6 +33,9 @@ export function TahfidzDashboard() {
     const [status, setStatus] = useState<string>(
         filters.filter?.status ?? 'all',
     );
+    const [programOpen, setProgramOpen] = useState(false);
+    const [targetOpen, setTargetOpen] = useState(false);
+    const [submissionOpen, setSubmissionOpen] = useState(false);
     const canView = canAccess(auth, 'tahfidz.view');
     const tahfidzIndexUrl = () =>
         routeOr('/pesantrian/tahfidz', 'pesantrian.tahfidz.index');
@@ -93,6 +102,14 @@ export function TahfidzDashboard() {
                 submissions={submissions.data}
             />
 
+            <TahfidzActionBar
+                canManage={canManage}
+                canRecord={canRecord}
+                onCreateProgram={() => setProgramOpen(true)}
+                onCreateTarget={() => setTargetOpen(true)}
+                onCreateSubmission={() => setSubmissionOpen(true)}
+            />
+
             {errors && Object.keys(errors).length > 0 ? (
                 <p role="alert" className="dashboard-message--error text-sm">
                     Filter Tahfidz / Hafalan tidak valid. Periksa input dan
@@ -136,6 +153,23 @@ export function TahfidzDashboard() {
                     <TahfidzEmptyState />
                 )}
             </section>
+
+            <TahfidzProgramDialog
+                open={programOpen}
+                options={options}
+                onOpenChange={setProgramOpen}
+            />
+            <TahfidzTargetDialog
+                open={targetOpen}
+                options={options}
+                onOpenChange={setTargetOpen}
+            />
+            <TahfidzSubmissionDialog
+                open={submissionOpen}
+                submission={null}
+                options={options}
+                onOpenChange={setSubmissionOpen}
+            />
         </div>
     );
 }

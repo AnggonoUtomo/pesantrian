@@ -1,18 +1,25 @@
 import { Link } from '@inertiajs/react';
 import { ArrowLeft } from 'lucide-react';
 import type { ReactNode } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { routeOr } from '@/lib/route';
-import type { TahfidzSubmission } from '../types';
+import type { TahfidzShowPageProps, TahfidzSubmission } from '../types';
 import {
     memorizationRange,
     tahfidzTypeLabel,
     targetRange,
 } from './tahfidzDisplay';
+import {
+    ReviewTahfidzDialog,
+    VoidTahfidzDialog,
+} from './TahfidzLifecycleDialogs';
 import { TahfidzStatusBadge } from './TahfidzStatusBadge';
+import { TahfidzSubmissionDialog } from './TahfidzSubmissionDialog';
 
 type Props = {
     submission: TahfidzSubmission;
+    options: TahfidzShowPageProps['options'];
     canManage: boolean;
     canRecord: boolean;
     canReview: boolean;
@@ -21,12 +28,21 @@ type Props = {
 
 export function TahfidzDetailPanel({
     submission,
+    options,
     canManage,
     canRecord,
     canReview,
     canArchive,
 }: Props) {
     const revisions = submission.revisions ?? [];
+    const [editOpen, setEditOpen] = useState(false);
+    const [reviewOpen, setReviewOpen] = useState(false);
+    const [voidOpen, setVoidOpen] = useState(false);
+    const canEditSubmission =
+        canRecord && ['draft', 'submitted'].includes(submission.status);
+    const canReviewSubmission =
+        canReview && submission.status === 'submitted';
+    const canVoidSubmission = canArchive && submission.status !== 'void';
 
     return (
         <div className="space-y-5">
@@ -46,13 +62,45 @@ export function TahfidzDetailPanel({
                 </Button>
                 <p className="text-sm text-foreground/60">
                     Aksi form program, target, setoran, review, dan void masuk
-                    Increment 11. Hak akses aktif: {permissionSummary({
+                    dari Increment 11. Hak akses aktif: {permissionSummary({
                         canManage,
                         canRecord,
                         canReview,
                         canArchive,
                     })}
                 </p>
+                <div className="flex flex-wrap gap-2">
+                    {canEditSubmission ? (
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setEditOpen(true)}
+                        >
+                            Edit setoran
+                        </Button>
+                    ) : null}
+                    {canReviewSubmission ? (
+                        <Button
+                            type="button"
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => setReviewOpen(true)}
+                        >
+                            Review setoran
+                        </Button>
+                    ) : null}
+                    {canVoidSubmission ? (
+                        <Button
+                            type="button"
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => setVoidOpen(true)}
+                        >
+                            Batalkan setoran
+                        </Button>
+                    ) : null}
+                </div>
             </div>
 
             <section className="dashboard-card rounded-2xl border p-5">
@@ -159,6 +207,23 @@ export function TahfidzDetailPanel({
                     </p>
                 )}
             </section>
+
+            <TahfidzSubmissionDialog
+                open={editOpen}
+                submission={submission}
+                options={options}
+                onOpenChange={setEditOpen}
+            />
+            <ReviewTahfidzDialog
+                open={reviewOpen}
+                submission={submission}
+                onOpenChange={setReviewOpen}
+            />
+            <VoidTahfidzDialog
+                open={voidOpen}
+                submission={submission}
+                onOpenChange={setVoidOpen}
+            />
         </div>
     );
 }

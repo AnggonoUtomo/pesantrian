@@ -10,7 +10,7 @@ dan [`docs/FOLDER-STRUCTURE.md`](../../../FOLDER-STRUCTURE.md).
 - Nama tampil: `Tahfidz / Hafalan`
 - Candidate source: `app/Modules/Pesantrian/Tahfidz/`
 - Candidate frontend: `resources/js/pages/Pesantrian/Tahfidz/`
-- Status: Active - UI read/list ready
+- Status: Active - UI mutation ready
 
 ## Tujuan
 
@@ -160,6 +160,14 @@ Route web Inertia:
 
 - `GET /pesantrian/tahfidz`
 - `GET /pesantrian/tahfidz/{submission}`
+- `POST /pesantrian/tahfidz/programs`
+- `PATCH /pesantrian/tahfidz/programs/{program}`
+- `POST /pesantrian/tahfidz/targets`
+- `PATCH /pesantrian/tahfidz/targets/{target}`
+- `POST /pesantrian/tahfidz/submissions`
+- `PATCH /pesantrian/tahfidz/submissions/{submission}`
+- `PATCH /pesantrian/tahfidz/submissions/{submission}/review`
+- `PATCH /pesantrian/tahfidz/submissions/{submission}/void`
 
 ## Data Demo
 
@@ -220,7 +228,16 @@ UI read/list awal sudah tersedia:
 - summary cards, table desktop, card mobile, empty state, dan pagination;
 - menu sidebar namespace Pesantrian.
 
-UI mutation program, target, setoran, review, dan void masuk Increment 11.
+UI mutation awal sudah tersedia:
+
+- dialog buat/ubah program;
+- dialog buat/ubah target hafalan;
+- dialog buat/ubah setoran;
+- dialog review setoran;
+- dialog pembatalan setoran dengan alasan.
+
+Backend tetap menjadi authority permission dan validasi. Frontend hanya
+mengatur pengalaman pengguna.
 
 ## Dokumentasi Terkait
 

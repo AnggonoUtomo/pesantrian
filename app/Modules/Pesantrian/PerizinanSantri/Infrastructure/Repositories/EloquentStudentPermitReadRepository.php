@@ -132,6 +132,16 @@ final class EloquentStudentPermitReadRepository implements StudentPermitMutation
         return $this->map($record);
     }
 
+    public function approve(string $id, ?string $reviewNote, string $actorId): ?StudentPermitData
+    {
+        return $this->review($id, 'approved', $reviewNote, $actorId);
+    }
+
+    public function reject(string $id, string $reason, string $actorId): ?StudentPermitData
+    {
+        return $this->review($id, 'rejected', $reason, $actorId);
+    }
+
     public function hasActiveOverlap(string $studentId, string $startsAt, string $endsAt, ?string $exceptId = null): bool
     {
         $normalizedStartsAt = Carbon::parse($startsAt)->toDateTimeString();
@@ -293,6 +303,31 @@ final class EloquentStudentPermitReadRepository implements StudentPermitMutation
         } while (StudentPermitRecord::query()->where('permit_no', $permitNo)->exists());
 
         return $permitNo;
+    }
+
+    private function review(string $id, string $status, ?string $reviewNote, string $actorId): ?StudentPermitData
+    {
+        $record = StudentPermitRecord::query()->find($id);
+
+        if (! $record instanceof StudentPermitRecord) {
+            return null;
+        }
+
+        $record->forceFill([
+            'status' => $status,
+            'reviewed_at' => now(),
+            'reviewed_by' => $actorId,
+            'review_note' => $reviewNote,
+        ])->save();
+        $this->createRevision($record, $reviewNote ?? 'Permohonan izin disetujui.', $actorId, [
+            'action' => 'review',
+            'changed_fields' => ['status', 'reviewed_at', 'reviewed_by', 'review_note'],
+            'to_status' => $status,
+        ]);
+
+        $record->load(['revisions' => fn ($query) => $query->orderBy('changed_at')])->loadCount('revisions');
+
+        return $this->map($record);
     }
 
     /** @param array<string, mixed> $summary */

@@ -85,6 +85,8 @@ frontend memakai Laravel named routes melalui Ziggy untuk Inertia React.
 | POST | `/api/v1/pesantrian/student-permits` | `api.v1.pesantrian.student-permits.store` | `perizinan_santri.manage` | Ya | Envelope sukses `201` dengan permohonan izin draft yang dibuat |
 | PATCH | `/api/v1/pesantrian/student-permits/{permit}` | `api.v1.pesantrian.student-permits.update` | `perizinan_santri.manage` | Ya | Envelope sukses dengan permohonan izin draft yang diperbarui dan revision tercatat |
 | GET | `/api/v1/pesantrian/student-permits/{permit}` | `api.v1.pesantrian.student-permits.show` | `perizinan_santri.view` | Tidak | Envelope sukses dengan detail izin, snapshot santri/wali, lifecycle, summary, dan revisions |
+| PATCH | `/api/v1/pesantrian/student-permits/{permit}/approve` | `api.v1.pesantrian.student-permits.approve` | `perizinan_santri.approve` | Ya | Envelope sukses dengan permohonan izin berstatus approved dan decision tercatat |
+| PATCH | `/api/v1/pesantrian/student-permits/{permit}/reject` | `api.v1.pesantrian.student-permits.reject` | `perizinan_santri.approve` | Ya | Envelope sukses dengan permohonan izin berstatus rejected dan alasan tercatat |
 | PATCH | `/api/v1/pesantrian/student-permits/{permit}/submit` | `api.v1.pesantrian.student-permits.submit` | `perizinan_santri.manage` | Ya | Envelope sukses dengan permohonan izin berstatus submitted bila tidak overlap izin aktif |
 | GET | `/api/v1/pesantrian/students` | `api.v1.pesantrian.students.index` | `santri.view` | Tidak | Envelope sukses dengan daftar data induk santri dan pagination meta |
 | POST | `/api/v1/pesantrian/students` | `api.v1.pesantrian.students.store` | `santri.manage` | Ya | Envelope sukses `201` dengan data induk santri yang dibuat |

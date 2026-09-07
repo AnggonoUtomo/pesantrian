@@ -22,5 +22,7 @@ Increment aktif:
 - Increment 6 menyiapkan API create draft, update draft, submit, revision
   koreksi/submit, validasi santri aktif, validasi rentang, rule overlap izin
   aktif, dan audit create/update/submit.
-- Approval, check-out/return, demo seeder, UI, dan integrasi awal ke
+- Increment 7 menyiapkan API approve/reject, validasi decision, revision
+  decision, dan audit approve/reject.
+- Check-out/return, demo seeder, UI, dan integrasi awal ke
   PresensiSantri dikerjakan pada increment berikutnya.

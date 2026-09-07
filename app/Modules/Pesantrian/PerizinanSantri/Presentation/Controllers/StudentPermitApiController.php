@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Modules\Pesantrian\PerizinanSantri\Presentation\Controllers;
 
 use App\Http\ApiResponseFactory;
+use App\Modules\Pesantrian\PerizinanSantri\Application\Actions\ApproveStudentPermit;
 use App\Modules\Pesantrian\PerizinanSantri\Application\Actions\CreateStudentPermitDraft;
+use App\Modules\Pesantrian\PerizinanSantri\Application\Actions\RejectStudentPermit;
 use App\Modules\Pesantrian\PerizinanSantri\Application\Actions\SubmitStudentPermitDraft;
 use App\Modules\Pesantrian\PerizinanSantri\Application\Actions\UpdateStudentPermitDraft;
 use App\Modules\Pesantrian\PerizinanSantri\Application\DTO\PaginatedStudentPermitData;
@@ -13,7 +15,9 @@ use App\Modules\Pesantrian\PerizinanSantri\Application\DTO\StudentPermitData;
 use App\Modules\Pesantrian\PerizinanSantri\Application\Exceptions\StudentPermitMutationException;
 use App\Modules\Pesantrian\PerizinanSantri\Application\Queries\ListStudentPermits;
 use App\Modules\Pesantrian\PerizinanSantri\Application\Queries\ShowStudentPermit;
+use App\Modules\Pesantrian\PerizinanSantri\Presentation\Requests\ApproveStudentPermitApiRequest;
 use App\Modules\Pesantrian\PerizinanSantri\Presentation\Requests\ListStudentPermitsApiRequest;
+use App\Modules\Pesantrian\PerizinanSantri\Presentation\Requests\RejectStudentPermitApiRequest;
 use App\Modules\Pesantrian\PerizinanSantri\Presentation\Requests\StoreStudentPermitApiRequest;
 use App\Modules\Pesantrian\PerizinanSantri\Presentation\Requests\UpdateStudentPermitApiRequest;
 use App\Modules\Pesantrian\PerizinanSantri\Presentation\Resources\StudentPermitResource;
@@ -30,6 +34,8 @@ final readonly class StudentPermitApiController implements HasMiddleware
         private CreateStudentPermitDraft $createStudentPermitDraft,
         private UpdateStudentPermitDraft $updateStudentPermitDraft,
         private SubmitStudentPermitDraft $submitStudentPermitDraft,
+        private ApproveStudentPermit $approveStudentPermit,
+        private RejectStudentPermit $rejectStudentPermit,
         private ApiResponseFactory $responses,
     ) {}
 
@@ -38,6 +44,7 @@ final readonly class StudentPermitApiController implements HasMiddleware
         return [
             new Middleware('can:perizinan_santri.view', only: ['index', 'show']),
             new Middleware('can:perizinan_santri.manage', only: ['store', 'update', 'submit']),
+            new Middleware('can:perizinan_santri.approve', only: ['approve', 'reject']),
         ];
     }
 
@@ -129,6 +136,50 @@ final readonly class StudentPermitApiController implements HasMiddleware
         return $this->responses->success(
             $request,
             'Permohonan izin santri berhasil disubmit.',
+            (new StudentPermitResource($data))->toArray($request),
+        );
+    }
+
+    public function approve(ApproveStudentPermitApiRequest $request, string $permit): JsonResponse
+    {
+        try {
+            $data = $this->approveStudentPermit->execute(
+                $request->user(),
+                $permit,
+                $request->reviewNote(),
+                $this->responses->correlationId($request),
+            );
+        } catch (StudentPermitMutationException $exception) {
+            return $this->invalidMutation($request, $exception);
+        }
+
+        abort_if($data === null, 404);
+
+        return $this->responses->success(
+            $request,
+            'Permohonan izin santri berhasil disetujui.',
+            (new StudentPermitResource($data))->toArray($request),
+        );
+    }
+
+    public function reject(RejectStudentPermitApiRequest $request, string $permit): JsonResponse
+    {
+        try {
+            $data = $this->rejectStudentPermit->execute(
+                $request->user(),
+                $permit,
+                $request->reason(),
+                $this->responses->correlationId($request),
+            );
+        } catch (StudentPermitMutationException $exception) {
+            return $this->invalidMutation($request, $exception);
+        }
+
+        abort_if($data === null, 404);
+
+        return $this->responses->success(
+            $request,
+            'Permohonan izin santri berhasil ditolak.',
             (new StudentPermitResource($data))->toArray($request),
         );
     }

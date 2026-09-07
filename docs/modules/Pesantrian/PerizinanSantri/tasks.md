@@ -206,17 +206,38 @@ Acceptance:
 
 ## Increment 7: Approve dan Reject
 
-- [ ] Buat action approve.
-- [ ] Buat action reject.
-- [ ] Tambahkan request validation decision note/reason.
-- [ ] Tambahkan audit decision.
-- [ ] Jalankan focused lifecycle tests.
+- [x] Buat action approve.
+- [x] Buat action reject.
+- [x] Tambahkan request validation decision note/reason.
+- [x] Tambahkan audit decision.
+- [x] Jalankan focused lifecycle tests.
+
+Hasil:
+
+- API decision internal tersedia:
+  - `PATCH /api/v1/pesantrian/student-permits/{permit}/approve`
+  - `PATCH /api/v1/pesantrian/student-permits/{permit}/reject`
+- Approve hanya boleh dari status `submitted`, mengubah status menjadi
+  `approved`, menyimpan `reviewed_at`, `reviewed_by`, dan catatan review
+  opsional.
+- Reject hanya boleh dari status `submitted`, mengubah status menjadi
+  `rejected`, menyimpan `reviewed_at`, `reviewed_by`, dan alasan penolakan.
+- Reject mewajibkan `reason` minimal 3 karakter.
+- Decision approve/reject mencatat revision history dan audit
+  `perizinan_santri.permit.approved` atau
+  `perizinan_santri.permit.rejected`.
+
+Verifikasi:
+
+- [x] `php artisan test tests/Feature/PerizinanSantriDecisionApiTest.php --no-ansi`
+- [x] `php artisan test tests/Feature/PerizinanSantriDecisionApiTest.php tests/Feature/PerizinanSantriMutationApiTest.php tests/Feature/PerizinanSantriApiTest.php tests/Feature/ApiRouteMatrixTest.php --no-ansi`
+- [x] `php artisan module:validate --no-ansi`
 
 Acceptance:
 
-- Approve/reject hanya dari submitted.
-- Reject wajib alasan.
-- Decision menyimpan actor, waktu, dan catatan.
+- [x] Approve/reject hanya dari submitted.
+- [x] Reject wajib alasan.
+- [x] Decision menyimpan actor, waktu, dan catatan.
 
 ## Increment 8: Check-out, Return, dan Void
 

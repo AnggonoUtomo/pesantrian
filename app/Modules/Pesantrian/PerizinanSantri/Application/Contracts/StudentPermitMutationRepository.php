@@ -15,5 +15,9 @@ interface StudentPermitMutationRepository
 
     public function submitDraft(string $id, string $actorId): ?StudentPermitData;
 
+    public function approve(string $id, ?string $reviewNote, string $actorId): ?StudentPermitData;
+
+    public function reject(string $id, string $reason, string $actorId): ?StudentPermitData;
+
     public function hasActiveOverlap(string $studentId, string $startsAt, string $endsAt, ?string $exceptId = null): bool;
 }

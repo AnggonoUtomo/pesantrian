@@ -17,4 +17,6 @@ Increment aktif:
 - Increment 3 memastikan contract lintas module untuk santri aktif, pembimbing
   aktif, dan periode aktif sudah tersedia tanpa coupling ke Infrastructure
   module dependency.
-- Table bisnis, API, seeder demo, dan UI dikerjakan pada increment berikutnya.
+- Increment 4 menyediakan table foundation, record model, dan factory minimum
+  untuk program, target, setoran/murojaah, dan histori revisi.
+- API, seeder demo, dan UI dikerjakan pada increment berikutnya.

@@ -2,10 +2,10 @@
 
 ## Status
 
-Active - contract readiness ready. Source module, manifest, route placeholder,
-ServiceProvider, README source, permission identity, wiring AccessControl, dan
-guardrail contract lintas module sudah tersedia. Belum ada migration, table
-bisnis, API bisnis, seeder demo Tahfidz, atau UI.
+Active - data foundation ready. Source module, manifest, route placeholder,
+ServiceProvider, README source, permission identity, wiring AccessControl,
+guardrail contract lintas module, migration, record model, dan factory minimum
+sudah tersedia. Belum ada API bisnis, seeder demo Tahfidz, atau UI.
 
 ## Objective
 

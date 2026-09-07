@@ -10,7 +10,7 @@ dan [`docs/FOLDER-STRUCTURE.md`](../../../FOLDER-STRUCTURE.md).
 - Nama tampil: `Tahfidz / Hafalan`
 - Candidate source: `app/Modules/Pesantrian/Tahfidz/`
 - Candidate frontend: `resources/js/pages/Pesantrian/Tahfidz/`
-- Status: Active - contract readiness ready
+- Status: Active - data foundation ready
 
 ## Tujuan
 
@@ -83,6 +83,13 @@ Baseline awal memakai konsep berikut:
 - `setoran`: catatan hafalan baru yang disetorkan santri.
 - `murojaah`: catatan pengulangan hafalan yang sudah pernah disetor.
 - `capaian`: ringkasan progres yang dihitung dari setoran dan murojaah.
+
+Table foundation yang sudah tersedia:
+
+- `tahfidz_programs`
+- `tahfidz_targets`
+- `tahfidz_submissions`
+- `tahfidz_submission_revisions`
 
 Satuan hafalan baseline menggunakan struktur Qur'an yang familiar:
 

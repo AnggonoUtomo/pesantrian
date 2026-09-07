@@ -92,13 +92,13 @@ Verifikasi:
 
 ## Increment 4: Data Foundation
 
-- [ ] Buat migration program tahfidz.
-- [ ] Buat migration target hafalan.
-- [ ] Buat migration setoran/murojaah.
-- [ ] Buat migration revision setoran.
-- [ ] Buat record model.
-- [ ] Buat factory minimum.
-- [ ] Jalankan focused data foundation tests.
+- [x] Buat migration program tahfidz.
+- [x] Buat migration target hafalan.
+- [x] Buat migration setoran/murojaah.
+- [x] Buat migration revision setoran.
+- [x] Buat record model.
+- [x] Buat factory minimum.
+- [x] Jalankan focused data foundation tests.
 
 Acceptance:
 
@@ -106,6 +106,25 @@ Acceptance:
 - Kode program unique.
 - Target dan setoran menyimpan snapshot santri/pembimbing.
 - Nama index eksplisit aman untuk MySQL.
+
+Hasil:
+
+- Migration `2026_09_07_000000_create_tahfidz_tables.php` membuat table:
+  `tahfidz_programs`, `tahfidz_targets`, `tahfidz_submissions`, dan
+  `tahfidz_submission_revisions`.
+- ServiceProvider Tahfidz memuat migration module dari folder
+  `Database/Migrations`.
+- Record model Infrastructure dibuat untuk program, target, setoran, dan
+  histori revisi.
+- Factory minimum dibuat untuk semua record model agar seeder/demo/test
+  berikutnya lebih mudah disusun.
+- Snapshot santri, periode, dan pembimbing disimpan pada target/setoran agar
+  histori tetap terbaca walaupun master data berubah.
+
+Verifikasi:
+
+- [x] `php artisan test tests/Feature/TahfidzDataFoundationTest.php --no-ansi`
+- [x] `php artisan module:validate --no-ansi`
 
 ## Increment 5: Backend Read/List
 

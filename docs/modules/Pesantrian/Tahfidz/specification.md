@@ -2,10 +2,11 @@
 
 ## Status
 
-Active - data foundation ready. Source module, manifest, route placeholder,
+Active - backend read/list ready. Source module, manifest, route placeholder,
 ServiceProvider, README source, permission identity, wiring AccessControl,
-guardrail contract lintas module, migration, record model, dan factory minimum
-sudah tersedia. Belum ada API bisnis, seeder demo Tahfidz, atau UI.
+guardrail contract lintas module, migration, record model, factory minimum,
+Application read query, dan API baca sudah tersedia. Belum ada mutation bisnis,
+seeder demo Tahfidz, atau UI.
 
 ## Objective
 
@@ -212,10 +213,15 @@ yang tidak perlu.
 
 ## API Candidate
 
-Endpoint API internal mengikuti envelope API canonical:
+Endpoint API internal mengikuti envelope API canonical.
+
+Endpoint read/list yang sudah tersedia:
 
 - `GET /api/v1/pesantrian/tahfidz`
 - `GET /api/v1/pesantrian/tahfidz/{submission}`
+
+Endpoint mutation kandidat berikutnya:
+
 - `POST /api/v1/pesantrian/tahfidz/programs`
 - `PATCH /api/v1/pesantrian/tahfidz/programs/{program}`
 - `POST /api/v1/pesantrian/tahfidz/targets`

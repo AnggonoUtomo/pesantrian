@@ -19,4 +19,6 @@ Increment aktif:
   module dependency.
 - Increment 4 menyediakan table foundation, record model, dan factory minimum
   untuk program, target, setoran/murojaah, dan histori revisi.
-- API, seeder demo, dan UI dikerjakan pada increment berikutnya.
+- Increment 5 menyediakan read query, repository, resource, request filter, dan
+  API baca untuk list/detail setoran tahfidz.
+- Mutation, seeder demo, dan UI dikerjakan pada increment berikutnya.

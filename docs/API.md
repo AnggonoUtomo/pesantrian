@@ -44,6 +44,8 @@ frontend memakai Laravel named routes melalui Ziggy untuk Inertia React.
 | PATCH | `/api/v1/pesantrian/student-attendances/{attendance}/submit` | `api.v1.pesantrian.student-attendances.submit` | `presensi_santri.submit` | Ya | Envelope sukses dengan sesi presensi berstatus submitted |
 | PATCH | `/api/v1/pesantrian/student-attendances/{attendance}/revise` | `api.v1.pesantrian.student-attendances.revise` | `presensi_santri.revise` | Ya | Envelope sukses dengan sesi presensi dibuka untuk revisi |
 | PATCH | `/api/v1/pesantrian/student-attendances/{attendance}/void` | `api.v1.pesantrian.student-attendances.void` | `presensi_santri.archive` | Ya | Envelope sukses dengan sesi presensi berstatus void tanpa menghapus entry |
+| GET | `/api/v1/pesantrian/tahfidz` | `api.v1.pesantrian.tahfidz.index` | `tahfidz.view` | Tidak | Envelope sukses dengan daftar setoran tahfidz dan pagination meta |
+| GET | `/api/v1/pesantrian/tahfidz/{submission}` | `api.v1.pesantrian.tahfidz.show` | `tahfidz.view` | Tidak | Envelope sukses dengan detail setoran, target, pembimbing, summary, dan histori revisi |
 | GET | `/api/v1/permissions` | `api.v1.permissions.index` | Access control view policy | Tidak | Envelope sukses dengan daftar permission dan pagination meta |
 | GET | `/api/v1/roles` | `api.v1.roles.index` | Access control view policy | Tidak | Envelope sukses dengan daftar role dan pagination meta |
 | POST | `/api/v1/roles` | `api.v1.roles.store` | Access control create policy | Ya | Envelope sukses `201` dengan role yang dibuat |

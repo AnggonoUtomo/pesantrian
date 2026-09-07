@@ -128,11 +128,11 @@ Verifikasi:
 
 ## Increment 5: Backend Read/List
 
-- [ ] Buat DTO/read model Tahfidz.
-- [ ] Buat query list/search/filter.
-- [ ] Buat query detail.
-- [ ] Buat controller/resource API read.
-- [ ] Jalankan focused API tests.
+- [x] Buat DTO/read model Tahfidz.
+- [x] Buat query list/search/filter.
+- [x] Buat query detail.
+- [x] Buat controller/resource API read.
+- [x] Jalankan focused API tests.
 
 Acceptance:
 
@@ -140,6 +140,28 @@ Acceptance:
   pagination.
 - Detail menampilkan target, setoran, pembimbing, dan summary.
 - Actor tanpa permission view ditolak.
+
+Hasil:
+
+- Contract `TahfidzReadRepository` dibuat sebagai public boundary internal
+  module untuk kebutuhan read/list.
+- Query `ListTahfidzSubmissions` dan `ShowTahfidzSubmission` tersedia di layer
+  Application.
+- Repository Eloquent membaca setoran Tahfidz dengan filter program, santri,
+  pembimbing, periode, tipe, status, rentang tanggal, search, sort, dan
+  pagination.
+- API read tersedia:
+  `GET /api/v1/pesantrian/tahfidz` dan
+  `GET /api/v1/pesantrian/tahfidz/{submission}`.
+- Response detail menampilkan program, target, snapshot santri, pembimbing,
+  summary, dan histori revisi.
+- Middleware backend `can:tahfidz.view` menjadi authority akses baca.
+
+Verifikasi:
+
+- [x] `php artisan test tests/Feature/TahfidzApiTest.php --no-ansi`
+- [x] `php artisan route:list --name=api.v1.pesantrian.tahfidz --no-ansi`
+- [x] `php artisan module:validate --no-ansi`
 
 ## Increment 6: Program dan Target Hafalan
 

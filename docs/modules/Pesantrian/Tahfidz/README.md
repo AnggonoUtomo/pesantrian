@@ -10,7 +10,7 @@ dan [`docs/FOLDER-STRUCTURE.md`](../../../FOLDER-STRUCTURE.md).
 - Nama tampil: `Tahfidz / Hafalan`
 - Candidate source: `app/Modules/Pesantrian/Tahfidz/`
 - Candidate frontend: `resources/js/pages/Pesantrian/Tahfidz/`
-- Status: Active - backend read/list ready
+- Status: Active - backend program/target mutation ready
 
 ## Tujuan
 
@@ -127,16 +127,26 @@ yang mungkin dibutuhkan nanti:
 - indikator santri yang perlu pembinaan lanjutan;
 - data capaian untuk sertifikat atau alumni.
 
-Public boundary internal yang sudah tersedia untuk read/list:
+Public boundary internal yang sudah tersedia:
 
 - `TahfidzReadRepository`
+- `TahfidzMutationRepository`
+- `TahfidzActivityPublisher`
 - `ListTahfidzSubmissions`
 - `ShowTahfidzSubmission`
+- `CreateTahfidzProgram`
+- `UpdateTahfidzProgram`
+- `CreateTahfidzTarget`
+- `UpdateTahfidzTarget`
 
-API baca internal:
+API internal:
 
 - `GET /api/v1/pesantrian/tahfidz`
 - `GET /api/v1/pesantrian/tahfidz/{submission}`
+- `POST /api/v1/pesantrian/tahfidz/programs`
+- `PATCH /api/v1/pesantrian/tahfidz/programs/{program}`
+- `POST /api/v1/pesantrian/tahfidz/targets`
+- `PATCH /api/v1/pesantrian/tahfidz/targets/{target}`
 
 ## Permission Candidate
 

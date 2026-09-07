@@ -10,6 +10,20 @@ Route::middleware(['web', 'auth', 'verified', 'throttle:system-api'])
     ->name('api.v1.pesantrian.tahfidz.')
     ->group(static function (): void {
         Route::get('/', [TahfidzApiController::class, 'index'])->name('index');
+        Route::post('/programs', [TahfidzApiController::class, 'storeProgram'])
+            ->middleware('api.idempotency')
+            ->name('programs.store');
+        Route::patch('/programs/{program}', [TahfidzApiController::class, 'updateProgram'])
+            ->whereUlid('program')
+            ->middleware('api.idempotency')
+            ->name('programs.update');
+        Route::post('/targets', [TahfidzApiController::class, 'storeTarget'])
+            ->middleware('api.idempotency')
+            ->name('targets.store');
+        Route::patch('/targets/{target}', [TahfidzApiController::class, 'updateTarget'])
+            ->whereUlid('target')
+            ->middleware('api.idempotency')
+            ->name('targets.update');
         Route::get('/{submission}', [TahfidzApiController::class, 'show'])
             ->whereUlid('submission')
             ->name('show');

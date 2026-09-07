@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Pesantrian\Tahfidz\Infrastructure\Repositories;
 
+use App\Modules\Pesantrian\Tahfidz\Application\Contracts\TahfidzMutationRepository;
 use App\Modules\Pesantrian\Tahfidz\Application\Contracts\TahfidzReadRepository;
 use App\Modules\Pesantrian\Tahfidz\Application\DTO\PaginatedTahfidzSubmissionData;
 use App\Modules\Pesantrian\Tahfidz\Application\DTO\TahfidzListFilter;
@@ -12,15 +13,72 @@ use App\Modules\Pesantrian\Tahfidz\Application\DTO\TahfidzSubmissionData;
 use App\Modules\Pesantrian\Tahfidz\Application\DTO\TahfidzSubmissionRevisionData;
 use App\Modules\Pesantrian\Tahfidz\Application\DTO\TahfidzSubmissionSummaryData;
 use App\Modules\Pesantrian\Tahfidz\Application\DTO\TahfidzTargetData;
+use App\Modules\Pesantrian\Tahfidz\Application\DTO\UpsertTahfidzProgramData;
+use App\Modules\Pesantrian\Tahfidz\Application\DTO\UpsertTahfidzTargetData;
 use App\Modules\Pesantrian\Tahfidz\Infrastructure\Models\TahfidzProgramRecord;
 use App\Modules\Pesantrian\Tahfidz\Infrastructure\Models\TahfidzSubmissionRecord;
 use App\Modules\Pesantrian\Tahfidz\Infrastructure\Models\TahfidzSubmissionRevisionRecord;
 use App\Modules\Pesantrian\Tahfidz\Infrastructure\Models\TahfidzTargetRecord;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
-final class EloquentTahfidzReadRepository implements TahfidzReadRepository
+final class EloquentTahfidzReadRepository implements TahfidzMutationRepository, TahfidzReadRepository
 {
+    public function createProgram(UpsertTahfidzProgramData $data, ?string $actorId): TahfidzProgramData
+    {
+        $record = TahfidzProgramRecord::query()->create([
+            ...$data->toArray(),
+            'created_by' => $actorId,
+        ]);
+
+        return $this->mapProgram($record);
+    }
+
+    public function updateProgram(string $id, array $changes): ?TahfidzProgramData
+    {
+        $record = TahfidzProgramRecord::query()
+            ->whereKey($id)
+            ->whereNull('archived_at')
+            ->first();
+
+        if (! $record instanceof TahfidzProgramRecord) {
+            return null;
+        }
+
+        $record->forceFill($changes)->save();
+
+        return $this->mapProgram($record->refresh());
+    }
+
+    public function createTarget(UpsertTahfidzTargetData $data, ?string $actorId): TahfidzTargetData
+    {
+        $payload = $data->toArray();
+        $payload['period_label'] = $this->periodLabel($data->academicPeriodId);
+        $payload['created_by'] = $actorId;
+
+        $record = TahfidzTargetRecord::query()->create($payload);
+
+        return $this->mapTarget($record);
+    }
+
+    public function updateTarget(string $id, array $changes): ?TahfidzTargetData
+    {
+        $record = TahfidzTargetRecord::query()->find($id);
+
+        if (! $record instanceof TahfidzTargetRecord) {
+            return null;
+        }
+
+        if (array_key_exists('academic_period_id', $changes)) {
+            $changes['period_label'] = $this->periodLabel($changes['academic_period_id'] === null ? null : (string) $changes['academic_period_id']);
+        }
+
+        $record->forceFill($changes)->save();
+
+        return $this->mapTarget($record->refresh());
+    }
+
     public function paginate(TahfidzListFilter $filter): PaginatedTahfidzSubmissionData
     {
         $query = $this->filteredQuery($filter)
@@ -188,5 +246,32 @@ final class EloquentTahfidzReadRepository implements TahfidzReadRepository
             'status' => 'tahfidz_submissions.status',
             default => 'tahfidz_submissions.created_at',
         };
+    }
+
+    private function periodLabel(?string $academicPeriodId): ?string
+    {
+        if ($academicPeriodId === null) {
+            return null;
+        }
+
+        $period = DB::table('academic_terms')
+            ->leftJoin('academic_years', 'academic_years.id', '=', 'academic_terms.academic_year_id')
+            ->where('academic_terms.id', $academicPeriodId)
+            ->select([
+                'academic_terms.name as term_name',
+                'academic_terms.code as term_code',
+                'academic_years.name as year_name',
+                'academic_years.code as year_code',
+            ])
+            ->first();
+
+        if ($period === null) {
+            return null;
+        }
+
+        $term = trim((string) ($period->term_name ?: $period->term_code));
+        $year = trim((string) ($period->year_name ?: $period->year_code));
+
+        return trim($term.' '.$year);
     }
 }

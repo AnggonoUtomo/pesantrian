@@ -165,17 +165,39 @@ Verifikasi:
 
 ## Increment 6: Program dan Target Hafalan
 
-- [ ] Buat request validation program/target.
-- [ ] Buat action create/update program.
-- [ ] Buat action create/update target.
-- [ ] Tambahkan audit program/target.
-- [ ] Jalankan focused mutation tests.
+- [x] Buat request validation program/target.
+- [x] Buat action create/update program.
+- [x] Buat action create/update target.
+- [x] Tambahkan audit program/target.
+- [x] Jalankan focused mutation tests.
 
 Acceptance:
 
 - Program aktif bisa dibuat dan diubah.
 - Target hanya untuk santri aktif.
 - Target menyimpan snapshot santri dan periode.
+
+Hasil:
+
+- Contract mutation `TahfidzMutationRepository` dan activity publisher Tahfidz
+  dibuat agar create/update tetap lewat Application action.
+- API mutation tersedia:
+  `POST /api/v1/pesantrian/tahfidz/programs`,
+  `PATCH /api/v1/pesantrian/tahfidz/programs/{program}`,
+  `POST /api/v1/pesantrian/tahfidz/targets`, dan
+  `PATCH /api/v1/pesantrian/tahfidz/targets/{target}`.
+- Program/target memakai middleware backend `can:tahfidz.manage` dan
+  `api.idempotency`.
+- Target mengambil santri lewat `ActiveStudentReader`, lalu menyimpan snapshot
+  `student_no`, `student_name`, dan `period_label`.
+- Audit System mengenal event `tahfidz.activity.occurred` dan mencatat
+  `tahfidz.program.created`, `tahfidz.program.updated`,
+  `tahfidz.target.created`, dan `tahfidz.target.updated`.
+
+Verifikasi:
+
+- [x] `php artisan test tests/Feature/TahfidzProgramTargetMutationApiTest.php tests/Feature/TahfidzApiTest.php --no-ansi`
+- [x] `php artisan route:list --name=api.v1.pesantrian.tahfidz --no-ansi`
 
 ## Increment 7: Setoran dan Murojaah
 

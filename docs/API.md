@@ -45,6 +45,10 @@ frontend memakai Laravel named routes melalui Ziggy untuk Inertia React.
 | PATCH | `/api/v1/pesantrian/student-attendances/{attendance}/revise` | `api.v1.pesantrian.student-attendances.revise` | `presensi_santri.revise` | Ya | Envelope sukses dengan sesi presensi dibuka untuk revisi |
 | PATCH | `/api/v1/pesantrian/student-attendances/{attendance}/void` | `api.v1.pesantrian.student-attendances.void` | `presensi_santri.archive` | Ya | Envelope sukses dengan sesi presensi berstatus void tanpa menghapus entry |
 | GET | `/api/v1/pesantrian/tahfidz` | `api.v1.pesantrian.tahfidz.index` | `tahfidz.view` | Tidak | Envelope sukses dengan daftar setoran tahfidz dan pagination meta |
+| POST | `/api/v1/pesantrian/tahfidz/programs` | `api.v1.pesantrian.tahfidz.programs.store` | `tahfidz.manage` | Ya | Envelope sukses `201` dengan program tahfidz yang dibuat |
+| PATCH | `/api/v1/pesantrian/tahfidz/programs/{program}` | `api.v1.pesantrian.tahfidz.programs.update` | `tahfidz.manage` | Ya | Envelope sukses dengan program tahfidz yang diperbarui |
+| POST | `/api/v1/pesantrian/tahfidz/targets` | `api.v1.pesantrian.tahfidz.targets.store` | `tahfidz.manage` | Ya | Envelope sukses `201` dengan target hafalan berisi snapshot santri dan periode |
+| PATCH | `/api/v1/pesantrian/tahfidz/targets/{target}` | `api.v1.pesantrian.tahfidz.targets.update` | `tahfidz.manage` | Ya | Envelope sukses dengan target hafalan yang diperbarui |
 | GET | `/api/v1/pesantrian/tahfidz/{submission}` | `api.v1.pesantrian.tahfidz.show` | `tahfidz.view` | Tidak | Envelope sukses dengan detail setoran, target, pembimbing, summary, dan histori revisi |
 | GET | `/api/v1/permissions` | `api.v1.permissions.index` | Access control view policy | Tidak | Envelope sukses dengan daftar permission dan pagination meta |
 | GET | `/api/v1/roles` | `api.v1.roles.index` | Access control view policy | Tidak | Envelope sukses dengan daftar role dan pagination meta |

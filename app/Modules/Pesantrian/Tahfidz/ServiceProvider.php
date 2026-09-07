@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Modules\Pesantrian\Tahfidz;
 
+use App\Modules\Pesantrian\Tahfidz\Application\Contracts\TahfidzActivityPublisher;
+use App\Modules\Pesantrian\Tahfidz\Application\Contracts\TahfidzMutationRepository;
 use App\Modules\Pesantrian\Tahfidz\Application\Contracts\TahfidzReadRepository;
+use App\Modules\Pesantrian\Tahfidz\Infrastructure\Events\LaravelTahfidzActivityPublisher;
 use App\Modules\Pesantrian\Tahfidz\Infrastructure\Repositories\EloquentTahfidzReadRepository;
 use Illuminate\Support\ServiceProvider as FrameworkServiceProvider;
 
@@ -12,6 +15,8 @@ final class ServiceProvider extends FrameworkServiceProvider
 {
     public function register(): void
     {
+        $this->app->bind(TahfidzActivityPublisher::class, LaravelTahfidzActivityPublisher::class);
+        $this->app->bind(TahfidzMutationRepository::class, EloquentTahfidzReadRepository::class);
         $this->app->bind(TahfidzReadRepository::class, EloquentTahfidzReadRepository::class);
     }
 

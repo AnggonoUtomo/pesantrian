@@ -241,19 +241,39 @@ Acceptance:
 
 ## Increment 8: Check-out, Return, dan Void
 
-- [ ] Buat action check-out.
-- [ ] Buat action return/check-in.
-- [ ] Buat action void.
-- [ ] Tambahkan revision history.
-- [ ] Tambahkan audit lifecycle.
-- [ ] Jalankan focused lifecycle tests.
+- [x] Buat action check-out.
+- [x] Buat action return/check-in.
+- [x] Buat action void.
+- [x] Tambahkan revision history.
+- [x] Tambahkan audit lifecycle.
+- [x] Jalankan focused lifecycle tests.
+
+Hasil:
+
+- API lifecycle operasional internal tersedia:
+  - `PATCH /api/v1/pesantrian/student-permits/{permit}/checkout`
+  - `PATCH /api/v1/pesantrian/student-permits/{permit}/return`
+  - `PATCH /api/v1/pesantrian/student-permits/{permit}/void`
+- Check-out hanya boleh dari status `approved`, menyimpan `checked_out_at`,
+  `checked_out_by`, revision, dan audit `perizinan_santri.permit.checked_out`.
+- Return/check-in hanya boleh dari status `checked_out`, menyimpan
+  `returned_at`, `returned_by`, catatan kembali opsional, revision, audit
+  `perizinan_santri.permit.returned`, dan summary keterlambatan tetap terbaca
+  dari read model.
+- Void hanya boleh untuk izin non-final, wajib alasan, menyimpan `voided_at`,
+  `voided_by`, `void_reason`, revision, dan audit
+  `perizinan_santri.permit.voided` tanpa menghapus data.
+
+Verifikasi:
+
+- [x] `php artisan test tests/Feature/PerizinanSantriOperationalLifecycleApiTest.php --no-ansi`
 
 Acceptance:
 
-- Check-out hanya dari approved.
-- Return hanya dari checked_out.
-- Return terlambat terbaca pada read model.
-- Void wajib alasan dan tidak menghapus data.
+- [x] Check-out hanya dari approved.
+- [x] Return hanya dari checked_out.
+- [x] Return terlambat terbaca pada read model.
+- [x] Void wajib alasan dan tidak menghapus data.
 
 ## Increment 9: Demo Seeder
 

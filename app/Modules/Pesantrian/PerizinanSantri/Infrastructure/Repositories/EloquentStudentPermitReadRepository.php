@@ -142,6 +142,87 @@ final class EloquentStudentPermitReadRepository implements StudentPermitMutation
         return $this->review($id, 'rejected', $reason, $actorId);
     }
 
+    public function checkout(string $id, string $actorId): ?StudentPermitData
+    {
+        $record = StudentPermitRecord::query()->find($id);
+
+        if (! $record instanceof StudentPermitRecord) {
+            return null;
+        }
+
+        $record->forceFill([
+            'status' => 'checked_out',
+            'checked_out_at' => now(),
+            'checked_out_by' => $actorId,
+        ])->save();
+        $this->createRevision($record, 'Santri dicatat keluar sesuai izin yang disetujui.', $actorId, [
+            'action' => 'checkout',
+            'changed_fields' => ['status', 'checked_out_at', 'checked_out_by'],
+            'from_status' => 'approved',
+            'to_status' => 'checked_out',
+        ]);
+
+        $record->load(['revisions' => fn ($query) => $query->orderBy('changed_at')])->loadCount('revisions');
+
+        return $this->map($record);
+    }
+
+    public function returnPermit(string $id, string $returnedAt, ?string $returnNote, string $actorId): ?StudentPermitData
+    {
+        $record = StudentPermitRecord::query()->find($id);
+
+        if (! $record instanceof StudentPermitRecord) {
+            return null;
+        }
+
+        $normalizedReturnedAt = Carbon::parse($returnedAt);
+        $record->forceFill([
+            'status' => 'returned',
+            'returned_at' => $normalizedReturnedAt->toDateTimeString(),
+            'returned_by' => $actorId,
+            'return_note' => $returnNote,
+        ])->save();
+
+        $this->createRevision($record, $returnNote ?? 'Santri dicatat kembali dari izin.', $actorId, [
+            'action' => 'return',
+            'changed_fields' => ['status', 'returned_at', 'returned_by', 'return_note'],
+            'from_status' => 'checked_out',
+            'to_status' => 'returned',
+            'is_late' => $normalizedReturnedAt->isAfter($record->ends_at),
+        ]);
+
+        $record->load(['revisions' => fn ($query) => $query->orderBy('changed_at')])->loadCount('revisions');
+
+        return $this->map($record);
+    }
+
+    public function void(string $id, string $reason, string $actorId): ?StudentPermitData
+    {
+        $record = StudentPermitRecord::query()->find($id);
+
+        if (! $record instanceof StudentPermitRecord) {
+            return null;
+        }
+
+        $fromStatus = (string) $record->status;
+        $record->forceFill([
+            'status' => 'void',
+            'voided_at' => now(),
+            'voided_by' => $actorId,
+            'void_reason' => $reason,
+        ])->save();
+        $this->createRevision($record, $reason, $actorId, [
+            'action' => 'void',
+            'changed_fields' => ['status', 'voided_at', 'voided_by', 'void_reason'],
+            'from_status' => $fromStatus,
+            'to_status' => 'void',
+        ]);
+
+        $record->load(['revisions' => fn ($query) => $query->orderBy('changed_at')])->loadCount('revisions');
+
+        return $this->map($record);
+    }
+
     public function hasActiveOverlap(string $studentId, string $startsAt, string $endsAt, ?string $exceptId = null): bool
     {
         $normalizedStartsAt = Carbon::parse($startsAt)->toDateTimeString();

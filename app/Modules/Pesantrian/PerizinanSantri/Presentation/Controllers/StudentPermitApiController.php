@@ -6,10 +6,13 @@ namespace App\Modules\Pesantrian\PerizinanSantri\Presentation\Controllers;
 
 use App\Http\ApiResponseFactory;
 use App\Modules\Pesantrian\PerizinanSantri\Application\Actions\ApproveStudentPermit;
+use App\Modules\Pesantrian\PerizinanSantri\Application\Actions\CheckoutStudentPermit;
 use App\Modules\Pesantrian\PerizinanSantri\Application\Actions\CreateStudentPermitDraft;
 use App\Modules\Pesantrian\PerizinanSantri\Application\Actions\RejectStudentPermit;
+use App\Modules\Pesantrian\PerizinanSantri\Application\Actions\ReturnStudentPermit;
 use App\Modules\Pesantrian\PerizinanSantri\Application\Actions\SubmitStudentPermitDraft;
 use App\Modules\Pesantrian\PerizinanSantri\Application\Actions\UpdateStudentPermitDraft;
+use App\Modules\Pesantrian\PerizinanSantri\Application\Actions\VoidStudentPermit;
 use App\Modules\Pesantrian\PerizinanSantri\Application\DTO\PaginatedStudentPermitData;
 use App\Modules\Pesantrian\PerizinanSantri\Application\DTO\StudentPermitData;
 use App\Modules\Pesantrian\PerizinanSantri\Application\Exceptions\StudentPermitMutationException;
@@ -18,8 +21,10 @@ use App\Modules\Pesantrian\PerizinanSantri\Application\Queries\ShowStudentPermit
 use App\Modules\Pesantrian\PerizinanSantri\Presentation\Requests\ApproveStudentPermitApiRequest;
 use App\Modules\Pesantrian\PerizinanSantri\Presentation\Requests\ListStudentPermitsApiRequest;
 use App\Modules\Pesantrian\PerizinanSantri\Presentation\Requests\RejectStudentPermitApiRequest;
+use App\Modules\Pesantrian\PerizinanSantri\Presentation\Requests\ReturnStudentPermitApiRequest;
 use App\Modules\Pesantrian\PerizinanSantri\Presentation\Requests\StoreStudentPermitApiRequest;
 use App\Modules\Pesantrian\PerizinanSantri\Presentation\Requests\UpdateStudentPermitApiRequest;
+use App\Modules\Pesantrian\PerizinanSantri\Presentation\Requests\VoidStudentPermitApiRequest;
 use App\Modules\Pesantrian\PerizinanSantri\Presentation\Resources\StudentPermitResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -36,6 +41,9 @@ final readonly class StudentPermitApiController implements HasMiddleware
         private SubmitStudentPermitDraft $submitStudentPermitDraft,
         private ApproveStudentPermit $approveStudentPermit,
         private RejectStudentPermit $rejectStudentPermit,
+        private CheckoutStudentPermit $checkoutStudentPermit,
+        private ReturnStudentPermit $returnStudentPermit,
+        private VoidStudentPermit $voidStudentPermit,
         private ApiResponseFactory $responses,
     ) {}
 
@@ -45,6 +53,9 @@ final readonly class StudentPermitApiController implements HasMiddleware
             new Middleware('can:perizinan_santri.view', only: ['index', 'show']),
             new Middleware('can:perizinan_santri.manage', only: ['store', 'update', 'submit']),
             new Middleware('can:perizinan_santri.approve', only: ['approve', 'reject']),
+            new Middleware('can:perizinan_santri.checkout', only: ['checkout']),
+            new Middleware('can:perizinan_santri.return', only: ['returnPermit']),
+            new Middleware('can:perizinan_santri.archive', only: ['void']),
         ];
     }
 
@@ -180,6 +191,72 @@ final readonly class StudentPermitApiController implements HasMiddleware
         return $this->responses->success(
             $request,
             'Permohonan izin santri berhasil ditolak.',
+            (new StudentPermitResource($data))->toArray($request),
+        );
+    }
+
+    public function checkout(Request $request, string $permit): JsonResponse
+    {
+        try {
+            $data = $this->checkoutStudentPermit->execute(
+                $request->user(),
+                $permit,
+                $this->responses->correlationId($request),
+            );
+        } catch (StudentPermitMutationException $exception) {
+            return $this->invalidMutation($request, $exception);
+        }
+
+        abort_if($data === null, 404);
+
+        return $this->responses->success(
+            $request,
+            'Izin santri berhasil di-check-out.',
+            (new StudentPermitResource($data))->toArray($request),
+        );
+    }
+
+    public function returnPermit(ReturnStudentPermitApiRequest $request, string $permit): JsonResponse
+    {
+        try {
+            $data = $this->returnStudentPermit->execute(
+                $request->user(),
+                $permit,
+                $request->returnedAt(),
+                $request->returnNote(),
+                $this->responses->correlationId($request),
+            );
+        } catch (StudentPermitMutationException $exception) {
+            return $this->invalidMutation($request, $exception);
+        }
+
+        abort_if($data === null, 404);
+
+        return $this->responses->success(
+            $request,
+            'Kepulangan santri berhasil dicatat.',
+            (new StudentPermitResource($data))->toArray($request),
+        );
+    }
+
+    public function void(VoidStudentPermitApiRequest $request, string $permit): JsonResponse
+    {
+        try {
+            $data = $this->voidStudentPermit->execute(
+                $request->user(),
+                $permit,
+                $request->reason(),
+                $this->responses->correlationId($request),
+            );
+        } catch (StudentPermitMutationException $exception) {
+            return $this->invalidMutation($request, $exception);
+        }
+
+        abort_if($data === null, 404);
+
+        return $this->responses->success(
+            $request,
+            'Izin santri berhasil dibatalkan.',
             (new StudentPermitResource($data))->toArray($request),
         );
     }

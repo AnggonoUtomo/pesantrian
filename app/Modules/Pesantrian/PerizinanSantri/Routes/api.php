@@ -29,6 +29,18 @@ Route::middleware(['web', 'auth', 'verified', 'throttle:system-api'])
             ->whereUlid('permit')
             ->middleware('api.idempotency')
             ->name('reject');
+        Route::patch('/{permit}/checkout', [StudentPermitApiController::class, 'checkout'])
+            ->whereUlid('permit')
+            ->middleware('api.idempotency')
+            ->name('checkout');
+        Route::patch('/{permit}/return', [StudentPermitApiController::class, 'returnPermit'])
+            ->whereUlid('permit')
+            ->middleware('api.idempotency')
+            ->name('return');
+        Route::patch('/{permit}/void', [StudentPermitApiController::class, 'void'])
+            ->whereUlid('permit')
+            ->middleware('api.idempotency')
+            ->name('void');
         Route::get('/{permit}', [StudentPermitApiController::class, 'show'])
             ->whereUlid('permit')
             ->name('show');

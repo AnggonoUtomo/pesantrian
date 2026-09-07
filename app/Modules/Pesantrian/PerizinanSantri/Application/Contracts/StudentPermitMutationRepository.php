@@ -19,5 +19,11 @@ interface StudentPermitMutationRepository
 
     public function reject(string $id, string $reason, string $actorId): ?StudentPermitData;
 
+    public function checkout(string $id, string $actorId): ?StudentPermitData;
+
+    public function returnPermit(string $id, string $returnedAt, ?string $returnNote, string $actorId): ?StudentPermitData;
+
+    public function void(string $id, string $reason, string $actorId): ?StudentPermitData;
+
     public function hasActiveOverlap(string $studentId, string $startsAt, string $endsAt, ?string $exceptId = null): bool;
 }

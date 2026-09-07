@@ -24,5 +24,8 @@ Increment aktif:
   aktif, dan audit create/update/submit.
 - Increment 7 menyiapkan API approve/reject, validasi decision, revision
   decision, dan audit approve/reject.
-- Check-out/return, demo seeder, UI, dan integrasi awal ke
-  PresensiSantri dikerjakan pada increment berikutnya.
+- Increment 8 menyiapkan API check-out, return/check-in, void, validasi status
+  lifecycle operasional, revision, summary keterlambatan return, dan audit
+  check-out/return/void.
+- Demo seeder, UI, dan integrasi awal ke PresensiSantri dikerjakan pada
+  increment berikutnya.

@@ -10,7 +10,7 @@ dan [`docs/FOLDER-STRUCTURE.md`](../../../FOLDER-STRUCTURE.md).
 - Nama tampil: `Tahfidz / Hafalan`
 - Candidate source: `app/Modules/Pesantrian/Tahfidz/`
 - Candidate frontend: `resources/js/pages/Pesantrian/Tahfidz/`
-- Status: Active - backend review/void lifecycle ready
+- Status: Active - demo seeder ready
 
 ## Tujuan
 
@@ -155,6 +155,21 @@ API internal:
 - `PATCH /api/v1/pesantrian/tahfidz/submissions/{submission}`
 - `PATCH /api/v1/pesantrian/tahfidz/submissions/{submission}/review`
 - `PATCH /api/v1/pesantrian/tahfidz/submissions/{submission}/void`
+
+## Data Demo
+
+Seeder demo tersedia di
+`app/Modules/Pesantrian/Tahfidz/Database/Seeders/TahfidzDemoSeeder.php` dan
+dipanggil dari `DatabaseSeeder`.
+
+Data demo mencakup:
+
+- program aktif `DEMO-THF-REG`;
+- program nonaktif/arsip `DEMO-THF-INT`;
+- target aktif dan cancelled untuk santri demo;
+- setoran accepted, submitted, needs_revision, dan void;
+- contoh murojaah;
+- revision history untuk review dan void.
 
 ## Permission Candidate
 

@@ -28,4 +28,7 @@ Increment aktif:
   murojaah.
 - Increment 8 menyediakan lifecycle review accepted/needs_revision, void wajib
   alasan, revision history, dan audit lifecycle setoran.
-- Seeder demo dan UI dikerjakan pada increment berikutnya.
+- Increment 9 menyediakan `TahfidzDemoSeeder` idempotent yang dipanggil dari
+  `DatabaseSeeder`, berisi program, target, setoran accepted/submitted/
+  needs_revision/void, murojaah, dan revision history.
+- UI dikerjakan pada increment berikutnya.

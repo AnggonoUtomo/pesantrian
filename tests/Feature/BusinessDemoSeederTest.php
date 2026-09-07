@@ -125,6 +125,20 @@ final class BusinessDemoSeederTest extends TestCase
         }
         self::assertSame(1, DB::table('student_attendance_entries')->where('status', 'late')->where('minutes_late', 15)->count());
         self::assertSame(1, DB::table('student_attendance_revisions')->count());
+
+        self::assertSame(2, DB::table('tahfidz_programs')->where('code', 'like', 'DEMO-THF-%')->count());
+        self::assertSame(1, DB::table('tahfidz_programs')->where('code', 'DEMO-THF-REG')->where('status', 'active')->whereNull('archived_at')->count());
+        self::assertSame(1, DB::table('tahfidz_programs')->where('code', 'DEMO-THF-INT')->where('status', 'inactive')->whereNotNull('archived_at')->count());
+        self::assertSame(3, DB::table('tahfidz_targets')->where('student_no', 'like', 'NIS-DEMO-%')->count());
+        self::assertSame(2, DB::table('tahfidz_targets')->where('status', 'active')->count());
+        self::assertSame(1, DB::table('tahfidz_targets')->where('status', 'cancelled')->count());
+        self::assertSame(4, DB::table('tahfidz_submissions')->where('student_no', 'like', 'NIS-DEMO-%')->count());
+        self::assertSame(1, DB::table('tahfidz_submissions')->where('status', 'accepted')->whereNotNull('reviewed_at')->count());
+        self::assertSame(1, DB::table('tahfidz_submissions')->where('status', 'submitted')->count());
+        self::assertSame(1, DB::table('tahfidz_submissions')->where('status', 'needs_revision')->whereNotNull('reviewed_at')->count());
+        self::assertSame(1, DB::table('tahfidz_submissions')->where('status', 'void')->whereNotNull('voided_at')->count());
+        self::assertSame(1, DB::table('tahfidz_submissions')->where('type', 'murojaah')->where('status', 'submitted')->count());
+        self::assertSame(2, DB::table('tahfidz_submission_revisions')->count());
     }
 
     public function test_demo_seeder_tidak_membuat_data_bisnis_di_production(): void
@@ -148,6 +162,10 @@ final class BusinessDemoSeederTest extends TestCase
         self::assertSame(0, DB::table('student_attendance_sessions')->count());
         self::assertSame(0, DB::table('student_attendance_entries')->count());
         self::assertSame(0, DB::table('student_attendance_revisions')->count());
+        self::assertSame(0, DB::table('tahfidz_programs')->count());
+        self::assertSame(0, DB::table('tahfidz_targets')->count());
+        self::assertSame(0, DB::table('tahfidz_submissions')->count());
+        self::assertSame(0, DB::table('tahfidz_submission_revisions')->count());
         self::assertSame(0, User::where('email', 'like', 'user-management-dummy-%@example.test')->count());
         self::assertSame(0, User::where('email', 'operator-ppdb@example.test')->count());
     }

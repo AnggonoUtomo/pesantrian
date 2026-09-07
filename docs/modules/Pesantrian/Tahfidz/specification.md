@@ -2,14 +2,14 @@
 
 ## Status
 
-Active - backend review/void lifecycle ready. Source module, manifest,
+Active - demo seeder ready. Source module, manifest,
 ServiceProvider, README source, permission identity, wiring AccessControl,
 guardrail contract lintas module, migration, record model, factory minimum,
 Application read query, API baca, request validation program/target/setoran,
 Application action create/update program/target/setoran, dan audit mutation
 program/target/setoran, review accepted/needs_revision, void wajib alasan,
-revision history, dan audit lifecycle sudah tersedia. Belum ada seeder demo
-Tahfidz atau UI.
+revision history, audit lifecycle, dan seeder demo Tahfidz sudah tersedia.
+Belum ada UI.
 
 ## Objective
 
@@ -265,6 +265,16 @@ Data demo minimum:
 - setoran needs_revision;
 - satu setoran void;
 - variasi pembimbing dari data SDM demo.
+
+Data demo yang sudah tersedia:
+
+- `DEMO-THF-REG`: program aktif untuk uji harian.
+- `DEMO-THF-INT`: program nonaktif/arsip untuk contoh data lama.
+- Target santri demo `NIS-DEMO-AKTIF` dan `NIS-DEMO-PPDB` pada periode
+  `2026-2027-GANJIL`.
+- Setoran `accepted`, `submitted`, `needs_revision`, dan `void`.
+- Contoh setoran `murojaah`.
+- Revision history untuk review accepted dan void.
 
 ## Open Questions
 

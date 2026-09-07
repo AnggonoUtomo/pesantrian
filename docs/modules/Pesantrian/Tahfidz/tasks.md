@@ -269,10 +269,10 @@ Verifikasi:
 
 ## Increment 9: Demo Seeder
 
-- [ ] Buat `TahfidzDemoSeeder`.
-- [ ] Update `DatabaseSeeder`.
-- [ ] Tambahkan test idempotent seeder.
-- [ ] Dokumentasikan data demo.
+- [x] Buat `TahfidzDemoSeeder`.
+- [x] Update `DatabaseSeeder`.
+- [x] Tambahkan test idempotent seeder.
+- [x] Dokumentasikan data demo.
 
 Acceptance:
 
@@ -280,6 +280,24 @@ Acceptance:
   needs_revision, dan void.
 - Seeder memakai data demo Santri dan SDM yang sudah ada.
 - Seeder aman diulang dan tidak berjalan pada environment production.
+
+Hasil:
+
+- `TahfidzDemoSeeder` tersedia dan dipanggil dari `DatabaseSeeder` setelah
+  seeder Santri, SDM, periode akademik, Asrama, dan Presensi.
+- Data demo memakai santri `NIS-DEMO-AKTIF` dan `NIS-DEMO-PPDB`, pembimbing
+  `PEG-DEMO-003`, serta contoh musyrif `PEG-DEMO-002`.
+- Program demo:
+  `DEMO-THF-REG` sebagai program aktif dan `DEMO-THF-INT` sebagai contoh
+  program nonaktif/arsip.
+- Target demo mencakup target aktif dan target cancelled.
+- Setoran demo mencakup status `accepted`, `submitted`, `needs_revision`, dan
+  `void`, termasuk contoh `murojaah`.
+- Revision history demo tersedia untuk setoran accepted dan void.
+
+Verifikasi:
+
+- [x] `php artisan test tests/Feature/BusinessDemoSeederTest.php --no-ansi`
 
 ## Increment 10: UI/Inertia List dan Detail
 

@@ -36,13 +36,18 @@ final class BusinessDemoSeederTest extends TestCase
         self::assertSame(1, $this->rolePermissionCount('OperatorSantri', 'santri.lifecycle'));
         self::assertSame(1, $this->rolePermissionCount('OperatorSantri', 'asrama.placement'));
         self::assertSame(1, $this->rolePermissionCount('OperatorSantri', 'presensi_santri.submit'));
+        self::assertSame(1, $this->rolePermissionCount('OperatorSantri', 'tahfidz.record'));
+        self::assertSame(1, $this->rolePermissionCount('OperatorSantri', 'tahfidz.review'));
         self::assertSame(1, $this->rolePermissionCount('OperatorAkademik', 'kelas_rombel.placement'));
         self::assertSame(1, $this->rolePermissionCount('OperatorAkademik', 'presensi_santri.submit'));
+        self::assertSame(1, $this->rolePermissionCount('OperatorAkademik', 'tahfidz.view'));
         self::assertSame(1, $this->rolePermissionCount('OperatorSDM', 'human_resource.manage'));
         self::assertSame(1, $this->rolePermissionCount('Auditor', 'audit_log.view'));
         self::assertSame(1, $this->rolePermissionCount('Auditor', 'presensi_santri.view'));
+        self::assertSame(1, $this->rolePermissionCount('Auditor', 'tahfidz.view'));
         self::assertSame(1, $this->rolePermissionCount('Viewer', 'kelas_rombel.view'));
         self::assertSame(1, $this->rolePermissionCount('Viewer', 'presensi_santri.view'));
+        self::assertSame(1, $this->rolePermissionCount('Viewer', 'tahfidz.view'));
 
         self::assertSame(7, DB::table('organization_units')->where('code', 'like', 'DEMO-%')->count());
         self::assertSame(1, DB::table('organization_units')->where('code', 'DEMO-YAYASAN')->where('status', 'active')->count());

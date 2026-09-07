@@ -24,11 +24,11 @@ Verifikasi:
 
 ## Increment 2: Module Skeleton dan Permission
 
-- [ ] Jalankan dry-run generator module.
-- [ ] Buat module `Pesantrian/Tahfidz`.
-- [ ] Tambahkan permission identity.
-- [ ] Wire permission ke seeder AccessControl.
-- [ ] Jalankan module validate.
+- [x] Jalankan dry-run generator module.
+- [x] Buat module `Pesantrian/Tahfidz`.
+- [x] Tambahkan permission identity.
+- [x] Wire permission ke seeder AccessControl.
+- [x] Jalankan module validate.
 
 Acceptance:
 
@@ -36,6 +36,27 @@ Acceptance:
 - Permission `tahfidz.view`, `tahfidz.manage`, `tahfidz.record`,
   `tahfidz.review`, dan `tahfidz.archive` tersedia.
 - Belum ada table bisnis pada increment ini.
+
+Hasil:
+
+- Skeleton source module dibuat di `app/Modules/Pesantrian/Tahfidz/`.
+- Module terdaftar sebagai `enabled`, bootable, dan terbaca oleh registry
+  module.
+- Permission baseline dibuat untuk akses lihat, kelola program/target,
+  pencatatan setoran, review setoran, dan arsip/batal data Tahfidz.
+- Seeder AccessControl memberi akses operasional awal:
+  `OperatorSantri` dapat melihat, mengelola, mencatat, dan review;
+  `OperatorAkademik`, `Auditor`, dan `Viewer` dapat melihat.
+- Permission `tahfidz.archive` sementara hanya melekat ke role super/admin
+  keamanan melalui mekanisme all-permission, karena arsip/batal catatan
+  termasuk aksi sensitif.
+
+Verifikasi:
+
+- [x] `php artisan module:make Pesantrian Tahfidz --dry-run --json --no-ansi`
+- [x] `php artisan test tests/Unit/TahfidzPermissionIdentityTest.php tests/Feature/AccessControlSeederTest.php tests/Feature/BusinessDemoSeederTest.php --no-ansi`
+- [x] `php artisan module:validate --no-ansi`
+- [x] `php artisan module:list --json --no-ansi`
 
 ## Increment 3: Contract Readiness
 

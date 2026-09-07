@@ -1,0 +1,13 @@
+{
+    "name": "Tahfidz",
+    "namespace": "App\\Modules\\Pesantrian\\Tahfidz",
+    "version": "1.0.0",
+    "schema_version": 1,
+    "status": "enabled",
+    "domain": "Pesantrian",
+    "path": "app/Modules/Pesantrian/Tahfidz",
+    "provider": "App\\Modules\\Pesantrian\\Tahfidz\\ServiceProvider",
+    "dependencies": [],
+    "permission_source": "permissions.php",
+    "config_source": "module.php"
+}

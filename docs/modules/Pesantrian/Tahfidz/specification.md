@@ -2,8 +2,10 @@
 
 ## Status
 
-Planned - documentation baseline. Belum ada source module, migration, API,
-seeder, atau UI yang dibuat pada increment ini.
+Active - skeleton dan permission ready. Source module, manifest, route
+placeholder, ServiceProvider, README source, permission identity, dan wiring
+AccessControl sudah tersedia. Belum ada migration, table bisnis, API bisnis,
+seeder demo Tahfidz, atau UI.
 
 ## Objective
 

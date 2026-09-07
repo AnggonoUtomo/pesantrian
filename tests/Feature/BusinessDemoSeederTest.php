@@ -38,6 +38,8 @@ final class BusinessDemoSeederTest extends TestCase
         self::assertSame(1, $this->rolePermissionCount('OperatorSantri', 'presensi_santri.submit'));
         self::assertSame(1, $this->rolePermissionCount('OperatorSantri', 'tahfidz.record'));
         self::assertSame(1, $this->rolePermissionCount('OperatorSantri', 'tahfidz.review'));
+        self::assertSame(1, $this->rolePermissionCount('OperatorSantri', 'perizinan_santri.checkout'));
+        self::assertSame(1, $this->rolePermissionCount('OperatorSantri', 'perizinan_santri.return'));
         self::assertSame(1, $this->rolePermissionCount('OperatorAkademik', 'kelas_rombel.placement'));
         self::assertSame(1, $this->rolePermissionCount('OperatorAkademik', 'presensi_santri.submit'));
         self::assertSame(1, $this->rolePermissionCount('OperatorAkademik', 'tahfidz.view'));
@@ -139,6 +141,14 @@ final class BusinessDemoSeederTest extends TestCase
         self::assertSame(1, DB::table('tahfidz_submissions')->where('status', 'void')->whereNotNull('voided_at')->count());
         self::assertSame(1, DB::table('tahfidz_submissions')->where('type', 'murojaah')->where('status', 'submitted')->count());
         self::assertSame(2, DB::table('tahfidz_submission_revisions')->count());
+
+        self::assertSame(7, DB::table('student_permits')->where('permit_no', 'like', 'IZN-DEMO-%')->count());
+        foreach (['draft', 'submitted', 'approved', 'rejected', 'checked_out', 'returned', 'void'] as $status) {
+            self::assertSame(1, DB::table('student_permits')->where('permit_no', 'like', 'IZN-DEMO-%')->where('status', $status)->count());
+        }
+        self::assertSame(1, DB::table('student_permits')->where('permit_no', 'IZN-DEMO-RETURNED')->where('status', 'returned')->whereNotNull('returned_at')->count());
+        self::assertSame(1, DB::table('student_permits')->where('permit_no', 'IZN-DEMO-VOID')->where('status', 'void')->whereNotNull('voided_at')->count());
+        self::assertSame(7, DB::table('student_permit_revisions')->count());
     }
 
     public function test_demo_seeder_tidak_membuat_data_bisnis_di_production(): void
@@ -166,6 +176,8 @@ final class BusinessDemoSeederTest extends TestCase
         self::assertSame(0, DB::table('tahfidz_targets')->count());
         self::assertSame(0, DB::table('tahfidz_submissions')->count());
         self::assertSame(0, DB::table('tahfidz_submission_revisions')->count());
+        self::assertSame(0, DB::table('student_permits')->count());
+        self::assertSame(0, DB::table('student_permit_revisions')->count());
         self::assertSame(0, User::where('email', 'like', 'user-management-dummy-%@example.test')->count());
         self::assertSame(0, User::where('email', 'operator-ppdb@example.test')->count());
     }

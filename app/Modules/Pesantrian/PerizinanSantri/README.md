@@ -27,5 +27,7 @@ Increment aktif:
 - Increment 8 menyiapkan API check-out, return/check-in, void, validasi status
   lifecycle operasional, revision, summary keterlambatan return, dan audit
   check-out/return/void.
-- Demo seeder, UI, dan integrasi awal ke PresensiSantri dikerjakan pada
-  increment berikutnya.
+- Increment 9 menyiapkan demo seeder idempotent untuk status
+  `draft/submitted/approved/rejected/checked_out/returned/void`, snapshot wali,
+  actor demo, dan revision history demo.
+- UI dan integrasi awal ke PresensiSantri dikerjakan pada increment berikutnya.

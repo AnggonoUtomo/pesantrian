@@ -154,19 +154,25 @@ Menu sidebar berada di namespace Pesantrian dengan nama tampil
 Permission dapat disesuaikan saat implementasi bila terlalu granular, tetapi
 backend tetap menjadi authority otorisasi.
 
-## Data Demo Candidate
+## Data Demo
 
 Seeder demo wajib idempotent dan tidak berjalan di `production`.
 
-Data demo minimum:
+Data demo tersedia melalui `PerizinanSantriDemoSeeder` dan dipanggil dari
+`DatabaseSeeder` setelah data demo santri tersedia.
 
-- satu izin pulang approved;
-- satu izin keluar submitted;
-- satu izin sakit rejected;
-- satu izin checked_out;
-- satu izin returned/closed;
-- satu izin void;
-- variasi santri aktif dan petugas approver.
+Data demo mencakup:
+
+- `IZN-DEMO-DRAFT`: draft izin pulang singkat.
+- `IZN-DEMO-SUBMITTED`: izin kegiatan yang menunggu review.
+- `IZN-DEMO-APPROVED`: izin yang sudah disetujui.
+- `IZN-DEMO-REJECTED`: izin yang ditolak dengan alasan.
+- `IZN-DEMO-CHECKEDOUT`: izin berjalan/santri sudah keluar.
+- `IZN-DEMO-RETURNED`: izin selesai dan santri kembali terlambat.
+- `IZN-DEMO-VOID`: izin dibatalkan karena salah input.
+
+Seeder memakai santri demo `NIS-DEMO-AKTIF` dan `NIS-DEMO-PPDB`, snapshot wali
+utama dari module Santri, serta actor user demo dari AccessControl.
 
 ## Dokumentasi Terkait
 

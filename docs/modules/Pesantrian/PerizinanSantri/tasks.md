@@ -277,16 +277,32 @@ Acceptance:
 
 ## Increment 9: Demo Seeder
 
-- [ ] Buat `PerizinanSantriDemoSeeder`.
-- [ ] Update `DatabaseSeeder`.
-- [ ] Tambahkan test idempotent seeder.
-- [ ] Dokumentasikan data demo.
+- [x] Buat `PerizinanSantriDemoSeeder`.
+- [x] Update `DatabaseSeeder`.
+- [x] Tambahkan test idempotent seeder.
+- [x] Dokumentasikan data demo.
+
+Hasil:
+
+- `PerizinanSantriDemoSeeder` dibuat di module PerizinanSantri.
+- Seeder dipanggil dari `DatabaseSeeder` setelah data demo Santri,
+  PresensiSantri, dan Tahfidz tersedia.
+- Seeder memakai data demo `NIS-DEMO-AKTIF` dan `NIS-DEMO-PPDB`, snapshot wali
+  utama dari Santri, serta actor user demo AccessControl.
+- Data demo dibuat idempotent memakai nomor izin `IZN-DEMO-*`.
+- Seeder tidak berjalan pada environment `production`.
+- Revision history demo dibuat untuk draft, submit, review approve/reject,
+  check-out, return terlambat, dan void.
+
+Verifikasi:
+
+- [x] `php artisan test tests/Feature/BusinessDemoSeederTest.php --no-ansi`
 
 Acceptance:
 
-- Seeder mencakup draft/submitted/approved/rejected/checked_out/returned/void.
-- Seeder memakai santri dan petugas demo yang sudah ada.
-- Seeder aman diulang dan tidak berjalan pada environment production.
+- [x] Seeder mencakup draft/submitted/approved/rejected/checked_out/returned/void.
+- [x] Seeder memakai santri dan petugas demo yang sudah ada.
+- [x] Seeder aman diulang dan tidak berjalan pada environment production.
 
 ## Increment 10: UI/Inertia List dan Detail
 

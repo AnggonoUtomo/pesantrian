@@ -19,5 +19,8 @@ Increment aktif:
   `student_permit_revisions`, record model, dan factory minimum.
 - Increment 5 menyiapkan API read/list/detail internal dengan filter,
   pagination, summary keterlambatan, dan revision history.
-- Lifecycle mutation izin, demo seeder, UI, dan integrasi awal ke
+- Increment 6 menyiapkan API create draft, update draft, submit, revision
+  koreksi/submit, validasi santri aktif, validasi rentang, rule overlap izin
+  aktif, dan audit create/update/submit.
+- Approval, check-out/return, demo seeder, UI, dan integrasi awal ke
   PresensiSantri dikerjakan pada increment berikutnya.

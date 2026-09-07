@@ -82,7 +82,10 @@ frontend memakai Laravel named routes melalui Ziggy untuk Inertia React.
 | PATCH | `/api/v1/pesantrian/student-attendances/{attendance}/revise` | `api.v1.pesantrian.student-attendances.revise` | `presensi_santri.revise` | Ya | Envelope sukses dengan sesi presensi dibuka untuk revisi |
 | PATCH | `/api/v1/pesantrian/student-attendances/{attendance}/void` | `api.v1.pesantrian.student-attendances.void` | `presensi_santri.archive` | Ya | Envelope sukses dengan sesi presensi berstatus void tanpa menghapus entry |
 | GET | `/api/v1/pesantrian/student-permits` | `api.v1.pesantrian.student-permits.index` | `perizinan_santri.view` | Tidak | Envelope sukses dengan daftar izin santri dan pagination meta |
+| POST | `/api/v1/pesantrian/student-permits` | `api.v1.pesantrian.student-permits.store` | `perizinan_santri.manage` | Ya | Envelope sukses `201` dengan permohonan izin draft yang dibuat |
+| PATCH | `/api/v1/pesantrian/student-permits/{permit}` | `api.v1.pesantrian.student-permits.update` | `perizinan_santri.manage` | Ya | Envelope sukses dengan permohonan izin draft yang diperbarui dan revision tercatat |
 | GET | `/api/v1/pesantrian/student-permits/{permit}` | `api.v1.pesantrian.student-permits.show` | `perizinan_santri.view` | Tidak | Envelope sukses dengan detail izin, snapshot santri/wali, lifecycle, summary, dan revisions |
+| PATCH | `/api/v1/pesantrian/student-permits/{permit}/submit` | `api.v1.pesantrian.student-permits.submit` | `perizinan_santri.manage` | Ya | Envelope sukses dengan permohonan izin berstatus submitted bila tidak overlap izin aktif |
 | GET | `/api/v1/pesantrian/students` | `api.v1.pesantrian.students.index` | `santri.view` | Tidak | Envelope sukses dengan daftar data induk santri dan pagination meta |
 | POST | `/api/v1/pesantrian/students` | `api.v1.pesantrian.students.store` | `santri.manage` | Ya | Envelope sukses `201` dengan data induk santri yang dibuat |
 | POST | `/api/v1/pesantrian/students/from-admission/{admission}` | `api.v1.pesantrian.students.from-admission` | `santri.manage` | Ya | Envelope sukses `201` dengan santri hasil konversi PPDB |

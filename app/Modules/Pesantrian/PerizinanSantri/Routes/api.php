@@ -10,6 +10,17 @@ Route::middleware(['web', 'auth', 'verified', 'throttle:system-api'])
     ->name('api.v1.pesantrian.student-permits.')
     ->group(static function (): void {
         Route::get('/', [StudentPermitApiController::class, 'index'])->name('index');
+        Route::post('/', [StudentPermitApiController::class, 'store'])
+            ->middleware('api.idempotency')
+            ->name('store');
+        Route::patch('/{permit}', [StudentPermitApiController::class, 'update'])
+            ->whereUlid('permit')
+            ->middleware('api.idempotency')
+            ->name('update');
+        Route::patch('/{permit}/submit', [StudentPermitApiController::class, 'submit'])
+            ->whereUlid('permit')
+            ->middleware('api.idempotency')
+            ->name('submit');
         Route::get('/{permit}', [StudentPermitApiController::class, 'show'])
             ->whereUlid('permit')
             ->name('show');

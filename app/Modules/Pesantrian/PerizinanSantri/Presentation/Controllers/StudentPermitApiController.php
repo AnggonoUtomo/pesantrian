@@ -5,11 +5,17 @@ declare(strict_types=1);
 namespace App\Modules\Pesantrian\PerizinanSantri\Presentation\Controllers;
 
 use App\Http\ApiResponseFactory;
+use App\Modules\Pesantrian\PerizinanSantri\Application\Actions\CreateStudentPermitDraft;
+use App\Modules\Pesantrian\PerizinanSantri\Application\Actions\SubmitStudentPermitDraft;
+use App\Modules\Pesantrian\PerizinanSantri\Application\Actions\UpdateStudentPermitDraft;
 use App\Modules\Pesantrian\PerizinanSantri\Application\DTO\PaginatedStudentPermitData;
 use App\Modules\Pesantrian\PerizinanSantri\Application\DTO\StudentPermitData;
+use App\Modules\Pesantrian\PerizinanSantri\Application\Exceptions\StudentPermitMutationException;
 use App\Modules\Pesantrian\PerizinanSantri\Application\Queries\ListStudentPermits;
 use App\Modules\Pesantrian\PerizinanSantri\Application\Queries\ShowStudentPermit;
 use App\Modules\Pesantrian\PerizinanSantri\Presentation\Requests\ListStudentPermitsApiRequest;
+use App\Modules\Pesantrian\PerizinanSantri\Presentation\Requests\StoreStudentPermitApiRequest;
+use App\Modules\Pesantrian\PerizinanSantri\Presentation\Requests\UpdateStudentPermitApiRequest;
 use App\Modules\Pesantrian\PerizinanSantri\Presentation\Resources\StudentPermitResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -21,6 +27,9 @@ final readonly class StudentPermitApiController implements HasMiddleware
     public function __construct(
         private ListStudentPermits $listStudentPermits,
         private ShowStudentPermit $showStudentPermit,
+        private CreateStudentPermitDraft $createStudentPermitDraft,
+        private UpdateStudentPermitDraft $updateStudentPermitDraft,
+        private SubmitStudentPermitDraft $submitStudentPermitDraft,
         private ApiResponseFactory $responses,
     ) {}
 
@@ -28,6 +37,7 @@ final readonly class StudentPermitApiController implements HasMiddleware
     {
         return [
             new Middleware('can:perizinan_santri.view', only: ['index', 'show']),
+            new Middleware('can:perizinan_santri.manage', only: ['store', 'update', 'submit']),
         ];
     }
 
@@ -59,6 +69,70 @@ final readonly class StudentPermitApiController implements HasMiddleware
         );
     }
 
+    public function store(StoreStudentPermitApiRequest $request): JsonResponse
+    {
+        try {
+            $data = $this->createStudentPermitDraft->execute(
+                $request->user(),
+                $request->toData(),
+                $this->responses->correlationId($request),
+            );
+        } catch (StudentPermitMutationException $exception) {
+            return $this->invalidMutation($request, $exception);
+        }
+
+        return $this->responses->success(
+            $request,
+            'Permohonan izin santri berhasil dibuat.',
+            (new StudentPermitResource($data))->toArray($request),
+            status: 201,
+        );
+    }
+
+    public function update(UpdateStudentPermitApiRequest $request, string $permit): JsonResponse
+    {
+        try {
+            $data = $this->updateStudentPermitDraft->execute(
+                $request->user(),
+                $permit,
+                $request->toData(),
+                $request->revisionReason(),
+                $this->responses->correlationId($request),
+            );
+        } catch (StudentPermitMutationException $exception) {
+            return $this->invalidMutation($request, $exception);
+        }
+
+        abort_if($data === null, 404);
+
+        return $this->responses->success(
+            $request,
+            'Permohonan izin santri berhasil diperbarui.',
+            (new StudentPermitResource($data))->toArray($request),
+        );
+    }
+
+    public function submit(Request $request, string $permit): JsonResponse
+    {
+        try {
+            $data = $this->submitStudentPermitDraft->execute(
+                $request->user(),
+                $permit,
+                $this->responses->correlationId($request),
+            );
+        } catch (StudentPermitMutationException $exception) {
+            return $this->invalidMutation($request, $exception);
+        }
+
+        abort_if($data === null, 404);
+
+        return $this->responses->success(
+            $request,
+            'Permohonan izin santri berhasil disubmit.',
+            (new StudentPermitResource($data))->toArray($request),
+        );
+    }
+
     /** @return array{current_page: int, per_page: int, total: int, last_page: int} */
     private function paginationMeta(PaginatedStudentPermitData $result): array
     {
@@ -68,5 +142,16 @@ final readonly class StudentPermitApiController implements HasMiddleware
             'total' => $result->total,
             'last_page' => $result->lastPage,
         ];
+    }
+
+    private function invalidMutation(Request $request, StudentPermitMutationException $exception): JsonResponse
+    {
+        return $this->responses->error(
+            $request,
+            $exception->getMessage(),
+            'PERIZINAN_SANTRI_MUTATION_INVALID',
+            422,
+            $exception->errors(),
+        );
     }
 }

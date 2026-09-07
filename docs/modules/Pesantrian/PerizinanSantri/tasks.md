@@ -169,18 +169,40 @@ Acceptance:
 
 ## Increment 6: Create/Update Draft dan Submit
 
-- [ ] Buat request validation create/update permit.
-- [ ] Buat action create/update draft.
-- [ ] Buat action submit permit.
-- [ ] Tambahkan audit create/update/submit.
-- [ ] Jalankan focused mutation tests.
+- [x] Buat request validation create/update permit.
+- [x] Buat action create/update draft.
+- [x] Buat action submit permit.
+- [x] Tambahkan audit create/update/submit.
+- [x] Jalankan focused mutation tests.
+
+Hasil:
+
+- API mutation internal tersedia:
+  - `POST /api/v1/pesantrian/student-permits`
+  - `PATCH /api/v1/pesantrian/student-permits/{permit}`
+  - `PATCH /api/v1/pesantrian/student-permits/{permit}/submit`
+- Create draft mengambil snapshot santri aktif dan wali utama melalui public
+  contract module Santri.
+- Update hanya boleh untuk status `draft` dan mencatat revision dengan alasan
+  koreksi.
+- Submit hanya boleh dari `draft` untuk santri yang masih aktif, menyimpan
+  actor/waktu submit, mencatat revision, dan menolak overlap dengan izin aktif
+  santri yang sama.
+- Audit create/update/submit dicatat melalui event `SystemActivityOccurred`
+  dengan module `PerizinanSantri`.
+
+Verifikasi:
+
+- [x] `php artisan test tests/Feature/PerizinanSantriMutationApiTest.php --no-ansi`
+- [x] `php artisan test tests/Feature/PerizinanSantriMutationApiTest.php tests/Feature/PerizinanSantriApiTest.php tests/Feature/ApiRouteMatrixTest.php --no-ansi`
+- [x] `php artisan module:validate --no-ansi`
 
 Acceptance:
 
-- Permohonan izin bisa dibuat sebagai draft.
-- Draft bisa diubah sebelum submit.
-- Submit hanya dari draft.
-- Rentang waktu valid dan tidak overlap untuk izin aktif santri.
+- [x] Permohonan izin bisa dibuat sebagai draft.
+- [x] Draft bisa diubah sebelum submit.
+- [x] Submit hanya dari draft.
+- [x] Rentang waktu valid dan tidak overlap untuk izin aktif santri.
 
 ## Increment 7: Approve dan Reject
 

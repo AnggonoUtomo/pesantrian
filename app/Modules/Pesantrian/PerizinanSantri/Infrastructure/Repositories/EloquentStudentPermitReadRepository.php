@@ -4,18 +4,21 @@ declare(strict_types=1);
 
 namespace App\Modules\Pesantrian\PerizinanSantri\Infrastructure\Repositories;
 
+use App\Modules\Pesantrian\PerizinanSantri\Application\Contracts\StudentPermitMutationRepository;
 use App\Modules\Pesantrian\PerizinanSantri\Application\Contracts\StudentPermitReadRepository;
 use App\Modules\Pesantrian\PerizinanSantri\Application\DTO\PaginatedStudentPermitData;
 use App\Modules\Pesantrian\PerizinanSantri\Application\DTO\StudentPermitData;
 use App\Modules\Pesantrian\PerizinanSantri\Application\DTO\StudentPermitListFilter;
+use App\Modules\Pesantrian\PerizinanSantri\Application\DTO\StudentPermitMutationData;
 use App\Modules\Pesantrian\PerizinanSantri\Application\DTO\StudentPermitRevisionData;
 use App\Modules\Pesantrian\PerizinanSantri\Application\DTO\StudentPermitSummaryData;
 use App\Modules\Pesantrian\PerizinanSantri\Infrastructure\Models\StudentPermitRecord;
 use App\Modules\Pesantrian\PerizinanSantri\Infrastructure\Models\StudentPermitRevisionRecord;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
 
-final class EloquentStudentPermitReadRepository implements StudentPermitReadRepository
+final class EloquentStudentPermitReadRepository implements StudentPermitMutationRepository, StudentPermitReadRepository
 {
     /** @var list<string> */
     private const ACTIVE_STATUSES = ['submitted', 'approved', 'checked_out'];
@@ -57,6 +60,90 @@ final class EloquentStudentPermitReadRepository implements StudentPermitReadRepo
         }
 
         return $this->map($record);
+    }
+
+    public function createDraft(StudentPermitMutationData $data, ?string $actorId): StudentPermitData
+    {
+        $record = StudentPermitRecord::query()->create([
+            ...$data->toDatabasePayload(includeNull: true),
+            'permit_no' => $this->nextPermitNo(),
+            'status' => 'draft',
+            'submitted_at' => null,
+            'submitted_by' => null,
+            'reviewed_at' => null,
+            'reviewed_by' => null,
+            'review_note' => null,
+            'checked_out_at' => null,
+            'checked_out_by' => null,
+            'returned_at' => null,
+            'returned_by' => null,
+            'return_note' => null,
+            'voided_at' => null,
+            'voided_by' => null,
+            'void_reason' => null,
+            'created_by' => $actorId,
+        ]);
+
+        $record->load(['revisions' => fn ($query) => $query->orderBy('changed_at')])->loadCount('revisions');
+
+        return $this->map($record);
+    }
+
+    public function updateDraft(string $id, StudentPermitMutationData $data, string $reason, ?string $actorId): ?StudentPermitData
+    {
+        $record = StudentPermitRecord::query()->find($id);
+
+        if (! $record instanceof StudentPermitRecord) {
+            return null;
+        }
+
+        $payload = $data->toDatabasePayload();
+        $record->forceFill($payload)->save();
+        $this->createRevision($record, $reason, $actorId, [
+            'changed_fields' => array_keys($payload),
+            'status' => $record->status,
+        ]);
+
+        $record->load(['revisions' => fn ($query) => $query->orderBy('changed_at')])->loadCount('revisions');
+
+        return $this->map($record);
+    }
+
+    public function submitDraft(string $id, string $actorId): ?StudentPermitData
+    {
+        $record = StudentPermitRecord::query()->find($id);
+
+        if (! $record instanceof StudentPermitRecord) {
+            return null;
+        }
+
+        $record->forceFill([
+            'status' => 'submitted',
+            'submitted_at' => now(),
+            'submitted_by' => $actorId,
+        ])->save();
+        $this->createRevision($record, 'Permohonan izin disubmit untuk review.', $actorId, [
+            'changed_fields' => ['status', 'submitted_at', 'submitted_by'],
+            'status' => 'submitted',
+        ]);
+
+        $record->load(['revisions' => fn ($query) => $query->orderBy('changed_at')])->loadCount('revisions');
+
+        return $this->map($record);
+    }
+
+    public function hasActiveOverlap(string $studentId, string $startsAt, string $endsAt, ?string $exceptId = null): bool
+    {
+        $normalizedStartsAt = Carbon::parse($startsAt)->toDateTimeString();
+        $normalizedEndsAt = Carbon::parse($endsAt)->toDateTimeString();
+
+        return StudentPermitRecord::query()
+            ->where('student_id', $studentId)
+            ->whereIn('status', self::ACTIVE_STATUSES)
+            ->when($exceptId !== null, fn (Builder $query) => $query->whereKeyNot($exceptId))
+            ->where('starts_at', '<', $normalizedEndsAt)
+            ->where('ends_at', '>', $normalizedStartsAt)
+            ->exists();
     }
 
     /** @return Builder<StudentPermitRecord> */
@@ -185,5 +272,38 @@ final class EloquentStudentPermitReadRepository implements StudentPermitReadRepo
             'ends_at' => 'student_permits.ends_at',
             default => 'student_permits.created_at',
         };
+    }
+
+    private function nextPermitNo(): string
+    {
+        $latestPermitNo = StudentPermitRecord::query()
+            ->where('permit_no', 'like', 'IZN-%')
+            ->orderByDesc('permit_no')
+            ->value('permit_no');
+
+        $nextNumber = 1;
+
+        if (is_string($latestPermitNo) && preg_match('/^IZN-(\d+)$/', $latestPermitNo, $matches) === 1) {
+            $nextNumber = ((int) $matches[1]) + 1;
+        }
+
+        do {
+            $permitNo = 'IZN-'.str_pad((string) $nextNumber, 6, '0', STR_PAD_LEFT);
+            $nextNumber++;
+        } while (StudentPermitRecord::query()->where('permit_no', $permitNo)->exists());
+
+        return $permitNo;
+    }
+
+    /** @param array<string, mixed> $summary */
+    private function createRevision(StudentPermitRecord $record, string $reason, ?string $actorId, array $summary): StudentPermitRevisionRecord
+    {
+        return StudentPermitRevisionRecord::query()->create([
+            'permit_id' => $record->id,
+            'reason' => $reason,
+            'changed_by' => $actorId,
+            'changed_at' => now(),
+            'summary' => $summary,
+        ]);
     }
 }

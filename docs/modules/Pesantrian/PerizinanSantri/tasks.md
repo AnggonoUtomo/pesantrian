@@ -133,19 +133,39 @@ Acceptance:
 
 ## Increment 5: Backend Read/List
 
-- [ ] Buat DTO/read model perizinan.
-- [ ] Buat query list/search/filter.
-- [ ] Buat query detail.
-- [ ] Buat controller/resource API read.
-- [ ] Jalankan focused API tests.
+- [x] Buat DTO/read model perizinan.
+- [x] Buat query list/search/filter.
+- [x] Buat query detail.
+- [x] Buat controller/resource API read.
+- [x] Jalankan focused API tests.
+
+Hasil:
+
+- Read model `StudentPermitData`, `StudentPermitSummaryData`,
+  `StudentPermitRevisionData`, dan pagination DTO tersedia.
+- Query `ListStudentPermits` dan `ShowStudentPermit` memakai contract
+  `StudentPermitReadRepository`.
+- Repository Eloquent read-only mendukung search, filter tanggal, jenis izin,
+  status, santri, keterlambatan, pagination, dan sort allowlist.
+- API internal tersedia:
+  - `GET /api/v1/pesantrian/student-permits`
+  - `GET /api/v1/pesantrian/student-permits/{permit}`
+- Response detail mengembalikan snapshot santri/wali, lifecycle actor/waktu,
+  summary, dan revision history.
+- Actor tanpa `perizinan_santri.view` ditolak oleh middleware backend.
+
+Verifikasi:
+
+- [x] `php artisan test tests/Feature/PerizinanSantriApiTest.php --no-ansi`
+- [x] `php artisan route:list --name=api.v1.pesantrian.student-permits --no-ansi`
 
 Acceptance:
 
-- List perizinan mendukung filter tanggal, jenis izin, status, santri,
+- [x] List perizinan mendukung filter tanggal, jenis izin, status, santri,
   keterlambatan, dan pagination.
-- Detail perizinan mengembalikan lifecycle, snapshot santri/wali, approval,
+- [x] Detail perizinan mengembalikan lifecycle, snapshot santri/wali, approval,
   check-out, return, dan revisions.
-- Actor tanpa permission view ditolak.
+- [x] Actor tanpa permission view ditolak.
 
 ## Increment 6: Create/Update Draft dan Submit
 

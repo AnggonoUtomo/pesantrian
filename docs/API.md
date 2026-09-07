@@ -17,6 +17,21 @@ frontend memakai Laravel named routes melalui Ziggy untuk Inertia React.
 | --- | --- | --- | --- | --- | --- |
 | GET | `/api/v1/audit-logs` | `api.v1.audit-logs.index` | Audit log view policy | Tidak | Envelope sukses dengan daftar audit dan pagination meta |
 | GET | `/api/v1/audit-logs/{auditLog}` | `api.v1.audit-logs.show` | Audit log view policy | Tidak | Envelope sukses dengan detail audit |
+| GET | `/api/v1/academic/class-groups` | `api.v1.academic.class-groups.index` | `kelas_rombel.view` | Tidak | Envelope sukses dengan daftar kelas/rombel dan pagination meta |
+| POST | `/api/v1/academic/class-groups` | `api.v1.academic.class-groups.store` | `kelas_rombel.manage` | Ya | Envelope sukses `201` dengan rombel yang dibuat |
+| POST | `/api/v1/academic/class-groups/curricula` | `api.v1.academic.class-groups.curricula.store` | `kelas_rombel.manage` | Ya | Envelope sukses `201` dengan kurikulum yang dibuat |
+| PATCH | `/api/v1/academic/class-groups/curricula/{curriculum}` | `api.v1.academic.class-groups.curricula.update` | `kelas_rombel.manage` | Ya | Envelope sukses dengan kurikulum yang diperbarui |
+| POST | `/api/v1/academic/class-groups/levels` | `api.v1.academic.class-groups.levels.store` | `kelas_rombel.manage` | Ya | Envelope sukses `201` dengan level kelas yang dibuat |
+| PATCH | `/api/v1/academic/class-groups/levels/{level}` | `api.v1.academic.class-groups.levels.update` | `kelas_rombel.manage` | Ya | Envelope sukses dengan level kelas yang diperbarui |
+| PATCH | `/api/v1/academic/class-groups/{classGroup}` | `api.v1.academic.class-groups.update` | `kelas_rombel.manage` | Ya | Envelope sukses dengan rombel yang diperbarui |
+| GET | `/api/v1/academic/class-groups/{classGroup}` | `api.v1.academic.class-groups.show` | `kelas_rombel.view` | Tidak | Envelope sukses dengan detail rombel, siswa, dan wali kelas |
+| PATCH | `/api/v1/academic/class-groups/{classGroup}/archive` | `api.v1.academic.class-groups.archive` | `kelas_rombel.archive` | Ya | Envelope sukses dengan rombel yang diarsipkan |
+| POST | `/api/v1/academic/class-groups/{classGroup}/homerooms` | `api.v1.academic.class-groups.homerooms.store` | `kelas_rombel.manage` | Ya | Envelope sukses `201` dengan penugasan wali kelas |
+| PATCH | `/api/v1/academic/class-groups/{classGroup}/homerooms/{homeroom}/end` | `api.v1.academic.class-groups.homerooms.end` | `kelas_rombel.manage` | Ya | Envelope sukses dengan penugasan wali kelas yang diakhiri |
+| PATCH | `/api/v1/academic/class-groups/{classGroup}/restore` | `api.v1.academic.class-groups.restore` | `kelas_rombel.archive` | Ya | Envelope sukses dengan rombel yang dipulihkan |
+| POST | `/api/v1/academic/class-groups/{classGroup}/students` | `api.v1.academic.class-groups.students.store` | `kelas_rombel.placement` | Ya | Envelope sukses `201` dengan penempatan santri ke rombel |
+| PATCH | `/api/v1/academic/class-groups/{classGroup}/students/{placement}/remove` | `api.v1.academic.class-groups.students.remove` | `kelas_rombel.placement` | Ya | Envelope sukses dengan penempatan santri yang diakhiri |
+| PATCH | `/api/v1/academic/class-groups/{classGroup}/students/{placement}/transfer` | `api.v1.academic.class-groups.students.transfer` | `kelas_rombel.placement` | Ya | Envelope sukses dengan perpindahan santri antar rombel |
 | GET | `/api/v1/academic/periods/terms` | `api.v1.academic.periods.terms.index` | `academic_period.view` | Tidak | Envelope sukses dengan daftar term akademik dan pagination meta |
 | GET | `/api/v1/academic/periods/terms/current` | `api.v1.academic.periods.terms.current` | `academic_period.view` | Tidak | Envelope sukses dengan term akademik aktif global atau `null` |
 | POST | `/api/v1/academic/periods/terms` | `api.v1.academic.periods.terms.store` | `academic_period.manage` | Ya | Envelope sukses `201` dengan term akademik yang dibuat |
@@ -36,6 +51,28 @@ frontend memakai Laravel named routes melalui Ziggy untuk Inertia React.
 | GET | `/api/v1/organization/units` | `api.v1.organization.units.index` | `organization.view` | Tidak | Envelope sukses dengan daftar unit dan pagination meta |
 | POST | `/api/v1/organization/units` | `api.v1.organization.units.store` | `organization.manage` | Ya | Envelope sukses `201` dengan unit yang dibuat |
 | PATCH | `/api/v1/organization/units/{unit}` | `api.v1.organization.units.update` | `organization.manage` | Ya | Envelope sukses dengan unit yang diperbarui |
+| GET | `/api/v1/pesantrian/admissions` | `api.v1.pesantrian.admissions.index` | `penerimaan_santri.view` | Tidak | Envelope sukses dengan daftar pendaftar dan pagination meta |
+| POST | `/api/v1/pesantrian/admissions` | `api.v1.pesantrian.admissions.store` | `penerimaan_santri.manage` | Ya | Envelope sukses `201` dengan pendaftar yang dibuat |
+| PATCH | `/api/v1/pesantrian/admissions/{admission}` | `api.v1.pesantrian.admissions.update` | `penerimaan_santri.manage` | Ya | Envelope sukses dengan pendaftar yang diperbarui |
+| PATCH | `/api/v1/pesantrian/admissions/{admission}/accept` | `api.v1.pesantrian.admissions.accept` | `penerimaan_santri.decide` | Ya | Envelope sukses dengan pendaftar diterima |
+| PATCH | `/api/v1/pesantrian/admissions/{admission}/cancel` | `api.v1.pesantrian.admissions.cancel` | `penerimaan_santri.manage` | Ya | Envelope sukses dengan pendaftar dibatalkan |
+| PATCH | `/api/v1/pesantrian/admissions/{admission}/reject` | `api.v1.pesantrian.admissions.reject` | `penerimaan_santri.decide` | Ya | Envelope sukses dengan pendaftar ditolak |
+| PATCH | `/api/v1/pesantrian/admissions/{admission}/verify` | `api.v1.pesantrian.admissions.verify` | `penerimaan_santri.manage` | Ya | Envelope sukses dengan pendaftar terverifikasi |
+| GET | `/api/v1/pesantrian/asrama` | `api.v1.pesantrian.asrama.index` | `asrama.view` | Tidak | Envelope sukses dengan daftar asrama dan pagination meta |
+| POST | `/api/v1/pesantrian/asrama` | `api.v1.pesantrian.asrama.store` | `asrama.manage` | Ya | Envelope sukses `201` dengan asrama yang dibuat |
+| PATCH | `/api/v1/pesantrian/asrama/{dormitory}` | `api.v1.pesantrian.asrama.update` | `asrama.manage` | Ya | Envelope sukses dengan asrama yang diperbarui |
+| GET | `/api/v1/pesantrian/asrama/{dormitory}` | `api.v1.pesantrian.asrama.show` | `asrama.view` | Tidak | Envelope sukses dengan detail asrama, kamar, penghuni, dan pembina |
+| PATCH | `/api/v1/pesantrian/asrama/{dormitory}/archive` | `api.v1.pesantrian.asrama.archive` | `asrama.archive` | Ya | Envelope sukses dengan asrama yang diarsipkan |
+| POST | `/api/v1/pesantrian/asrama/{dormitory}/placements` | `api.v1.pesantrian.asrama.placements.store` | `asrama.placement` | Ya | Envelope sukses `201` dengan penempatan santri ke kamar |
+| PATCH | `/api/v1/pesantrian/asrama/{dormitory}/placements/{placement}/remove` | `api.v1.pesantrian.asrama.placements.remove` | `asrama.placement` | Ya | Envelope sukses dengan penempatan kamar yang diakhiri |
+| PATCH | `/api/v1/pesantrian/asrama/{dormitory}/placements/{placement}/transfer` | `api.v1.pesantrian.asrama.placements.transfer` | `asrama.placement` | Ya | Envelope sukses dengan perpindahan kamar santri |
+| PATCH | `/api/v1/pesantrian/asrama/{dormitory}/restore` | `api.v1.pesantrian.asrama.restore` | `asrama.archive` | Ya | Envelope sukses dengan asrama yang dipulihkan |
+| POST | `/api/v1/pesantrian/asrama/{dormitory}/rooms` | `api.v1.pesantrian.asrama.rooms.store` | `asrama.manage` | Ya | Envelope sukses `201` dengan kamar yang dibuat |
+| PATCH | `/api/v1/pesantrian/asrama/{dormitory}/rooms/{room}` | `api.v1.pesantrian.asrama.rooms.update` | `asrama.manage` | Ya | Envelope sukses dengan kamar yang diperbarui |
+| PATCH | `/api/v1/pesantrian/asrama/{dormitory}/rooms/{room}/archive` | `api.v1.pesantrian.asrama.rooms.archive` | `asrama.archive` | Ya | Envelope sukses dengan kamar yang diarsipkan |
+| PATCH | `/api/v1/pesantrian/asrama/{dormitory}/rooms/{room}/restore` | `api.v1.pesantrian.asrama.rooms.restore` | `asrama.archive` | Ya | Envelope sukses dengan kamar yang dipulihkan |
+| POST | `/api/v1/pesantrian/asrama/{dormitory}/supervisors` | `api.v1.pesantrian.asrama.supervisors.store` | `asrama.supervisor` | Ya | Envelope sukses `201` dengan pembina asrama yang ditugaskan |
+| PATCH | `/api/v1/pesantrian/asrama/{dormitory}/supervisors/{assignment}/end` | `api.v1.pesantrian.asrama.supervisors.end` | `asrama.supervisor` | Ya | Envelope sukses dengan penugasan pembina yang diakhiri |
 | GET | `/api/v1/pesantrian/student-attendances` | `api.v1.pesantrian.student-attendances.index` | `presensi_santri.view` | Tidak | Envelope sukses dengan daftar sesi presensi dan pagination meta |
 | GET | `/api/v1/pesantrian/student-attendances/{attendance}` | `api.v1.pesantrian.student-attendances.show` | `presensi_santri.view` | Tidak | Envelope sukses dengan detail sesi, summary, dan entries |
 | POST | `/api/v1/pesantrian/student-attendances` | `api.v1.pesantrian.student-attendances.store` | `presensi_santri.manage` | Ya | Envelope sukses `201` dengan sesi draft presensi yang dibuat |
@@ -44,6 +81,16 @@ frontend memakai Laravel named routes melalui Ziggy untuk Inertia React.
 | PATCH | `/api/v1/pesantrian/student-attendances/{attendance}/submit` | `api.v1.pesantrian.student-attendances.submit` | `presensi_santri.submit` | Ya | Envelope sukses dengan sesi presensi berstatus submitted |
 | PATCH | `/api/v1/pesantrian/student-attendances/{attendance}/revise` | `api.v1.pesantrian.student-attendances.revise` | `presensi_santri.revise` | Ya | Envelope sukses dengan sesi presensi dibuka untuk revisi |
 | PATCH | `/api/v1/pesantrian/student-attendances/{attendance}/void` | `api.v1.pesantrian.student-attendances.void` | `presensi_santri.archive` | Ya | Envelope sukses dengan sesi presensi berstatus void tanpa menghapus entry |
+| GET | `/api/v1/pesantrian/student-permits` | `api.v1.pesantrian.student-permits.index` | `perizinan_santri.view` | Tidak | Envelope sukses dengan daftar izin santri dan pagination meta |
+| GET | `/api/v1/pesantrian/student-permits/{permit}` | `api.v1.pesantrian.student-permits.show` | `perizinan_santri.view` | Tidak | Envelope sukses dengan detail izin, snapshot santri/wali, lifecycle, summary, dan revisions |
+| GET | `/api/v1/pesantrian/students` | `api.v1.pesantrian.students.index` | `santri.view` | Tidak | Envelope sukses dengan daftar data induk santri dan pagination meta |
+| POST | `/api/v1/pesantrian/students` | `api.v1.pesantrian.students.store` | `santri.manage` | Ya | Envelope sukses `201` dengan data induk santri yang dibuat |
+| POST | `/api/v1/pesantrian/students/from-admission/{admission}` | `api.v1.pesantrian.students.from-admission` | `santri.manage` | Ya | Envelope sukses `201` dengan santri hasil konversi PPDB |
+| GET | `/api/v1/pesantrian/students/{student}` | `api.v1.pesantrian.students.show` | `santri.view` | Tidak | Envelope sukses dengan detail data induk santri dan wali |
+| PATCH | `/api/v1/pesantrian/students/{student}` | `api.v1.pesantrian.students.update` | `santri.manage` | Ya | Envelope sukses dengan data induk santri yang diperbarui |
+| PATCH | `/api/v1/pesantrian/students/{student}/archive` | `api.v1.pesantrian.students.archive` | `santri.archive` | Ya | Envelope sukses dengan data santri yang diarsipkan |
+| PATCH | `/api/v1/pesantrian/students/{student}/lifecycle` | `api.v1.pesantrian.students.lifecycle` | `santri.lifecycle` | Ya | Envelope sukses dengan status lifecycle santri yang diperbarui |
+| PATCH | `/api/v1/pesantrian/students/{student}/restore` | `api.v1.pesantrian.students.restore` | `santri.archive` | Ya | Envelope sukses dengan data santri yang dipulihkan |
 | GET | `/api/v1/pesantrian/tahfidz` | `api.v1.pesantrian.tahfidz.index` | `tahfidz.view` | Tidak | Envelope sukses dengan daftar setoran tahfidz dan pagination meta |
 | POST | `/api/v1/pesantrian/tahfidz/programs` | `api.v1.pesantrian.tahfidz.programs.store` | `tahfidz.manage` | Ya | Envelope sukses `201` dengan program tahfidz yang dibuat |
 | PATCH | `/api/v1/pesantrian/tahfidz/programs/{program}` | `api.v1.pesantrian.tahfidz.programs.update` | `tahfidz.manage` | Ya | Envelope sukses dengan program tahfidz yang diperbarui |

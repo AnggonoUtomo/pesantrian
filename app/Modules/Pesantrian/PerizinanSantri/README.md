@@ -17,5 +17,7 @@ Increment aktif:
   `ActiveEmployeeReader`, dan snapshot wali utama dari Santri.
 - Increment 4 menyiapkan table bisnis `student_permits`,
   `student_permit_revisions`, record model, dan factory minimum.
-- Lifecycle izin, demo seeder, UI, dan integrasi awal ke PresensiSantri
-  dikerjakan pada increment berikutnya.
+- Increment 5 menyiapkan API read/list/detail internal dengan filter,
+  pagination, summary keterlambatan, dan revision history.
+- Lifecycle mutation izin, demo seeder, UI, dan integrasi awal ke
+  PresensiSantri dikerjakan pada increment berikutnya.

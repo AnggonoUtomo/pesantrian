@@ -2,13 +2,13 @@
 
 ## Status
 
-Active - backend program/target mutation ready. Source module, manifest,
+Active - backend setoran/murojaah mutation ready. Source module, manifest,
 ServiceProvider, README source, permission identity, wiring AccessControl,
 guardrail contract lintas module, migration, record model, factory minimum,
-Application read query, API baca, request validation program/target,
-Application action create/update program/target, dan audit mutation
-program/target sudah tersedia. Belum ada mutation setoran/murojaah, seeder demo
-Tahfidz, atau UI.
+Application read query, API baca, request validation program/target/setoran,
+Application action create/update program/target/setoran, dan audit mutation
+program/target/setoran sudah tersedia. Belum ada review/void lifecycle, seeder
+demo Tahfidz, atau UI.
 
 ## Objective
 
@@ -225,11 +225,11 @@ Endpoint yang sudah tersedia:
 - `PATCH /api/v1/pesantrian/tahfidz/programs/{program}`
 - `POST /api/v1/pesantrian/tahfidz/targets`
 - `PATCH /api/v1/pesantrian/tahfidz/targets/{target}`
+- `POST /api/v1/pesantrian/tahfidz/submissions`
+- `PATCH /api/v1/pesantrian/tahfidz/submissions/{submission}`
 
 Endpoint mutation kandidat berikutnya:
 
-- `POST /api/v1/pesantrian/tahfidz/submissions`
-- `PATCH /api/v1/pesantrian/tahfidz/submissions/{submission}`
 - `PATCH /api/v1/pesantrian/tahfidz/submissions/{submission}/review`
 - `PATCH /api/v1/pesantrian/tahfidz/submissions/{submission}/void`
 

@@ -23,5 +23,8 @@ Increment aktif:
   API baca untuk list/detail setoran tahfidz.
 - Increment 6 menyediakan request validation, Application action, API mutation,
   snapshot santri/periode, dan audit untuk program serta target hafalan.
-- Mutation setoran/murojaah, seeder demo, dan UI dikerjakan pada increment
+- Increment 7 menyediakan request validation, Application action, API mutation,
+  snapshot santri/pembimbing, dan audit untuk setoran hafalan baru serta
+  murojaah.
+- Review/void lifecycle, seeder demo, dan UI dikerjakan pada increment
   berikutnya.

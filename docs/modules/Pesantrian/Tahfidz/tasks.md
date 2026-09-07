@@ -201,17 +201,37 @@ Verifikasi:
 
 ## Increment 7: Setoran dan Murojaah
 
-- [ ] Buat request validation setoran.
-- [ ] Buat action create/update setoran.
-- [ ] Buat rule rentang juz/surah/ayat.
-- [ ] Tambahkan audit setoran.
-- [ ] Jalankan focused mutation tests.
+- [x] Buat request validation setoran.
+- [x] Buat action create/update setoran.
+- [x] Buat rule rentang juz/surah/ayat.
+- [x] Tambahkan audit setoran.
+- [x] Jalankan focused mutation tests.
 
 Acceptance:
 
 - Setoran hafalan baru dan murojaah bisa dibuat.
 - Rentang ayat valid.
 - Setoran final/void tidak bisa diedit langsung tanpa lifecycle yang sesuai.
+
+Hasil:
+
+- API mutation setoran tersedia:
+  `POST /api/v1/pesantrian/tahfidz/submissions` dan
+  `PATCH /api/v1/pesantrian/tahfidz/submissions/{submission}`.
+- Setoran hafalan baru dan murojaah dapat dibuat sebagai `draft` atau
+  `submitted`.
+- Request validation menjaga program aktif, target aktif milik santri/program
+  yang sama, minimal konteks hafalan, dan rentang ayat valid.
+- Action setoran mengambil snapshot santri aktif lewat `ActiveStudentReader`
+  dan snapshot pembimbing aktif lewat `ActiveEmployeeReader`.
+- Update langsung hanya boleh untuk setoran `draft` dan `submitted`; setoran
+  `accepted` atau `void` wajib memakai jalur lifecycle berikutnya.
+- Audit mencatat `tahfidz.submission.created` dan
+  `tahfidz.submission.updated` dengan metadata ringkas.
+
+Verifikasi:
+
+- [x] `php artisan test tests/Feature/TahfidzSubmissionMutationApiTest.php tests/Feature/TahfidzProgramTargetMutationApiTest.php tests/Feature/TahfidzApiTest.php --no-ansi`
 
 ## Increment 8: Review, Koreksi, dan Void
 

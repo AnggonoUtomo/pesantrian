@@ -14,6 +14,7 @@ use App\Modules\Pesantrian\Tahfidz\Application\DTO\TahfidzSubmissionRevisionData
 use App\Modules\Pesantrian\Tahfidz\Application\DTO\TahfidzSubmissionSummaryData;
 use App\Modules\Pesantrian\Tahfidz\Application\DTO\TahfidzTargetData;
 use App\Modules\Pesantrian\Tahfidz\Application\DTO\UpsertTahfidzProgramData;
+use App\Modules\Pesantrian\Tahfidz\Application\DTO\UpsertTahfidzSubmissionData;
 use App\Modules\Pesantrian\Tahfidz\Application\DTO\UpsertTahfidzTargetData;
 use App\Modules\Pesantrian\Tahfidz\Infrastructure\Models\TahfidzProgramRecord;
 use App\Modules\Pesantrian\Tahfidz\Infrastructure\Models\TahfidzSubmissionRecord;
@@ -77,6 +78,29 @@ final class EloquentTahfidzReadRepository implements TahfidzMutationRepository, 
         $record->forceFill($changes)->save();
 
         return $this->mapTarget($record->refresh());
+    }
+
+    public function createSubmission(UpsertTahfidzSubmissionData $data, ?string $actorId): TahfidzSubmissionData
+    {
+        $record = TahfidzSubmissionRecord::query()->create([
+            ...$data->toArray(),
+            'created_by' => $actorId,
+        ]);
+
+        return $this->map($record->load(['program', 'target', 'revisions']));
+    }
+
+    public function updateSubmission(string $id, array $changes): ?TahfidzSubmissionData
+    {
+        $record = TahfidzSubmissionRecord::query()->find($id);
+
+        if (! $record instanceof TahfidzSubmissionRecord) {
+            return null;
+        }
+
+        $record->forceFill($changes)->save();
+
+        return $this->map($record->refresh()->load(['program', 'target', 'revisions']));
     }
 
     public function paginate(TahfidzListFilter $filter): PaginatedTahfidzSubmissionData

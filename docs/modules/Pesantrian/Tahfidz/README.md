@@ -10,7 +10,7 @@ dan [`docs/FOLDER-STRUCTURE.md`](../../../FOLDER-STRUCTURE.md).
 - Nama tampil: `Tahfidz / Hafalan`
 - Candidate source: `app/Modules/Pesantrian/Tahfidz/`
 - Candidate frontend: `resources/js/pages/Pesantrian/Tahfidz/`
-- Status: Active - backend program/target mutation ready
+- Status: Active - backend setoran/murojaah mutation ready
 
 ## Tujuan
 
@@ -138,6 +138,8 @@ Public boundary internal yang sudah tersedia:
 - `UpdateTahfidzProgram`
 - `CreateTahfidzTarget`
 - `UpdateTahfidzTarget`
+- `CreateTahfidzSubmission`
+- `UpdateTahfidzSubmission`
 
 API internal:
 
@@ -147,6 +149,8 @@ API internal:
 - `PATCH /api/v1/pesantrian/tahfidz/programs/{program}`
 - `POST /api/v1/pesantrian/tahfidz/targets`
 - `PATCH /api/v1/pesantrian/tahfidz/targets/{target}`
+- `POST /api/v1/pesantrian/tahfidz/submissions`
+- `PATCH /api/v1/pesantrian/tahfidz/submissions/{submission}`
 
 ## Permission Candidate
 

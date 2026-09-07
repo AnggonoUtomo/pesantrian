@@ -6,8 +6,10 @@ namespace App\Modules\Pesantrian\Tahfidz\Presentation\Controllers;
 
 use App\Http\ApiResponseFactory;
 use App\Modules\Pesantrian\Tahfidz\Application\Actions\CreateTahfidzProgram;
+use App\Modules\Pesantrian\Tahfidz\Application\Actions\CreateTahfidzSubmission;
 use App\Modules\Pesantrian\Tahfidz\Application\Actions\CreateTahfidzTarget;
 use App\Modules\Pesantrian\Tahfidz\Application\Actions\UpdateTahfidzProgram;
+use App\Modules\Pesantrian\Tahfidz\Application\Actions\UpdateTahfidzSubmission;
 use App\Modules\Pesantrian\Tahfidz\Application\Actions\UpdateTahfidzTarget;
 use App\Modules\Pesantrian\Tahfidz\Application\DTO\PaginatedTahfidzSubmissionData;
 use App\Modules\Pesantrian\Tahfidz\Application\DTO\TahfidzSubmissionData;
@@ -16,8 +18,10 @@ use App\Modules\Pesantrian\Tahfidz\Application\Queries\ListTahfidzSubmissions;
 use App\Modules\Pesantrian\Tahfidz\Application\Queries\ShowTahfidzSubmission;
 use App\Modules\Pesantrian\Tahfidz\Presentation\Requests\ListTahfidzSubmissionsApiRequest;
 use App\Modules\Pesantrian\Tahfidz\Presentation\Requests\StoreTahfidzProgramApiRequest;
+use App\Modules\Pesantrian\Tahfidz\Presentation\Requests\StoreTahfidzSubmissionApiRequest;
 use App\Modules\Pesantrian\Tahfidz\Presentation\Requests\StoreTahfidzTargetApiRequest;
 use App\Modules\Pesantrian\Tahfidz\Presentation\Requests\UpdateTahfidzProgramApiRequest;
+use App\Modules\Pesantrian\Tahfidz\Presentation\Requests\UpdateTahfidzSubmissionApiRequest;
 use App\Modules\Pesantrian\Tahfidz\Presentation\Requests\UpdateTahfidzTargetApiRequest;
 use App\Modules\Pesantrian\Tahfidz\Presentation\Resources\TahfidzProgramResource;
 use App\Modules\Pesantrian\Tahfidz\Presentation\Resources\TahfidzSubmissionResource;
@@ -36,6 +40,8 @@ final readonly class TahfidzApiController implements HasMiddleware
         private UpdateTahfidzProgram $updateTahfidzProgram,
         private CreateTahfidzTarget $createTahfidzTarget,
         private UpdateTahfidzTarget $updateTahfidzTarget,
+        private CreateTahfidzSubmission $createTahfidzSubmission,
+        private UpdateTahfidzSubmission $updateTahfidzSubmission,
         private ApiResponseFactory $responses,
     ) {}
 
@@ -44,6 +50,7 @@ final readonly class TahfidzApiController implements HasMiddleware
         return [
             new Middleware('can:tahfidz.view', only: ['index', 'show']),
             new Middleware('can:tahfidz.manage', only: ['storeProgram', 'updateProgram', 'storeTarget', 'updateTarget']),
+            new Middleware('can:tahfidz.record', only: ['storeSubmission', 'updateSubmission']),
         ];
     }
 
@@ -148,6 +155,48 @@ final readonly class TahfidzApiController implements HasMiddleware
             $request,
             'Target hafalan berhasil diperbarui.',
             (new TahfidzTargetResource($updated))->toArray($request),
+        );
+    }
+
+    public function storeSubmission(StoreTahfidzSubmissionApiRequest $request): JsonResponse
+    {
+        try {
+            $submission = $this->createTahfidzSubmission->execute(
+                $request->user(),
+                $request->toData(),
+                $this->responses->correlationId($request),
+            );
+        } catch (TahfidzMutationException $exception) {
+            return $this->invalidMutation($request, $exception);
+        }
+
+        return $this->responses->success(
+            $request,
+            'Setoran tahfidz berhasil dibuat.',
+            (new TahfidzSubmissionResource($submission))->toArray($request),
+            status: 201,
+        );
+    }
+
+    public function updateSubmission(UpdateTahfidzSubmissionApiRequest $request, string $submission): JsonResponse
+    {
+        try {
+            $updated = $this->updateTahfidzSubmission->execute(
+                $request->user(),
+                $submission,
+                $request->changes(),
+                $this->responses->correlationId($request),
+            );
+        } catch (TahfidzMutationException $exception) {
+            return $this->invalidMutation($request, $exception);
+        }
+
+        abort_if($updated === null, 404);
+
+        return $this->responses->success(
+            $request,
+            'Setoran tahfidz berhasil diperbarui.',
+            (new TahfidzSubmissionResource($updated))->toArray($request),
         );
     }
 

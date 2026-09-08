@@ -81,6 +81,8 @@ return [
         'pesantrian.student-permits.checkout',
         'pesantrian.student-permits.return',
         'pesantrian.student-permits.void',
+        'pesantrian.student-discipline-cases.index',
+        'pesantrian.student-discipline-cases.show',
         'api.v1.pesantrian.admissions.store',
         'api.v1.pesantrian.admissions.update',
         'api.v1.pesantrian.admissions.verify',

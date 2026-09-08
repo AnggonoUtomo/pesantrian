@@ -375,19 +375,48 @@ Acceptance:
 
 ## Increment 11: UI/Inertia List dan Detail
 
-- [ ] Buat page index/detail.
-- [ ] Buat komponen list/detail di folder `components`.
-- [ ] Tambahkan filter tanggal/status/severity/kategori/search.
-- [ ] Tambahkan summary cards dan pagination.
-- [ ] Tambahkan sidebar menu namespace Pesantrian.
-- [ ] Tambahkan whitelist route Ziggy.
+- [x] Buat page index/detail.
+- [x] Buat komponen list/detail di folder `components`.
+- [x] Tambahkan filter tanggal/status/severity/kategori/search.
+- [x] Tambahkan summary cards dan pagination.
+- [x] Tambahkan sidebar menu namespace Pesantrian.
+- [x] Tambahkan whitelist route Ziggy.
+
+Hasil:
+
+- Route web read-only tersedia untuk list dan detail kasus:
+  `pesantrian.student-discipline-cases.index` dan
+  `pesantrian.student-discipline-cases.show`.
+- Page Inertia berada di
+  `resources/js/pages/Pesantrian/KedisiplinanSantri/pages/Index.tsx` dan
+  `resources/js/pages/Pesantrian/KedisiplinanSantri/pages/Show.tsx`.
+- Komponen business-specific dipisah ke folder
+  `resources/js/pages/Pesantrian/KedisiplinanSantri/components/`.
+- UI list menyediakan filter search, tanggal, status kasus, tingkat, kategori,
+  summary cards, empty state, table desktop, card mobile, dan pagination.
+- UI detail menyediakan ringkasan kasus, data santri/kategori, lifecycle kasus,
+  catatan pembinaan, dan histori revisi.
+- Menu sidebar Pesantrian menampilkan `Pelanggaran / Kedisiplinan` untuk user
+  dengan permission `kedisiplinan_santri.*`.
+- Whitelist Ziggy mencakup route index dan detail KedisiplinanSantri.
+
+Verifikasi:
+
+- [x] `php artisan test tests/Feature/KedisiplinanSantriPresentationTest.php --no-ansi`
+- [x] `php artisan test --filter=KedisiplinanSantri --no-ansi`
+- [x] `php artisan route:list --name=student-discipline --no-ansi`
+- [x] `php artisan module:validate --no-ansi`
+- [x] `vendor\bin\pint --dirty --test`
+- [x] `npm run types:check`
+- [x] `npm run lint:check`
+- [x] `npm run build`
 
 Acceptance:
 
-- UI berada di `resources/js/pages/Pesantrian/KedisiplinanSantri/`.
-- Index tetap minimal.
-- Komponen business-specific berada di folder `components`.
-- List/detail tampil di desktop dan mobile.
+- [x] UI berada di `resources/js/pages/Pesantrian/KedisiplinanSantri/`.
+- [x] Index tetap minimal.
+- [x] Komponen business-specific berada di folder `components`.
+- [x] List/detail tampil di desktop dan mobile.
 
 ## Increment 12: UI Mutation
 

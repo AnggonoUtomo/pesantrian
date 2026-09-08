@@ -39,3 +39,6 @@ Increment aktif:
 - Increment 10 menyediakan demo seeder idempotent untuk kategori dan kasus
   lifecycle `draft`, `submitted`, `in_review`, `action_assigned`, `resolved`,
   dan `void`.
+- Increment 11 menyediakan UI/Inertia read-only untuk list dan detail kasus,
+  filter tanggal/status/tingkat/kategori/search, summary cards, pagination,
+  sidebar menu Pesantrian, dan whitelist route Ziggy.

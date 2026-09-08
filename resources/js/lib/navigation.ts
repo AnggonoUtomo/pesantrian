@@ -12,6 +12,7 @@ import {
     Settings2,
     School,
     ShieldCheck,
+    TriangleAlert,
     UsersRound,
 } from 'lucide-react';
 import route from '@/lib/route';
@@ -210,6 +211,11 @@ function buildPesantrianNavigation(auth: Auth): NavItem[] {
             'perizinan_santri.checkout',
             'perizinan_santri.return',
             'perizinan_santri.archive',
+            'kedisiplinan_santri.view',
+            'kedisiplinan_santri.manage',
+            'kedisiplinan_santri.review',
+            'kedisiplinan_santri.resolve',
+            'kedisiplinan_santri.archive',
         ])
     ) {
         return [];
@@ -323,6 +329,26 @@ function buildPesantrianNavigation(auth: Auth): NavItem[] {
             ),
             icon: ClipboardList,
             iconClassName: 'text-cyan-600 dark:text-cyan-300',
+        });
+    }
+
+    if (
+        hasAnyPermission(auth, [
+            'kedisiplinan_santri.view',
+            'kedisiplinan_santri.manage',
+            'kedisiplinan_santri.review',
+            'kedisiplinan_santri.resolve',
+            'kedisiplinan_santri.archive',
+        ])
+    ) {
+        items.push({
+            title: 'Pelanggaran / Kedisiplinan',
+            href: routeOr(
+                '/pesantrian/student-discipline-cases',
+                'pesantrian.student-discipline-cases.index',
+            ),
+            icon: TriangleAlert,
+            iconClassName: 'text-amber-600 dark:text-amber-300',
         });
     }
 

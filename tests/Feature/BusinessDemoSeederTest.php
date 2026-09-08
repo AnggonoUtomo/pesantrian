@@ -154,6 +154,16 @@ final class BusinessDemoSeederTest extends TestCase
         self::assertSame(1, DB::table('student_permits')->where('permit_no', 'IZN-DEMO-RETURNED')->where('status', 'returned')->whereNotNull('returned_at')->count());
         self::assertSame(1, DB::table('student_permits')->where('permit_no', 'IZN-DEMO-VOID')->where('status', 'void')->whereNotNull('voided_at')->count());
         self::assertSame(7, DB::table('student_permit_revisions')->count());
+
+        self::assertSame(4, DB::table('student_discipline_categories')->where('code', 'like', 'DIS-DEMO-%')->count());
+        self::assertSame(1, DB::table('student_discipline_categories')->where('code', 'DIS-DEMO-ARSIP')->where('status', 'archived')->count());
+        self::assertSame(6, DB::table('student_discipline_cases')->where('case_no', 'like', 'DIS-DEMO-%')->count());
+        foreach (['draft', 'submitted', 'in_review', 'action_assigned', 'resolved', 'void'] as $status) {
+            self::assertSame(1, DB::table('student_discipline_cases')->where('case_no', 'like', 'DIS-DEMO-%')->where('status', $status)->count());
+        }
+        self::assertSame(1, DB::table('student_discipline_cases')->where('case_no', 'DIS-DEMO-RESOLVED')->where('status', 'resolved')->whereNotNull('resolved_at')->count());
+        self::assertSame(1, DB::table('student_discipline_cases')->where('case_no', 'DIS-DEMO-VOID')->where('status', 'void')->whereNotNull('voided_at')->count());
+        self::assertSame(6, DB::table('student_discipline_revisions')->count());
     }
 
     public function test_demo_seeder_tidak_membuat_data_bisnis_di_production(): void
@@ -183,6 +193,9 @@ final class BusinessDemoSeederTest extends TestCase
         self::assertSame(0, DB::table('tahfidz_submission_revisions')->count());
         self::assertSame(0, DB::table('student_permits')->count());
         self::assertSame(0, DB::table('student_permit_revisions')->count());
+        self::assertSame(0, DB::table('student_discipline_categories')->count());
+        self::assertSame(0, DB::table('student_discipline_cases')->count());
+        self::assertSame(0, DB::table('student_discipline_revisions')->count());
         self::assertSame(0, User::where('email', 'like', 'user-management-dummy-%@example.test')->count());
         self::assertSame(0, User::where('email', 'operator-ppdb@example.test')->count());
     }

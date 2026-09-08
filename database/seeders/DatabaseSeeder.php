@@ -7,6 +7,7 @@ use App\Modules\Academic\KelasRombel\Database\Seeders\KelasRombelDemoSeeder;
 use App\Modules\HumanResource\HumanResource\Database\Seeders\HumanResourceDemoSeeder;
 use App\Modules\Organization\Organization\Database\Seeders\OrganizationDemoSeeder;
 use App\Modules\Pesantrian\Asrama\Database\Seeders\AsramaDemoSeeder;
+use App\Modules\Pesantrian\KedisiplinanSantri\Database\Seeders\KedisiplinanSantriDemoSeeder;
 use App\Modules\Pesantrian\PenerimaanSantri\Database\Seeders\PenerimaanSantriDemoSeeder;
 use App\Modules\Pesantrian\PerizinanSantri\Database\Seeders\PerizinanSantriDemoSeeder;
 use App\Modules\Pesantrian\PresensiSantri\Database\Seeders\PresensiSantriDemoSeeder;
@@ -46,6 +47,7 @@ class DatabaseSeeder extends Seeder
             PresensiSantriDemoSeeder::class,
             TahfidzDemoSeeder::class,
             PerizinanSantriDemoSeeder::class,
+            KedisiplinanSantriDemoSeeder::class,
         ]);
     }
 }

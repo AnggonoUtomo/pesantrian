@@ -36,3 +36,6 @@ Increment aktif:
 - Increment 9 menyediakan penyelesaian kasus `action_assigned` menjadi
   `resolved` dan pembatalan kasus non-final menjadi `void` tanpa menghapus
   data, termasuk actor, timestamp lifecycle, revision, dan audit.
+- Increment 10 menyediakan demo seeder idempotent untuk kategori dan kasus
+  lifecycle `draft`, `submitted`, `in_review`, `action_assigned`, `resolved`,
+  dan `void`.

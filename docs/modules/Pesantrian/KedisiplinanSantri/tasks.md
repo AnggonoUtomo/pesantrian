@@ -341,16 +341,37 @@ Acceptance:
 
 ## Increment 10: Demo Seeder
 
-- [ ] Buat `KedisiplinanSantriDemoSeeder`.
-- [ ] Update `DatabaseSeeder`.
-- [ ] Tambahkan test idempotent seeder.
+- [x] Buat `KedisiplinanSantriDemoSeeder`.
+- [x] Update `DatabaseSeeder`.
+- [x] Tambahkan test idempotent seeder.
+
+Hasil:
+
+- Seeder demo module dibuat di
+  `app/Modules/Pesantrian/KedisiplinanSantri/Database/Seeders/KedisiplinanSantriDemoSeeder.php`.
+- Seeder global memanggil `KedisiplinanSantriDemoSeeder` setelah dependency
+  santri, SDM, dan module Pesantrian lain tersedia.
+- Demo menyediakan 4 kategori, termasuk 1 kategori archived.
+- Demo menyediakan 6 kasus dengan status `draft`, `submitted`, `in_review`,
+  `action_assigned`, `resolved`, dan `void`.
+- Revision demo dibuat satu per kasus agar lifecycle mudah diuji manual.
+- Seeder memakai guard `config('app.env') === 'production'` sehingga tidak
+  membuat data bisnis demo di production.
+
+Verifikasi:
+
+- [x] `php artisan test tests/Feature/BusinessDemoSeederTest.php --no-ansi`
+- [x] `php artisan test --filter=KedisiplinanSantri --no-ansi`
+- [x] `php artisan module:validate --no-ansi`
+- [x] `vendor\bin\pint --dirty --test`
+- [x] `git diff --check`
 
 Acceptance:
 
-- Demo mencakup kategori dan kasus draft/submitted/in_review/action_assigned/
+- [x] Demo mencakup kategori dan kasus draft/submitted/in_review/action_assigned/
   resolved/void.
-- Demo memakai santri dan petugas demo yang sudah ada.
-- Seeder aman diulang dan tidak berjalan di production.
+- [x] Demo memakai santri dan petugas demo yang sudah ada.
+- [x] Seeder aman diulang dan tidak berjalan di production.
 
 ## Increment 11: UI/Inertia List dan Detail
 

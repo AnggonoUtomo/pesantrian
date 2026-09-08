@@ -271,17 +271,39 @@ Acceptance:
 
 ## Increment 8: Review dan Assign Action
 
-- [ ] Buat action review.
-- [ ] Buat action assign action.
-- [ ] Tambahkan request validation review/action.
-- [ ] Tambahkan revision/audit review/action.
-- [ ] Tambahkan test lifecycle review/action.
+- [x] Buat action review.
+- [x] Buat action assign action.
+- [x] Tambahkan request validation review/action.
+- [x] Tambahkan revision/audit review/action.
+- [x] Tambahkan test lifecycle review/action.
+
+Hasil:
+
+- Kasus `submitted` dapat direview menjadi `in_review` dengan catatan review,
+  actor reviewer, dan waktu review.
+- Tindakan pembinaan dapat ditetapkan dari status `submitted` atau `in_review`
+  menjadi `action_assigned`.
+- `action_plan` wajib diisi saat menetapkan tindakan pembinaan.
+- Pembina/petugas opsional divalidasi melalui contract `ActiveEmployeeReader`;
+  pegawai tidak aktif ditolak.
+- Revision dibuat untuk review dan assign action.
+- Audit dibuat untuk `kedisiplinan_santri.case.reviewed` dan
+  `kedisiplinan_santri.case.action_assigned`.
+
+Verifikasi:
+
+- [x] `php artisan test tests/Feature/KedisiplinanSantriReviewActionApiTest.php --no-ansi`
+- [x] `php artisan test --filter=KedisiplinanSantri --no-ansi`
+- [x] `php artisan module:validate --no-ansi`
+- [x] `php artisan route:list --name=student-discipline --no-ansi`
+- [x] `vendor\bin\pint --dirty --test`
+- [x] `git diff --check`
 
 Acceptance:
 
-- Review hanya dari submitted.
-- Tindakan pembinaan wajib memiliki catatan.
-- Actor dan waktu lifecycle tersimpan.
+- [x] Review hanya dari submitted.
+- [x] Tindakan pembinaan wajib memiliki catatan.
+- [x] Actor dan waktu lifecycle tersimpan.
 
 ## Increment 9: Resolve dan Void
 

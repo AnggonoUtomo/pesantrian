@@ -14,4 +14,8 @@ interface StudentDisciplineCaseMutationRepository
     public function updateCaseDraft(string $id, StudentDisciplineCaseMutationData $data, string $reason, ?string $actorId): ?StudentDisciplineCaseData;
 
     public function submitCaseDraft(string $id, string $actorId): ?StudentDisciplineCaseData;
+
+    public function reviewCase(string $id, string $reviewNote, string $actorId): ?StudentDisciplineCaseData;
+
+    public function assignCaseAction(string $id, string $actionPlan, ?string $assignedEmployeeId, ?string $assignedEmployeeName, string $actorId): ?StudentDisciplineCaseData;
 }

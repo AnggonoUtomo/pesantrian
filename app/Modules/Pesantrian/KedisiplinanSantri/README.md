@@ -30,3 +30,6 @@ Increment aktif:
 - Increment 7 menyediakan mutation kasus awal: create draft, update draft,
   submit draft, snapshot santri/kategori/pembina, revision history, audit
   activity, dan nomor kasus otomatis `DIS-xxxxxx`.
+- Increment 8 menyediakan review kasus submitted menjadi `in_review` dan
+  penetapan tindakan pembinaan menjadi `action_assigned`, termasuk actor,
+  timestamp lifecycle, revision, audit, dan validasi pembina aktif.

@@ -39,6 +39,14 @@ Route::middleware(['web', 'auth', 'verified', 'throttle:system-api'])
             ->whereUlid('case')
             ->middleware('api.idempotency')
             ->name('submit');
+        Route::patch('/{case}/review', [StudentDisciplineApiController::class, 'review'])
+            ->whereUlid('case')
+            ->middleware('api.idempotency')
+            ->name('review');
+        Route::patch('/{case}/assign-action', [StudentDisciplineApiController::class, 'assignAction'])
+            ->whereUlid('case')
+            ->middleware('api.idempotency')
+            ->name('assign-action');
         Route::get('/{case}', [StudentDisciplineApiController::class, 'show'])
             ->whereUlid('case')
             ->name('show');

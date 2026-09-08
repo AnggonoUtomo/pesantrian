@@ -6,8 +6,10 @@ namespace App\Modules\Pesantrian\KedisiplinanSantri\Presentation\Controllers;
 
 use App\Http\ApiResponseFactory;
 use App\Modules\Pesantrian\KedisiplinanSantri\Application\Actions\ArchiveStudentDisciplineCategory;
+use App\Modules\Pesantrian\KedisiplinanSantri\Application\Actions\AssignStudentDisciplineCaseAction;
 use App\Modules\Pesantrian\KedisiplinanSantri\Application\Actions\CreateStudentDisciplineCaseDraft;
 use App\Modules\Pesantrian\KedisiplinanSantri\Application\Actions\CreateStudentDisciplineCategory;
+use App\Modules\Pesantrian\KedisiplinanSantri\Application\Actions\ReviewStudentDisciplineCase;
 use App\Modules\Pesantrian\KedisiplinanSantri\Application\Actions\SubmitStudentDisciplineCaseDraft;
 use App\Modules\Pesantrian\KedisiplinanSantri\Application\Actions\UpdateStudentDisciplineCaseDraft;
 use App\Modules\Pesantrian\KedisiplinanSantri\Application\Actions\UpdateStudentDisciplineCategory;
@@ -19,8 +21,10 @@ use App\Modules\Pesantrian\KedisiplinanSantri\Application\Queries\ListStudentDis
 use App\Modules\Pesantrian\KedisiplinanSantri\Application\Queries\ListStudentDisciplineCategories;
 use App\Modules\Pesantrian\KedisiplinanSantri\Application\Queries\ShowStudentDisciplineCase;
 use App\Modules\Pesantrian\KedisiplinanSantri\Presentation\Requests\ArchiveStudentDisciplineCategoryApiRequest;
+use App\Modules\Pesantrian\KedisiplinanSantri\Presentation\Requests\AssignStudentDisciplineCaseActionApiRequest;
 use App\Modules\Pesantrian\KedisiplinanSantri\Presentation\Requests\ListStudentDisciplineCasesApiRequest;
 use App\Modules\Pesantrian\KedisiplinanSantri\Presentation\Requests\ListStudentDisciplineCategoriesApiRequest;
+use App\Modules\Pesantrian\KedisiplinanSantri\Presentation\Requests\ReviewStudentDisciplineCaseApiRequest;
 use App\Modules\Pesantrian\KedisiplinanSantri\Presentation\Requests\StoreStudentDisciplineCaseApiRequest;
 use App\Modules\Pesantrian\KedisiplinanSantri\Presentation\Requests\StoreStudentDisciplineCategoryApiRequest;
 use App\Modules\Pesantrian\KedisiplinanSantri\Presentation\Requests\UpdateStudentDisciplineCaseApiRequest;
@@ -44,6 +48,8 @@ final readonly class StudentDisciplineApiController implements HasMiddleware
         private CreateStudentDisciplineCaseDraft $createCaseDraft,
         private UpdateStudentDisciplineCaseDraft $updateCaseDraft,
         private SubmitStudentDisciplineCaseDraft $submitCaseDraft,
+        private ReviewStudentDisciplineCase $reviewCase,
+        private AssignStudentDisciplineCaseAction $assignCaseAction,
         private ApiResponseFactory $responses,
     ) {}
 
@@ -52,6 +58,7 @@ final readonly class StudentDisciplineApiController implements HasMiddleware
         return [
             new Middleware('can:kedisiplinan_santri.view', only: ['categories', 'index', 'show']),
             new Middleware('can:kedisiplinan_santri.manage', only: ['storeCategory', 'updateCategory', 'store', 'update', 'submit']),
+            new Middleware('can:kedisiplinan_santri.review', only: ['review', 'assignAction']),
             new Middleware('can:kedisiplinan_santri.archive', only: ['archiveCategory']),
         ];
     }
@@ -197,6 +204,51 @@ final readonly class StudentDisciplineApiController implements HasMiddleware
         return $this->responses->success(
             $request,
             'Draft kasus kedisiplinan santri berhasil disubmit.',
+            (new StudentDisciplineCaseResource($data))->toArray($request),
+        );
+    }
+
+    public function review(ReviewStudentDisciplineCaseApiRequest $request, string $case): JsonResponse
+    {
+        try {
+            $data = $this->reviewCase->execute(
+                $request->user(),
+                $case,
+                $request->reviewNote(),
+                $this->responses->correlationId($request),
+            );
+        } catch (StudentDisciplineMutationException $exception) {
+            return $this->invalidMutation($request, $exception);
+        }
+
+        abort_if($data === null, 404);
+
+        return $this->responses->success(
+            $request,
+            'Kasus kedisiplinan santri berhasil direview.',
+            (new StudentDisciplineCaseResource($data))->toArray($request),
+        );
+    }
+
+    public function assignAction(AssignStudentDisciplineCaseActionApiRequest $request, string $case): JsonResponse
+    {
+        try {
+            $data = $this->assignCaseAction->execute(
+                $request->user(),
+                $case,
+                $request->actionPlan(),
+                $request->assignedEmployeeId(),
+                $this->responses->correlationId($request),
+            );
+        } catch (StudentDisciplineMutationException $exception) {
+            return $this->invalidMutation($request, $exception);
+        }
+
+        abort_if($data === null, 404);
+
+        return $this->responses->success(
+            $request,
+            'Tindakan pembinaan kasus kedisiplinan berhasil ditetapkan.',
             (new StudentDisciplineCaseResource($data))->toArray($request),
         );
     }

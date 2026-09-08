@@ -108,6 +108,56 @@ final class EloquentStudentDisciplineReadRepository implements StudentDiscipline
         return $this->mapCase($record->refresh()->load(['category', 'revisions'])->loadCount('revisions'));
     }
 
+    public function reviewCase(string $id, string $reviewNote, string $actorId): ?StudentDisciplineCaseData
+    {
+        $record = StudentDisciplineCaseRecord::query()->find($id);
+
+        if (! $record instanceof StudentDisciplineCaseRecord) {
+            return null;
+        }
+
+        $record->forceFill([
+            'status' => 'in_review',
+            'reviewed_at' => now(),
+            'reviewed_by' => $actorId,
+            'review_note' => $reviewNote,
+        ])->save();
+        $this->createRevision($record, $reviewNote, $actorId, [
+            'action' => 'review',
+            'changed_fields' => ['status', 'reviewed_at', 'reviewed_by', 'review_note'],
+            'from_status' => 'submitted',
+            'to_status' => 'in_review',
+        ]);
+
+        return $this->mapCase($record->refresh()->load(['category', 'revisions'])->loadCount('revisions'));
+    }
+
+    public function assignCaseAction(string $id, string $actionPlan, ?string $assignedEmployeeId, ?string $assignedEmployeeName, string $actorId): ?StudentDisciplineCaseData
+    {
+        $record = StudentDisciplineCaseRecord::query()->find($id);
+
+        if (! $record instanceof StudentDisciplineCaseRecord) {
+            return null;
+        }
+
+        $fromStatus = (string) $record->status;
+        $record->forceFill([
+            'status' => 'action_assigned',
+            'action_plan' => $actionPlan,
+            'action_assigned_at' => now(),
+            'assigned_employee_id' => $assignedEmployeeId,
+            'assigned_employee_name' => $assignedEmployeeName,
+        ])->save();
+        $this->createRevision($record, $actionPlan, $actorId, [
+            'action' => 'assign_action',
+            'changed_fields' => ['status', 'action_plan', 'action_assigned_at', 'assigned_employee_id'],
+            'from_status' => $fromStatus,
+            'to_status' => 'action_assigned',
+        ]);
+
+        return $this->mapCase($record->refresh()->load(['category', 'revisions'])->loadCount('revisions'));
+    }
+
     public function findActiveCategory(string $id): ?StudentDisciplineCategoryData
     {
         $record = StudentDisciplineCategoryRecord::query()

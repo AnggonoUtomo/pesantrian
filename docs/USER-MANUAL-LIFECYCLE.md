@@ -380,6 +380,48 @@ Relasi:
 - Sertifikat tahfidz, lampiran audio/video, dan portal wali/santri belum
   dibuat. Baseline sekarang fokus pada pencatatan internal/admin dulu.
 
+### Langkah N: Perizinan Santri
+
+Menu: **Pesantrian -> Perizinan Santri**
+
+Data demo penting:
+
+- `IZN-DEMO-DRAFT`: izin pulang yang masih draft.
+- `IZN-DEMO-SUBMITTED`: izin kegiatan yang menunggu review.
+- `IZN-DEMO-APPROVED`: izin yang sudah disetujui.
+- `IZN-DEMO-REJECTED`: izin yang ditolak dengan alasan.
+- `IZN-DEMO-CHECKEDOUT`: izin berjalan/santri sudah keluar.
+- `IZN-DEMO-RETURNED`: izin selesai dan santri kembali terlambat.
+- `IZN-DEMO-VOID`: izin yang dibatalkan tanpa menghapus data.
+
+Tujuan:
+
+- Melihat daftar izin santri.
+- Memfilter berdasarkan pencarian, tanggal, jenis izin, status, dan
+  keterlambatan.
+- Membuka detail izin untuk membaca data santri, snapshot wali, lifecycle
+  waktu, catatan keputusan, catatan kembali, void, dan histori revisi.
+- Membuat draft izin dari santri aktif.
+- Mengedit draft sebelum submit.
+- Submit draft agar masuk review.
+- Approve atau reject izin yang menunggu review.
+- Check-out santri untuk izin yang sudah disetujui.
+- Return/check-in saat santri kembali, termasuk mencatat keterlambatan.
+- Void izin non-final dengan alasan tanpa menghapus histori data.
+
+Relasi:
+
+- Perizinan memakai santri aktif dari Data Induk Santri dan Wali.
+- Snapshot wali diambil dari data wali utama santri supaya histori izin tetap
+  terbaca walaupun data wali berubah.
+- Actor approve, check-out, return, dan void adalah user yang login.
+- Presensi Santri belum otomatis membaca izin. Untuk sementara, status izin di
+  Presensi masih dicatat manual; integrasi read-only ke PerizinanSantri masuk
+  increment berikutnya.
+- Kesehatan/Klinik, Pelanggaran/Kedisiplinan, tagihan/denda, notifikasi wali,
+  dan lampiran dokumen izin belum otomatis terhubung karena module terkait
+  belum dibuat atau belum diputuskan integrasinya.
+
 ## 4. Module yang Belum Dibuat
 
 Jika saat uji manual terasa ada relasi yang belum bisa diklik, itu memang masih
@@ -388,7 +430,6 @@ di luar baseline running saat ini.
 | Kebutuhan | Status saat ini |
 | --- | --- |
 | Wali Santri master | Belum dibuat; wali masih snapshot di Santri/PPDB. |
-| Perizinan Santri | Belum dibuat. |
 | Pelanggaran / Kedisiplinan | Belum dibuat. |
 | Prestasi | Belum dibuat. |
 | Kesehatan / Klinik | Belum dibuat. |
@@ -418,6 +459,8 @@ di luar baseline running saat ini.
 - Buka Tahfidz / Hafalan, cek `DEMO-THF-REG`, target santri, setoran
   accepted/submitted/needs_revision/void, lalu coba tambah program, tambah
   target, tambah setoran, review, dan void.
+- Buka Perizinan Santri, cek `IZN-DEMO-*`, lalu coba buat draft, edit, submit,
+  approve/reject, check-out, return/check-in, dan void.
 - Buka Audit Trail setelah beberapa aksi dan cek aktivitas tercatat.
 
 Jika ada error Ziggy/route di console browser, catat nama route yang disebutkan.

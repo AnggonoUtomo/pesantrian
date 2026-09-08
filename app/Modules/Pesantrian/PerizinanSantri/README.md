@@ -36,5 +36,6 @@ Increment aktif:
 - Increment 11 menyiapkan UI mutation untuk create/update draft, submit,
   approve/reject, check-out, return/check-in, void, serta whitelist route Ziggy
   untuk seluruh route mutation web.
-- QA browser, user manual final, dan integrasi awal ke PresensiSantri
-  dikerjakan pada increment berikutnya.
+- Increment 12 menyiapkan QA browser desktop/mobile untuk flow list/detail dan
+  mutation utama, serta update user manual lifecycle.
+- Integrasi awal ke PresensiSantri dikerjakan pada increment berikutnya.

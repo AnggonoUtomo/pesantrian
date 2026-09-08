@@ -28,6 +28,10 @@ UI internal sekarang mendukung list/detail serta mutation utama: buat draft,
 edit draft, submit, approve, reject, check-out, return/check-in, dan void.
 Semua aksi tetap divalidasi di backend.
 
+QA browser desktop/mobile untuk lifecycle utama sudah tersedia di
+`tests/Browser/perizinan-santri.spec.ts`. Panduan manual pengguna pemula
+tersedia di `docs/USER-MANUAL-LIFECYCLE.md`.
+
 ## Boundary
 
 ### Dimiliki PerizinanSantri

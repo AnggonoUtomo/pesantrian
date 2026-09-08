@@ -394,16 +394,35 @@ Acceptance:
 
 ## Increment 12: QA Browser dan User Manual
 
-- [ ] Jalankan browser QA desktop.
-- [ ] Jalankan browser QA mobile/responsive.
-- [ ] Update user manual lifecycle.
-- [ ] Update README/tasks hasil final.
+- [x] Jalankan browser QA desktop.
+- [x] Jalankan browser QA mobile/responsive.
+- [x] Update user manual lifecycle.
+- [x] Update README/tasks hasil final.
+
+Hasil:
+
+- Browser QA otomatis ditambahkan untuk flow utama Perizinan Santri.
+- Fixture Playwright membuat user operator, permission, unit, santri aktif, dan
+  wali utama khusus test, lalu membersihkannya setelah test selesai.
+- QA desktop dan mobile memverifikasi login, buka halaman Perizinan Santri,
+  create draft, edit draft, submit, approve, check-out, return/check-in,
+  reject, void, dan accessibility high-impact check.
+- Test menangkap console error, page error, serta response 403 yang tidak
+  diharapkan.
+- User manual lifecycle SakaSantri diperbarui dengan langkah Perizinan Santri
+  dan keterangan relasi yang belum otomatis terhubung.
+
+Verifikasi:
+
+- [x] `npm run types:check`
+- [x] `npm run lint:check`
+- [x] `E2E_START_SERVER=true npx playwright test tests/Browser/perizinan-santri.spec.ts`
 
 Acceptance:
 
-- Flow list/detail/mutation utama bisa diuji manual.
-- Relasi ke module yang belum ada diberi keterangan.
-- Console browser bersih dari error.
+- [x] Flow list/detail/mutation utama bisa diuji manual.
+- [x] Relasi ke module yang belum ada diberi keterangan.
+- [x] Console browser bersih dari error.
 
 ## Increment 13: Integrasi Awal ke PresensiSantri
 

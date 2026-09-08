@@ -202,6 +202,8 @@ terstruktur agar laporan dan pembinaan tidak bergantung pada teks bebas.
   `App\Modules\Pesantrian\Santri\Application\Contracts\ActiveStudentReader`.
 - Kandidat pembina/petugas aktif memakai contract
   `App\Modules\HumanResource\HumanResource\Application\Contracts\ActiveEmployeeReader`.
+- Source module membungkus dua contract tersebut melalui query Application
+  `ListDisciplineStudentCandidates` dan `ListDisciplineOfficerCandidates`.
 - Module tidak membaca model Infrastructure milik Santri, HumanResource,
   PresensiSantri, atau PerizinanSantri secara langsung.
 - Public contract keluar dari KedisiplinanSantri belum dibuat pada baseline

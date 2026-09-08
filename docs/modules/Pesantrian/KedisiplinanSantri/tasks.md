@@ -76,17 +76,39 @@ Acceptance:
 
 ## Increment 3: Contract Readiness
 
-- [ ] Audit contract `ActiveStudentReader`.
-- [ ] Audit contract `ActiveEmployeeReader`.
-- [ ] Tambahkan test readiness.
-- [ ] Dokumentasikan batas integrasi Presensi/Perizinan.
+- [x] Audit contract `ActiveStudentReader`.
+- [x] Audit contract `ActiveEmployeeReader`.
+- [x] Tambahkan test readiness.
+- [x] Dokumentasikan batas integrasi Presensi/Perizinan.
+
+Hasil:
+
+- KedisiplinanSantri memakai `ActiveStudentReader` dari module Santri untuk
+  kandidat santri aktif.
+- KedisiplinanSantri memakai `ActiveEmployeeReader` dari module HumanResource
+  untuk kandidat pembina/petugas aktif.
+- Query Application `ListDisciplineStudentCandidates` dan
+  `ListDisciplineOfficerCandidates` dibuat sebagai adapter internal use case
+  KedisiplinanSantri ke public contract dependency.
+- Integrasi PresensiSantri dan PerizinanSantri tetap dibatasi sebagai kandidat
+  read-only untuk increment berikutnya; belum ada auto-generate kasus
+  pelanggaran.
+- KedisiplinanSantri belum memiliki import model Infrastructure lintas module.
+
+Verifikasi:
+
+- [x] `php artisan test tests/Feature/KedisiplinanSantriContractReadinessTest.php --no-ansi`
+- [x] `php -l app/Modules/Pesantrian/KedisiplinanSantri/Application/Queries/ListDisciplineStudentCandidates.php`
+- [x] `php -l app/Modules/Pesantrian/KedisiplinanSantri/Application/Queries/ListDisciplineOfficerCandidates.php`
+- [x] `php -l tests/Feature/KedisiplinanSantriContractReadinessTest.php`
+- [x] Scan import `App\Modules\*\Infrastructure\` pada module KedisiplinanSantri.
 
 Acceptance:
 
-- KedisiplinanSantri bisa membaca santri aktif melalui public contract.
-- KedisiplinanSantri bisa membaca pembina/petugas aktif melalui public
+- [x] KedisiplinanSantri bisa membaca santri aktif melalui public contract.
+- [x] KedisiplinanSantri bisa membaca pembina/petugas aktif melalui public
   contract.
-- KedisiplinanSantri tidak membaca model Infrastructure module lain.
+- [x] KedisiplinanSantri tidak membaca model Infrastructure module lain.
 
 ## Increment 4: Data Foundation
 

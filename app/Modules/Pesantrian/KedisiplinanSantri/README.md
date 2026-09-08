@@ -15,6 +15,7 @@ Increment aktif:
 
 - Increment 2 menyediakan skeleton module, permission identity, route
   placeholder, dan wiring permission ke seeder AccessControl.
-- Increment 3 berikutnya memastikan contract lintas module untuk santri aktif
-  dan pembina/petugas aktif tersedia tanpa coupling ke Infrastructure module
-  dependency.
+- Increment 3 memastikan contract lintas module untuk santri aktif dan
+  pembina/petugas aktif tersedia tanpa coupling ke Infrastructure module
+  dependency, melalui query `ListDisciplineStudentCandidates` dan
+  `ListDisciplineOfficerCandidates`.

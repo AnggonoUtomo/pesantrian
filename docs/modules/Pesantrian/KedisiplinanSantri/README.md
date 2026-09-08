@@ -77,6 +77,12 @@ Contract awal yang diperkirakan dibutuhkan:
 - `ActiveEmployeeReader` dari `HumanResource/HumanResource` untuk selector
   pembina/petugas.
 
+Pada source module, contract tersebut dibungkus oleh query Application
+KedisiplinanSantri:
+
+- `ListDisciplineStudentCandidates`;
+- `ListDisciplineOfficerCandidates`.
+
 Candidate contract yang mungkin dibuat setelah consumer nyata masuk:
 
 - reader ringkasan pelanggaran aktif per santri untuk dashboard operator;
@@ -84,6 +90,10 @@ Candidate contract yang mungkin dibuat setelah consumer nyata masuk:
 - event ringan ketika kasus kedisiplinan dibuat, diselesaikan, atau dibatalkan.
 
 Baseline tidak membuat contract keluar sebagai placeholder.
+
+Integrasi PresensiSantri dan PerizinanSantri masih dibatasi sebagai kandidat
+read-only. Data alfa/terlambat atau terlambat kembali tidak otomatis menjadi
+kasus pelanggaran tanpa review manusia.
 
 ## Lifecycle Baseline
 

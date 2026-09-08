@@ -112,19 +112,45 @@ Acceptance:
 
 ## Increment 4: Data Foundation
 
-- [ ] Buat migration `student_discipline_categories`.
-- [ ] Buat migration `student_discipline_cases`.
-- [ ] Buat migration `student_discipline_revisions`.
-- [ ] Buat record model dan factory minimum.
-- [ ] Tambahkan test data foundation.
+- [x] Buat migration `student_discipline_categories`.
+- [x] Buat migration `student_discipline_cases`.
+- [x] Buat migration `student_discipline_revisions`.
+- [x] Buat record model dan factory minimum.
+- [x] Tambahkan test data foundation.
+
+Hasil:
+
+- Table `student_discipline_categories` dibuat untuk kategori pelanggaran,
+  severity default, poin default, dan status kategori.
+- Table `student_discipline_cases` dibuat untuk nomor kasus, snapshot santri,
+  unit, kategori, severity, poin, waktu/lokasi kejadian, status lifecycle,
+  assignment pembina/petugas, tindakan pembinaan, penyelesaian, void, dan actor
+  lifecycle.
+- Table `student_discipline_revisions` dibuat untuk histori perubahan kasus.
+- Record model Eloquent dibuat untuk kategori, kasus, dan revision dengan
+  relasi category -> cases, case -> category, case -> revisions, dan revision
+  -> case.
+- Factory minimum dibuat untuk kategori, kasus, dan revision.
+- `ServiceProvider` KedisiplinanSantri sekarang memuat migration module.
+- Unique kode kategori dan nomor kasus dijaga di database.
+- Index pendukung filter santri, tanggal, status, severity, kategori, unit, dan
+  pembina tersedia dengan nama eksplisit pendek.
+
+Verifikasi:
+
+- [x] `php artisan test tests/Feature/KedisiplinanSantriDataFoundationTest.php --no-ansi`
+- [x] `php artisan test --filter=KedisiplinanSantri --no-ansi`
+- [x] `php artisan module:validate --no-ansi`
+- [x] `vendor\bin\pint --dirty --test`
+- [x] PHP lint migration, model, factory, dan test data foundation.
 
 Acceptance:
 
-- Table memakai ULID.
-- Kode kategori dan nomor kasus unique.
-- Index/filter tanggal, status, severity, kategori, santri, dan pembina
+- [x] Table memakai ULID.
+- [x] Kode kategori dan nomor kasus unique.
+- [x] Index/filter tanggal, status, severity, kategori, santri, dan pembina
   tersedia.
-- Migration aman di MySQL dengan nama index eksplisit pendek.
+- [x] Migration aman di MySQL dengan nama index eksplisit pendek.
 
 ## Increment 5: Backend Read/List
 

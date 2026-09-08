@@ -19,3 +19,6 @@ Increment aktif:
   pembina/petugas aktif tersedia tanpa coupling ke Infrastructure module
   dependency, melalui query `ListDisciplineStudentCandidates` dan
   `ListDisciplineOfficerCandidates`.
+- Increment 4 menyediakan table foundation `student_discipline_categories`,
+  `student_discipline_cases`, `student_discipline_revisions`, record model,
+  factory minimum, dan migration loading dari ServiceProvider.

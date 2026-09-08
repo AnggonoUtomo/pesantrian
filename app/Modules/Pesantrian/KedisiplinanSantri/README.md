@@ -42,3 +42,6 @@ Increment aktif:
 - Increment 11 menyediakan UI/Inertia read-only untuk list dan detail kasus,
   filter tanggal/status/tingkat/kategori/search, summary cards, pagination,
   sidebar menu Pesantrian, dan whitelist route Ziggy.
+- Increment 12 menyediakan UI mutation untuk create/update draft, submit,
+  review, assign action, resolve, dan void melalui dialog permission-aware
+  dengan redirect/flash Inertia dari route web.

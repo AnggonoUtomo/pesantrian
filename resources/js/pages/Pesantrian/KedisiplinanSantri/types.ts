@@ -144,8 +144,38 @@ export type StudentDisciplineIndexPageProps = {
 export type StudentDisciplineShowPageProps = {
     auth: Auth;
     case: StudentDisciplineCase;
+    options: StudentDisciplineIndexPageProps['options'];
     canManage: boolean;
     canReview: boolean;
     canResolve: boolean;
     canArchive: boolean;
+};
+
+export type StudentDisciplineMutationPayload = {
+    student_id: string;
+    category_id: string;
+    severity: StudentDisciplineSeverity;
+    points: string | number | null;
+    occurred_at: string;
+    location: string | null;
+    description: string;
+    assigned_employee_id: string | null;
+    revision_reason?: string;
+};
+
+export type StudentDisciplineReviewPayload = {
+    review_note: string;
+};
+
+export type StudentDisciplineActionPayload = {
+    action_plan: string;
+    assigned_employee_id: string | null;
+};
+
+export type StudentDisciplineResolvePayload = {
+    resolution_note: string;
+};
+
+export type StudentDisciplineVoidPayload = {
+    void_reason: string;
 };

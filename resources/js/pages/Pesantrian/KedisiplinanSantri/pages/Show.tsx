@@ -6,7 +6,15 @@ import { KedisiplinanSantriDetailPanel } from '../components/KedisiplinanSantriD
 import type { StudentDisciplineShowPageProps } from '../types';
 
 export default function Show() {
-    const { auth, case: disciplineCase, canManage, canReview, canResolve, canArchive } =
+    const {
+        auth,
+        case: disciplineCase,
+        options,
+        canManage,
+        canReview,
+        canResolve,
+        canArchive,
+    } =
         usePage<StudentDisciplineShowPageProps>().props;
 
     if (!canAccess(auth, 'kedisiplinan_santri.view')) {
@@ -25,6 +33,7 @@ export default function Show() {
             >
                 <KedisiplinanSantriDetailPanel
                     case={disciplineCase}
+                    options={options}
                     canManage={canManage}
                     canReview={canReview}
                     canResolve={canResolve}

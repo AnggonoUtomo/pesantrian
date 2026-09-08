@@ -23,6 +23,13 @@ final class KedisiplinanSantriPresentationTest extends TestCase
     public function test_mendaftarkan_route_web_inertia_kedisiplinan_santri_untuk_ziggy(): void
     {
         self::assertTrue(Route::has('pesantrian.student-discipline-cases.index'));
+        self::assertTrue(Route::has('pesantrian.student-discipline-cases.store'));
+        self::assertTrue(Route::has('pesantrian.student-discipline-cases.update'));
+        self::assertTrue(Route::has('pesantrian.student-discipline-cases.submit'));
+        self::assertTrue(Route::has('pesantrian.student-discipline-cases.review'));
+        self::assertTrue(Route::has('pesantrian.student-discipline-cases.assign-action'));
+        self::assertTrue(Route::has('pesantrian.student-discipline-cases.resolve'));
+        self::assertTrue(Route::has('pesantrian.student-discipline-cases.void'));
         self::assertTrue(Route::has('pesantrian.student-discipline-cases.show'));
     }
 
@@ -187,6 +194,46 @@ final class KedisiplinanSantriPresentationTest extends TestCase
                 ->where('canReview', false));
     }
 
+    public function test_mengelola_create_draft_dan_submit_kasus_kedisiplinan_dari_route_web(): void
+    {
+        $actor = $this->actor(['kedisiplinan_santri.view', 'kedisiplinan_santri.manage']);
+        $references = $this->seedReferences();
+        $category = StudentDisciplineCategoryRecord::factory()->create([
+            'code' => 'UI-WEB',
+            'name' => 'Web Mutation UI',
+            'default_severity' => 'minor',
+            'default_points' => 5,
+        ]);
+
+        $this->actingAs($actor)
+            ->post(route('pesantrian.student-discipline-cases.store'), [
+                'student_id' => $references['student_id'],
+                'category_id' => $category->id,
+                'severity' => 'minor',
+                'points' => 5,
+                'occurred_at' => '2026-09-24 07:30:00',
+                'location' => 'Halaman web',
+                'description' => 'Kasus dibuat dari route web.',
+                'assigned_employee_id' => $references['employee_id'],
+            ])
+            ->assertRedirect();
+
+        $case = StudentDisciplineCaseRecord::query()
+            ->where('description', 'Kasus dibuat dari route web.')
+            ->firstOrFail();
+
+        self::assertSame('draft', $case->status);
+
+        $this->actingAs($actor)
+            ->patch(route('pesantrian.student-discipline-cases.submit', $case->id))
+            ->assertRedirect(route('pesantrian.student-discipline-cases.show', $case->id));
+
+        self::assertSame(
+            'submitted',
+            $case->fresh()?->status,
+        );
+    }
+
     public function test_menghubungkan_ui_kedisiplinan_ke_komponen_canonical_sidebar_dan_ziggy(): void
     {
         $index = $this->sourceFile('js/pages/Pesantrian/KedisiplinanSantri/pages/Index.tsx');
@@ -198,6 +245,9 @@ final class KedisiplinanSantriPresentationTest extends TestCase
         $pagination = $this->sourceFile('js/pages/Pesantrian/KedisiplinanSantri/components/KedisiplinanSantriPagination.tsx');
         $empty = $this->sourceFile('js/pages/Pesantrian/KedisiplinanSantri/components/KedisiplinanSantriEmptyState.tsx');
         $detail = $this->sourceFile('js/pages/Pesantrian/KedisiplinanSantri/components/KedisiplinanSantriDetailPanel.tsx');
+        $actionBar = $this->sourceFile('js/pages/Pesantrian/KedisiplinanSantri/components/KedisiplinanSantriActionBar.tsx');
+        $mutation = $this->sourceFile('js/pages/Pesantrian/KedisiplinanSantri/components/KedisiplinanSantriMutationDialog.tsx');
+        $lifecycle = $this->sourceFile('js/pages/Pesantrian/KedisiplinanSantri/components/KedisiplinanSantriLifecycleDialogs.tsx');
         $navigation = $this->sourceFile('js/lib/navigation.ts');
         $ziggy = file_get_contents(config_path('ziggy.php'));
 
@@ -208,6 +258,8 @@ final class KedisiplinanSantriPresentationTest extends TestCase
         self::assertStringContainsString('KedisiplinanSantriFilters', $dashboard);
         self::assertStringContainsString('KedisiplinanSantriTable', $dashboard);
         self::assertStringContainsString('KedisiplinanSantriPagination', $dashboard);
+        self::assertStringContainsString('KedisiplinanSantriActionBar', $dashboard);
+        self::assertStringContainsString('KedisiplinanSantriMutationDialog', $dashboard);
         self::assertStringContainsString('Cari kasus kedisiplinan', $filters);
         self::assertStringContainsString('Status kasus', $filters);
         self::assertStringContainsString('Tingkat', $filters);
@@ -223,11 +275,27 @@ final class KedisiplinanSantriPresentationTest extends TestCase
         self::assertStringContainsString('Detail Kedisiplinan Santri', $detail);
         self::assertStringContainsString('Lifecycle kasus', $detail);
         self::assertStringContainsString('Histori revisi', $detail);
+        self::assertStringContainsString('Aksi Kedisiplinan', $actionBar);
+        self::assertStringContainsString('Buat kasus', $actionBar);
+        self::assertStringContainsString('Buat draft kasus', $mutation);
+        self::assertStringContainsString('Simpan perubahan', $mutation);
+        self::assertStringContainsString('Submit kasus', $lifecycle);
+        self::assertStringContainsString('Review kasus', $lifecycle);
+        self::assertStringContainsString('Tetapkan tindakan pembinaan', $lifecycle);
+        self::assertStringContainsString('Selesaikan kasus', $lifecycle);
+        self::assertStringContainsString('Batalkan kasus', $lifecycle);
         self::assertStringContainsString('Pelanggaran / Kedisiplinan', $navigation);
         self::assertStringContainsString('pesantrian.student-discipline-cases.index', $navigation);
         self::assertStringContainsString("'kedisiplinan_santri.view'", $navigation);
         self::assertIsString($ziggy);
         self::assertStringContainsString("'pesantrian.student-discipline-cases.index'", $ziggy);
+        self::assertStringContainsString("'pesantrian.student-discipline-cases.store'", $ziggy);
+        self::assertStringContainsString("'pesantrian.student-discipline-cases.update'", $ziggy);
+        self::assertStringContainsString("'pesantrian.student-discipline-cases.submit'", $ziggy);
+        self::assertStringContainsString("'pesantrian.student-discipline-cases.review'", $ziggy);
+        self::assertStringContainsString("'pesantrian.student-discipline-cases.assign-action'", $ziggy);
+        self::assertStringContainsString("'pesantrian.student-discipline-cases.resolve'", $ziggy);
+        self::assertStringContainsString("'pesantrian.student-discipline-cases.void'", $ziggy);
         self::assertStringContainsString("'pesantrian.student-discipline-cases.show'", $ziggy);
     }
 

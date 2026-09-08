@@ -420,17 +420,48 @@ Acceptance:
 
 ## Increment 12: UI Mutation
 
-- [ ] Buat dialog create/update.
-- [ ] Buat dialog submit/review/assign action/resolve/void.
-- [ ] Tambahkan UX permission-aware.
-- [ ] Tambahkan toast/error handling.
-- [ ] Tambahkan test presentation/mutation web bila tersedia.
+- [x] Buat dialog create/update.
+- [x] Buat dialog submit/review/assign action/resolve/void.
+- [x] Tambahkan UX permission-aware.
+- [x] Tambahkan toast/error handling.
+- [x] Tambahkan test presentation/mutation web bila tersedia.
+
+Hasil:
+
+- Web route mutation tersedia untuk create/update draft, submit, review,
+  assign action, resolve, dan void kasus kedisiplinan.
+- Controller Inertia memakai action Application yang sama dengan API, sehingga
+  backend tetap menjadi authority validasi dan permission.
+- Dialog create/update berada di komponen
+  `KedisiplinanSantriMutationDialog`.
+- Dialog lifecycle berada di komponen
+  `KedisiplinanSantriLifecycleDialogs`.
+- Tombol aksi list/detail permission-aware dan status-aware:
+  draft bisa edit/submit, submitted bisa review, in_review bisa assign action,
+  action_assigned bisa resolve, dan kasus non-final bisa void.
+- Action final/destructive memakai dialog konfirmasi dengan alasan/catatan
+  sesuai kebutuhan backend.
+- Redirect dan flash toast memakai route web Inertia supaya halaman refresh ke
+  detail kasus setelah mutation berhasil.
+- Whitelist Ziggy mencakup route web mutation KedisiplinanSantri.
+
+Verifikasi:
+
+- [x] RED: `php artisan test tests/Feature/KedisiplinanSantriPresentationTest.php --no-ansi` gagal sebelum route/component mutation dibuat.
+- [x] `php artisan test tests/Feature/KedisiplinanSantriPresentationTest.php --no-ansi`
+- [x] `php artisan test --filter=KedisiplinanSantri --no-ansi`
+- [x] `php artisan route:list --name=student-discipline --no-ansi`
+- [x] `php artisan module:validate --no-ansi`
+- [x] `vendor\bin\pint --dirty --test`
+- [x] `npm run types:check`
+- [x] `npm run lint:check`
+- [x] `npm run build`
 
 Acceptance:
 
-- Semua form mutation berada di folder `components`.
-- Action final/destructive memakai confirmation.
-- Backend tetap authority permission dan validasi.
+- [x] Semua form mutation berada di folder `components`.
+- [x] Action final/destructive memakai confirmation.
+- [x] Backend tetap authority permission dan validasi.
 
 ## Increment 13: QA Browser dan User Manual
 

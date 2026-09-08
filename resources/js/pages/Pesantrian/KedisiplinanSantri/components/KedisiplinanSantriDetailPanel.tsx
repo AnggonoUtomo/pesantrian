@@ -1,9 +1,13 @@
 import { Link } from '@inertiajs/react';
 import { ArrowLeft, CheckCircle2, ClipboardList, History } from 'lucide-react';
+import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { routeOr } from '@/lib/route';
-import type { StudentDisciplineCase } from '../types';
+import type {
+    StudentDisciplineCase,
+    StudentDisciplineIndexPageProps,
+} from '../types';
 import {
     disciplineSeverityLabel,
     formatDate,
@@ -11,10 +15,19 @@ import {
     lifecycleSummary,
     pointsLabel,
 } from './kedisiplinanSantriDisplay';
+import {
+    AssignActionKedisiplinanDialog,
+    ResolveKedisiplinanDialog,
+    ReviewKedisiplinanDialog,
+    SubmitKedisiplinanDialog,
+    VoidKedisiplinanDialog,
+} from './KedisiplinanSantriLifecycleDialogs';
+import { KedisiplinanSantriMutationDialog } from './KedisiplinanSantriMutationDialog';
 import { KedisiplinanSantriStatusBadge } from './KedisiplinanSantriStatusBadge';
 
 type Props = {
     case: StudentDisciplineCase;
+    options: StudentDisciplineIndexPageProps['options'];
     canManage: boolean;
     canReview: boolean;
     canResolve: boolean;
@@ -23,40 +36,117 @@ type Props = {
 
 export function KedisiplinanSantriDetailPanel({
     case: disciplineCase,
+    options,
     canManage,
     canReview,
     canResolve,
     canArchive,
 }: Props) {
-    return (
-        <div className="space-y-5">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <Button asChild variant="outline" size="sm">
-                    <Link
-                        href={String(
-                            routeOr(
-                                '/pesantrian/student-discipline-cases',
-                                'pesantrian.student-discipline-cases.index',
-                            ),
-                        )}
-                    >
-                        <ArrowLeft className="size-4" aria-hidden="true" />
-                        Kembali ke daftar
-                    </Link>
-                </Button>
-                <div className="flex flex-wrap gap-2">
-                    {canManage ? <Badge variant="outline">Kelola</Badge> : null}
-                    {canReview ? <Badge variant="outline">Review</Badge> : null}
-                    {canResolve ? (
-                        <Badge variant="outline">Penyelesaian</Badge>
-                    ) : null}
-                    {canArchive ? (
-                        <Badge variant="outline">Arsip</Badge>
-                    ) : null}
-                </div>
-            </div>
+    const [mutationDialogOpen, setMutationDialogOpen] = useState(false);
+    const [submitOpen, setSubmitOpen] = useState(false);
+    const [reviewOpen, setReviewOpen] = useState(false);
+    const [assignActionOpen, setAssignActionOpen] = useState(false);
+    const [resolveOpen, setResolveOpen] = useState(false);
+    const [voidOpen, setVoidOpen] = useState(false);
+    const isFinal = disciplineCase.summary.is_final;
 
-            <section className="dashboard-card dashboard-card--amber rounded-2xl border p-4 sm:p-5">
+    return (
+        <>
+            <div className="space-y-5">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <Button asChild variant="outline" size="sm">
+                        <Link
+                            href={String(
+                                routeOr(
+                                    '/pesantrian/student-discipline-cases',
+                                    'pesantrian.student-discipline-cases.index',
+                                ),
+                            )}
+                        >
+                            <ArrowLeft className="size-4" aria-hidden="true" />
+                            Kembali ke daftar
+                        </Link>
+                    </Button>
+                    <div className="flex flex-wrap gap-2">
+                        {canManage ? (
+                            <Badge variant="outline">Kelola</Badge>
+                        ) : null}
+                        {canReview ? (
+                            <Badge variant="outline">Review</Badge>
+                        ) : null}
+                        {canResolve ? (
+                            <Badge variant="outline">Penyelesaian</Badge>
+                        ) : null}
+                        {canArchive ? (
+                            <Badge variant="outline">Arsip</Badge>
+                        ) : null}
+                    </div>
+                </div>
+
+                <section className="flex flex-col gap-3 rounded-2xl border bg-background/70 p-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h2 className="font-semibold">Aksi Kedisiplinan</h2>
+                        <p className="text-sm text-foreground/65">
+                            Tombol disesuaikan dengan permission dan status
+                            kasus saat ini.
+                        </p>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                        {canManage && disciplineCase.status === 'draft' ? (
+                            <>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() => setMutationDialogOpen(true)}
+                                >
+                                    Edit
+                                </Button>
+                                <Button
+                                    type="button"
+                                    onClick={() => setSubmitOpen(true)}
+                                >
+                                    Submit kasus
+                                </Button>
+                            </>
+                        ) : null}
+                        {canReview && disciplineCase.status === 'submitted' ? (
+                            <Button
+                                type="button"
+                                onClick={() => setReviewOpen(true)}
+                            >
+                                Review kasus
+                            </Button>
+                        ) : null}
+                        {canReview && disciplineCase.status === 'in_review' ? (
+                            <Button
+                                type="button"
+                                onClick={() => setAssignActionOpen(true)}
+                            >
+                                Tetapkan tindakan
+                            </Button>
+                        ) : null}
+                        {canResolve &&
+                        disciplineCase.status === 'action_assigned' ? (
+                            <Button
+                                type="button"
+                                onClick={() => setResolveOpen(true)}
+                            >
+                                Selesaikan kasus
+                            </Button>
+                        ) : null}
+                        {canResolve && !isFinal ? (
+                            <Button
+                                type="button"
+                                variant="destructive"
+                                onClick={() => setVoidOpen(true)}
+                            >
+                                Batalkan kasus
+                            </Button>
+                        ) : null}
+                    </div>
+                </section>
+
+                <section className="dashboard-card dashboard-card--amber rounded-2xl border p-4 sm:p-5">
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                     <div>
                         <p className="text-sm text-foreground/60">
@@ -110,9 +200,9 @@ export function KedisiplinanSantriDetailPanel({
                         ]}
                     />
                 </div>
-            </section>
+                </section>
 
-            <section className="dashboard-card rounded-2xl border p-4 sm:p-5">
+                <section className="dashboard-card rounded-2xl border p-4 sm:p-5">
                 <h2 className="font-semibold">Catatan pembinaan</h2>
                 <div className="mt-4 grid gap-4 lg:grid-cols-3">
                     <DetailText
@@ -128,9 +218,9 @@ export function KedisiplinanSantriDetailPanel({
                         value={disciplineCase.resolution_note}
                     />
                 </div>
-            </section>
+                </section>
 
-            <section className="dashboard-card rounded-2xl border p-4 sm:p-5">
+                <section className="dashboard-card rounded-2xl border p-4 sm:p-5">
                 <div className="flex items-center justify-between gap-3">
                     <div>
                         <h2 className="font-semibold">Histori revisi</h2>
@@ -170,8 +260,42 @@ export function KedisiplinanSantriDetailPanel({
                         Belum ada histori revisi untuk kasus ini.
                     </p>
                 )}
-            </section>
-        </div>
+                </section>
+            </div>
+
+            <KedisiplinanSantriMutationDialog
+                open={mutationDialogOpen}
+                case={disciplineCase}
+                options={options}
+                onOpenChange={setMutationDialogOpen}
+            />
+            <SubmitKedisiplinanDialog
+                open={submitOpen}
+                case={disciplineCase}
+                onOpenChange={setSubmitOpen}
+            />
+            <ReviewKedisiplinanDialog
+                open={reviewOpen}
+                case={disciplineCase}
+                onOpenChange={setReviewOpen}
+            />
+            <AssignActionKedisiplinanDialog
+                open={assignActionOpen}
+                case={disciplineCase}
+                options={options}
+                onOpenChange={setAssignActionOpen}
+            />
+            <ResolveKedisiplinanDialog
+                open={resolveOpen}
+                case={disciplineCase}
+                onOpenChange={setResolveOpen}
+            />
+            <VoidKedisiplinanDialog
+                open={voidOpen}
+                case={disciplineCase}
+                onOpenChange={setVoidOpen}
+            />
+        </>
     );
 }
 

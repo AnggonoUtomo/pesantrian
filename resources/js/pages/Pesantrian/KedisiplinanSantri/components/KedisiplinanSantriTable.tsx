@@ -14,9 +14,29 @@ import {
 
 type Props = {
     cases: StudentDisciplineCase[];
+    canManage: boolean;
+    canReview: boolean;
+    canResolve: boolean;
+    onEdit: (disciplineCase: StudentDisciplineCase) => void;
+    onSubmitCase: (disciplineCase: StudentDisciplineCase) => void;
+    onReview: (disciplineCase: StudentDisciplineCase) => void;
+    onAssignAction: (disciplineCase: StudentDisciplineCase) => void;
+    onResolve: (disciplineCase: StudentDisciplineCase) => void;
+    onVoid: (disciplineCase: StudentDisciplineCase) => void;
 };
 
-export function KedisiplinanSantriTable({ cases }: Props) {
+export function KedisiplinanSantriTable({
+    cases,
+    canManage,
+    canReview,
+    canResolve,
+    onEdit,
+    onSubmitCase,
+    onReview,
+    onAssignAction,
+    onResolve,
+    onVoid,
+}: Props) {
     return (
         <div className="overflow-hidden rounded-xl border bg-background">
             <div className="hidden overflow-x-auto md:block">
@@ -100,6 +120,18 @@ export function KedisiplinanSantriTable({ cases }: Props) {
                                             Lihat detail
                                         </Link>
                                     </Button>
+                                    <CaseActions
+                                        case={disciplineCase}
+                                        canManage={canManage}
+                                        canReview={canReview}
+                                        canResolve={canResolve}
+                                        onEdit={onEdit}
+                                        onSubmitCase={onSubmitCase}
+                                        onReview={onReview}
+                                        onAssignAction={onAssignAction}
+                                        onResolve={onResolve}
+                                        onVoid={onVoid}
+                                    />
                                 </td>
                             </tr>
                         ))}
@@ -161,6 +193,18 @@ export function KedisiplinanSantriTable({ cases }: Props) {
                                 </Link>
                             </Button>
                         </div>
+                        <CaseActions
+                            case={disciplineCase}
+                            canManage={canManage}
+                            canReview={canReview}
+                            canResolve={canResolve}
+                            onEdit={onEdit}
+                            onSubmitCase={onSubmitCase}
+                            onReview={onReview}
+                            onAssignAction={onAssignAction}
+                            onResolve={onResolve}
+                            onVoid={onVoid}
+                        />
                     </article>
                 ))}
             </div>
@@ -173,6 +217,97 @@ function CaseField({ label, value }: { label: string; value: string }) {
         <div className="flex justify-between gap-3">
             <dt className="text-foreground/50">{label}</dt>
             <dd className="text-right font-medium">{value}</dd>
+        </div>
+    );
+}
+
+function CaseActions({
+    case: disciplineCase,
+    canManage,
+    canReview,
+    canResolve,
+    onEdit,
+    onSubmitCase,
+    onReview,
+    onAssignAction,
+    onResolve,
+    onVoid,
+}: {
+    case: StudentDisciplineCase;
+    canManage: boolean;
+    canReview: boolean;
+    canResolve: boolean;
+    onEdit: (disciplineCase: StudentDisciplineCase) => void;
+    onSubmitCase: (disciplineCase: StudentDisciplineCase) => void;
+    onReview: (disciplineCase: StudentDisciplineCase) => void;
+    onAssignAction: (disciplineCase: StudentDisciplineCase) => void;
+    onResolve: (disciplineCase: StudentDisciplineCase) => void;
+    onVoid: (disciplineCase: StudentDisciplineCase) => void;
+}) {
+    const isFinal = disciplineCase.summary.is_final;
+
+    return (
+        <div className="mt-2 flex flex-wrap justify-end gap-2">
+            {canManage && disciplineCase.status === 'draft' ? (
+                <>
+                    <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => onEdit(disciplineCase)}
+                    >
+                        Edit
+                    </Button>
+                    <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => onSubmitCase(disciplineCase)}
+                    >
+                        Submit
+                    </Button>
+                </>
+            ) : null}
+            {canReview && disciplineCase.status === 'submitted' ? (
+                <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => onReview(disciplineCase)}
+                >
+                    Review
+                </Button>
+            ) : null}
+            {canReview && disciplineCase.status === 'in_review' ? (
+                <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => onAssignAction(disciplineCase)}
+                >
+                    Tindakan
+                </Button>
+            ) : null}
+            {canResolve && disciplineCase.status === 'action_assigned' ? (
+                <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => onResolve(disciplineCase)}
+                >
+                    Selesai
+                </Button>
+            ) : null}
+            {canResolve && !isFinal ? (
+                <Button
+                    type="button"
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => onVoid(disciplineCase)}
+                >
+                    Batalkan
+                </Button>
+            ) : null}
         </div>
     );
 }

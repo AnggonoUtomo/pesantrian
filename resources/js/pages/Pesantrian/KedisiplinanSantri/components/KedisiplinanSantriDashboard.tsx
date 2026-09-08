@@ -3,17 +3,38 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { canAccess } from '@/lib/authorization';
 import { routeOr } from '@/lib/route';
-import type { StudentDisciplineIndexPageProps } from '../types';
+import type {
+    StudentDisciplineCase,
+    StudentDisciplineIndexPageProps,
+} from '../types';
 import { KedisiplinanSantriAccessDenied } from './KedisiplinanSantriAccessDenied';
+import { KedisiplinanSantriActionBar } from './KedisiplinanSantriActionBar';
 import { KedisiplinanSantriEmptyState } from './KedisiplinanSantriEmptyState';
 import { KedisiplinanSantriFilters } from './KedisiplinanSantriFilters';
+import {
+    AssignActionKedisiplinanDialog,
+    ResolveKedisiplinanDialog,
+    ReviewKedisiplinanDialog,
+    SubmitKedisiplinanDialog,
+    VoidKedisiplinanDialog,
+} from './KedisiplinanSantriLifecycleDialogs';
+import { KedisiplinanSantriMutationDialog } from './KedisiplinanSantriMutationDialog';
 import { KedisiplinanSantriPagination } from './KedisiplinanSantriPagination';
 import { KedisiplinanSantriSummaryCards } from './KedisiplinanSantriSummaryCards';
 import { KedisiplinanSantriTable } from './KedisiplinanSantriTable';
 
 export function KedisiplinanSantriDashboard() {
-    const { auth, cases, filters, pagination, options, errors } =
-        usePage<StudentDisciplineIndexPageProps>().props;
+    const {
+        auth,
+        cases,
+        filters,
+        pagination,
+        options,
+        errors,
+        canManage,
+        canReview,
+        canResolve,
+    } = usePage<StudentDisciplineIndexPageProps>().props;
     const [search, setSearch] = useState(filters.search ?? '');
     const [dateFrom, setDateFrom] = useState(
         filters.filter?.date_from ?? '',
@@ -27,6 +48,20 @@ export function KedisiplinanSantriDashboard() {
     );
     const [categoryId, setCategoryId] = useState<string>(
         filters.filter?.category_id ?? 'all',
+    );
+    const [mutationCase, setMutationCase] =
+        useState<StudentDisciplineCase | null>(null);
+    const [mutationDialogOpen, setMutationDialogOpen] = useState(false);
+    const [submitCase, setSubmitCase] =
+        useState<StudentDisciplineCase | null>(null);
+    const [reviewCase, setReviewCase] =
+        useState<StudentDisciplineCase | null>(null);
+    const [assignActionCase, setAssignActionCase] =
+        useState<StudentDisciplineCase | null>(null);
+    const [resolveCase, setResolveCase] =
+        useState<StudentDisciplineCase | null>(null);
+    const [voidCase, setVoidCase] = useState<StudentDisciplineCase | null>(
+        null,
     );
     const canView = canAccess(auth, 'kedisiplinan_santri.view');
     const disciplineIndexUrl = () =>
@@ -89,62 +124,138 @@ export function KedisiplinanSantriDashboard() {
         );
     };
 
+    const openCreateDialog = () => {
+        setMutationCase(null);
+        setMutationDialogOpen(true);
+    };
+
+    const openEditDialog = (disciplineCase: StudentDisciplineCase) => {
+        setMutationCase(disciplineCase);
+        setMutationDialogOpen(true);
+    };
+
     if (!canView) {
         return <KedisiplinanSantriAccessDenied />;
     }
 
     return (
-        <div className="space-y-5">
-            <KedisiplinanSantriSummaryCards
-                total={cases.meta.total}
-                cases={cases.data}
-            />
-
-            {errors && Object.keys(errors).length > 0 ? (
-                <p role="alert" className="dashboard-message--error text-sm">
-                    Filter kedisiplinan santri tidak valid. Periksa input dan
-                    coba kembali.
-                </p>
-            ) : null}
-
-            <section className="dashboard-card dashboard-card--amber space-y-4 rounded-2xl border p-4 sm:p-5">
-                <KedisiplinanSantriFilters
-                    search={search}
-                    dateFrom={dateFrom}
-                    dateTo={dateTo}
-                    status={status}
-                    severity={severity}
-                    categoryId={categoryId}
-                    perPage={cases.meta.perPage}
-                    options={options}
-                    onSearchChange={setSearch}
-                    onDateFromChange={setDateFrom}
-                    onDateToChange={setDateTo}
-                    onStatusChange={setStatus}
-                    onSeverityChange={setSeverity}
-                    onCategoryChange={setCategoryId}
-                    onSubmit={submitFilters}
-                    onReset={resetFilters}
+        <>
+            <div className="space-y-5">
+                <KedisiplinanSantriActionBar
+                    canManage={canManage}
+                    onCreate={openCreateDialog}
                 />
 
-                {cases.data.length > 0 ? (
-                    <>
-                        <KedisiplinanSantriTable cases={cases.data} />
-                        <KedisiplinanSantriPagination
-                            meta={cases.meta}
-                            pagination={pagination}
-                            onPageChange={(page) =>
-                                visitCases(page, cases.meta.perPage)
-                            }
-                            onPerPageChange={(perPage) =>
-                                visitCases(1, perPage)
-                            }
-                        />
-                    </>
-                ) : (
-                    <KedisiplinanSantriEmptyState />
-                )}
-            </section>
-        </div>
+                <KedisiplinanSantriSummaryCards
+                    total={cases.meta.total}
+                    cases={cases.data}
+                />
+
+                {errors && Object.keys(errors).length > 0 ? (
+                    <p
+                        role="alert"
+                        className="dashboard-message--error text-sm"
+                    >
+                        Filter kedisiplinan santri tidak valid. Periksa input
+                        dan coba kembali.
+                    </p>
+                ) : null}
+
+                <section className="dashboard-card dashboard-card--amber space-y-4 rounded-2xl border p-4 sm:p-5">
+                    <KedisiplinanSantriFilters
+                        search={search}
+                        dateFrom={dateFrom}
+                        dateTo={dateTo}
+                        status={status}
+                        severity={severity}
+                        categoryId={categoryId}
+                        perPage={cases.meta.perPage}
+                        options={options}
+                        onSearchChange={setSearch}
+                        onDateFromChange={setDateFrom}
+                        onDateToChange={setDateTo}
+                        onStatusChange={setStatus}
+                        onSeverityChange={setSeverity}
+                        onCategoryChange={setCategoryId}
+                        onSubmit={submitFilters}
+                        onReset={resetFilters}
+                    />
+
+                    {cases.data.length > 0 ? (
+                        <>
+                            <KedisiplinanSantriTable
+                                cases={cases.data}
+                                canManage={canManage}
+                                canReview={canReview}
+                                canResolve={canResolve}
+                                onEdit={openEditDialog}
+                                onSubmitCase={setSubmitCase}
+                                onReview={setReviewCase}
+                                onAssignAction={setAssignActionCase}
+                                onResolve={setResolveCase}
+                                onVoid={setVoidCase}
+                            />
+                            <KedisiplinanSantriPagination
+                                meta={cases.meta}
+                                pagination={pagination}
+                                onPageChange={(page) =>
+                                    visitCases(page, cases.meta.perPage)
+                                }
+                                onPerPageChange={(perPage) =>
+                                    visitCases(1, perPage)
+                                }
+                            />
+                        </>
+                    ) : (
+                        <KedisiplinanSantriEmptyState />
+                    )}
+                </section>
+            </div>
+
+            <KedisiplinanSantriMutationDialog
+                open={mutationDialogOpen}
+                case={mutationCase}
+                options={options}
+                onOpenChange={setMutationDialogOpen}
+            />
+            {submitCase ? (
+                <SubmitKedisiplinanDialog
+                    open
+                    case={submitCase}
+                    onOpenChange={(open) => !open && setSubmitCase(null)}
+                />
+            ) : null}
+            {reviewCase ? (
+                <ReviewKedisiplinanDialog
+                    open
+                    case={reviewCase}
+                    onOpenChange={(open) => !open && setReviewCase(null)}
+                />
+            ) : null}
+            {assignActionCase ? (
+                <AssignActionKedisiplinanDialog
+                    open
+                    case={assignActionCase}
+                    options={options}
+                    onOpenChange={(open) =>
+                        !open && setAssignActionCase(null)
+                    }
+                />
+            ) : null}
+            {resolveCase ? (
+                <ResolveKedisiplinanDialog
+                    open
+                    case={resolveCase}
+                    onOpenChange={(open) => !open && setResolveCase(null)}
+                />
+            ) : null}
+            {voidCase ? (
+                <VoidKedisiplinanDialog
+                    open
+                    case={voidCase}
+                    onOpenChange={(open) => !open && setVoidCase(null)}
+                />
+            ) : null}
+        </>
     );
 }

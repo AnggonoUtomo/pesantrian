@@ -307,17 +307,37 @@ Acceptance:
 
 ## Increment 9: Resolve dan Void
 
-- [ ] Buat action resolve.
-- [ ] Buat action void.
-- [ ] Tambahkan request validation resolve/void.
-- [ ] Tambahkan revision/audit resolve/void.
-- [ ] Tambahkan test lifecycle resolve/void.
+- [x] Buat action resolve.
+- [x] Buat action void.
+- [x] Tambahkan request validation resolve/void.
+- [x] Tambahkan revision/audit resolve/void.
+- [x] Tambahkan test lifecycle resolve/void.
+
+Hasil:
+
+- Kasus `action_assigned` dapat diselesaikan menjadi `resolved` dengan catatan
+  penyelesaian, actor penyelesai, dan waktu penyelesaian.
+- Kasus non-final (`draft`, `submitted`, `in_review`, `action_assigned`) dapat
+  dibatalkan menjadi `void` dengan alasan pembatalan tanpa menghapus record.
+- Status `resolved` dan `void` menjadi status final baseline.
+- Revision dibuat untuk resolve dan void.
+- Audit dibuat untuk `kedisiplinan_santri.case.resolved` dan
+  `kedisiplinan_santri.case.voided`.
+
+Verifikasi:
+
+- [x] `php artisan test tests/Feature/KedisiplinanSantriResolveVoidApiTest.php --no-ansi`
+- [x] `php artisan test --filter=KedisiplinanSantri --no-ansi`
+- [x] `php artisan module:validate --no-ansi`
+- [x] `php artisan route:list --name=student-discipline --no-ansi`
+- [x] `vendor\bin\pint --dirty --test`
+- [x] `git diff --check`
 
 Acceptance:
 
-- Resolve wajib catatan penyelesaian.
-- Void wajib alasan dan tidak menghapus data.
-- Resolved/void menjadi status final baseline.
+- [x] Resolve wajib catatan penyelesaian.
+- [x] Void wajib alasan dan tidak menghapus data.
+- [x] Resolved/void menjadi status final baseline.
 
 ## Increment 10: Demo Seeder
 

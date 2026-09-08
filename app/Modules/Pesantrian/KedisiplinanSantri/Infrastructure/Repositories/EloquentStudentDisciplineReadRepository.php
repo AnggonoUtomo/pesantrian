@@ -158,6 +158,55 @@ final class EloquentStudentDisciplineReadRepository implements StudentDiscipline
         return $this->mapCase($record->refresh()->load(['category', 'revisions'])->loadCount('revisions'));
     }
 
+    public function resolveCase(string $id, string $resolutionNote, string $actorId): ?StudentDisciplineCaseData
+    {
+        $record = StudentDisciplineCaseRecord::query()->find($id);
+
+        if (! $record instanceof StudentDisciplineCaseRecord) {
+            return null;
+        }
+
+        $record->forceFill([
+            'status' => 'resolved',
+            'resolved_at' => now(),
+            'resolved_by' => $actorId,
+            'resolution_note' => $resolutionNote,
+        ])->save();
+        $this->createRevision($record, $resolutionNote, $actorId, [
+            'action' => 'resolve',
+            'changed_fields' => ['status', 'resolved_at', 'resolved_by', 'resolution_note'],
+            'from_status' => 'action_assigned',
+            'to_status' => 'resolved',
+        ]);
+
+        return $this->mapCase($record->refresh()->load(['category', 'revisions'])->loadCount('revisions'));
+    }
+
+    public function voidCase(string $id, string $voidReason, string $actorId): ?StudentDisciplineCaseData
+    {
+        $record = StudentDisciplineCaseRecord::query()->find($id);
+
+        if (! $record instanceof StudentDisciplineCaseRecord) {
+            return null;
+        }
+
+        $fromStatus = (string) $record->status;
+        $record->forceFill([
+            'status' => 'void',
+            'voided_at' => now(),
+            'voided_by' => $actorId,
+            'void_reason' => $voidReason,
+        ])->save();
+        $this->createRevision($record, $voidReason, $actorId, [
+            'action' => 'void',
+            'changed_fields' => ['status', 'voided_at', 'voided_by', 'void_reason'],
+            'from_status' => $fromStatus,
+            'to_status' => 'void',
+        ]);
+
+        return $this->mapCase($record->refresh()->load(['category', 'revisions'])->loadCount('revisions'));
+    }
+
     public function findActiveCategory(string $id): ?StudentDisciplineCategoryData
     {
         $record = StudentDisciplineCategoryRecord::query()

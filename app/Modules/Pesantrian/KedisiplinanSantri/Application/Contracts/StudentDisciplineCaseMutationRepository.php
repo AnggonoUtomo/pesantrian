@@ -18,4 +18,8 @@ interface StudentDisciplineCaseMutationRepository
     public function reviewCase(string $id, string $reviewNote, string $actorId): ?StudentDisciplineCaseData;
 
     public function assignCaseAction(string $id, string $actionPlan, ?string $assignedEmployeeId, ?string $assignedEmployeeName, string $actorId): ?StudentDisciplineCaseData;
+
+    public function resolveCase(string $id, string $resolutionNote, string $actorId): ?StudentDisciplineCaseData;
+
+    public function voidCase(string $id, string $voidReason, string $actorId): ?StudentDisciplineCaseData;
 }

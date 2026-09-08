@@ -18,7 +18,8 @@ php artisan db:seed
 Seeder bersifat idempotent, artinya aman dijalankan berulang untuk melengkapi
 data demo tanpa membuat data demo dobel berdasarkan kode unik seperti
 `DEMO-*`, `PPDB-DEMO-*`, `NIS-DEMO-*`, `PEG-DEMO-*`, `DEMO-ASR-*`,
-`DEMO-KMR-*`, kode presensi `DEMO-*`, dan kode Tahfidz `DEMO-THF-*`.
+`DEMO-KMR-*`, kode presensi `DEMO-*`, kode Tahfidz `DEMO-THF-*`, izin
+`IZN-DEMO-*`, dan kasus kedisiplinan `DIS-DEMO-*`.
 
 Password akun demo tidak ditulis di source code. Jika ingin semua akun demo
 punya password lokal yang sama, isi `.env` lokal:
@@ -343,8 +344,10 @@ Relasi:
   relevan pada tanggal presensi, tetapi layar Presensi belum otomatis mengubah
   entry menjadi izin. Status izin/sakit/alfa saat ini tetap dicatat manual di
   Presensi Santri.
-- Kesehatan/Klinik dan Pelanggaran/Kedisiplinan belum otomatis terhubung karena
-  module terkait belum dibuat.
+- Kesehatan/Klinik belum dibuat.
+- Pelanggaran/Kedisiplinan sudah tersedia, tetapi Presensi belum otomatis
+  membuat kandidat kasus dari alfa atau terlambat. Integrasi itu direncanakan
+  sebagai pekerjaan terpisah agar tetap ada review manusia.
 - Integrasi perangkat absensi belum dibuat; input awal masih admin/internal.
 
 ### Langkah M: Tahfidz / Hafalan
@@ -421,9 +424,53 @@ Relasi:
   dari PerizinanSantri, tetapi layar Presensi belum otomatis mengisi status
   izin. Operator tetap mencatat status presensi secara manual sampai auto-fill
   diputuskan di increment terpisah.
-- Kesehatan/Klinik, Pelanggaran/Kedisiplinan, tagihan/denda, notifikasi wali,
-  dan lampiran dokumen izin belum otomatis terhubung karena module terkait
-  belum dibuat atau belum diputuskan integrasinya.
+- Kedisiplinan sudah tersedia, tetapi belum otomatis menerima kandidat kasus
+  dari keterlambatan kembali. Integrasi itu direncanakan terpisah agar operator
+  tetap mereview konteks izin sebelum menjadi kasus.
+- Kesehatan/Klinik, tagihan/denda, notifikasi wali, dan lampiran dokumen izin
+  belum otomatis terhubung karena module terkait belum dibuat atau belum
+  diputuskan integrasinya.
+
+### Langkah O: Pelanggaran / Kedisiplinan
+
+Menu: **Pesantrian -> Pelanggaran / Kedisiplinan**
+
+Data demo penting:
+
+- `DIS-DEMO-DRAFT`: catatan awal yang masih bisa diedit.
+- `DIS-DEMO-SUBMITTED`: catatan yang sudah disubmit dan menunggu review.
+- `DIS-DEMO-INREVIEW`: kasus yang sedang diklarifikasi pembina.
+- `DIS-DEMO-ACTION`: kasus yang sudah punya tindakan pembinaan.
+- `DIS-DEMO-RESOLVED`: kasus yang sudah selesai.
+- `DIS-DEMO-VOID`: catatan yang dibatalkan tanpa menghapus histori.
+
+Tujuan:
+
+- Melihat daftar kasus kedisiplinan.
+- Memfilter berdasarkan pencarian, tanggal, status, severity, dan kategori.
+- Membuka detail kasus untuk membaca data santri, kategori, kronologi,
+  lifecycle, catatan pembinaan, dan histori revisi.
+- Membuat draft kasus dari santri aktif.
+- Mengedit draft sebelum submit.
+- Submit draft agar masuk review.
+- Mereview kasus yang sudah disubmit.
+- Menetapkan tindakan pembinaan atau sanksi edukatif.
+- Menyelesaikan kasus setelah tindak lanjut selesai.
+- Void kasus non-final dengan alasan tanpa menghapus histori data.
+
+Relasi:
+
+- Kedisiplinan memakai santri aktif dari Data Induk Santri.
+- Kedisiplinan memakai pembina/petugas aktif dari SDM Pesantren bila tindakan
+  perlu ditangani orang tertentu.
+- Snapshot santri, kategori, dan petugas disimpan agar histori kasus tetap
+  terbaca walaupun data master berubah.
+- Presensi Santri dan Perizinan Santri belum otomatis membuat kasus. Untuk
+  baseline sekarang, operator tetap mencatat kasus secara manual setelah
+  melakukan review manusia.
+- Konseling/Pembinaan, Kesehatan/Klinik, tagihan/denda, notifikasi wali, dan
+  lampiran bukti belum otomatis terhubung karena module atau integrasi tersebut
+  belum dibuat.
 
 ## 4. Module yang Belum Dibuat
 
@@ -433,7 +480,7 @@ di luar baseline running saat ini.
 | Kebutuhan | Status saat ini |
 | --- | --- |
 | Wali Santri master | Belum dibuat; wali masih snapshot di Santri/PPDB. |
-| Pelanggaran / Kedisiplinan | Belum dibuat. |
+| Integrasi otomatis Presensi/Perizinan -> Kedisiplinan | Belum dibuat; kandidat kasus harus direview manusia dulu. |
 | Prestasi | Belum dibuat. |
 | Kesehatan / Klinik | Belum dibuat. |
 | Konseling / Pembinaan | Belum dibuat. |
@@ -464,6 +511,8 @@ di luar baseline running saat ini.
   target, tambah setoran, review, dan void.
 - Buka Perizinan Santri, cek `IZN-DEMO-*`, lalu coba buat draft, edit, submit,
   approve/reject, check-out, return/check-in, dan void.
+- Buka Pelanggaran / Kedisiplinan, cek `DIS-DEMO-*`, lalu coba buat draft,
+  edit, submit, review, tetapkan tindakan, selesaikan, dan void.
 - Buka Audit Trail setelah beberapa aksi dan cek aktivitas tercatat.
 
 Jika ada error Ziggy/route di console browser, catat nama route yang disebutkan.

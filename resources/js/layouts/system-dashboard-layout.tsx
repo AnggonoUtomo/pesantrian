@@ -71,7 +71,7 @@ export default function SystemDashboardLayout({
                 ) : null}
             </header>
 
-            <main className="min-w-0 flex-1">{children}</main>
+            <div className="min-w-0 flex-1">{children}</div>
 
             <footer className="mt-8 border-t border-border/70 pt-4 text-xs text-foreground/60">
                 <p>Created by Ino@2026</p>

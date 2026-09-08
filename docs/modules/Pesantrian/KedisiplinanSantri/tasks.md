@@ -465,16 +465,41 @@ Acceptance:
 
 ## Increment 13: QA Browser dan User Manual
 
-- [ ] Jalankan browser QA desktop.
-- [ ] Jalankan browser QA mobile/responsive.
-- [ ] Update user manual lifecycle.
-- [ ] Update README/tasks hasil final.
+- [x] Jalankan browser QA desktop.
+- [x] Jalankan browser QA mobile/responsive.
+- [x] Update user manual lifecycle.
+- [x] Update README/tasks hasil final.
+
+Hasil:
+
+- Browser QA memakai Playwright pada server lokal
+  `http://127.0.0.1:8000`.
+- Database lokal dimigrasikan dan diisi ulang dengan
+  `KedisiplinanSantriDemoSeeder` agar data `DIS-DEMO-*` tersedia.
+- Daftar Kedisiplinan menampilkan heading, pencarian, tombol `Buat kasus`,
+  pagination/link detail, dan data demo.
+- Detail Kedisiplinan menampilkan lifecycle kasus, histori revisi, dan aksi
+  lifecycle sesuai status/permission.
+- Layout dashboard dirapikan agar hanya ada satu landmark `main`, dan sidebar
+  desktop/mobile diberi landmark navigasi yang valid.
+- Console browser bersih dari error/warning.
+- Axe accessibility menghasilkan `0` violation pada desktop dan mobile
+  setelah build frontend terbaru.
 
 Acceptance:
 
-- Flow list/detail/mutation utama bisa diuji manual.
-- Relasi ke module yang belum otomatis terhubung diberi keterangan.
-- Console browser bersih dari error.
+- [x] Flow list/detail/mutation utama bisa diuji manual.
+- [x] Relasi ke module yang belum otomatis terhubung diberi keterangan.
+- [x] Console browser bersih dari error.
+
+Verifikasi:
+
+- [x] `php artisan migrate --no-interaction --no-ansi`
+- [x] `php artisan db:seed --class="App\Modules\Pesantrian\KedisiplinanSantri\Database\Seeders\KedisiplinanSantriDemoSeeder" --no-interaction --no-ansi`
+- [x] Browser QA desktop Playwright + axe: list/detail OK, console bersih,
+  `0` axe violation.
+- [x] Browser QA mobile Playwright + axe: list/detail OK, console bersih,
+  `0` axe violation.
 
 ## Increment 14: Integrasi Read-only dari Presensi dan Perizinan
 

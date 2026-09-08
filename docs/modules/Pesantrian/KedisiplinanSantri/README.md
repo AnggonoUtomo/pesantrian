@@ -10,7 +10,7 @@ dan [`docs/FOLDER-STRUCTURE.md`](../../../FOLDER-STRUCTURE.md).
 - Nama tampil: `Pelanggaran / Kedisiplinan`
 - Candidate source: `app/Modules/Pesantrian/KedisiplinanSantri/`
 - Candidate frontend: `resources/js/pages/Pesantrian/KedisiplinanSantri/`
-- Status: Active - documentation baseline ready
+- Status: Active - QA browser dan user manual selesai
 
 ## Tujuan
 
@@ -181,6 +181,31 @@ Data demo minimum:
 - variasi severity ringan/sedang/berat.
 
 Seeder memakai santri demo aktif dan petugas demo yang sudah tersedia.
+
+Kode demo utama:
+
+- `DIS-DEMO-DRAFT`
+- `DIS-DEMO-SUBMITTED`
+- `DIS-DEMO-INREVIEW`
+- `DIS-DEMO-ACTION`
+- `DIS-DEMO-RESOLVED`
+- `DIS-DEMO-VOID`
+
+## QA Browser
+
+QA browser dilakukan pada halaman daftar dan detail
+`/pesantrian/student-discipline-cases` untuk desktop dan mobile/responsive.
+
+Hasil Increment 13:
+
+- daftar bisa dibuka;
+- pencarian/filter utama terlihat;
+- tombol `Buat kasus` terlihat untuk user berizin;
+- link detail tersedia;
+- detail menampilkan lifecycle, histori revisi, dan aksi kedisiplinan;
+- console browser bersih dari error/warning;
+- pemeriksaan accessibility axe menghasilkan 0 violation pada desktop dan
+  mobile setelah landmark layout dashboard/sidebar dirapikan.
 
 ## Dokumentasi Terkait
 

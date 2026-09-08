@@ -426,16 +426,40 @@ Acceptance:
 
 ## Increment 13: Integrasi Awal ke PresensiSantri
 
-- [ ] Buat public contract read-only izin approved.
-- [ ] Buat DTO status izin santri per tanggal.
-- [ ] Tambahkan test consumer readiness.
-- [ ] Dokumentasikan batas integrasi.
+- [x] Buat public contract read-only izin approved.
+- [x] Buat DTO status izin santri per tanggal.
+- [x] Tambahkan test consumer readiness.
+- [x] Dokumentasikan batas integrasi.
+
+Hasil:
+
+- Public contract `ApprovedStudentPermitReader` tersedia di Application layer
+  PerizinanSantri untuk membaca izin yang relevan pada tanggal presensi.
+- DTO `StudentPermitAttendanceStatusData` membawa status izin santri per
+  tanggal tanpa mengekspos model Infrastructure PerizinanSantri.
+- Adapter Eloquent PerizinanSantri membaca status `approved`, `checked_out`,
+  dan `returned` yang rentang waktunya memotong tanggal presensi.
+- PresensiSantri memiliki query kecil `FindApprovedPermitForAttendance` sebagai
+  consumer nyata melalui public contract, bukan melalui model Eloquent module
+  lain.
+- Integrasi ini bersifat read-only. UI/flow PresensiSantri belum otomatis
+  mengubah entry presensi menjadi izin; operator tetap bisa memilih status
+  manual.
+
+Verifikasi:
+
+- [x] `php artisan test tests/Feature/PresensiSantriContractReadinessTest.php --no-ansi`
+- [x] `php artisan test tests/Feature/PresensiSantriContractReadinessTest.php tests/Feature/PerizinanSantriContractReadinessTest.php --no-ansi`
+- [x] `php artisan test --filter=PerizinanSantri --no-ansi`
+- [x] `php artisan test --filter=PresensiSantri --no-ansi`
+- [x] `php artisan module:validate --no-ansi`
+- [x] `vendor\bin\pint --dirty --test`
 
 Acceptance:
 
-- PresensiSantri bisa membaca izin approved tanpa coupling ke Infrastructure.
-- Izin tidak otomatis mengubah presensi tanpa keputusan eksplisit.
-- Fallback manual PresensiSantri tetap tersedia.
+- [x] PresensiSantri bisa membaca izin approved tanpa coupling ke Infrastructure.
+- [x] Izin tidak otomatis mengubah presensi tanpa keputusan eksplisit.
+- [x] Fallback manual PresensiSantri tetap tersedia.
 
 ## Keputusan Baseline
 
@@ -444,4 +468,5 @@ Acceptance:
 - [x] Perizinan awal memakai admin/internal, bukan public form.
 - [x] Snapshot wali dipakai dulu; master WaliSantri tidak dipaksa.
 - [x] Approval baseline satu level dulu.
-- [x] Integrasi otomatis Presensi/Kesehatan/Kedisiplinan ditunda.
+- [x] Integrasi read-only awal ke PresensiSantri tersedia; auto-fill Presensi,
+  Kesehatan/Kedisiplinan, tagihan/denda, dan notifikasi tetap ditunda.

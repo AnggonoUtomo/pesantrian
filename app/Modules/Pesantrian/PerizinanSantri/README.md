@@ -38,4 +38,7 @@ Increment aktif:
   untuk seluruh route mutation web.
 - Increment 12 menyiapkan QA browser desktop/mobile untuk flow list/detail dan
   mutation utama, serta update user manual lifecycle.
-- Integrasi awal ke PresensiSantri dikerjakan pada increment berikutnya.
+- Increment 13 menyiapkan public contract read-only
+  `ApprovedStudentPermitReader` untuk integrasi awal ke PresensiSantri. Contract
+  ini hanya membantu membaca izin yang relevan pada tanggal presensi; entry
+  PresensiSantri belum otomatis diubah menjadi izin.

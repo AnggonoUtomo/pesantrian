@@ -17,5 +17,7 @@ Increment aktif:
   identity, readiness contract kandidat presensi, migration, record model,
   factory minimum, API read/list/detail, mutation, lifecycle submit/revisi/void,
   demo seeder, UI Inertia, dan QA browser desktop/mobile.
-- Relasi otomatis ke Perizinan Santri, Kesehatan/Klinik, dan
-  Pelanggaran/Kedisiplinan belum dibuat karena module tersebut belum tersedia.
+- Integrasi read-only awal ke Perizinan Santri sudah tersedia melalui public
+  contract PerizinanSantri, tetapi entry presensi belum otomatis berubah menjadi
+  izin. Relasi otomatis ke Kesehatan/Klinik dan Pelanggaran/Kedisiplinan belum
+  dibuat karena module tersebut belum tersedia.

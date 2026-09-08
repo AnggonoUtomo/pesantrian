@@ -371,5 +371,14 @@ Verifikasi:
 - [x] Nama tampil memakai `Presensi Santri`.
 - [x] Presensi awal memakai admin/internal, bukan public form.
 - [x] Status kehadiran memakai istilah sederhana untuk operator.
-- [x] PerizinanSantri belum menjadi dependency runtime wajib.
+- [x] PerizinanSantri belum menjadi dependency runtime wajib pada baseline
+  penutupan PresensiSantri; setelah PerizinanSantri Increment 13, integrasi
+  read-only tersedia melalui public contract.
 - [x] Integrasi perangkat absensi ditunda.
+
+Catatan setelah PerizinanSantri Increment 13:
+
+- [x] PresensiSantri sekarang memiliki consumer read-only ke public contract
+  PerizinanSantri untuk membaca izin yang relevan pada tanggal presensi.
+- [x] Integrasi ini tidak mengubah entry presensi otomatis; fallback manual
+  tetap berlaku.

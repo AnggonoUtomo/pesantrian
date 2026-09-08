@@ -61,8 +61,9 @@ tersedia di `docs/USER-MANUAL-LIFECYCLE.md`.
 
 - `Pesantrian/Santri`: sumber santri aktif untuk selector dan validasi.
 - `HumanResource/HumanResource`: sumber petugas/approver aktif bila diperlukan.
-- `Pesantrian/PresensiSantri`: planned consumer; nanti bisa membaca status izin
-  yang sudah disetujui untuk membantu pengisian presensi.
+- `Pesantrian/PresensiSantri`: consumer read-only awal; bisa membaca izin yang
+  sudah layak dipakai pada tanggal presensi melalui public contract
+  PerizinanSantri.
 - `Pesantrian/Asrama`: konteks lokasi/kamar santri bila izin terkait asrama.
 - `Pesantrian/WaliSantri`: planned; baseline memakai snapshot wali dari data
   santri/pendaftaran sampai master wali dibuat.
@@ -77,17 +78,18 @@ module lain secara langsung.
 
 ## Contract Readiness
 
-Contract awal yang diperkirakan dibutuhkan:
+Contract awal yang dibutuhkan:
 
 - `ActiveStudentReader` dari `Pesantrian/Santri` untuk selector dan validasi
   santri aktif.
 - `ActiveEmployeeReader` dari `HumanResource/HumanResource` untuk selector
   approver atau petugas yang mencatat izin.
-- Contract read-only dari PerizinanSantri ke PresensiSantri nanti, misalnya
-  daftar izin approved pada tanggal tertentu, hanya dibuat ketika consumer nyata
-  sudah masuk increment integrasi.
+- `ApprovedStudentPermitReader` dari PerizinanSantri untuk PresensiSantri,
+  membaca izin `approved`, `checked_out`, dan `returned` pada tanggal presensi.
+  Hasilnya dikembalikan sebagai `StudentPermitAttendanceStatusData`.
 
-Baseline tidak membuat contract keluar sebagai placeholder.
+Baseline tidak membuat contract keluar sebagai placeholder. Contract keluar
+baru dibuat ketika consumer nyata sudah masuk increment integrasi.
 
 ## Lifecycle Baseline
 
@@ -111,12 +113,15 @@ Status izin minimum:
 - `returned`: santri sudah kembali.
 - `void`: permohonan dibatalkan karena salah input atau tidak jadi dipakai.
 
-## Public Boundary Candidate
+## Public Boundary
 
-Public boundary keluar dari PerizinanSantri ditunda sampai consumer nyata ada.
-Candidate yang mungkin dibutuhkan nanti:
+Public boundary keluar dari PerizinanSantri yang sudah tersedia:
 
-- daftar izin approved per tanggal untuk PresensiSantri;
+- `ApprovedStudentPermitReader`: daftar izin approved per tanggal untuk
+  PresensiSantri.
+
+Candidate tambahan yang mungkin dibutuhkan nanti:
+
 - status izin aktif santri untuk dashboard operator;
 - histori izin santri untuk KedisiplinanSantri bila terlambat kembali;
 - rekap izin untuk Reporting;

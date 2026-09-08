@@ -339,10 +339,12 @@ Relasi:
 - Presensi kelas/rombel memakai snapshot konteks dari Kelas/Rombel.
 - Presensi asrama memakai snapshot konteks dari Asrama.
 - Presensi kegiatan umum bisa dipakai tanpa module jadwal khusus.
-- Module Perizinan, Kesehatan/Klinik, dan Pelanggaran/Kedisiplinan belum
-  otomatis terhubung. Status izin/sakit/alfa saat ini dicatat manual di
-  Presensi Santri, lalu nanti bisa dihubungkan ke module terkait setelah
-  dibuat.
+- Perizinan Santri sudah punya integrasi read-only awal untuk membaca izin yang
+  relevan pada tanggal presensi, tetapi layar Presensi belum otomatis mengubah
+  entry menjadi izin. Status izin/sakit/alfa saat ini tetap dicatat manual di
+  Presensi Santri.
+- Kesehatan/Klinik dan Pelanggaran/Kedisiplinan belum otomatis terhubung karena
+  module terkait belum dibuat.
 - Integrasi perangkat absensi belum dibuat; input awal masih admin/internal.
 
 ### Langkah M: Tahfidz / Hafalan
@@ -415,9 +417,10 @@ Relasi:
 - Snapshot wali diambil dari data wali utama santri supaya histori izin tetap
   terbaca walaupun data wali berubah.
 - Actor approve, check-out, return, dan void adalah user yang login.
-- Presensi Santri belum otomatis membaca izin. Untuk sementara, status izin di
-  Presensi masih dicatat manual; integrasi read-only ke PerizinanSantri masuk
-  increment berikutnya.
+- Presensi Santri sudah bisa membaca izin melalui integrasi read-only internal
+  dari PerizinanSantri, tetapi layar Presensi belum otomatis mengisi status
+  izin. Operator tetap mencatat status presensi secara manual sampai auto-fill
+  diputuskan di increment terpisah.
 - Kesehatan/Klinik, Pelanggaran/Kedisiplinan, tagihan/denda, notifikasi wali,
   dan lampiran dokumen izin belum otomatis terhubung karena module terkait
   belum dibuat atau belum diputuskan integrasinya.

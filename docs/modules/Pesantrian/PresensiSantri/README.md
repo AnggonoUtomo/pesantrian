@@ -55,8 +55,9 @@ Nama tampil memakai Bahasa Indonesia agar mudah dipahami operator:
   sebagai pencatat atau penanggung jawab.
 - `System/AccessControl`: otorisasi backend.
 - `System/AuditLog`: audit pembuatan, submit, dan revisi presensi.
-- `Pesantrian/PerizinanSantri`: planned; nanti menjadi sumber alasan izin yang
-  lebih resmi setelah modul perizinan dibuat.
+- `Pesantrian/PerizinanSantri`: sumber read-only izin santri yang sudah
+  approved/berjalan/selesai pada tanggal presensi. Presensi membaca melalui
+  public contract PerizinanSantri, bukan model Infrastructure.
 
 Dependency lintas module wajib melalui public contract/Application DTO yang
 tersedia. PresensiSantri tidak boleh membaca model Eloquent Infrastructure
@@ -72,6 +73,8 @@ Sumber kandidat santri untuk presensi awal:
   `Academic/KelasRombel::ActiveClassGroupRosterReader`.
 - Penghuni asrama/kamar aktif memakai
   `Pesantrian/Asrama::ActiveDormitoryResidentReader`.
+- Izin santri approved/berjalan/selesai per tanggal memakai
+  `Pesantrian/PerizinanSantri::ApprovedStudentPermitReader`.
 
 Contract ini bersifat read-only dan hanya mengembalikan DTO sederhana yang
 dibutuhkan untuk membuat sesi/entry presensi. Mutation tetap menjadi tanggung
@@ -162,9 +165,11 @@ Presensi Santri sudah memiliki baseline operasional:
   dan void;
 - QA browser desktop dan mobile/responsive untuk flow utama.
 
-Relasi otomatis ke `PerizinanSantri`, `Kesehatan/Klinik`, dan
-`Pelanggaran/Kedisiplinan` belum dibuat karena module terkait belum tersedia.
-Status izin, sakit, dan alfa saat ini dicatat manual pada entry presensi.
+Integrasi read-only awal ke `PerizinanSantri` sudah tersedia untuk membaca
+izin yang relevan pada tanggal presensi. Integrasi ini belum otomatis mengubah
+entry presensi menjadi `izin`; operator tetap bisa mengisi status manual.
+Relasi otomatis ke `Kesehatan/Klinik` dan `Pelanggaran/Kedisiplinan` belum
+dibuat karena module terkait belum tersedia.
 
 ## Dokumentasi Terkait
 

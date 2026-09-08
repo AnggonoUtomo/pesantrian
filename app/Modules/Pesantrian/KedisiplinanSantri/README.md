@@ -25,3 +25,5 @@ Increment aktif:
 - Increment 5 menyediakan API baca kategori, list kasus dengan filter dan
   pagination, detail kasus dengan lifecycle/action/resolution/revision history,
   serta port `StudentDisciplineReadRepository`.
+- Increment 6 menyediakan mutation kategori: create, update, archive, request
+  validation, audit activity, dan route idempotent untuk operasi tulis.

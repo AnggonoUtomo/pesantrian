@@ -10,6 +10,17 @@ Route::middleware(['web', 'auth', 'verified', 'throttle:system-api'])
     ->name('api.v1.pesantrian.student-discipline-categories.')
     ->group(static function (): void {
         Route::get('/', [StudentDisciplineApiController::class, 'categories'])->name('index');
+        Route::post('/', [StudentDisciplineApiController::class, 'storeCategory'])
+            ->middleware('api.idempotency')
+            ->name('store');
+        Route::patch('/{category}', [StudentDisciplineApiController::class, 'updateCategory'])
+            ->whereUlid('category')
+            ->middleware('api.idempotency')
+            ->name('update');
+        Route::patch('/{category}/archive', [StudentDisciplineApiController::class, 'archiveCategory'])
+            ->whereUlid('category')
+            ->middleware('api.idempotency')
+            ->name('archive');
     });
 
 Route::middleware(['web', 'auth', 'verified', 'throttle:system-api'])

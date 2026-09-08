@@ -189,18 +189,43 @@ Acceptance:
 
 ## Increment 6: Category Management
 
-- [ ] Buat action create/update/archive kategori.
-- [ ] Buat request validation kategori.
-- [ ] Buat API mutation kategori.
-- [ ] Tambahkan audit kategori.
-- [ ] Tambahkan test mutation kategori.
+- [x] Buat action create/update/archive kategori.
+- [x] Buat request validation kategori.
+- [x] Buat API mutation kategori.
+- [x] Tambahkan audit kategori.
+- [x] Tambahkan test mutation kategori.
+
+Hasil:
+
+- Mutation kategori tersedia melalui action Application:
+  `CreateStudentDisciplineCategory`, `UpdateStudentDisciplineCategory`, dan
+  `ArchiveStudentDisciplineCategory`.
+- Port `StudentDisciplineCategoryMutationRepository` dan adapter Eloquent
+  kategori dibuat untuk create/update/archive.
+- Audit kategori dikirim melalui event
+  `kedisiplinan-santri.activity.occurred` dan dicatat oleh AuditLog.
+- Endpoint kategori mutation memakai idempotency middleware.
+- Update kategori tidak mengubah status secara langsung; archive memakai
+  endpoint dan permission khusus.
+- Kategori archived tidak muncul pada list kategori aktif, tetapi histori kasus
+  lama tetap mempertahankan snapshot kategori.
+
+Verifikasi:
+
+- [x] `php artisan test tests/Feature/KedisiplinanSantriCategoryMutationApiTest.php --no-ansi`
+- [x] `php artisan test --filter=KedisiplinanSantri --no-ansi`
+- [x] `php artisan module:validate --no-ansi`
+- [x] `vendor\bin\pint --dirty --test`
+- [x] PHP lint file action, contract, DTO, publisher, request, controller, repository, audit listener, dan test mutation.
+- [x] `php artisan route:list --name=student-discipline --no-ansi`
+- [x] `git diff --check`
 
 Acceptance:
 
-- Kategori bisa dibuat dan diubah.
-- Kategori archived tidak muncul untuk kasus baru.
-- Archive kategori tidak menghapus histori kasus lama.
-- Kode kategori tetap unique.
+- [x] Kategori bisa dibuat dan diubah.
+- [x] Kategori archived tidak muncul untuk kasus baru.
+- [x] Archive kategori tidak menghapus histori kasus lama.
+- [x] Kode kategori tetap unique.
 
 ## Increment 7: Create/Update Draft dan Submit Case
 

@@ -5,14 +5,20 @@ declare(strict_types=1);
 namespace App\Modules\Pesantrian\KedisiplinanSantri\Presentation\Controllers;
 
 use App\Http\ApiResponseFactory;
+use App\Modules\Pesantrian\KedisiplinanSantri\Application\Actions\ArchiveStudentDisciplineCategory;
+use App\Modules\Pesantrian\KedisiplinanSantri\Application\Actions\CreateStudentDisciplineCategory;
+use App\Modules\Pesantrian\KedisiplinanSantri\Application\Actions\UpdateStudentDisciplineCategory;
 use App\Modules\Pesantrian\KedisiplinanSantri\Application\DTO\PaginatedStudentDisciplineCaseData;
 use App\Modules\Pesantrian\KedisiplinanSantri\Application\DTO\StudentDisciplineCaseData;
 use App\Modules\Pesantrian\KedisiplinanSantri\Application\DTO\StudentDisciplineCategoryData;
 use App\Modules\Pesantrian\KedisiplinanSantri\Application\Queries\ListStudentDisciplineCases;
 use App\Modules\Pesantrian\KedisiplinanSantri\Application\Queries\ListStudentDisciplineCategories;
 use App\Modules\Pesantrian\KedisiplinanSantri\Application\Queries\ShowStudentDisciplineCase;
+use App\Modules\Pesantrian\KedisiplinanSantri\Presentation\Requests\ArchiveStudentDisciplineCategoryApiRequest;
 use App\Modules\Pesantrian\KedisiplinanSantri\Presentation\Requests\ListStudentDisciplineCasesApiRequest;
 use App\Modules\Pesantrian\KedisiplinanSantri\Presentation\Requests\ListStudentDisciplineCategoriesApiRequest;
+use App\Modules\Pesantrian\KedisiplinanSantri\Presentation\Requests\StoreStudentDisciplineCategoryApiRequest;
+use App\Modules\Pesantrian\KedisiplinanSantri\Presentation\Requests\UpdateStudentDisciplineCategoryApiRequest;
 use App\Modules\Pesantrian\KedisiplinanSantri\Presentation\Resources\StudentDisciplineCaseResource;
 use App\Modules\Pesantrian\KedisiplinanSantri\Presentation\Resources\StudentDisciplineCategoryResource;
 use Illuminate\Http\JsonResponse;
@@ -26,6 +32,9 @@ final readonly class StudentDisciplineApiController implements HasMiddleware
         private ListStudentDisciplineCategories $listCategories,
         private ListStudentDisciplineCases $listCases,
         private ShowStudentDisciplineCase $showCase,
+        private CreateStudentDisciplineCategory $createCategory,
+        private UpdateStudentDisciplineCategory $updateCategory,
+        private ArchiveStudentDisciplineCategory $archiveCategory,
         private ApiResponseFactory $responses,
     ) {}
 
@@ -33,6 +42,8 @@ final readonly class StudentDisciplineApiController implements HasMiddleware
     {
         return [
             new Middleware('can:kedisiplinan_santri.view', only: ['categories', 'index', 'show']),
+            new Middleware('can:kedisiplinan_santri.manage', only: ['storeCategory', 'updateCategory']),
+            new Middleware('can:kedisiplinan_santri.archive', only: ['archiveCategory']),
         ];
     }
 
@@ -47,6 +58,58 @@ final readonly class StudentDisciplineApiController implements HasMiddleware
                 static fn (StudentDisciplineCategoryData $category): array => (new StudentDisciplineCategoryResource($category))->toArray($request),
                 $categories,
             ),
+        );
+    }
+
+    public function storeCategory(StoreStudentDisciplineCategoryApiRequest $request): JsonResponse
+    {
+        $category = $this->createCategory->execute(
+            $request->user(),
+            $request->toData(),
+            $this->responses->correlationId($request),
+        );
+
+        return $this->responses->success(
+            $request,
+            'Kategori kedisiplinan santri berhasil dibuat.',
+            (new StudentDisciplineCategoryResource($category))->toArray($request),
+            status: 201,
+        );
+    }
+
+    public function updateCategory(UpdateStudentDisciplineCategoryApiRequest $request, string $category): JsonResponse
+    {
+        $updated = $this->updateCategory->execute(
+            $request->user(),
+            $category,
+            $request->changes(),
+            $this->responses->correlationId($request),
+        );
+
+        abort_if($updated === null, 404);
+
+        return $this->responses->success(
+            $request,
+            'Kategori kedisiplinan santri berhasil diperbarui.',
+            (new StudentDisciplineCategoryResource($updated))->toArray($request),
+        );
+    }
+
+    public function archiveCategory(ArchiveStudentDisciplineCategoryApiRequest $request, string $category): JsonResponse
+    {
+        $archived = $this->archiveCategory->execute(
+            $request->user(),
+            $category,
+            $request->reason(),
+            $this->responses->correlationId($request),
+        );
+
+        abort_if($archived === null, 404);
+
+        return $this->responses->success(
+            $request,
+            'Kategori kedisiplinan santri berhasil diarsipkan.',
+            (new StudentDisciplineCategoryResource($archived))->toArray($request),
         );
     }
 

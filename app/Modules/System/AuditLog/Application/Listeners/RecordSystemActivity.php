@@ -17,6 +17,7 @@ final readonly class RecordSystemActivity
         'AcademicPeriod' => 'academic-period.activity.occurred',
         'Asrama' => 'asrama.activity.occurred',
         'HumanResource' => 'human-resource.activity.occurred',
+        'KedisiplinanSantri' => 'kedisiplinan-santri.activity.occurred',
         'KelasRombel' => 'kelas-rombel.activity.occurred',
         'Organization' => 'organization.activity.occurred',
         'PenerimaanSantri' => 'penerimaan-santri.activity.occurred',

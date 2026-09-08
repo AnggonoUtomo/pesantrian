@@ -15,6 +15,9 @@ final class AuditLogOperatorLabels
         'authentication.password_reset' => 'Kata sandi diperbarui',
         'authentication.signed_in' => 'Masuk ke akun',
         'authentication.signed_out' => 'Keluar dari akun',
+        'kedisiplinan_santri.category.archived' => 'Kategori kedisiplinan diarsipkan',
+        'kedisiplinan_santri.category.created' => 'Kategori kedisiplinan dibuat',
+        'kedisiplinan_santri.category.updated' => 'Kategori kedisiplinan diperbarui',
         'system_setting.updated' => 'Pengaturan sistem diperbarui',
         'user.created' => 'Pengguna ditambahkan',
         'user.deleted' => 'Pengguna diarsipkan',
@@ -34,6 +37,7 @@ final class AuditLogOperatorLabels
     private const SUBJECTS = [
         'account' => 'Akun',
         'role' => 'Role',
+        'student_discipline_category' => 'Kategori kedisiplinan santri',
         'system_setting' => 'Pengaturan sistem',
         'user' => 'Pengguna',
     ];
@@ -42,6 +46,7 @@ final class AuditLogOperatorLabels
     private const MODULES = [
         'AccessControl' => 'Kontrol akses',
         'Authentication' => 'Autentikasi',
+        'KedisiplinanSantri' => 'Pelanggaran / Kedisiplinan',
         'SystemSetting' => 'Pengaturan sistem',
         'UserManagement' => 'Manajemen pengguna',
     ];

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Pesantrian\KedisiplinanSantri\Infrastructure\Repositories;
 
+use App\Modules\Pesantrian\KedisiplinanSantri\Application\Contracts\StudentDisciplineCategoryMutationRepository;
 use App\Modules\Pesantrian\KedisiplinanSantri\Application\Contracts\StudentDisciplineReadRepository;
 use App\Modules\Pesantrian\KedisiplinanSantri\Application\DTO\PaginatedStudentDisciplineCaseData;
 use App\Modules\Pesantrian\KedisiplinanSantri\Application\DTO\StudentDisciplineCaseData;
@@ -12,19 +13,56 @@ use App\Modules\Pesantrian\KedisiplinanSantri\Application\DTO\StudentDisciplineC
 use App\Modules\Pesantrian\KedisiplinanSantri\Application\DTO\StudentDisciplineCategoryListFilter;
 use App\Modules\Pesantrian\KedisiplinanSantri\Application\DTO\StudentDisciplineRevisionData;
 use App\Modules\Pesantrian\KedisiplinanSantri\Application\DTO\StudentDisciplineSummaryData;
+use App\Modules\Pesantrian\KedisiplinanSantri\Application\DTO\UpsertStudentDisciplineCategoryData;
 use App\Modules\Pesantrian\KedisiplinanSantri\Infrastructure\Models\StudentDisciplineCaseRecord;
 use App\Modules\Pesantrian\KedisiplinanSantri\Infrastructure\Models\StudentDisciplineCategoryRecord;
 use App\Modules\Pesantrian\KedisiplinanSantri\Infrastructure\Models\StudentDisciplineRevisionRecord;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 
-final class EloquentStudentDisciplineReadRepository implements StudentDisciplineReadRepository
+final class EloquentStudentDisciplineReadRepository implements StudentDisciplineCategoryMutationRepository, StudentDisciplineReadRepository
 {
     /** @var list<string> */
     private const FINAL_STATUSES = ['resolved', 'void'];
 
     /** @var list<string> */
     private const NEEDS_ACTION_STATUSES = ['submitted', 'in_review', 'action_assigned'];
+
+    public function createCategory(UpsertStudentDisciplineCategoryData $data, ?string $actorId): StudentDisciplineCategoryData
+    {
+        $record = StudentDisciplineCategoryRecord::query()->create([
+            ...$data->toArray(),
+            'status' => 'active',
+        ]);
+
+        return $this->mapCategory($record);
+    }
+
+    public function updateCategory(string $id, array $changes): ?StudentDisciplineCategoryData
+    {
+        $record = StudentDisciplineCategoryRecord::query()->find($id);
+
+        if (! $record instanceof StudentDisciplineCategoryRecord) {
+            return null;
+        }
+
+        $record->forceFill($changes)->save();
+
+        return $this->mapCategory($record->refresh());
+    }
+
+    public function archiveCategory(string $id): ?StudentDisciplineCategoryData
+    {
+        $record = StudentDisciplineCategoryRecord::query()->find($id);
+
+        if (! $record instanceof StudentDisciplineCategoryRecord) {
+            return null;
+        }
+
+        $record->forceFill(['status' => 'archived'])->save();
+
+        return $this->mapCategory($record->refresh());
+    }
 
     /** @return list<StudentDisciplineCategoryData> */
     public function categories(StudentDisciplineCategoryListFilter $filter): array

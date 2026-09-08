@@ -1,0 +1,13 @@
+{
+    "name": "KedisiplinanSantri",
+    "namespace": "App\\Modules\\Pesantrian\\KedisiplinanSantri",
+    "version": "1.0.0",
+    "schema_version": 1,
+    "status": "enabled",
+    "domain": "Pesantrian",
+    "path": "app/Modules/Pesantrian/KedisiplinanSantri",
+    "provider": "App\\Modules\\Pesantrian\\KedisiplinanSantri\\ServiceProvider",
+    "dependencies": [],
+    "permission_source": "permissions.php",
+    "config_source": "module.php"
+}

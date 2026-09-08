@@ -38,19 +38,41 @@ Acceptance:
 
 ## Increment 2: Module Skeleton dan Permission
 
-- [ ] Buat module `Pesantrian/KedisiplinanSantri`.
-- [ ] Buat permission identity.
-- [ ] Tambahkan permission ke seeder/wiring role.
-- [ ] Tambahkan README source module.
-- [ ] Jalankan module validation.
+- [x] Buat module `Pesantrian/KedisiplinanSantri`.
+- [x] Buat permission identity.
+- [x] Tambahkan permission ke seeder/wiring role.
+- [x] Tambahkan README source module.
+- [x] Jalankan module validation.
+
+Hasil:
+
+- Module skeleton dibuat dengan generator `module:make` untuk namespace
+  `Pesantrian` dan module `KedisiplinanSantri`.
+- Permission identity tersedia: view/manage/review/resolve/archive.
+- Role demo `OperatorSantri` mendapat permission operasional
+  view/manage/review/resolve.
+- Role demo `OperatorAkademik`, `Auditor`, dan `Viewer` mendapat permission
+  view-only untuk kebutuhan baca.
+- Permission `kedisiplinan_santri.archive` tetap sensitif dan tidak diberikan
+  ke role operator biasa pada baseline.
+
+Verifikasi:
+
+- [x] `php artisan module:make Pesantrian KedisiplinanSantri --dry-run --json --no-ansi`
+- [x] `php artisan module:make Pesantrian KedisiplinanSantri --force --yes --no-ansi`
+- [x] `php artisan test tests/Unit/KedisiplinanSantriPermissionIdentityTest.php --no-ansi`
+- [x] `php artisan test tests/Unit/KedisiplinanSantriPermissionIdentityTest.php tests/Feature/AccessControlSeederTest.php --no-ansi`
+- [x] `php artisan test tests/Feature/BusinessDemoSeederTest.php --no-ansi`
+- [x] `php artisan module:validate --no-ansi`
+- [x] `vendor\bin\pint --dirty --test`
 
 Acceptance:
 
-- Module discover/validate normal.
-- Permission `kedisiplinan_santri.view`, `kedisiplinan_santri.manage`,
+- [x] Module discover/validate normal.
+- [x] Permission `kedisiplinan_santri.view`, `kedisiplinan_santri.manage`,
   `kedisiplinan_santri.review`, `kedisiplinan_santri.resolve`, dan
   `kedisiplinan_santri.archive` tersedia.
-- Belum ada table bisnis.
+- [x] Belum ada table bisnis.
 
 ## Increment 3: Contract Readiness
 

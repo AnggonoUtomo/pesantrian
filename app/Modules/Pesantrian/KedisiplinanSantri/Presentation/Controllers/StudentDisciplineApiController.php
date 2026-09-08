@@ -6,18 +6,24 @@ namespace App\Modules\Pesantrian\KedisiplinanSantri\Presentation\Controllers;
 
 use App\Http\ApiResponseFactory;
 use App\Modules\Pesantrian\KedisiplinanSantri\Application\Actions\ArchiveStudentDisciplineCategory;
+use App\Modules\Pesantrian\KedisiplinanSantri\Application\Actions\CreateStudentDisciplineCaseDraft;
 use App\Modules\Pesantrian\KedisiplinanSantri\Application\Actions\CreateStudentDisciplineCategory;
+use App\Modules\Pesantrian\KedisiplinanSantri\Application\Actions\SubmitStudentDisciplineCaseDraft;
+use App\Modules\Pesantrian\KedisiplinanSantri\Application\Actions\UpdateStudentDisciplineCaseDraft;
 use App\Modules\Pesantrian\KedisiplinanSantri\Application\Actions\UpdateStudentDisciplineCategory;
 use App\Modules\Pesantrian\KedisiplinanSantri\Application\DTO\PaginatedStudentDisciplineCaseData;
 use App\Modules\Pesantrian\KedisiplinanSantri\Application\DTO\StudentDisciplineCaseData;
 use App\Modules\Pesantrian\KedisiplinanSantri\Application\DTO\StudentDisciplineCategoryData;
+use App\Modules\Pesantrian\KedisiplinanSantri\Application\Exceptions\StudentDisciplineMutationException;
 use App\Modules\Pesantrian\KedisiplinanSantri\Application\Queries\ListStudentDisciplineCases;
 use App\Modules\Pesantrian\KedisiplinanSantri\Application\Queries\ListStudentDisciplineCategories;
 use App\Modules\Pesantrian\KedisiplinanSantri\Application\Queries\ShowStudentDisciplineCase;
 use App\Modules\Pesantrian\KedisiplinanSantri\Presentation\Requests\ArchiveStudentDisciplineCategoryApiRequest;
 use App\Modules\Pesantrian\KedisiplinanSantri\Presentation\Requests\ListStudentDisciplineCasesApiRequest;
 use App\Modules\Pesantrian\KedisiplinanSantri\Presentation\Requests\ListStudentDisciplineCategoriesApiRequest;
+use App\Modules\Pesantrian\KedisiplinanSantri\Presentation\Requests\StoreStudentDisciplineCaseApiRequest;
 use App\Modules\Pesantrian\KedisiplinanSantri\Presentation\Requests\StoreStudentDisciplineCategoryApiRequest;
+use App\Modules\Pesantrian\KedisiplinanSantri\Presentation\Requests\UpdateStudentDisciplineCaseApiRequest;
 use App\Modules\Pesantrian\KedisiplinanSantri\Presentation\Requests\UpdateStudentDisciplineCategoryApiRequest;
 use App\Modules\Pesantrian\KedisiplinanSantri\Presentation\Resources\StudentDisciplineCaseResource;
 use App\Modules\Pesantrian\KedisiplinanSantri\Presentation\Resources\StudentDisciplineCategoryResource;
@@ -35,6 +41,9 @@ final readonly class StudentDisciplineApiController implements HasMiddleware
         private CreateStudentDisciplineCategory $createCategory,
         private UpdateStudentDisciplineCategory $updateCategory,
         private ArchiveStudentDisciplineCategory $archiveCategory,
+        private CreateStudentDisciplineCaseDraft $createCaseDraft,
+        private UpdateStudentDisciplineCaseDraft $updateCaseDraft,
+        private SubmitStudentDisciplineCaseDraft $submitCaseDraft,
         private ApiResponseFactory $responses,
     ) {}
 
@@ -42,7 +51,7 @@ final readonly class StudentDisciplineApiController implements HasMiddleware
     {
         return [
             new Middleware('can:kedisiplinan_santri.view', only: ['categories', 'index', 'show']),
-            new Middleware('can:kedisiplinan_santri.manage', only: ['storeCategory', 'updateCategory']),
+            new Middleware('can:kedisiplinan_santri.manage', only: ['storeCategory', 'updateCategory', 'store', 'update', 'submit']),
             new Middleware('can:kedisiplinan_santri.archive', only: ['archiveCategory']),
         ];
     }
@@ -128,6 +137,70 @@ final readonly class StudentDisciplineApiController implements HasMiddleware
         );
     }
 
+    public function store(StoreStudentDisciplineCaseApiRequest $request): JsonResponse
+    {
+        try {
+            $data = $this->createCaseDraft->execute(
+                $request->user(),
+                $request->toData(),
+                $this->responses->correlationId($request),
+            );
+        } catch (StudentDisciplineMutationException $exception) {
+            return $this->invalidMutation($request, $exception);
+        }
+
+        return $this->responses->success(
+            $request,
+            'Draft kasus kedisiplinan santri berhasil dibuat.',
+            (new StudentDisciplineCaseResource($data))->toArray($request),
+            status: 201,
+        );
+    }
+
+    public function update(UpdateStudentDisciplineCaseApiRequest $request, string $case): JsonResponse
+    {
+        try {
+            $data = $this->updateCaseDraft->execute(
+                $request->user(),
+                $case,
+                $request->toData(),
+                $request->revisionReason(),
+                $this->responses->correlationId($request),
+            );
+        } catch (StudentDisciplineMutationException $exception) {
+            return $this->invalidMutation($request, $exception);
+        }
+
+        abort_if($data === null, 404);
+
+        return $this->responses->success(
+            $request,
+            'Draft kasus kedisiplinan santri berhasil diperbarui.',
+            (new StudentDisciplineCaseResource($data))->toArray($request),
+        );
+    }
+
+    public function submit(Request $request, string $case): JsonResponse
+    {
+        try {
+            $data = $this->submitCaseDraft->execute(
+                $request->user(),
+                $case,
+                $this->responses->correlationId($request),
+            );
+        } catch (StudentDisciplineMutationException $exception) {
+            return $this->invalidMutation($request, $exception);
+        }
+
+        abort_if($data === null, 404);
+
+        return $this->responses->success(
+            $request,
+            'Draft kasus kedisiplinan santri berhasil disubmit.',
+            (new StudentDisciplineCaseResource($data))->toArray($request),
+        );
+    }
+
     public function show(Request $request, string $case): JsonResponse
     {
         $data = $this->showCase->execute($case);
@@ -150,5 +223,16 @@ final readonly class StudentDisciplineApiController implements HasMiddleware
             'total' => $result->total,
             'last_page' => $result->lastPage,
         ];
+    }
+
+    private function invalidMutation(Request $request, StudentDisciplineMutationException $exception): JsonResponse
+    {
+        return $this->responses->error(
+            $request,
+            $exception->getMessage(),
+            'KEDISIPLINAN_SANTRI_MUTATION_INVALID',
+            422,
+            $exception->errors(),
+        );
     }
 }

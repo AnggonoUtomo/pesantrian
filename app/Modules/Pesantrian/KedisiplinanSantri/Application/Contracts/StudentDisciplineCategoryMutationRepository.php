@@ -9,6 +9,8 @@ use App\Modules\Pesantrian\KedisiplinanSantri\Application\DTO\UpsertStudentDisci
 
 interface StudentDisciplineCategoryMutationRepository
 {
+    public function findActiveCategory(string $id): ?StudentDisciplineCategoryData;
+
     public function createCategory(UpsertStudentDisciplineCategoryData $data, ?string $actorId): StudentDisciplineCategoryData;
 
     /** @param array<string, int|string|null> $changes */

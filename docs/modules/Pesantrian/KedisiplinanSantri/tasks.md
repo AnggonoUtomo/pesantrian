@@ -229,19 +229,45 @@ Acceptance:
 
 ## Increment 7: Create/Update Draft dan Submit Case
 
-- [ ] Buat action create draft.
-- [ ] Buat action update draft.
-- [ ] Buat action submit.
-- [ ] Tambahkan request validation.
-- [ ] Tambahkan revision/audit create/update/submit.
-- [ ] Tambahkan test mutation case awal.
+- [x] Buat action create draft.
+- [x] Buat action update draft.
+- [x] Buat action submit.
+- [x] Tambahkan request validation.
+- [x] Tambahkan revision/audit create/update/submit.
+- [x] Tambahkan test mutation case awal.
+
+Hasil:
+
+- Draft kasus dapat dibuat dari santri aktif dan kategori aktif.
+- Snapshot santri memakai contract `ActiveStudentReader`; snapshot pembina
+  opsional memakai contract `ActiveEmployeeReader`.
+- Nomor kasus dibuat otomatis dengan format awal `DIS-000001`.
+- Update draft hanya boleh dilakukan ketika kasus masih berstatus `draft`.
+- Submit hanya mengubah kasus dari `draft` menjadi `submitted`.
+- Revision dibuat untuk create, update, dan submit.
+- Audit dibuat untuk `kedisiplinan_santri.case.created`,
+  `kedisiplinan_santri.case.updated`, dan
+  `kedisiplinan_santri.case.submitted`.
+- Submit tidak menyimpan kolom `submitted_by` karena table foundation belum
+  memiliki field tersebut; actor submit tetap tercatat di audit dan revision
+  `changed_by`.
+
+Verifikasi:
+
+- [x] `php artisan test tests/Feature/KedisiplinanSantriCaseDraftMutationApiTest.php --no-ansi`
+- [x] `php artisan test --filter=KedisiplinanSantri --no-ansi`
+- [x] `php artisan module:validate --no-ansi`
+- [x] `php artisan route:list --name=student-discipline --no-ansi`
+- [x] `vendor\bin\pint --dirty --test`
+- [x] PHP lint file action, contract, DTO, exception, request, controller, repository, dan test mutation.
+- [x] `git diff --check`
 
 Acceptance:
 
-- Hanya santri aktif yang bisa dibuatkan kasus.
-- Kategori aktif wajib dipilih.
-- Severity valid dan poin tidak negatif.
-- Submit hanya dari draft.
+- [x] Hanya santri aktif yang bisa dibuatkan kasus.
+- [x] Kategori aktif wajib dipilih.
+- [x] Severity valid dan poin tidak negatif.
+- [x] Submit hanya dari draft.
 
 ## Increment 8: Review dan Assign Action
 

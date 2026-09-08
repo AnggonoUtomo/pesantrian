@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Modules\Pesantrian\KedisiplinanSantri\Infrastructure\Repositories;
 
+use App\Modules\Pesantrian\KedisiplinanSantri\Application\Contracts\StudentDisciplineCaseMutationRepository;
 use App\Modules\Pesantrian\KedisiplinanSantri\Application\Contracts\StudentDisciplineCategoryMutationRepository;
 use App\Modules\Pesantrian\KedisiplinanSantri\Application\Contracts\StudentDisciplineReadRepository;
 use App\Modules\Pesantrian\KedisiplinanSantri\Application\DTO\PaginatedStudentDisciplineCaseData;
 use App\Modules\Pesantrian\KedisiplinanSantri\Application\DTO\StudentDisciplineCaseData;
 use App\Modules\Pesantrian\KedisiplinanSantri\Application\DTO\StudentDisciplineCaseListFilter;
+use App\Modules\Pesantrian\KedisiplinanSantri\Application\DTO\StudentDisciplineCaseMutationData;
 use App\Modules\Pesantrian\KedisiplinanSantri\Application\DTO\StudentDisciplineCategoryData;
 use App\Modules\Pesantrian\KedisiplinanSantri\Application\DTO\StudentDisciplineCategoryListFilter;
 use App\Modules\Pesantrian\KedisiplinanSantri\Application\DTO\StudentDisciplineRevisionData;
@@ -19,14 +21,106 @@ use App\Modules\Pesantrian\KedisiplinanSantri\Infrastructure\Models\StudentDisci
 use App\Modules\Pesantrian\KedisiplinanSantri\Infrastructure\Models\StudentDisciplineRevisionRecord;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
-final class EloquentStudentDisciplineReadRepository implements StudentDisciplineCategoryMutationRepository, StudentDisciplineReadRepository
+final class EloquentStudentDisciplineReadRepository implements StudentDisciplineCaseMutationRepository, StudentDisciplineCategoryMutationRepository, StudentDisciplineReadRepository
 {
     /** @var list<string> */
     private const FINAL_STATUSES = ['resolved', 'void'];
 
     /** @var list<string> */
     private const NEEDS_ACTION_STATUSES = ['submitted', 'in_review', 'action_assigned'];
+
+    public function createCaseDraft(StudentDisciplineCaseMutationData $data, ?string $actorId): StudentDisciplineCaseData
+    {
+        $record = StudentDisciplineCaseRecord::query()->create([
+            ...$data->toDatabasePayload(includeNull: true),
+            'case_no' => $this->nextCaseNo(),
+            'unit_name' => $this->unitName($data->unitId),
+            'reported_by' => $actorId,
+            'status' => 'draft',
+            'submitted_at' => null,
+            'reviewed_at' => null,
+            'reviewed_by' => null,
+            'review_note' => null,
+            'action_plan' => null,
+            'action_assigned_at' => null,
+            'resolved_at' => null,
+            'resolved_by' => null,
+            'resolution_note' => null,
+            'voided_at' => null,
+            'voided_by' => null,
+            'void_reason' => null,
+            'created_by' => $actorId,
+        ]);
+        $this->createRevision($record, 'Draft kasus kedisiplinan dibuat.', $actorId, [
+            'action' => 'create',
+            'changed_fields' => ['student_id', 'category_id', 'severity', 'points', 'occurred_at', 'location', 'description', 'assigned_employee_id', 'status'],
+            'to_status' => 'draft',
+        ]);
+
+        return $this->mapCase($record->refresh()->load(['category', 'revisions'])->loadCount('revisions'));
+    }
+
+    public function updateCaseDraft(string $id, StudentDisciplineCaseMutationData $data, string $reason, ?string $actorId): ?StudentDisciplineCaseData
+    {
+        $record = StudentDisciplineCaseRecord::query()->find($id);
+
+        if (! $record instanceof StudentDisciplineCaseRecord) {
+            return null;
+        }
+
+        $payload = $data->toDatabasePayload();
+
+        if (array_key_exists('unit_id', $payload)) {
+            $payload['unit_name'] = $this->unitName($payload['unit_id'] === null ? null : (string) $payload['unit_id']);
+        }
+
+        $record->forceFill($payload)->save();
+        $this->createRevision($record, $reason, $actorId, [
+            'action' => 'update',
+            'changed_fields' => array_keys($payload),
+            'status' => $record->status,
+        ]);
+
+        return $this->mapCase($record->refresh()->load(['category', 'revisions'])->loadCount('revisions'));
+    }
+
+    public function submitCaseDraft(string $id, string $actorId): ?StudentDisciplineCaseData
+    {
+        $record = StudentDisciplineCaseRecord::query()->find($id);
+
+        if (! $record instanceof StudentDisciplineCaseRecord) {
+            return null;
+        }
+
+        $record->forceFill([
+            'status' => 'submitted',
+            'submitted_at' => now(),
+        ])->save();
+        $this->createRevision($record, 'Draft kasus kedisiplinan disubmit untuk review.', $actorId, [
+            'action' => 'submit',
+            'changed_fields' => ['status', 'submitted_at'],
+            'from_status' => 'draft',
+            'to_status' => 'submitted',
+        ]);
+
+        return $this->mapCase($record->refresh()->load(['category', 'revisions'])->loadCount('revisions'));
+    }
+
+    public function findActiveCategory(string $id): ?StudentDisciplineCategoryData
+    {
+        $record = StudentDisciplineCategoryRecord::query()
+            ->whereKey($id)
+            ->where('status', 'active')
+            ->first();
+
+        if (! $record instanceof StudentDisciplineCategoryRecord) {
+            return null;
+        }
+
+        return $this->mapCategory($record);
+    }
 
     public function createCategory(UpsertStudentDisciplineCategoryData $data, ?string $actorId): StudentDisciplineCategoryData
     {
@@ -245,5 +339,51 @@ final class EloquentStudentDisciplineReadRepository implements StudentDiscipline
             'created_at' => 'student_discipline_cases.created_at',
             default => 'student_discipline_cases.occurred_at',
         };
+    }
+
+    private function nextCaseNo(): string
+    {
+        $latestCaseNo = StudentDisciplineCaseRecord::query()
+            ->where('case_no', 'like', 'DIS-%')
+            ->orderByDesc('case_no')
+            ->value('case_no');
+
+        $nextNumber = 1;
+
+        if (is_string($latestCaseNo) && preg_match('/^DIS-(\d+)$/', $latestCaseNo, $matches) === 1) {
+            $nextNumber = ((int) $matches[1]) + 1;
+        }
+
+        do {
+            $caseNo = 'DIS-'.str_pad((string) $nextNumber, 6, '0', STR_PAD_LEFT);
+            $nextNumber++;
+        } while (StudentDisciplineCaseRecord::query()->where('case_no', $caseNo)->exists());
+
+        return $caseNo;
+    }
+
+    private function unitName(?string $unitId): ?string
+    {
+        if ($unitId === null) {
+            return null;
+        }
+
+        $name = DB::table('organization_units')
+            ->where('id', $unitId)
+            ->value('name');
+
+        return is_string($name) ? $name : null;
+    }
+
+    /** @param array<string, mixed> $summary */
+    private function createRevision(StudentDisciplineCaseRecord $record, string $reason, ?string $actorId, array $summary): void
+    {
+        StudentDisciplineRevisionRecord::query()->create([
+            'case_id' => $record->getKey(),
+            'reason' => $reason,
+            'changed_by' => $actorId,
+            'changed_at' => now(),
+            'summary' => $summary,
+        ]);
     }
 }

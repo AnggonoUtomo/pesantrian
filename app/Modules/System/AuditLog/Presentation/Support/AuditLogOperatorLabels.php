@@ -18,6 +18,9 @@ final class AuditLogOperatorLabels
         'kedisiplinan_santri.category.archived' => 'Kategori kedisiplinan diarsipkan',
         'kedisiplinan_santri.category.created' => 'Kategori kedisiplinan dibuat',
         'kedisiplinan_santri.category.updated' => 'Kategori kedisiplinan diperbarui',
+        'kedisiplinan_santri.case.created' => 'Kasus kedisiplinan dibuat',
+        'kedisiplinan_santri.case.submitted' => 'Kasus kedisiplinan disubmit',
+        'kedisiplinan_santri.case.updated' => 'Kasus kedisiplinan diperbarui',
         'system_setting.updated' => 'Pengaturan sistem diperbarui',
         'user.created' => 'Pengguna ditambahkan',
         'user.deleted' => 'Pengguna diarsipkan',
@@ -37,6 +40,7 @@ final class AuditLogOperatorLabels
     private const SUBJECTS = [
         'account' => 'Akun',
         'role' => 'Role',
+        'student_discipline_case' => 'Kasus kedisiplinan santri',
         'student_discipline_category' => 'Kategori kedisiplinan santri',
         'system_setting' => 'Pengaturan sistem',
         'user' => 'Pengguna',

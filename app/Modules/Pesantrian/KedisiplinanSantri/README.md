@@ -27,3 +27,6 @@ Increment aktif:
   serta port `StudentDisciplineReadRepository`.
 - Increment 6 menyediakan mutation kategori: create, update, archive, request
   validation, audit activity, dan route idempotent untuk operasi tulis.
+- Increment 7 menyediakan mutation kasus awal: create draft, update draft,
+  submit draft, snapshot santri/kategori/pembina, revision history, audit
+  activity, dan nomor kasus otomatis `DIS-xxxxxx`.

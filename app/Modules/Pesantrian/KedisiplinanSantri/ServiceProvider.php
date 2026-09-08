@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Pesantrian\KedisiplinanSantri;
 
 use App\Modules\Pesantrian\KedisiplinanSantri\Application\Contracts\StudentDisciplineActivityPublisher;
+use App\Modules\Pesantrian\KedisiplinanSantri\Application\Contracts\StudentDisciplineCaseMutationRepository;
 use App\Modules\Pesantrian\KedisiplinanSantri\Application\Contracts\StudentDisciplineCategoryMutationRepository;
 use App\Modules\Pesantrian\KedisiplinanSantri\Application\Contracts\StudentDisciplineReadRepository;
 use App\Modules\Pesantrian\KedisiplinanSantri\Infrastructure\Events\LaravelStudentDisciplineActivityPublisher;
@@ -16,6 +17,7 @@ final class ServiceProvider extends FrameworkServiceProvider
     public function register(): void
     {
         $this->app->bind(StudentDisciplineActivityPublisher::class, LaravelStudentDisciplineActivityPublisher::class);
+        $this->app->bind(StudentDisciplineCaseMutationRepository::class, EloquentStudentDisciplineReadRepository::class);
         $this->app->bind(StudentDisciplineCategoryMutationRepository::class, EloquentStudentDisciplineReadRepository::class);
         $this->app->bind(StudentDisciplineReadRepository::class, EloquentStudentDisciplineReadRepository::class);
     }

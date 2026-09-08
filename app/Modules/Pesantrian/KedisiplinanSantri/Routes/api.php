@@ -28,6 +28,17 @@ Route::middleware(['web', 'auth', 'verified', 'throttle:system-api'])
     ->name('api.v1.pesantrian.student-discipline-cases.')
     ->group(static function (): void {
         Route::get('/', [StudentDisciplineApiController::class, 'index'])->name('index');
+        Route::post('/', [StudentDisciplineApiController::class, 'store'])
+            ->middleware('api.idempotency')
+            ->name('store');
+        Route::patch('/{case}', [StudentDisciplineApiController::class, 'update'])
+            ->whereUlid('case')
+            ->middleware('api.idempotency')
+            ->name('update');
+        Route::patch('/{case}/submit', [StudentDisciplineApiController::class, 'submit'])
+            ->whereUlid('case')
+            ->middleware('api.idempotency')
+            ->name('submit');
         Route::get('/{case}', [StudentDisciplineApiController::class, 'show'])
             ->whereUlid('case')
             ->name('show');

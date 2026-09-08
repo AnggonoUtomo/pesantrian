@@ -22,3 +22,6 @@ Increment aktif:
 - Increment 4 menyediakan table foundation `student_discipline_categories`,
   `student_discipline_cases`, `student_discipline_revisions`, record model,
   factory minimum, dan migration loading dari ServiceProvider.
+- Increment 5 menyediakan API baca kategori, list kasus dengan filter dan
+  pagination, detail kasus dengan lifecycle/action/resolution/revision history,
+  serta port `StudentDisciplineReadRepository`.

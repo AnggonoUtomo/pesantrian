@@ -154,20 +154,38 @@ Acceptance:
 
 ## Increment 5: Backend Read/List
 
-- [ ] Buat DTO/read model kategori dan kasus.
-- [ ] Buat repository/query list kategori.
-- [ ] Buat repository/query list kasus.
-- [ ] Buat query detail kasus.
-- [ ] Buat API read routes/resources.
-- [ ] Tambahkan test API read/list/detail.
+- [x] Buat DTO/read model kategori dan kasus.
+- [x] Buat repository/query list kategori.
+- [x] Buat repository/query list kasus.
+- [x] Buat query detail kasus.
+- [x] Buat API read routes/resources.
+- [x] Tambahkan test API read/list/detail.
+
+Hasil:
+
+- Read model kategori, kasus, summary, dan revision dibuat di layer
+  Application/DTO.
+- Contract `StudentDisciplineReadRepository` menjadi port baca untuk kategori,
+  list kasus, dan detail kasus.
+- Adapter `EloquentStudentDisciplineReadRepository` membaca data foundation
+  tanpa mengambil model privat module lain.
+- Endpoint API read tersedia untuk kategori, list kasus, dan detail kasus.
+- Filter list kasus mendukung search, tanggal, status, severity, kategori,
+  santri, pembina, sort, dan pagination.
+- Detail kasus mengembalikan snapshot santri/unit, kategori, lifecycle review,
+  action plan, resolution/void, summary, dan revision history.
+
+Verifikasi:
+
+- [x] `php artisan test tests/Feature/KedisiplinanSantriApiTest.php --no-ansi`
 
 Acceptance:
 
-- List kasus mendukung search, filter tanggal, status, severity, kategori,
+- [x] List kasus mendukung search, filter tanggal, status, severity, kategori,
   santri, pembina, dan pagination.
-- Detail kasus menampilkan lifecycle, snapshot santri, kategori, action,
+- [x] Detail kasus menampilkan lifecycle, snapshot santri, kategori, action,
   resolution, dan revision history.
-- Actor tanpa `kedisiplinan_santri.view` ditolak oleh middleware backend.
+- [x] Actor tanpa `kedisiplinan_santri.view` ditolak oleh middleware backend.
 
 ## Increment 6: Category Management
 

@@ -131,6 +131,81 @@ final class EloquentStudentAchievementReadRepository implements StudentAchieveme
         return $this->mapAchievement($record->refresh()->load(['category', 'revisions'])->loadCount('revisions'));
     }
 
+    public function submitDraft(string $id, string $actorId): ?StudentAchievementData
+    {
+        $record = StudentAchievementRecord::query()->find($id);
+
+        if (! $record instanceof StudentAchievementRecord) {
+            return null;
+        }
+
+        $fromStatus = (string) $record->status;
+        $record->forceFill([
+            'status' => 'submitted',
+            'submitted_at' => now(),
+            'submitted_by' => $actorId,
+            'verified_at' => null,
+            'verified_by' => null,
+        ])->save();
+
+        $this->createRevision($record, 'Draft prestasi disubmit untuk verifikasi.', $actorId, $fromStatus, 'submitted', [
+            'action' => 'submit',
+            'changed_fields' => ['status', 'submitted_at', 'submitted_by'],
+            'from_status' => $fromStatus,
+            'to_status' => 'submitted',
+        ]);
+
+        return $this->mapAchievement($record->refresh()->load(['category', 'revisions'])->loadCount('revisions'));
+    }
+
+    public function verify(string $id, ?string $verificationNote, string $actorId): ?StudentAchievementData
+    {
+        $record = StudentAchievementRecord::query()->find($id);
+
+        if (! $record instanceof StudentAchievementRecord) {
+            return null;
+        }
+
+        $record->forceFill([
+            'status' => 'verified',
+            'verified_at' => now(),
+            'verified_by' => $actorId,
+            'verification_note' => $verificationNote,
+        ])->save();
+
+        $this->createRevision($record, $verificationNote ?? 'Prestasi diverifikasi.', $actorId, 'submitted', 'verified', [
+            'action' => 'verify',
+            'changed_fields' => ['status', 'verified_at', 'verified_by', 'verification_note'],
+            'from_status' => 'submitted',
+            'to_status' => 'verified',
+        ]);
+
+        return $this->mapAchievement($record->refresh()->load(['category', 'revisions'])->loadCount('revisions'));
+    }
+
+    public function requestRevision(string $id, string $verificationNote, string $actorId): ?StudentAchievementData
+    {
+        $record = StudentAchievementRecord::query()->find($id);
+
+        if (! $record instanceof StudentAchievementRecord) {
+            return null;
+        }
+
+        $record->forceFill([
+            'status' => 'needs_revision',
+            'verification_note' => $verificationNote,
+        ])->save();
+
+        $this->createRevision($record, $verificationNote, $actorId, 'submitted', 'needs_revision', [
+            'action' => 'request_revision',
+            'changed_fields' => ['status', 'verification_note'],
+            'from_status' => 'submitted',
+            'to_status' => 'needs_revision',
+        ]);
+
+        return $this->mapAchievement($record->refresh()->load(['category', 'revisions'])->loadCount('revisions'));
+    }
+
     /** @return list<StudentAchievementCategoryData> */
     public function categories(StudentAchievementCategoryListFilter $filter): array
     {

@@ -12,4 +12,10 @@ interface StudentAchievementMutationRepository
     public function createDraft(StudentAchievementMutationData $data, ?string $actorId): StudentAchievementData;
 
     public function updateDraft(string $id, StudentAchievementMutationData $data, string $reason, ?string $actorId): ?StudentAchievementData;
+
+    public function submitDraft(string $id, string $actorId): ?StudentAchievementData;
+
+    public function verify(string $id, ?string $verificationNote, string $actorId): ?StudentAchievementData;
+
+    public function requestRevision(string $id, string $verificationNote, string $actorId): ?StudentAchievementData;
 }

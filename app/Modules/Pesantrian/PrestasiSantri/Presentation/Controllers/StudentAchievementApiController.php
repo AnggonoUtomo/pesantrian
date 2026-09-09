@@ -8,8 +8,11 @@ use App\Http\ApiResponseFactory;
 use App\Modules\Pesantrian\PrestasiSantri\Application\Actions\ArchiveStudentAchievementCategory;
 use App\Modules\Pesantrian\PrestasiSantri\Application\Actions\CreateStudentAchievementCategory;
 use App\Modules\Pesantrian\PrestasiSantri\Application\Actions\CreateStudentAchievementDraft;
+use App\Modules\Pesantrian\PrestasiSantri\Application\Actions\RequestStudentAchievementRevision;
+use App\Modules\Pesantrian\PrestasiSantri\Application\Actions\SubmitStudentAchievementDraft;
 use App\Modules\Pesantrian\PrestasiSantri\Application\Actions\UpdateStudentAchievementCategory;
 use App\Modules\Pesantrian\PrestasiSantri\Application\Actions\UpdateStudentAchievementDraft;
+use App\Modules\Pesantrian\PrestasiSantri\Application\Actions\VerifyStudentAchievement;
 use App\Modules\Pesantrian\PrestasiSantri\Application\DTO\PaginatedStudentAchievementData;
 use App\Modules\Pesantrian\PrestasiSantri\Application\DTO\StudentAchievementCategoryData;
 use App\Modules\Pesantrian\PrestasiSantri\Application\DTO\StudentAchievementData;
@@ -20,10 +23,12 @@ use App\Modules\Pesantrian\PrestasiSantri\Application\Queries\ShowStudentAchieve
 use App\Modules\Pesantrian\PrestasiSantri\Presentation\Requests\ArchiveStudentAchievementCategoryApiRequest;
 use App\Modules\Pesantrian\PrestasiSantri\Presentation\Requests\ListStudentAchievementCategoriesApiRequest;
 use App\Modules\Pesantrian\PrestasiSantri\Presentation\Requests\ListStudentAchievementsApiRequest;
+use App\Modules\Pesantrian\PrestasiSantri\Presentation\Requests\RequestStudentAchievementRevisionApiRequest;
 use App\Modules\Pesantrian\PrestasiSantri\Presentation\Requests\StoreStudentAchievementApiRequest;
 use App\Modules\Pesantrian\PrestasiSantri\Presentation\Requests\StoreStudentAchievementCategoryApiRequest;
 use App\Modules\Pesantrian\PrestasiSantri\Presentation\Requests\UpdateStudentAchievementApiRequest;
 use App\Modules\Pesantrian\PrestasiSantri\Presentation\Requests\UpdateStudentAchievementCategoryApiRequest;
+use App\Modules\Pesantrian\PrestasiSantri\Presentation\Requests\VerifyStudentAchievementApiRequest;
 use App\Modules\Pesantrian\PrestasiSantri\Presentation\Resources\StudentAchievementCategoryResource;
 use App\Modules\Pesantrian\PrestasiSantri\Presentation\Resources\StudentAchievementResource;
 use Illuminate\Http\JsonResponse;
@@ -42,6 +47,9 @@ final readonly class StudentAchievementApiController implements HasMiddleware
         private ArchiveStudentAchievementCategory $archiveCategory,
         private CreateStudentAchievementDraft $createDraft,
         private UpdateStudentAchievementDraft $updateDraft,
+        private SubmitStudentAchievementDraft $submitDraft,
+        private VerifyStudentAchievement $verifyAchievement,
+        private RequestStudentAchievementRevision $requestRevision,
         private ApiResponseFactory $responses,
     ) {}
 
@@ -50,7 +58,8 @@ final readonly class StudentAchievementApiController implements HasMiddleware
         return [
             new Middleware('can:prestasi_santri.view', only: ['categories', 'index', 'show']),
             new Middleware('can:prestasi_santri.manage', only: ['storeCategory', 'updateCategory']),
-            new Middleware('can:prestasi_santri.record', only: ['store', 'update']),
+            new Middleware('can:prestasi_santri.record', only: ['store', 'update', 'submit']),
+            new Middleware('can:prestasi_santri.verify', only: ['verify', 'revise']),
             new Middleware('can:prestasi_santri.archive', only: ['archiveCategory']),
         ];
     }
@@ -175,6 +184,71 @@ final readonly class StudentAchievementApiController implements HasMiddleware
         return $this->responses->success(
             $request,
             'Draft prestasi santri berhasil diperbarui.',
+            (new StudentAchievementResource($data))->toArray($request),
+        );
+    }
+
+    public function submit(Request $request, string $achievement): JsonResponse
+    {
+        try {
+            $data = $this->submitDraft->execute(
+                $request->user(),
+                $achievement,
+                $this->responses->correlationId($request),
+            );
+        } catch (StudentAchievementMutationException $exception) {
+            return $this->invalidMutation($request, $exception);
+        }
+
+        abort_if($data === null, 404);
+
+        return $this->responses->success(
+            $request,
+            'Draft prestasi santri berhasil disubmit.',
+            (new StudentAchievementResource($data))->toArray($request),
+        );
+    }
+
+    public function verify(VerifyStudentAchievementApiRequest $request, string $achievement): JsonResponse
+    {
+        try {
+            $data = $this->verifyAchievement->execute(
+                $request->user(),
+                $achievement,
+                $request->verificationNote(),
+                $this->responses->correlationId($request),
+            );
+        } catch (StudentAchievementMutationException $exception) {
+            return $this->invalidMutation($request, $exception);
+        }
+
+        abort_if($data === null, 404);
+
+        return $this->responses->success(
+            $request,
+            'Prestasi santri berhasil diverifikasi.',
+            (new StudentAchievementResource($data))->toArray($request),
+        );
+    }
+
+    public function revise(RequestStudentAchievementRevisionApiRequest $request, string $achievement): JsonResponse
+    {
+        try {
+            $data = $this->requestRevision->execute(
+                $request->user(),
+                $achievement,
+                $request->verificationNote(),
+                $this->responses->correlationId($request),
+            );
+        } catch (StudentAchievementMutationException $exception) {
+            return $this->invalidMutation($request, $exception);
+        }
+
+        abort_if($data === null, 404);
+
+        return $this->responses->success(
+            $request,
+            'Prestasi santri berhasil diminta revisi.',
             (new StudentAchievementResource($data))->toArray($request),
         );
     }

@@ -22,3 +22,5 @@ Increment aktif:
 - Increment 6 menyiapkan mutation kategori dan draft prestasi, termasuk
   snapshot santri/pembina/periode aktif, revision history, audit activity, dan
   nomor prestasi otomatis `PRS-xxxxxx`.
+- Increment 7 menyiapkan submit, verifikasi, dan minta revisi dengan revision
+  history serta audit lifecycle.

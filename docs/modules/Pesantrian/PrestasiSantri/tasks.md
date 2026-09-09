@@ -207,12 +207,12 @@ Hasil:
 
 ## Increment 7: Submit dan Verifikasi
 
-- [ ] Buat action submit catatan prestasi.
-- [ ] Buat action verify dengan hasil `verified`.
-- [ ] Buat action meminta revisi dengan status `needs_revision`.
-- [ ] Buat revision history.
-- [ ] Tambahkan audit lifecycle.
-- [ ] Jalankan focused lifecycle tests.
+- [x] Buat action submit catatan prestasi.
+- [x] Buat action verify dengan hasil `verified`.
+- [x] Buat action meminta revisi dengan status `needs_revision`.
+- [x] Buat revision history.
+- [x] Tambahkan audit lifecycle.
+- [x] Jalankan focused lifecycle tests.
 
 Acceptance:
 
@@ -223,7 +223,23 @@ Acceptance:
 
 Verifikasi:
 
-- [ ] `php artisan test tests/Feature/PrestasiSantriLifecycleApiTest.php tests/Feature/PrestasiSantriDraftMutationApiTest.php tests/Feature/PrestasiSantriApiTest.php --no-ansi`
+- [x] `php artisan test tests/Feature/PrestasiSantriLifecycleApiTest.php tests/Feature/PrestasiSantriDraftMutationApiTest.php tests/Feature/PrestasiSantriApiTest.php --no-ansi`
+
+Hasil:
+
+- Draft dan catatan berstatus `needs_revision` bisa disubmit menjadi
+  `submitted`.
+- Catatan berstatus `submitted` bisa diverifikasi menjadi `verified`.
+- Catatan berstatus `submitted` bisa diminta revisi menjadi `needs_revision`
+  dengan catatan verifikasi wajib.
+- Setiap transisi menulis revision history dengan status awal/akhir,
+  changed fields, actor, dan waktu perubahan.
+- Setiap transisi menerbitkan audit `PrestasiSantri`:
+  `prestasi_santri.achievement.submitted`,
+  `prestasi_santri.achievement.verified`, dan
+  `prestasi_santri.achievement.revision_requested`.
+- Permission backend memakai `prestasi_santri.record` untuk submit dan
+  `prestasi_santri.verify` untuk verifikasi/minta revisi.
 
 ## Increment 8: Void / Pembatalan Aman
 

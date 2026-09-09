@@ -10,7 +10,7 @@ dan [`docs/FOLDER-STRUCTURE.md`](../../../FOLDER-STRUCTURE.md).
 - Nama tampil: `Prestasi`
 - Candidate source: `app/Modules/Pesantrian/PrestasiSantri/`
 - Candidate frontend: `resources/js/pages/Pesantrian/PrestasiSantri/`
-- Status: Active - draft mutation ready
+- Status: Active - lifecycle submit/verify ready
 
 ## Tujuan
 
@@ -99,6 +99,9 @@ API read/list yang sudah tersedia:
 - `api.v1.pesantrian.prestasi-santri.index`
 - `api.v1.pesantrian.prestasi-santri.store`
 - `api.v1.pesantrian.prestasi-santri.update`
+- `api.v1.pesantrian.prestasi-santri.submit`
+- `api.v1.pesantrian.prestasi-santri.verify`
+- `api.v1.pesantrian.prestasi-santri.revise`
 - `api.v1.pesantrian.prestasi-santri.show`
 
 ## Lifecycle Baseline

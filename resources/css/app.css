@@ -637,6 +637,19 @@ html[data-typography='mono'] body {
         padding-top: 0.75rem;
     }
 
+    [data-slot='sidebar'][data-collapsible='icon']
+        .dashboard-sidebar
+        [data-sidebar='content'] {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    [data-slot='sidebar'][data-collapsible='icon']
+        .dashboard-sidebar
+        [data-sidebar='content']::-webkit-scrollbar {
+        display: none;
+    }
+
     .dashboard-sidebar [data-sidebar='content'] [data-sidebar='menu-item'] {
         margin-block: 0.125rem;
     }

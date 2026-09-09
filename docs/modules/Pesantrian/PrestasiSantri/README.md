@@ -10,7 +10,7 @@ dan [`docs/FOLDER-STRUCTURE.md`](../../../FOLDER-STRUCTURE.md).
 - Nama tampil: `Prestasi`
 - Candidate source: `app/Modules/Pesantrian/PrestasiSantri/`
 - Candidate frontend: `resources/js/pages/Pesantrian/PrestasiSantri/`
-- Status: Active - void lifecycle ready
+- Status: Active - demo seeder ready
 
 ## Tujuan
 
@@ -235,9 +235,10 @@ mengatur pengalaman pengguna.
 
 ## Data Demo
 
-Seeder demo direncanakan di
+Seeder demo tersedia di
 `app/Modules/Pesantrian/PrestasiSantri/Database/Seeders/PrestasiSantriDemoSeeder.php`
-dan dipanggil dari `DatabaseSeeder`.
+dan dipanggil dari `DatabaseSeeder`. Seeder ini aman diulang dan tidak membuat
+data bisnis ketika environment `production`.
 
 Data demo minimum:
 
@@ -247,6 +248,15 @@ Data demo minimum:
 - snapshot santri aktif;
 - pembina pendamping bila tersedia;
 - revision history untuk verifikasi dan pembatalan.
+
+Data demo yang tersedia:
+
+- kategori `PRS-DEMO-AKD`, `PRS-DEMO-THF`, `PRS-DEMO-NONAKD`, dan kategori arsip
+  `PRS-DEMO-ARSIP`;
+- catatan `PRS-DEMO-DRAFT`, `PRS-DEMO-SUBMITTED`, `PRS-DEMO-VERIFIED`,
+  `PRS-DEMO-REVISION`, dan `PRS-DEMO-VOID`;
+- role `OperatorSantri` memiliki permission operasional Prestasi termasuk
+  `prestasi_santri.archive` untuk mencoba flow pembatalan aman.
 
 ## QA Browser dan User Manual
 

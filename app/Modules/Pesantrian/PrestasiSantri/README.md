@@ -27,3 +27,6 @@ Increment aktif:
 - Increment 8 menyiapkan void/pembatalan aman dengan alasan wajib, permission
   sensitif `prestasi_santri.archive`, revision history, audit lifecycle, dan
   tanpa menghapus catatan prestasi.
+- Increment 9 menyiapkan demo seeder idempotent untuk kategori aktif/arsip dan
+  catatan prestasi berstatus draft, submitted, verified, needs_revision, dan
+  void.

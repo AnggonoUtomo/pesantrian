@@ -272,10 +272,10 @@ Hasil:
 
 ## Increment 9: Demo Seeder
 
-- [ ] Buat `PrestasiSantriDemoSeeder`.
-- [ ] Update `DatabaseSeeder`.
-- [ ] Tambahkan test idempotent seeder.
-- [ ] Dokumentasikan data demo.
+- [x] Buat `PrestasiSantriDemoSeeder`.
+- [x] Update `DatabaseSeeder`.
+- [x] Tambahkan test idempotent seeder.
+- [x] Dokumentasikan data demo.
 
 Acceptance:
 
@@ -287,7 +287,21 @@ Acceptance:
 
 Verifikasi:
 
-- [ ] `php artisan test tests/Feature/BusinessDemoSeederTest.php --no-ansi`
+- [x] `php artisan test tests/Feature/BusinessDemoSeederTest.php --no-ansi`
+
+Hasil:
+
+- Seeder demo `PrestasiSantriDemoSeeder` dipanggil dari `DatabaseSeeder`
+  setelah dependency Santri, AcademicPeriod, HumanResource, Tahfidz,
+  PerizinanSantri, dan KedisiplinanSantri tersedia.
+- Data demo mencakup kategori aktif `PRS-DEMO-AKD`, `PRS-DEMO-THF`,
+  `PRS-DEMO-NONAKD`, kategori arsip `PRS-DEMO-ARSIP`, dan catatan prestasi
+  `PRS-DEMO-DRAFT`, `PRS-DEMO-SUBMITTED`, `PRS-DEMO-VERIFIED`,
+  `PRS-DEMO-REVISION`, serta `PRS-DEMO-VOID`.
+- Seeder aman diulang, tidak berjalan di production, memakai snapshot santri,
+  periode akademik, dan pembina demo yang sudah tersedia.
+- Role demo `OperatorSantri` diberi `prestasi_santri.archive` agar flow void
+  bisa diuji manual oleh operator demo.
 
 ## Increment 10: UI/Inertia List dan Detail
 

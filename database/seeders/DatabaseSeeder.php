@@ -10,6 +10,7 @@ use App\Modules\Pesantrian\Asrama\Database\Seeders\AsramaDemoSeeder;
 use App\Modules\Pesantrian\KedisiplinanSantri\Database\Seeders\KedisiplinanSantriDemoSeeder;
 use App\Modules\Pesantrian\PenerimaanSantri\Database\Seeders\PenerimaanSantriDemoSeeder;
 use App\Modules\Pesantrian\PerizinanSantri\Database\Seeders\PerizinanSantriDemoSeeder;
+use App\Modules\Pesantrian\PrestasiSantri\Database\Seeders\PrestasiSantriDemoSeeder;
 use App\Modules\Pesantrian\PresensiSantri\Database\Seeders\PresensiSantriDemoSeeder;
 use App\Modules\Pesantrian\Santri\Database\Seeders\SantriDemoSeeder;
 use App\Modules\Pesantrian\Tahfidz\Database\Seeders\TahfidzDemoSeeder;
@@ -48,6 +49,7 @@ class DatabaseSeeder extends Seeder
             TahfidzDemoSeeder::class,
             PerizinanSantriDemoSeeder::class,
             KedisiplinanSantriDemoSeeder::class,
+            PrestasiSantriDemoSeeder::class,
         ]);
     }
 }

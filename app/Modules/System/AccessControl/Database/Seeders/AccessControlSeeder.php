@@ -85,6 +85,7 @@ final class AccessControlSeeder extends Seeder
             'prestasi_santri.manage',
             'prestasi_santri.record',
             'prestasi_santri.verify',
+            'prestasi_santri.archive',
         ]);
         $this->syncDemoRole('OperatorAkademik', [
             'system.dashboard.view',

@@ -10,7 +10,7 @@ dan [`docs/FOLDER-STRUCTURE.md`](../../../FOLDER-STRUCTURE.md).
 - Nama tampil: `Prestasi`
 - Candidate source: `app/Modules/Pesantrian/PrestasiSantri/`
 - Candidate frontend: `resources/js/pages/Pesantrian/PrestasiSantri/`
-- Status: Active - documentation baseline
+- Status: Active - skeleton dan permission ready
 
 ## Tujuan
 
@@ -159,11 +159,11 @@ Route web Inertia kandidat:
 
 ## Permission Candidate
 
-- `prestasi-santri.view`
-- `prestasi-santri.manage`
-- `prestasi-santri.record`
-- `prestasi-santri.verify`
-- `prestasi-santri.archive`
+- `prestasi_santri.view`
+- `prestasi_santri.manage`
+- `prestasi_santri.record`
+- `prestasi_santri.verify`
+- `prestasi_santri.archive`
 
 Permission dapat disesuaikan saat implementation kalau terlalu granular, tetapi
 backend tetap menjadi authority otorisasi.

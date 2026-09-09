@@ -81,6 +81,10 @@ final class AccessControlSeeder extends Seeder
             'tahfidz.manage',
             'tahfidz.record',
             'tahfidz.review',
+            'prestasi_santri.view',
+            'prestasi_santri.manage',
+            'prestasi_santri.record',
+            'prestasi_santri.verify',
         ]);
         $this->syncDemoRole('OperatorAkademik', [
             'system.dashboard.view',
@@ -100,6 +104,7 @@ final class AccessControlSeeder extends Seeder
             'perizinan_santri.view',
             'kedisiplinan_santri.view',
             'tahfidz.view',
+            'prestasi_santri.view',
         ]);
         $this->syncDemoRole('OperatorSDM', [
             'system.dashboard.view',
@@ -121,6 +126,7 @@ final class AccessControlSeeder extends Seeder
             'perizinan_santri.view',
             'kedisiplinan_santri.view',
             'tahfidz.view',
+            'prestasi_santri.view',
             'system_setting.view',
         ]);
         $this->syncDemoRole('Viewer', [
@@ -136,6 +142,7 @@ final class AccessControlSeeder extends Seeder
             'perizinan_santri.view',
             'kedisiplinan_santri.view',
             'tahfidz.view',
+            'prestasi_santri.view',
         ]);
 
         $configuredPassword = config('access-control.dummy_password') ?: config('access_control.dummy_password');

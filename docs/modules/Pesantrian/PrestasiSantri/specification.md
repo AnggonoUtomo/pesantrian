@@ -216,11 +216,11 @@ tests/Browser/support/prestasi-santri-fixture.ts
 
 | Permission | Makna |
 | --- | --- |
-| `prestasi-santri.view` | Melihat daftar dan detail prestasi. |
-| `prestasi-santri.manage` | Mengelola kategori prestasi. |
-| `prestasi-santri.record` | Membuat, mengubah, dan submit catatan prestasi. |
-| `prestasi-santri.verify` | Memverifikasi atau meminta revisi catatan. |
-| `prestasi-santri.archive` | Arsip kategori atau void catatan prestasi. |
+| `prestasi_santri.view` | Melihat daftar dan detail prestasi. |
+| `prestasi_santri.manage` | Mengelola kategori prestasi. |
+| `prestasi_santri.record` | Membuat, mengubah, dan submit catatan prestasi. |
+| `prestasi_santri.verify` | Memverifikasi atau meminta revisi catatan. |
+| `prestasi_santri.archive` | Arsip kategori atau void catatan prestasi. |
 
 Backend adalah authority permission. Frontend hanya menyembunyikan/menampilkan
 aksi untuk UX.
@@ -281,6 +281,6 @@ Keputusan sementara untuk coding awal:
 - Nomor prestasi memakai auto-generate sederhana dengan prefix candidate
   `PRS-`.
 - Verifikasi awal dilakukan admin/operator yang punya permission
-  `prestasi-santri.verify`.
+  `prestasi_santri.verify`.
 - Prestasi Tahfidz boleh dicatat bila berbentuk penghargaan/lomba; setoran dan
   target hafalan tetap milik module `Tahfidz`.

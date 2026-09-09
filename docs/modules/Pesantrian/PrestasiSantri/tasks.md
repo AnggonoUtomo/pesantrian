@@ -23,26 +23,44 @@ Verifikasi:
 
 ## Increment 2: Module Skeleton dan Permission
 
-- [ ] Jalankan dry-run generator module.
-- [ ] Buat module `Pesantrian/PrestasiSantri`.
-- [ ] Tambahkan permission identity.
-- [ ] Wire permission ke seeder AccessControl.
-- [ ] Jalankan module validate.
+- [x] Jalankan dry-run generator module.
+- [x] Buat module `Pesantrian/PrestasiSantri`.
+- [x] Tambahkan permission identity.
+- [x] Wire permission ke seeder AccessControl.
+- [x] Jalankan module validate.
 
 Acceptance:
 
 - `php artisan module:validate --no-ansi` berhasil.
-- Permission `prestasi-santri.view`, `prestasi-santri.manage`,
-  `prestasi-santri.record`, `prestasi-santri.verify`, dan
-  `prestasi-santri.archive` tersedia.
+- Permission `prestasi_santri.view`, `prestasi_santri.manage`,
+  `prestasi_santri.record`, `prestasi_santri.verify`, dan
+  `prestasi_santri.archive` tersedia.
 - Belum ada table bisnis pada increment ini.
 
 Verifikasi:
 
-- [ ] `php artisan module:make Pesantrian PrestasiSantri --dry-run --json --no-ansi`
-- [ ] `php artisan test tests/Unit/PrestasiSantriPermissionIdentityTest.php tests/Feature/AccessControlSeederTest.php tests/Feature/BusinessDemoSeederTest.php --no-ansi`
-- [ ] `php artisan module:validate --no-ansi`
-- [ ] `php artisan module:list --json --no-ansi`
+- [x] `php artisan module:make Pesantrian PrestasiSantri --dry-run --json --no-ansi`
+- [x] `php artisan test tests/Unit/PrestasiSantriPermissionIdentityTest.php tests/Feature/AccessControlSeederTest.php tests/Feature/BusinessDemoSeederTest.php --no-ansi`
+- [x] `php artisan module:validate --no-ansi`
+- [x] `php artisan module:list --json --no-ansi`
+
+Hasil:
+
+- Skeleton source module dibuat di
+  `app/Modules/Pesantrian/PrestasiSantri/`.
+- Module terdaftar sebagai `enabled`, bootable, dan terbaca oleh registry
+  module.
+- Permission baseline dibuat untuk akses lihat, kelola kategori, pencatatan,
+  verifikasi, dan arsip/batal data prestasi.
+- Permission key memakai format underscore `prestasi_santri.*` agar konsisten
+  dengan module dua-kata lain seperti `perizinan_santri.*` dan
+  `kedisiplinan_santri.*`.
+- Seeder AccessControl memberi akses operasional awal:
+  `OperatorSantri` dapat melihat, mengelola, mencatat, dan verifikasi;
+  `OperatorAkademik`, `Auditor`, dan `Viewer` dapat melihat.
+- Permission `prestasi_santri.archive` sementara hanya melekat ke role
+  super/admin keamanan melalui mekanisme all-permission karena pembatalan data
+  prestasi termasuk aksi sensitif.
 
 ## Increment 3: Contract Readiness
 

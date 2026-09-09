@@ -243,11 +243,11 @@ Hasil:
 
 ## Increment 8: Void / Pembatalan Aman
 
-- [ ] Buat action void dengan alasan.
-- [ ] Batasi void memakai permission sensitif.
-- [ ] Pastikan void tidak menghapus data.
-- [ ] Tambahkan revision history dan audit.
-- [ ] Jalankan focused void tests.
+- [x] Buat action void dengan alasan.
+- [x] Batasi void memakai permission sensitif.
+- [x] Pastikan void tidak menghapus data.
+- [x] Tambahkan revision history dan audit.
+- [x] Jalankan focused void tests.
 
 Acceptance:
 
@@ -257,7 +257,18 @@ Acceptance:
 
 Verifikasi:
 
-- [ ] `php artisan test tests/Feature/PrestasiSantriVoidApiTest.php tests/Feature/PrestasiSantriLifecycleApiTest.php --no-ansi`
+- [x] `php artisan test tests/Feature/PrestasiSantriVoidApiTest.php tests/Feature/PrestasiSantriLifecycleApiTest.php --no-ansi`
+
+Hasil:
+
+- Endpoint API `api.v1.pesantrian.prestasi-santri.void` tersedia dengan
+  middleware idempotency dan permission backend `prestasi_santri.archive`.
+- Void memakai alasan wajib `void_reason`, mengubah status ke `void`,
+  menyimpan `voided_at`, `voided_by`, dan `void_reason`, serta tidak menghapus
+  row `student_achievements`.
+- Pembatalan membuat revision history dan audit event
+  `prestasi_santri.achievement.voided` tanpa memasukkan `void_reason` ke
+  ringkasan metadata result.
 
 ## Increment 9: Demo Seeder
 

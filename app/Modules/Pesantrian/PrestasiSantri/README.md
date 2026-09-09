@@ -24,3 +24,6 @@ Increment aktif:
   nomor prestasi otomatis `PRS-xxxxxx`.
 - Increment 7 menyiapkan submit, verifikasi, dan minta revisi dengan revision
   history serta audit lifecycle.
+- Increment 8 menyiapkan void/pembatalan aman dengan alasan wajib, permission
+  sensitif `prestasi_santri.archive`, revision history, audit lifecycle, dan
+  tanpa menghapus catatan prestasi.

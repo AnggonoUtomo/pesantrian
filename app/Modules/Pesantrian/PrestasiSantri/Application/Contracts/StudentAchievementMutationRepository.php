@@ -18,4 +18,6 @@ interface StudentAchievementMutationRepository
     public function verify(string $id, ?string $verificationNote, string $actorId): ?StudentAchievementData;
 
     public function requestRevision(string $id, string $verificationNote, string $actorId): ?StudentAchievementData;
+
+    public function void(string $id, string $voidReason, string $actorId): ?StudentAchievementData;
 }

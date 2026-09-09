@@ -13,6 +13,7 @@ use App\Modules\Pesantrian\PrestasiSantri\Application\Actions\SubmitStudentAchie
 use App\Modules\Pesantrian\PrestasiSantri\Application\Actions\UpdateStudentAchievementCategory;
 use App\Modules\Pesantrian\PrestasiSantri\Application\Actions\UpdateStudentAchievementDraft;
 use App\Modules\Pesantrian\PrestasiSantri\Application\Actions\VerifyStudentAchievement;
+use App\Modules\Pesantrian\PrestasiSantri\Application\Actions\VoidStudentAchievement;
 use App\Modules\Pesantrian\PrestasiSantri\Application\DTO\PaginatedStudentAchievementData;
 use App\Modules\Pesantrian\PrestasiSantri\Application\DTO\StudentAchievementCategoryData;
 use App\Modules\Pesantrian\PrestasiSantri\Application\DTO\StudentAchievementData;
@@ -29,6 +30,7 @@ use App\Modules\Pesantrian\PrestasiSantri\Presentation\Requests\StoreStudentAchi
 use App\Modules\Pesantrian\PrestasiSantri\Presentation\Requests\UpdateStudentAchievementApiRequest;
 use App\Modules\Pesantrian\PrestasiSantri\Presentation\Requests\UpdateStudentAchievementCategoryApiRequest;
 use App\Modules\Pesantrian\PrestasiSantri\Presentation\Requests\VerifyStudentAchievementApiRequest;
+use App\Modules\Pesantrian\PrestasiSantri\Presentation\Requests\VoidStudentAchievementApiRequest;
 use App\Modules\Pesantrian\PrestasiSantri\Presentation\Resources\StudentAchievementCategoryResource;
 use App\Modules\Pesantrian\PrestasiSantri\Presentation\Resources\StudentAchievementResource;
 use Illuminate\Http\JsonResponse;
@@ -50,6 +52,7 @@ final readonly class StudentAchievementApiController implements HasMiddleware
         private SubmitStudentAchievementDraft $submitDraft,
         private VerifyStudentAchievement $verifyAchievement,
         private RequestStudentAchievementRevision $requestRevision,
+        private VoidStudentAchievement $voidAchievement,
         private ApiResponseFactory $responses,
     ) {}
 
@@ -60,7 +63,7 @@ final readonly class StudentAchievementApiController implements HasMiddleware
             new Middleware('can:prestasi_santri.manage', only: ['storeCategory', 'updateCategory']),
             new Middleware('can:prestasi_santri.record', only: ['store', 'update', 'submit']),
             new Middleware('can:prestasi_santri.verify', only: ['verify', 'revise']),
-            new Middleware('can:prestasi_santri.archive', only: ['archiveCategory']),
+            new Middleware('can:prestasi_santri.archive', only: ['archiveCategory', 'void']),
         ];
     }
 
@@ -249,6 +252,28 @@ final readonly class StudentAchievementApiController implements HasMiddleware
         return $this->responses->success(
             $request,
             'Prestasi santri berhasil diminta revisi.',
+            (new StudentAchievementResource($data))->toArray($request),
+        );
+    }
+
+    public function void(VoidStudentAchievementApiRequest $request, string $achievement): JsonResponse
+    {
+        try {
+            $data = $this->voidAchievement->execute(
+                $request->user(),
+                $achievement,
+                $request->voidReason(),
+                $this->responses->correlationId($request),
+            );
+        } catch (StudentAchievementMutationException $exception) {
+            return $this->invalidMutation($request, $exception);
+        }
+
+        abort_if($data === null, 404);
+
+        return $this->responses->success(
+            $request,
+            'Prestasi santri berhasil dibatalkan.',
             (new StudentAchievementResource($data))->toArray($request),
         );
     }

@@ -41,6 +41,10 @@ Route::middleware(['web', 'auth', 'verified', 'throttle:system-api'])
             ->whereUlid('achievement')
             ->middleware('api.idempotency')
             ->name('revise');
+        Route::patch('/{achievement}/void', [StudentAchievementApiController::class, 'void'])
+            ->whereUlid('achievement')
+            ->middleware('api.idempotency')
+            ->name('void');
         Route::get('/{achievement}', [StudentAchievementApiController::class, 'show'])
             ->whereUlid('achievement')
             ->name('show');

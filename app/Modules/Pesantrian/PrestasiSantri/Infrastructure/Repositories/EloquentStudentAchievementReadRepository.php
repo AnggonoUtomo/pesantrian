@@ -206,6 +206,32 @@ final class EloquentStudentAchievementReadRepository implements StudentAchieveme
         return $this->mapAchievement($record->refresh()->load(['category', 'revisions'])->loadCount('revisions'));
     }
 
+    public function void(string $id, string $voidReason, string $actorId): ?StudentAchievementData
+    {
+        $record = StudentAchievementRecord::query()->find($id);
+
+        if (! $record instanceof StudentAchievementRecord) {
+            return null;
+        }
+
+        $fromStatus = (string) $record->status;
+        $record->forceFill([
+            'status' => 'void',
+            'voided_at' => now(),
+            'voided_by' => $actorId,
+            'void_reason' => $voidReason,
+        ])->save();
+
+        $this->createRevision($record, $voidReason, $actorId, $fromStatus, 'void', [
+            'action' => 'void',
+            'changed_fields' => ['status', 'voided_at', 'voided_by', 'void_reason'],
+            'from_status' => $fromStatus,
+            'to_status' => 'void',
+        ]);
+
+        return $this->mapAchievement($record->refresh()->load(['category', 'revisions'])->loadCount('revisions'));
+    }
+
     /** @return list<StudentAchievementCategoryData> */
     public function categories(StudentAchievementCategoryListFilter $filter): array
     {

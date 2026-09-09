@@ -10,7 +10,7 @@ dan [`docs/FOLDER-STRUCTURE.md`](../../../FOLDER-STRUCTURE.md).
 - Nama tampil: `Prestasi`
 - Candidate source: `app/Modules/Pesantrian/PrestasiSantri/`
 - Candidate frontend: `resources/js/pages/Pesantrian/PrestasiSantri/`
-- Status: Active - lifecycle submit/verify ready
+- Status: Active - void lifecycle ready
 
 ## Tujuan
 
@@ -102,6 +102,7 @@ API read/list yang sudah tersedia:
 - `api.v1.pesantrian.prestasi-santri.submit`
 - `api.v1.pesantrian.prestasi-santri.verify`
 - `api.v1.pesantrian.prestasi-santri.revise`
+- `api.v1.pesantrian.prestasi-santri.void`
 - `api.v1.pesantrian.prestasi-santri.show`
 
 ## Lifecycle Baseline
@@ -147,6 +148,7 @@ Public boundary internal yang direncanakan:
 - `UpdateStudentAchievementDraft`
 - `SubmitStudentAchievementDraft`
 - `VerifyStudentAchievement`
+- `RequestStudentAchievementRevision`
 - `VoidStudentAchievement`
 
 ## API Candidate
@@ -162,6 +164,7 @@ API internal kandidat:
 - `PATCH /api/v1/pesantrian/prestasi-santri/{achievement}`
 - `PATCH /api/v1/pesantrian/prestasi-santri/{achievement}/submit`
 - `PATCH /api/v1/pesantrian/prestasi-santri/{achievement}/verify`
+- `PATCH /api/v1/pesantrian/prestasi-santri/{achievement}/revise`
 - `PATCH /api/v1/pesantrian/prestasi-santri/{achievement}/void`
 
 Route web Inertia kandidat:

@@ -13,7 +13,7 @@ Dokumentasi kerja aktif:
 Increment aktif:
 
 - Increment 2 menyiapkan skeleton module dan permission identity.
-- Increment 3 akan menyiapkan readiness contract ke `ActiveStudentReader`,
+- Increment 3 menyiapkan readiness contract ke `ActiveStudentReader`,
   `ActiveEmployeeReader`, dan `ActiveAcademicPeriodReader`.
 - Increment 4 akan menyiapkan table bisnis kategori, catatan prestasi, dan
   revision history.

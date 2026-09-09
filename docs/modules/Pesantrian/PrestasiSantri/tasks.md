@@ -64,11 +64,11 @@ Hasil:
 
 ## Increment 3: Contract Readiness
 
-- [ ] Audit contract Santri aktif.
-- [ ] Audit contract pembina/pegawai aktif.
-- [ ] Audit contract periode akademik aktif.
-- [ ] Tambahkan contract hanya bila belum tersedia dan memang dibutuhkan.
-- [ ] Tambahkan tests readiness lintas module.
+- [x] Audit contract Santri aktif.
+- [x] Audit contract pembina/pegawai aktif.
+- [x] Audit contract periode akademik aktif.
+- [x] Tambahkan contract hanya bila belum tersedia dan memang dibutuhkan.
+- [x] Tambahkan tests readiness lintas module.
 
 Acceptance:
 
@@ -78,8 +78,21 @@ Acceptance:
 
 Verifikasi:
 
-- [ ] `php artisan test tests/Feature/PrestasiSantriContractReadinessTest.php --no-ansi`
-- [ ] `php artisan module:validate --no-ansi`
+- [x] `php artisan test tests/Feature/PrestasiSantriContractReadinessTest.php --no-ansi`
+- [x] `php artisan module:validate --no-ansi`
+
+Hasil:
+
+- Contract `ActiveStudentReader` dari `Pesantrian/Santri` sudah cukup untuk
+  selector dan validasi santri aktif.
+- Contract `ActiveEmployeeReader` dari `HumanResource/HumanResource` sudah
+  cukup untuk selector pembina/pendamping aktif.
+- Contract `ActiveAcademicPeriodReader` dari `Academic/AcademicPeriod` sudah
+  cukup untuk konteks tahun ajaran/periode rekap prestasi.
+- Tidak ada contract baru yang dibuat karena kebutuhan PrestasiSantri awal
+  sudah terlayani oleh public contract existing.
+- Guardrail readiness ditambahkan agar PrestasiSantri tidak mengambil model
+  Infrastructure module dependency secara langsung.
 
 ## Increment 4: Data Foundation
 

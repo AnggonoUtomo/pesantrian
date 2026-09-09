@@ -19,3 +19,6 @@ Increment aktif:
   revision history.
 - Increment 5 menyiapkan API read/list untuk kategori, daftar catatan prestasi,
   dan detail catatan prestasi.
+- Increment 6 menyiapkan mutation kategori dan draft prestasi, termasuk
+  snapshot santri/pembina/periode aktif, revision history, audit activity, dan
+  nomor prestasi otomatis `PRS-xxxxxx`.

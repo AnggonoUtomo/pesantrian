@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace App\Modules\Pesantrian\PrestasiSantri;
 
 use App\Modules\Pesantrian\PrestasiSantri\Application\Contracts\StudentAchievementReadRepository;
+use App\Modules\Pesantrian\PrestasiSantri\Application\Contracts\StudentAchievementActivityPublisher;
+use App\Modules\Pesantrian\PrestasiSantri\Application\Contracts\StudentAchievementCategoryMutationRepository;
+use App\Modules\Pesantrian\PrestasiSantri\Application\Contracts\StudentAchievementMutationRepository;
+use App\Modules\Pesantrian\PrestasiSantri\Infrastructure\Events\LaravelStudentAchievementActivityPublisher;
 use App\Modules\Pesantrian\PrestasiSantri\Infrastructure\Repositories\EloquentStudentAchievementReadRepository;
 use Illuminate\Support\ServiceProvider as FrameworkServiceProvider;
 
@@ -12,6 +16,9 @@ final class ServiceProvider extends FrameworkServiceProvider
 {
     public function register(): void
     {
+        $this->app->bind(StudentAchievementActivityPublisher::class, LaravelStudentAchievementActivityPublisher::class);
+        $this->app->bind(StudentAchievementCategoryMutationRepository::class, EloquentStudentAchievementReadRepository::class);
+        $this->app->bind(StudentAchievementMutationRepository::class, EloquentStudentAchievementReadRepository::class);
         $this->app->bind(StudentAchievementReadRepository::class, EloquentStudentAchievementReadRepository::class);
     }
 

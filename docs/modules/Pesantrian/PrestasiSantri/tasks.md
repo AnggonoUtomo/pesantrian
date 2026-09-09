@@ -172,12 +172,12 @@ Hasil:
 
 ## Increment 6: Kategori dan Catatan Draft
 
-- [ ] Buat request validation kategori.
-- [ ] Buat action create/update/archive kategori.
-- [ ] Buat request validation catatan draft.
-- [ ] Buat action create/update catatan draft.
-- [ ] Tambahkan audit kategori dan draft.
-- [ ] Jalankan focused mutation tests.
+- [x] Buat request validation kategori.
+- [x] Buat action create/update/archive kategori.
+- [x] Buat request validation catatan draft.
+- [x] Buat action create/update catatan draft.
+- [x] Tambahkan audit kategori dan draft.
+- [x] Jalankan focused mutation tests.
 
 Acceptance:
 
@@ -188,7 +188,22 @@ Acceptance:
 
 Verifikasi:
 
-- [ ] `php artisan test tests/Feature/PrestasiSantriCategoryMutationApiTest.php tests/Feature/PrestasiSantriDraftMutationApiTest.php tests/Feature/PrestasiSantriApiTest.php --no-ansi`
+- [x] `php artisan test tests/Feature/PrestasiSantriCategoryMutationApiTest.php tests/Feature/PrestasiSantriDraftMutationApiTest.php tests/Feature/PrestasiSantriApiTest.php --no-ansi`
+
+Hasil:
+
+- Kategori prestasi bisa dibuat, diperbarui, dan diarsip melalui API dengan
+  idempotency middleware.
+- Arsip kategori tidak menghapus catatan prestasi historis yang sudah memakai
+  kategori tersebut.
+- Draft prestasi bisa dibuat dan diperbarui melalui API.
+- Draft prestasi mengambil snapshot santri aktif, kategori aktif, pembina aktif
+  bila dipilih, dan periode akademik aktif bila tersedia.
+- Draft prestasi mendapat nomor otomatis `PRS-000001` dan seterusnya.
+- Create/update draft membuat revision history.
+- Create/update/archive kategori dan create/update draft menerbitkan audit
+  `PrestasiSantri` ke `System/AuditLog`.
+- Catatan berstatus `verified` atau `void` belum bisa diedit langsung.
 
 ## Increment 7: Submit dan Verifikasi
 

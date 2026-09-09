@@ -22,6 +22,7 @@ final readonly class RecordSystemActivity
         'Organization' => 'organization.activity.occurred',
         'PenerimaanSantri' => 'penerimaan-santri.activity.occurred',
         'PerizinanSantri' => 'perizinan-santri.activity.occurred',
+        'PrestasiSantri' => 'prestasi-santri.activity.occurred',
         'PresensiSantri' => 'presensi-santri.activity.occurred',
         'Santri' => 'santri.activity.occurred',
         'Tahfidz' => 'tahfidz.activity.occurred',

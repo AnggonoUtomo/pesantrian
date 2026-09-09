@@ -10,7 +10,7 @@ dan [`docs/FOLDER-STRUCTURE.md`](../../../FOLDER-STRUCTURE.md).
 - Nama tampil: `Prestasi`
 - Candidate source: `app/Modules/Pesantrian/PrestasiSantri/`
 - Candidate frontend: `resources/js/pages/Pesantrian/PrestasiSantri/`
-- Status: Active - backend read/list ready
+- Status: Active - draft mutation ready
 
 ## Tujuan
 
@@ -93,7 +93,12 @@ Table foundation yang sudah tersedia:
 API read/list yang sudah tersedia:
 
 - `api.v1.pesantrian.prestasi-santri.categories.index`
+- `api.v1.pesantrian.prestasi-santri.categories.store`
+- `api.v1.pesantrian.prestasi-santri.categories.update`
+- `api.v1.pesantrian.prestasi-santri.categories.archive`
 - `api.v1.pesantrian.prestasi-santri.index`
+- `api.v1.pesantrian.prestasi-santri.store`
+- `api.v1.pesantrian.prestasi-santri.update`
 - `api.v1.pesantrian.prestasi-santri.show`
 
 ## Lifecycle Baseline

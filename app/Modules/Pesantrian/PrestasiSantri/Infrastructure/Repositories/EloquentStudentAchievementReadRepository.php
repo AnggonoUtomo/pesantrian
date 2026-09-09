@@ -4,27 +4,132 @@ declare(strict_types=1);
 
 namespace App\Modules\Pesantrian\PrestasiSantri\Infrastructure\Repositories;
 
+use App\Modules\Pesantrian\PrestasiSantri\Application\Contracts\StudentAchievementCategoryMutationRepository;
+use App\Modules\Pesantrian\PrestasiSantri\Application\Contracts\StudentAchievementMutationRepository;
 use App\Modules\Pesantrian\PrestasiSantri\Application\Contracts\StudentAchievementReadRepository;
 use App\Modules\Pesantrian\PrestasiSantri\Application\DTO\PaginatedStudentAchievementData;
 use App\Modules\Pesantrian\PrestasiSantri\Application\DTO\StudentAchievementCategoryData;
 use App\Modules\Pesantrian\PrestasiSantri\Application\DTO\StudentAchievementCategoryListFilter;
 use App\Modules\Pesantrian\PrestasiSantri\Application\DTO\StudentAchievementData;
 use App\Modules\Pesantrian\PrestasiSantri\Application\DTO\StudentAchievementListFilter;
+use App\Modules\Pesantrian\PrestasiSantri\Application\DTO\StudentAchievementMutationData;
 use App\Modules\Pesantrian\PrestasiSantri\Application\DTO\StudentAchievementRevisionData;
 use App\Modules\Pesantrian\PrestasiSantri\Application\DTO\StudentAchievementSummaryData;
+use App\Modules\Pesantrian\PrestasiSantri\Application\DTO\UpsertStudentAchievementCategoryData;
 use App\Modules\Pesantrian\PrestasiSantri\Infrastructure\Models\StudentAchievementCategoryRecord;
 use App\Modules\Pesantrian\PrestasiSantri\Infrastructure\Models\StudentAchievementRecord;
 use App\Modules\Pesantrian\PrestasiSantri\Infrastructure\Models\StudentAchievementRevisionRecord;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 
-final class EloquentStudentAchievementReadRepository implements StudentAchievementReadRepository
+final class EloquentStudentAchievementReadRepository implements StudentAchievementCategoryMutationRepository, StudentAchievementMutationRepository, StudentAchievementReadRepository
 {
     /** @var list<string> */
     private const FINAL_STATUSES = ['verified', 'void'];
 
     /** @var list<string> */
     private const NEEDS_ACTION_STATUSES = ['submitted', 'needs_revision'];
+
+    public function findActiveCategory(string $id): ?StudentAchievementCategoryData
+    {
+        $record = StudentAchievementCategoryRecord::query()
+            ->whereKey($id)
+            ->where('status', 'active')
+            ->first();
+
+        if (! $record instanceof StudentAchievementCategoryRecord) {
+            return null;
+        }
+
+        return $this->mapCategory($record);
+    }
+
+    public function createCategory(UpsertStudentAchievementCategoryData $data, ?string $actorId): StudentAchievementCategoryData
+    {
+        $record = StudentAchievementCategoryRecord::query()->create([
+            ...$data->toArray(),
+            'status' => 'active',
+        ]);
+
+        return $this->mapCategory($record);
+    }
+
+    /** @param array<string, string|null> $changes */
+    public function updateCategory(string $id, array $changes): ?StudentAchievementCategoryData
+    {
+        $record = StudentAchievementCategoryRecord::query()->find($id);
+
+        if (! $record instanceof StudentAchievementCategoryRecord) {
+            return null;
+        }
+
+        $record->forceFill($changes)->save();
+
+        return $this->mapCategory($record->refresh());
+    }
+
+    public function archiveCategory(string $id, string $reason, ?string $actorId): ?StudentAchievementCategoryData
+    {
+        $record = StudentAchievementCategoryRecord::query()->find($id);
+
+        if (! $record instanceof StudentAchievementCategoryRecord) {
+            return null;
+        }
+
+        $record->forceFill([
+            'status' => 'archived',
+            'archived_at' => now(),
+            'archived_by' => $actorId,
+            'archive_reason' => $reason,
+        ])->save();
+
+        return $this->mapCategory($record->refresh());
+    }
+
+    public function createDraft(StudentAchievementMutationData $data, ?string $actorId): StudentAchievementData
+    {
+        $record = StudentAchievementRecord::query()->create([
+            ...$data->toDatabasePayload(includeNull: true),
+            'achievement_no' => $this->nextAchievementNo(),
+            'status' => 'draft',
+            'submitted_at' => null,
+            'submitted_by' => null,
+            'verified_at' => null,
+            'verified_by' => null,
+            'verification_note' => null,
+            'voided_at' => null,
+            'voided_by' => null,
+            'void_reason' => null,
+            'created_by' => $actorId,
+        ]);
+        $this->createRevision($record, 'Draft prestasi dibuat.', $actorId, null, 'draft', [
+            'action' => 'create',
+            'changed_fields' => ['category_id', 'student_id', 'student_no', 'student_name', 'academic_period_id', 'mentor_employee_id', 'title', 'achievement_type', 'level', 'result', 'organizer', 'event_name', 'event_location', 'achieved_on', 'period_started_on', 'period_ended_on', 'description', 'notes', 'status'],
+            'to_status' => 'draft',
+        ]);
+
+        return $this->mapAchievement($record->refresh()->load(['category', 'revisions'])->loadCount('revisions'));
+    }
+
+    public function updateDraft(string $id, StudentAchievementMutationData $data, string $reason, ?string $actorId): ?StudentAchievementData
+    {
+        $record = StudentAchievementRecord::query()->find($id);
+
+        if (! $record instanceof StudentAchievementRecord) {
+            return null;
+        }
+
+        $payload = $data->toDatabasePayload();
+
+        $record->forceFill($payload)->save();
+        $this->createRevision($record, $reason, $actorId, (string) $record->status, (string) $record->status, [
+            'action' => 'update',
+            'changed_fields' => array_keys($payload),
+            'status' => $record->status,
+        ]);
+
+        return $this->mapAchievement($record->refresh()->load(['category', 'revisions'])->loadCount('revisions'));
+    }
 
     /** @return list<StudentAchievementCategoryData> */
     public function categories(StudentAchievementCategoryListFilter $filter): array
@@ -214,5 +319,40 @@ final class EloquentStudentAchievementReadRepository implements StudentAchieveme
             'created_at' => 'student_achievements.created_at',
             default => 'student_achievements.achieved_on',
         };
+    }
+
+    private function nextAchievementNo(): string
+    {
+        $latestAchievementNo = StudentAchievementRecord::query()
+            ->where('achievement_no', 'like', 'PRS-%')
+            ->orderByDesc('achievement_no')
+            ->value('achievement_no');
+
+        $nextNumber = 1;
+
+        if (is_string($latestAchievementNo) && preg_match('/^PRS-(\d+)$/', $latestAchievementNo, $matches) === 1) {
+            $nextNumber = ((int) $matches[1]) + 1;
+        }
+
+        do {
+            $achievementNo = 'PRS-'.str_pad((string) $nextNumber, 6, '0', STR_PAD_LEFT);
+            $nextNumber++;
+        } while (StudentAchievementRecord::query()->where('achievement_no', $achievementNo)->exists());
+
+        return $achievementNo;
+    }
+
+    /** @param array<string, mixed> $summary */
+    private function createRevision(StudentAchievementRecord $record, string $reason, ?string $actorId, ?string $fromStatus, string $toStatus, array $summary): void
+    {
+        StudentAchievementRevisionRecord::query()->create([
+            'achievement_id' => $record->getKey(),
+            'from_status' => $fromStatus,
+            'to_status' => $toStatus,
+            'reason' => $reason,
+            'changed_by' => $actorId,
+            'changed_at' => now(),
+            'summary' => $summary,
+        ]);
     }
 }

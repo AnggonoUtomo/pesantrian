@@ -119,11 +119,13 @@ Public boundary keluar dari PerizinanSantri yang sudah tersedia:
 
 - `ApprovedStudentPermitReader`: daftar izin approved per tanggal untuk
   PresensiSantri.
+- `LateStudentPermitReader`: daftar izin yang terlambat kembali atau overdue
+  untuk KedisiplinanSantri. Reader ini read-only dan tidak membuat kasus
+  pelanggaran.
 
 Candidate tambahan yang mungkin dibutuhkan nanti:
 
 - status izin aktif santri untuk dashboard operator;
-- histori izin santri untuk KedisiplinanSantri bila terlambat kembali;
 - rekap izin untuk Reporting;
 - ringkasan izin untuk portal wali/santri.
 

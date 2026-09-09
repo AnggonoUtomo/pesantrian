@@ -503,17 +503,36 @@ Verifikasi:
 
 ## Increment 14: Integrasi Read-only dari Presensi dan Perizinan
 
-- [ ] Evaluasi contract PresensiSantri untuk rekap alfa/terlambat.
-- [ ] Evaluasi contract PerizinanSantri untuk keterlambatan kembali.
-- [ ] Buat query kandidat kasus bila flow disetujui.
-- [ ] Tambahkan test consumer readiness.
-- [ ] Dokumentasikan batas integrasi.
+- [x] Evaluasi contract PresensiSantri untuk rekap alfa/terlambat.
+- [x] Evaluasi contract PerizinanSantri untuk keterlambatan kembali.
+- [x] Buat query kandidat kasus bila flow disetujui.
+- [x] Tambahkan test consumer readiness.
+- [x] Dokumentasikan batas integrasi.
+
+Hasil:
+
+- PresensiSantri menyediakan public contract
+  `StudentAttendanceDisciplineSignalReader` untuk membaca sinyal `late` dan
+  `absent` dari sesi submitted/revised.
+- PerizinanSantri menyediakan public contract `LateStudentPermitReader` untuk
+  membaca izin yang terlambat kembali atau masih overdue.
+- KedisiplinanSantri menyediakan query Application
+  `ListStudentDisciplineCaseCandidates` untuk menggabungkan sinyal tersebut
+  menjadi kandidat kasus read-only.
+- Kandidat membawa `requires_human_review = true`, metadata sumber, dan
+  severity awal yang masih harus direview operator/pembina.
+- Tidak ada route/UI mutation baru dan tidak ada auto-create kasus.
 
 Acceptance:
 
-- KedisiplinanSantri tidak membaca model Infrastructure Presensi/Perizinan.
-- Kandidat kasus tidak otomatis menjadi pelanggaran tanpa review manusia.
-- Pencatatan manual tetap tersedia.
+- [x] KedisiplinanSantri tidak membaca model Infrastructure Presensi/Perizinan.
+- [x] Kandidat kasus tidak otomatis menjadi pelanggaran tanpa review manusia.
+- [x] Pencatatan manual tetap tersedia.
+
+Verifikasi:
+
+- [x] RED: `php artisan test tests/Feature/KedisiplinanSantriContractReadinessTest.php --no-ansi` gagal sebelum query dibuat.
+- [x] `php artisan test tests/Feature/KedisiplinanSantriContractReadinessTest.php --no-ansi`
 
 ## Keputusan Baseline
 

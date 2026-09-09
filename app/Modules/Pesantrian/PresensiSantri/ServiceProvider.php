@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Modules\Pesantrian\PresensiSantri;
 
 use App\Modules\Pesantrian\PresensiSantri\Application\Contracts\StudentAttendanceActivityPublisher;
+use App\Modules\Pesantrian\PresensiSantri\Application\Contracts\StudentAttendanceDisciplineSignalReader;
 use App\Modules\Pesantrian\PresensiSantri\Application\Contracts\StudentAttendanceMutationRepository;
 use App\Modules\Pesantrian\PresensiSantri\Application\Contracts\StudentAttendanceReadRepository;
 use App\Modules\Pesantrian\PresensiSantri\Infrastructure\Events\LaravelStudentAttendanceActivityPublisher;
+use App\Modules\Pesantrian\PresensiSantri\Infrastructure\Readers\EloquentStudentAttendanceDisciplineSignalReader;
 use App\Modules\Pesantrian\PresensiSantri\Infrastructure\Repositories\EloquentStudentAttendanceReadRepository;
 use Illuminate\Support\ServiceProvider as FrameworkServiceProvider;
 
@@ -18,6 +20,7 @@ final class ServiceProvider extends FrameworkServiceProvider
         $this->app->bind(StudentAttendanceReadRepository::class, EloquentStudentAttendanceReadRepository::class);
         $this->app->bind(StudentAttendanceMutationRepository::class, EloquentStudentAttendanceReadRepository::class);
         $this->app->bind(StudentAttendanceActivityPublisher::class, LaravelStudentAttendanceActivityPublisher::class);
+        $this->app->bind(StudentAttendanceDisciplineSignalReader::class, EloquentStudentAttendanceDisciplineSignalReader::class);
     }
 
     public function boot(): void

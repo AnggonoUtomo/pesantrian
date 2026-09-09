@@ -53,10 +53,10 @@ laporan.
 
 - `Pesantrian/Santri`: sumber santri aktif untuk selector dan validasi.
 - `HumanResource/HumanResource`: sumber pembina/petugas aktif bila diperlukan.
-- `Pesantrian/PresensiSantri`: planned/read-only; nanti bisa menjadi sumber
-  rekap alfa/terlambat, tetapi tidak otomatis membuat pelanggaran.
-- `Pesantrian/PerizinanSantri`: planned/read-only; nanti bisa menjadi sumber
-  informasi terlambat kembali, tetapi tidak otomatis membuat pelanggaran.
+- `Pesantrian/PresensiSantri`: sumber read-only sinyal alfa/terlambat melalui
+  `StudentAttendanceDisciplineSignalReader`.
+- `Pesantrian/PerizinanSantri`: sumber read-only izin terlambat kembali atau
+  overdue melalui `LateStudentPermitReader`.
 - `Pesantrian/WaliSantri`: planned; baseline cukup menyimpan snapshot wali bila
   diperlukan untuk konteks komunikasi.
 - `System/AccessControl`: otorisasi backend.
@@ -82,6 +82,14 @@ KedisiplinanSantri:
 
 - `ListDisciplineStudentCandidates`;
 - `ListDisciplineOfficerCandidates`.
+- `ListStudentDisciplineCaseCandidates`.
+
+Integrasi read-only PresensiSantri dan PerizinanSantri yang sudah tersedia:
+
+- `StudentAttendanceDisciplineSignalReader` dari PresensiSantri untuk membaca
+  entry `late` dan `absent` dari sesi submitted/revised;
+- `LateStudentPermitReader` dari PerizinanSantri untuk membaca izin yang
+  terlambat kembali atau masih overdue.
 
 Candidate contract yang mungkin dibuat setelah consumer nyata masuk:
 
@@ -91,9 +99,9 @@ Candidate contract yang mungkin dibuat setelah consumer nyata masuk:
 
 Baseline tidak membuat contract keluar sebagai placeholder.
 
-Integrasi PresensiSantri dan PerizinanSantri masih dibatasi sebagai kandidat
-read-only. Data alfa/terlambat atau terlambat kembali tidak otomatis menjadi
-kasus pelanggaran tanpa review manusia.
+Data alfa/terlambat atau terlambat kembali hanya menjadi kandidat review.
+KedisiplinanSantri tetap tidak otomatis membuat kasus pelanggaran tanpa review
+manusia.
 
 ## Lifecycle Baseline
 

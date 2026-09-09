@@ -117,13 +117,18 @@ Status kehadiran minimum:
 - `sick`: sakit.
 - `absent`: alfa/tanpa keterangan.
 
-## Public Boundary Candidate
+## Public Boundary
 
-Public boundary keluar dari PresensiSantri ditunda sampai consumer nyata ada.
-Candidate yang mungkin dibutuhkan nanti:
+Public boundary keluar dari PresensiSantri yang sudah tersedia:
+
+- `StudentAttendanceDisciplineSignalReader`: daftar sinyal presensi
+  `late`/`absent` dari sesi submitted/revised untuk KedisiplinanSantri. Reader
+  ini read-only, mengembalikan DTO sederhana, dan tidak membuat kasus
+  pelanggaran.
+
+Candidate tambahan yang mungkin dibutuhkan nanti:
 
 - ringkasan presensi santri untuk dashboard wali/santri;
-- rekap alfa/terlambat untuk KedisiplinanSantri;
 - rekap sakit untuk KesehatanSantri;
 - data kehadiran kegiatan untuk Reporting.
 
@@ -168,8 +173,10 @@ Presensi Santri sudah memiliki baseline operasional:
 Integrasi read-only awal ke `PerizinanSantri` sudah tersedia untuk membaca
 izin yang relevan pada tanggal presensi. Integrasi ini belum otomatis mengubah
 entry presensi menjadi `izin`; operator tetap bisa mengisi status manual.
-Relasi otomatis ke `Kesehatan/Klinik` dan `Pelanggaran/Kedisiplinan` belum
-dibuat karena module terkait belum tersedia.
+Integrasi read-only ke `KedisiplinanSantri` juga tersedia sebagai sinyal
+kandidat kasus dari status `late` dan `absent`, tetapi tidak otomatis membuat
+kasus pelanggaran. Relasi otomatis ke `Kesehatan/Klinik` belum dibuat karena
+module terkait belum tersedia.
 
 ## Dokumentasi Terkait
 

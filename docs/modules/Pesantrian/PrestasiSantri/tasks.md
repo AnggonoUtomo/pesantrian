@@ -134,11 +134,11 @@ Hasil:
 
 ## Increment 5: Backend Read/List
 
-- [ ] Buat DTO/read model PrestasiSantri.
-- [ ] Buat query list/search/filter.
-- [ ] Buat query detail.
-- [ ] Buat controller/resource API read.
-- [ ] Jalankan focused API tests.
+- [x] Buat DTO/read model PrestasiSantri.
+- [x] Buat query list/search/filter.
+- [x] Buat query detail.
+- [x] Buat controller/resource API read.
+- [x] Jalankan focused API tests.
 
 Acceptance:
 
@@ -150,9 +150,25 @@ Acceptance:
 
 Verifikasi:
 
-- [ ] `php artisan test tests/Feature/PrestasiSantriApiTest.php --no-ansi`
-- [ ] `php artisan route:list --name=api.v1.pesantrian.prestasi-santri --no-ansi`
-- [ ] `php artisan module:validate --no-ansi`
+- [x] `php artisan test tests/Feature/PrestasiSantriApiTest.php --no-ansi`
+- [x] `php artisan route:list --name=api.v1.pesantrian.prestasi-santri --no-ansi`
+- [x] `php artisan module:validate --no-ansi`
+
+Hasil:
+
+- API read memakai prefix route
+  `api.v1.pesantrian.prestasi-santri.*`.
+- Endpoint kategori tersedia di
+  `api.v1.pesantrian.prestasi-santri.categories.index`.
+- Endpoint list dan detail catatan prestasi tersedia di
+  `api.v1.pesantrian.prestasi-santri.index` dan
+  `api.v1.pesantrian.prestasi-santri.show`.
+- List mendukung search, filter kategori, santri, pembina, periode akademik,
+  tingkat, status, rentang tanggal prestasi, sort, dan pagination.
+- Detail menampilkan snapshot kategori, santri, periode akademik, pembina,
+  status verifikasi, ringkasan status, dan revision history.
+- Permission `prestasi_santri.view` menjadi guard backend untuk list kategori,
+  list catatan, dan detail catatan prestasi.
 
 ## Increment 6: Kategori dan Catatan Draft
 

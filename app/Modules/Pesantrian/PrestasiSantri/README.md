@@ -17,3 +17,5 @@ Increment aktif:
   `ActiveEmployeeReader`, dan `ActiveAcademicPeriodReader`.
 - Increment 4 menyiapkan table bisnis kategori, catatan prestasi, dan
   revision history.
+- Increment 5 menyiapkan API read/list untuk kategori, daftar catatan prestasi,
+  dan detail catatan prestasi.

@@ -10,7 +10,7 @@ dan [`docs/FOLDER-STRUCTURE.md`](../../../FOLDER-STRUCTURE.md).
 - Nama tampil: `Prestasi`
 - Candidate source: `app/Modules/Pesantrian/PrestasiSantri/`
 - Candidate frontend: `resources/js/pages/Pesantrian/PrestasiSantri/`
-- Status: Active - data foundation ready
+- Status: Active - backend read/list ready
 
 ## Tujuan
 
@@ -89,6 +89,12 @@ Table foundation yang sudah tersedia:
 - `student_achievement_categories`
 - `student_achievements`
 - `student_achievement_revisions`
+
+API read/list yang sudah tersedia:
+
+- `api.v1.pesantrian.prestasi-santri.categories.index`
+- `api.v1.pesantrian.prestasi-santri.index`
+- `api.v1.pesantrian.prestasi-santri.show`
 
 ## Lifecycle Baseline
 

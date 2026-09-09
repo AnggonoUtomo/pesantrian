@@ -96,12 +96,12 @@ Hasil:
 
 ## Increment 4: Data Foundation
 
-- [ ] Buat migration kategori prestasi.
-- [ ] Buat migration catatan prestasi.
-- [ ] Buat migration revision prestasi.
-- [ ] Buat record model.
-- [ ] Buat factory minimum.
-- [ ] Jalankan focused data foundation tests.
+- [x] Buat migration kategori prestasi.
+- [x] Buat migration catatan prestasi.
+- [x] Buat migration revision prestasi.
+- [x] Buat record model.
+- [x] Buat factory minimum.
+- [x] Jalankan focused data foundation tests.
 
 Acceptance:
 
@@ -113,8 +113,24 @@ Acceptance:
 
 Verifikasi:
 
-- [ ] `php artisan test tests/Feature/PrestasiSantriDataFoundationTest.php --no-ansi`
-- [ ] `php artisan module:validate --no-ansi`
+- [x] `php artisan test tests/Feature/PrestasiSantriDataFoundationTest.php --no-ansi`
+- [x] `php artisan module:validate --no-ansi`
+
+Hasil:
+
+- Migration `2026_09_17_000000_create_prestasi_santri_tables.php` membuat
+  table `student_achievement_categories`, `student_achievements`, dan
+  `student_achievement_revisions`.
+- ServiceProvider PrestasiSantri memuat migration module dari folder
+  `Database/Migrations`.
+- Record model Infrastructure dibuat untuk kategori prestasi, catatan prestasi,
+  dan histori revisi.
+- Factory minimum dibuat untuk semua record model agar seeder/demo/test
+  berikutnya lebih mudah disusun.
+- Catatan prestasi menyimpan snapshot kategori, santri, periode akademik, dan
+  pembina agar riwayat tetap terbaca walaupun master data berubah.
+- Nama index revision memakai prefix `psar_*` agar tidak bentrok dengan index
+  revision PresensiSantri pada SQLite.
 
 ## Increment 5: Backend Read/List
 

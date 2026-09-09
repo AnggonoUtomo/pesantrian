@@ -10,7 +10,7 @@ dan [`docs/FOLDER-STRUCTURE.md`](../../../FOLDER-STRUCTURE.md).
 - Nama tampil: `Prestasi`
 - Candidate source: `app/Modules/Pesantrian/PrestasiSantri/`
 - Candidate frontend: `resources/js/pages/Pesantrian/PrestasiSantri/`
-- Status: Active - contract readiness ready
+- Status: Active - data foundation ready
 
 ## Tujuan
 
@@ -84,7 +84,7 @@ Baseline awal memakai konsep berikut:
 - `status`: status catatan prestasi.
 - `verification`: proses memastikan catatan layak masuk riwayat resmi santri.
 
-Table foundation yang direncanakan:
+Table foundation yang sudah tersedia:
 
 - `student_achievement_categories`
 - `student_achievements`

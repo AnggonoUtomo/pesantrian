@@ -143,7 +143,7 @@ tests/Browser/support/prestasi-santri-fixture.ts
 - `code` unique.
 - `name`.
 - `description` nullable.
-- `is_active`.
+- `status`.
 - `archived_at`, `archived_by`, `archive_reason` nullable.
 - timestamps.
 

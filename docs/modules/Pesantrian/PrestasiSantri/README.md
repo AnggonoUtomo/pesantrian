@@ -8,9 +8,9 @@ dan [`docs/FOLDER-STRUCTURE.md`](../../../FOLDER-STRUCTURE.md).
 - Namespace teknis: `Pesantrian`
 - Module teknis: `PrestasiSantri`
 - Nama tampil: `Prestasi`
-- Candidate source: `app/Modules/Pesantrian/PrestasiSantri/`
-- Candidate frontend: `resources/js/pages/Pesantrian/PrestasiSantri/`
-- Status: Active - demo seeder ready
+- Source: `app/Modules/Pesantrian/PrestasiSantri/`
+- Frontend: `resources/js/pages/Pesantrian/PrestasiSantri/`
+- Status: Active - UI dan browser QA ready
 
 ## Tujuan
 
@@ -187,7 +187,7 @@ backend tetap menjadi authority otorisasi.
 
 ## UI Baseline
 
-UI akan berada di `resources/js/pages/Pesantrian/PrestasiSantri/`.
+UI berada di `resources/js/pages/Pesantrian/PrestasiSantri/`.
 
 Struktur komponen wajib menjaga page tetap tipis:
 
@@ -196,22 +196,27 @@ resources/js/pages/Pesantrian/PrestasiSantri/
 |-- pages/
 |   |-- Index.tsx
 |   `-- Show.tsx
-`-- components/
-    |-- PrestasiSantriDashboard.tsx
-    |-- PrestasiSantriFilters.tsx
-    |-- PrestasiSantriTable.tsx
-    |-- PrestasiSantriDetailPanel.tsx
-    |-- PrestasiSantriActionBar.tsx
-    |-- PrestasiSantriFormFields.tsx
-    |-- PrestasiSantriCategoryDialog.tsx
-    |-- PrestasiSantriMutationDialog.tsx
-    |-- PrestasiSantriLifecycleDialogs.tsx
-    |-- PrestasiSantriStatusBadge.tsx
-    |-- PrestasiSantriSummaryCards.tsx
-    `-- PrestasiSantriPagination.tsx
+|-- components/
+|   |-- PrestasiSantriDashboard.tsx
+|   |-- PrestasiSantriFilters.tsx
+|   |-- PrestasiSantriTable.tsx
+|   |-- PrestasiSantriDetailPanel.tsx
+|   |-- PrestasiSantriActionBar.tsx
+|   |-- PrestasiSantriFormFields.tsx
+|   |-- PrestasiSantriCategoryDialog.tsx
+|   |-- PrestasiSantriCategoryPanel.tsx
+|   |-- PrestasiSantriEmptyState.tsx
+|   |-- PrestasiSantriMutationDialog.tsx
+|   |-- PrestasiSantriLifecycleDialogs.tsx
+|   |-- PrestasiSantriStatusBadge.tsx
+|   |-- PrestasiSantriSummaryCards.tsx
+|   |-- PrestasiSantriPagination.tsx
+|   `-- prestasiSantriDisplay.ts
+`-- types.ts
 ```
 
-Menu sidebar berada di namespace Pesantrian dengan nama tampil `Prestasi`.
+Menu sidebar berada di namespace Pesantrian dengan nama tampil
+`Prestasi Santri`.
 
 UI read/list awal harus mendukung:
 
@@ -228,6 +233,8 @@ UI mutation awal harus mendukung:
 - dialog buat/ubah catatan prestasi;
 - submit catatan;
 - verifikasi catatan;
+- minta revisi catatan;
+- arsip kategori yang tidak dipakai lagi;
 - pembatalan catatan dengan alasan.
 
 Backend tetap menjadi authority permission dan validasi. Frontend hanya
@@ -260,23 +267,24 @@ Data demo yang tersedia:
 
 ## QA Browser dan User Manual
 
-QA browser direncanakan di `tests/Browser/prestasi-santri.spec.ts` dengan
-fixture khusus di `tests/Browser/support/prestasi-santri-fixture.ts`.
+QA browser tersedia di `tests/Browser/prestasi-santri.spec.ts` dengan fixture
+khusus di `tests/Browser/support/prestasi-santri-fixture.ts`.
 
 Coverage QA:
 
 - desktop Chromium dan mobile Chromium;
 - login operator fixture;
 - buka list dan filter prestasi;
-- buka dialog kategori dan catatan prestasi;
+- buat kategori dan catatan prestasi;
+- submit dan void catatan prestasi;
 - buka detail prestasi submitted/verified;
 - cek tombol edit, submit, verify, dan void;
 - accessibility gate untuk issue critical/serious;
 - console error, page error, dan response 403 harus kosong.
 
-Manual penggunaan end-to-end akan diperbarui di
-[`../../../USER-MANUAL-LIFECYCLE.md`](../../../USER-MANUAL-LIFECYCLE.md) saat UI
-siap diuji manual.
+Manual penggunaan end-to-end diperbarui di
+[`../../../USER-MANUAL-LIFECYCLE.md`](../../../USER-MANUAL-LIFECYCLE.md) dengan
+Langkah P: Prestasi Santri.
 
 Keterbatasan baseline yang sengaja belum dibuat:
 

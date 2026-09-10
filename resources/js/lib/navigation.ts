@@ -12,6 +12,7 @@ import {
     Settings2,
     School,
     ShieldCheck,
+    Trophy,
     TriangleAlert,
     UsersRound,
 } from 'lucide-react';
@@ -216,6 +217,11 @@ function buildPesantrianNavigation(auth: Auth): NavItem[] {
             'kedisiplinan_santri.review',
             'kedisiplinan_santri.resolve',
             'kedisiplinan_santri.archive',
+            'prestasi_santri.view',
+            'prestasi_santri.manage',
+            'prestasi_santri.record',
+            'prestasi_santri.verify',
+            'prestasi_santri.archive',
         ])
     ) {
         return [];
@@ -349,6 +355,26 @@ function buildPesantrianNavigation(auth: Auth): NavItem[] {
             ),
             icon: TriangleAlert,
             iconClassName: 'text-amber-600 dark:text-amber-300',
+        });
+    }
+
+    if (
+        hasAnyPermission(auth, [
+            'prestasi_santri.view',
+            'prestasi_santri.manage',
+            'prestasi_santri.record',
+            'prestasi_santri.verify',
+            'prestasi_santri.archive',
+        ])
+    ) {
+        items.push({
+            title: 'Prestasi Santri',
+            href: routeOr(
+                '/pesantrian/prestasi-santri',
+                'pesantrian.prestasi-santri.index',
+            ),
+            icon: Trophy,
+            iconClassName: 'text-yellow-600 dark:text-yellow-300',
         });
     }
 

@@ -19,7 +19,7 @@ Seeder bersifat idempotent, artinya aman dijalankan berulang untuk melengkapi
 data demo tanpa membuat data demo dobel berdasarkan kode unik seperti
 `DEMO-*`, `PPDB-DEMO-*`, `NIS-DEMO-*`, `PEG-DEMO-*`, `DEMO-ASR-*`,
 `DEMO-KMR-*`, kode presensi `DEMO-*`, kode Tahfidz `DEMO-THF-*`, izin
-`IZN-DEMO-*`, dan kasus kedisiplinan `DIS-DEMO-*`.
+`IZN-DEMO-*`, kasus kedisiplinan `DIS-DEMO-*`, dan prestasi `PRS-DEMO-*`.
 
 Password akun demo tidak ditulis di source code. Jika ingin semua akun demo
 punya password lokal yang sama, isi `.env` lokal:
@@ -44,7 +44,7 @@ Role operator dibuat agar uji coba terasa seperti pekerjaan harian.
 | SuperSystem | `super-system@example.test` | Semua fitur dan pemeriksaan permission. |
 | SecurityAdmin | `security-admin@example.test` | Role, permission, user, dan audit awal. |
 | OperatorPPDB | `operator-ppdb@example.test` | Pendaftaran santri baru sampai keputusan. |
-| OperatorSantri | `operator-santri@example.test` | Data induk santri, wali, lifecycle santri, asrama, presensi, dan Tahfidz/Hafalan. |
+| OperatorSantri | `operator-santri@example.test` | Data induk santri, wali, lifecycle santri, asrama, presensi, Tahfidz/Hafalan, perizinan, kedisiplinan, dan prestasi. |
 | OperatorAkademik | `operator-akademik@example.test` | Tahun ajaran, semester, kelas, rombel, placement. |
 | OperatorSDM | `operator-sdm@example.test` | Data pegawai, guru, ustaz, staff, dan unit tugas. |
 | Auditor | `auditor@example.test` | Audit log dan data baca lintas module. |
@@ -472,6 +472,51 @@ Relasi:
   lampiran bukti belum otomatis terhubung karena module atau integrasi tersebut
   belum dibuat.
 
+### Langkah P: Prestasi Santri
+
+Menu: **Pesantrian -> Prestasi Santri**
+
+Data demo penting:
+
+- `PRS-DEMO-DRAFT`: catatan awal yang masih bisa diedit.
+- `PRS-DEMO-SUBMITTED`: catatan yang sudah disubmit dan menunggu verifikasi.
+- `PRS-DEMO-VERIFIED`: catatan yang sudah menjadi riwayat resmi.
+- `PRS-DEMO-REVISION`: catatan yang dikembalikan untuk dilengkapi.
+- `PRS-DEMO-VOID`: catatan yang dibatalkan tanpa menghapus histori.
+- Kategori `PRS-DEMO-AKD`, `PRS-DEMO-THF`, `PRS-DEMO-NONAKD`, dan
+  `PRS-DEMO-ARSIP`.
+
+Tujuan:
+
+- Melihat daftar prestasi santri.
+- Memfilter berdasarkan pencarian, tanggal, status, tingkat, dan kategori.
+- Membuka detail prestasi untuk membaca data santri, kategori, kegiatan,
+  hasil, status, catatan verifikasi, dan histori revisi.
+- Membuat kategori prestasi baru.
+- Mengubah kategori prestasi.
+- Mengarsipkan kategori yang tidak dipakai lagi.
+- Membuat draft prestasi dari santri aktif.
+- Mengedit draft atau catatan yang perlu revisi.
+- Submit draft agar masuk verifikasi.
+- Verifikasi prestasi yang sudah valid.
+- Minta revisi jika data/bukti prestasi belum cukup.
+- Void catatan non-final dengan alasan tanpa menghapus histori data.
+
+Relasi:
+
+- Prestasi memakai santri aktif dari Data Induk Santri.
+- Prestasi memakai pembimbing aktif dari SDM Pesantren bila tersedia.
+- Prestasi dapat diberi konteks Tahun Ajaran/Semester aktif.
+- Prestasi Tahfidz berbentuk lomba/penghargaan boleh dicatat di Prestasi,
+  tetapi setoran dan target hafalan tetap dicatat di Tahfidz/Hafalan.
+- Snapshot santri, kategori, pembimbing, dan periode disimpan agar histori
+  tetap terbaca walaupun data master berubah.
+- Lampiran sertifikat/file bukti belum tersedia karena module dokumen belum
+  dibuat. Untuk sementara, catatan bukti ditulis di deskripsi atau catatan
+  internal.
+- Alumni, beasiswa/reward finansial, publikasi ke portal wali/santri, dan
+  laporan prestasi kompleks belum otomatis terhubung.
+
 ## 4. Module yang Belum Dibuat
 
 Jika saat uji manual terasa ada relasi yang belum bisa diklik, itu memang masih
@@ -481,7 +526,6 @@ di luar baseline running saat ini.
 | --- | --- |
 | Wali Santri master | Belum dibuat; wali masih snapshot di Santri/PPDB. |
 | Integrasi otomatis Presensi/Perizinan -> Kedisiplinan | Belum dibuat; kandidat kasus harus direview manusia dulu. |
-| Prestasi | Belum dibuat. |
 | Kesehatan / Klinik | Belum dibuat. |
 | Konseling / Pembinaan | Belum dibuat. |
 | Alumni | Belum dibuat; status lulus ada di Santri. |
@@ -513,6 +557,8 @@ di luar baseline running saat ini.
   approve/reject, check-out, return/check-in, dan void.
 - Buka Pelanggaran / Kedisiplinan, cek `DIS-DEMO-*`, lalu coba buat draft,
   edit, submit, review, tetapkan tindakan, selesaikan, dan void.
+- Buka Prestasi Santri, cek `PRS-DEMO-*`, kategori `PRS-DEMO-*`, lalu coba
+  buat kategori, buat draft, edit, submit, verifikasi/minta revisi, dan void.
 - Buka Audit Trail setelah beberapa aksi dan cek aktivitas tercatat.
 
 Jika ada error Ziggy/route di console browser, catat nama route yang disebutkan.

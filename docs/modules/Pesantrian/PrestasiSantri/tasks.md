@@ -305,12 +305,12 @@ Hasil:
 
 ## Increment 10: UI/Inertia List dan Detail
 
-- [ ] Buat page index.
-- [ ] Buat page detail.
-- [ ] Buat komponen filter/table/card/summary/pagination.
-- [ ] Tambahkan sidebar menu namespace Pesantrian.
-- [ ] Tambahkan presentation/Ziggy tests.
-- [ ] Jalankan typecheck, lint, dan build.
+- [x] Buat page index.
+- [x] Buat page detail.
+- [x] Buat komponen filter/table/card/summary/pagination.
+- [x] Tambahkan sidebar menu namespace Pesantrian.
+- [x] Tambahkan presentation/Ziggy tests.
+- [x] Jalankan typecheck, lint, dan build.
 
 Acceptance:
 
@@ -321,21 +321,34 @@ Acceptance:
 
 Verifikasi:
 
-- [ ] `php artisan test tests/Feature/PrestasiSantriPresentationTest.php tests/Feature/PrestasiSantriApiTest.php --no-ansi`
-- [ ] `php artisan route:list --name=pesantrian.prestasi-santri --no-ansi`
-- [ ] `php artisan module:validate --no-ansi`
-- [ ] `npm run types:check`
-- [ ] `npm run lint:check`
-- [ ] `npm run build`
+- [x] `php artisan test tests/Feature/PrestasiSantriPresentationTest.php tests/Feature/PrestasiSantriApiTest.php --no-ansi`
+- [x] `php artisan route:list --name=pesantrian.prestasi-santri --no-ansi`
+- [x] `php artisan module:validate --no-ansi`
+- [x] `npm run types:check`
+- [x] `npm run lint:check`
+- [x] `npm run build`
+
+Hasil:
+
+- Route web `pesantrian.prestasi-santri.index` dan
+  `pesantrian.prestasi-santri.show` ditambahkan ke route module dan Ziggy
+  allow-list.
+- UI list/detail berada di `resources/js/pages/Pesantrian/PrestasiSantri/`
+  dengan page tipis dan komponen terpisah di folder `components/`.
+- Sidebar namespace Pesantrian menampilkan menu `Prestasi Santri` untuk
+  permission `prestasi_santri.*`.
+- Live browser console QA tetap dicatat untuk tahap QA UI setelah mutation UI
+  selesai; Increment 10 sudah menutup risiko route/Ziggy lewat route-list,
+  build, dan presentation test.
 
 ## Increment 11: UI Mutation
 
-- [ ] Buat dialog create/update kategori.
-- [ ] Buat dialog create/update catatan prestasi.
-- [ ] Buat dialog submit.
-- [ ] Buat dialog verify/needs_revision.
-- [ ] Buat confirmation void.
-- [ ] Jalankan typecheck, lint, dan build.
+- [x] Buat dialog create/update kategori.
+- [x] Buat dialog create/update catatan prestasi.
+- [x] Buat dialog submit.
+- [x] Buat dialog verify/needs_revision.
+- [x] Buat confirmation void.
+- [x] Jalankan typecheck, lint, dan build.
 
 Acceptance:
 
@@ -345,19 +358,31 @@ Acceptance:
 
 Verifikasi:
 
-- [ ] `php artisan test tests/Feature/PrestasiSantriPresentationTest.php tests/Feature/PrestasiSantriCategoryMutationApiTest.php tests/Feature/PrestasiSantriDraftMutationApiTest.php tests/Feature/PrestasiSantriLifecycleApiTest.php tests/Feature/PrestasiSantriVoidApiTest.php --no-ansi`
-- [ ] `php artisan route:list --name=pesantrian.prestasi-santri --no-ansi`
-- [ ] `php artisan module:validate --no-ansi`
-- [ ] `npm run types:check`
-- [ ] `npm run lint:check`
-- [ ] `npm run build`
+- [x] `php artisan test tests/Feature/PrestasiSantriPresentationTest.php tests/Feature/PrestasiSantriCategoryMutationApiTest.php tests/Feature/PrestasiSantriDraftMutationApiTest.php tests/Feature/PrestasiSantriLifecycleApiTest.php tests/Feature/PrestasiSantriVoidApiTest.php --no-ansi`
+- [x] `php artisan route:list --name=pesantrian.prestasi-santri --no-ansi`
+- [x] `php artisan module:validate --no-ansi`
+- [x] `npm run types:check`
+- [x] `npm run lint:check`
+- [x] `npm run build`
+
+Hasil:
+
+- Route web mutation PrestasiSantri ditambahkan untuk create/update kategori,
+  arsip kategori, create/update draft prestasi, submit, verify, request
+  revision, dan void.
+- UI mutation berada di folder
+  `resources/js/pages/Pesantrian/PrestasiSantri/components/`.
+- Dashboard list dan detail sudah memiliki tombol aksi sesuai permission dan
+  status lifecycle.
+- Backend tetap menjadi authority permission dan validasi melalui FormRequest
+  dan Application actions.
 
 ## Increment 12: QA Browser dan User Manual
 
-- [ ] Jalankan browser QA desktop.
-- [ ] Jalankan browser QA mobile/responsive.
-- [ ] Update user manual lifecycle.
-- [ ] Update README/tasks hasil final.
+- [x] Jalankan browser QA desktop.
+- [x] Jalankan browser QA mobile/responsive.
+- [x] Update user manual lifecycle.
+- [x] Update README/tasks hasil final.
 
 Acceptance:
 
@@ -367,11 +392,29 @@ Acceptance:
 
 Verifikasi:
 
-- [ ] `php artisan migrate --no-ansi`
-- [ ] `php artisan route:list --name=pesantrian.prestasi-santri --no-ansi`
-- [ ] `npm run types:check`
-- [ ] `npm run lint:check`
-- [ ] `E2E_START_SERVER=true npx playwright test tests/Browser/prestasi-santri.spec.ts`
+- [x] `php artisan migrate --no-ansi`
+- [x] `php artisan route:list --name=pesantrian.prestasi-santri --no-ansi`
+- [x] `php artisan test tests\Feature\PrestasiSantriPresentationTest.php tests\Feature\PrestasiSantriCategoryMutationApiTest.php tests\Feature\PrestasiSantriDraftMutationApiTest.php tests\Feature\PrestasiSantriLifecycleApiTest.php tests\Feature\PrestasiSantriVoidApiTest.php --no-ansi`
+- [x] `php artisan module:validate --no-ansi`
+- [x] `npm run types:check`
+- [x] `npm run lint:check`
+- [x] `npm run build`
+- [x] PowerShell:
+  `$env:E2E_START_SERVER='true'; npx playwright test tests/Browser/prestasi-santri.spec.ts`
+
+Hasil:
+
+- Browser QA PrestasiSantri tersedia di
+  `tests/Browser/prestasi-santri.spec.ts` dengan fixture idempotent di
+  `tests/Browser/support/prestasi-santri-fixture.ts`.
+- QA mencakup desktop Chromium dan mobile Chromium.
+- Flow yang diuji: login operator fixture, buka list, filter prestasi, buat
+  kategori, buat draft prestasi, submit, void, buka detail submitted, serta
+  buka dialog verifikasi dan revisi.
+- Accessibility gate high-impact berjalan dan console/page error serta response
+  403 harus kosong.
+- User manual lifecycle diperbarui dengan Langkah P: Prestasi Santri dan relasi
+  yang belum otomatis.
 
 ## Keputusan Baseline
 
